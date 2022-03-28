@@ -3,7 +3,20 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer')
 require('dotenv').config();
+const { google } = require("googleapis");
+const OAuth2 = google.auth.OAuth2;
 
+
+let Auth = new OAuth2(
+    "268413882311-o45lkpk5ob5lbgrocemku281umttkcb1.apps.googleusercontent.com",
+    "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",
+)
+
+Auth.setCredentials({
+    refresh_token: "1//049Fk9ubBjBukCgYIARAAGAQSNwF-L9IrfolI7eSMNl6evKu8SBPIKx3uHkDbFct8sIdkUPOk3Q6Ec_-oAnOfm_Wzpc8IE7AcfJE"
+})
+
+var AccessToken = Auth.getAccessToken();
 
 exports.checkEmail = async(req, res) => {
     const {email} = req.body;
@@ -15,12 +28,17 @@ exports.checkEmail = async(req, res) => {
         if(user){
             const token = jwt.sign({email: email}, process.env.TOKEN, { expiresIn: "15m"});
             const link = `${process.env.BASE_URL}/reset-password/${user.id}/${token}`;
-            console.log(link);
+            //console.log(link);
+
             var transporter = nodemailer.createTransport({
                 service: 'gmail',
                 auth: {
+                    type: "OAuth2",
                     user: process.env.E_USER,
-                    pass: process.env.E_PASS
+                    clientId: process.env.CLIENT_ID,
+                    clientSecret: process.env.CLIENT_SECRET,
+                    refreshToken: process.env.REFRESH_TOKEN,
+                    accessToken: AccessToken
                 }
             });
 
@@ -33,15 +51,20 @@ exports.checkEmail = async(req, res) => {
             transporter.sendMail(mailOptions, function(err, info) {
                 if(err){
                     console.log(err)
+                    res.status(400).json({
+                        status: false,
+                        msg: "An error has occured"
+                    })
                 } else {
                     console.log(info);
+                    res.status(200).json({
+                        status: true,
+                        msg: "An email has been sent to you, Check your inbox"
+                    })
                 }
             });
 
-            res.status(200).json({
-                status: true,
-                msg: "An email has been sent to you, Check your inbox"
-            })
+            
         } else {
             res.status(404).json("User email not found")
         }
