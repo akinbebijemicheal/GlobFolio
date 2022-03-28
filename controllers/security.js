@@ -56,7 +56,7 @@ exports.checkEmail = async(req, res) => {
                         msg: "An error has occured"
                     })
                 } else {
-                    console.log(info);
+                    //console.log(info);
                     res.status(200).json({
                         status: true,
                         msg: "An email has been sent to you, Check your inbox"
