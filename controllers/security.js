@@ -3,20 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer')
 require('dotenv').config();
-const { google } = require("googleapis");
-const OAuth2 = google.auth.OAuth2;
 
-
-let Auth = new OAuth2(
-    "268413882311-o45lkpk5ob5lbgrocemku281umttkcb1.apps.googleusercontent.com",
-    "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",
-)
-
-Auth.setCredentials({
-    refresh_token: "1//049Fk9ubBjBukCgYIARAAGAQSNwF-L9IrfolI7eSMNl6evKu8SBPIKx3uHkDbFct8sIdkUPOk3Q6Ec_-oAnOfm_Wzpc8IE7AcfJE"
-})
-
-var AccessToken = Auth.getAccessToken();
 
 exports.checkEmail = async(req, res) => {
     const {email} = req.body;
@@ -28,22 +15,18 @@ exports.checkEmail = async(req, res) => {
         if(user){
             const token = jwt.sign({email: email}, process.env.TOKEN, { expiresIn: "15m"});
             const link = `${process.env.BASE_URL}/reset-password/${user.id}/${token}`;
-            //console.log(link);
-
+            console.log(link);
             var transporter = nodemailer.createTransport({
-                service: 'gmail',
+                host: 'smtp.mailtrap.io',
+                port: 2525,
                 auth: {
-                    type: "OAuth2",
                     user: process.env.E_USER,
-                    clientId: process.env.CLIENT_ID,
-                    clientSecret: process.env.CLIENT_SECRET,
-                    refreshToken: process.env.REFRESH_TOKEN,
-                    accessToken: AccessToken
+                    pass: process.env.E_PASS
                 }
             });
 
             const mailOptions = {
-                from:  `${process.env.E_USER}`,
+                from:  `${process.env.E_TEAM}`,
                 to: `${user.email}`,
                 subject: "Reset Password",
                 html: `<h1> Hello ${user.fullname} </h1>  <p>Receiving this email means you requested to change you password, follow the link below to reset your password </p> <p> ${link} </p> <p> This link will expire in 15 minutes </p>  `
@@ -51,10 +34,6 @@ exports.checkEmail = async(req, res) => {
             transporter.sendMail(mailOptions, function(err, info) {
                 if(err){
                     console.log(err)
-                    res.status(400).json({
-                        status: false,
-                        msg: "An error has occured"
-                    })
                 } else {
                     //console.log(info);
                     res.status(200).json({
