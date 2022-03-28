@@ -102,7 +102,8 @@ exports.LoginUser = async (role, req, res) => {
                 expiresIn: '24 hours',
                 verified: user.verified,
                 updatedAt: user.updatedAt,
-                createdAt: user.createdAt
+                createdAt: user.createdAt,
+                access_token: `Bearer ${token}`
             };
 
             var option = {
