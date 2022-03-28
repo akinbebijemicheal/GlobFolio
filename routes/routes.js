@@ -48,6 +48,10 @@ router
 });
 
 router
+.route('/dashboard/profile/upadte')
+.post(userAuth, updateUser);
+
+router
 .route('/get-unverified-vendor')
 .get(userAuth, checkRole(["admin"]), getUnverifieds)
 
