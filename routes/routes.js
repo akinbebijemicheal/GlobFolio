@@ -95,5 +95,15 @@ router
 .route('/getpostsbuser')
 .get(userAuth, getPostForUser)
 
+router
+.post('/logout', (req, res) => {
+    req.logout();
+    req.session.destroy((err) => {
+       return res.json('successfully logged out')
+    })
+    res.clearCookie('jwt');
+    
+   // return res.redirect('/dashboard')
+});
 
 module.exports = router;
