@@ -17,7 +17,7 @@ exports.checkEmail = async(req, res) => {
             const link = `${process.env.BASE_URL}/reset-password/${user.id}/${token}`;
             //console.log(link);
             var transporter = nodemailer.createTransport({
-                host: 'smtp.mailtrap.io',
+                host: "smtp.mailtrap.io",
                 port: 2525,
                 auth: {
                     user: process.env.E_USER,

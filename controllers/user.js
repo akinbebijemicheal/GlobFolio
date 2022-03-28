@@ -220,7 +220,7 @@ exports.updateUser = async(req, res) => {
 
 exports.deleteUser = async(req, res) => {
     try{
-        const user = await User.findOneAndDelete({ where: {
+        const user = await User.destroy({ where: {
             email: req.user.email}
         });
         

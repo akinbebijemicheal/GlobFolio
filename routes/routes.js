@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
+const multer = require('../util/multer');
 const { profile, userAuth, RegisterUser, LoginUser, checkRole, getUser, getUsers, updateUser, deleteUser } = require('../controllers/user');
 const {checkEmail, changePassword, forgotPassword} = require('../controllers/security');
 const { createPost, getPosts, getPostByTitle, getPostForServices, getPostForUser} = require('../controllers/post');
 const {  verification, getUnverifieds, getVendors, getVendorsByServices} = require('../controllers/vendor')
-
+const { updatePicture, uploadPicture, deletePicture, getPicture} = require('../controllers/picture')
 
 
 //user
@@ -50,6 +51,23 @@ router
 router
 .route('/dashboard/profile/update')
 .post(userAuth, updateUser);
+
+router
+.route('/dashboard/profile/upload-pic')
+.post(userAuth, multer.single("image") ,uploadPicture);
+
+router
+.route('/dashboard/profile/update-pic')
+.patch(userAuth, multer.single("image"), updatePicture);
+
+router
+.route('/dashboard/profile/delete-pic')
+.delete(userAuth, deletePicture);
+
+router
+.route('/dashboard/profile/get-pic/')
+.get(userAuth, getPicture);
+
 
 router
 .route('/get-unverified-vendor')
