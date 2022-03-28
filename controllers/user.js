@@ -15,7 +15,9 @@ exports.RegisterUser = async (role, req, res) => {
                 }
             });
         if(user) {
-            return res.status(302).json("user already exist")
+            return res.status(302).json({
+                status: false,
+                message: "user already exist"})
         }
         const salt = await bcrypt.genSalt(12);
         const hashedPass = await bcrypt.hash(password, salt);
@@ -41,16 +43,17 @@ exports.RegisterUser = async (role, req, res) => {
         await user.save();
 
         return res.status(201).json({
-            status: "success",
+            status: true,
             message: 'account created'
         });
 
     } catch(error){
         console.error(error)
-       return res.status(500).json({
-            message: "error occured",
-            error
-        })
+        return res.status(500).json({
+             status: false,
+             message: "error occured",
+             error: error
+         })
     }
 };
 
@@ -63,15 +66,17 @@ exports.LoginUser = async (role, req, res) => {
         });
         if(!user){
             return res.status(404).json({
+                status: false,
                 message: 'user does not exist',
-                success: false
+                
             });
         }
 
         if(user.role !== role){
             return res.status(401).json({
+                status: false,
                 message: "Please ensure you are logging-in from the right portal",
-                success: false
+                
             });
         }
         
@@ -87,6 +92,7 @@ exports.LoginUser = async (role, req, res) => {
                 process.env.TOKEN, { expiresIn: 24 * 60 * 60});
 
             let result = {
+                id: user.id,
                 fullname: user.fullname,
                 email: user.email,
                 role: user.role,
@@ -94,7 +100,9 @@ exports.LoginUser = async (role, req, res) => {
                 country: user.country,
                 serviceType: user.serviceType,
                 expiresIn: '24 hours',
-                verified: user.verified
+                verified: user.verified,
+                updatedAt: user.updatedAt,
+                createdAt: user.createdAt
             };
 
             var option = {
@@ -108,17 +116,20 @@ exports.LoginUser = async (role, req, res) => {
             res.cookie("jwt", token, option);
 
             return res.status(200).json({
-                ... result,
-                status: "successfully logged in",
-                success: true
+                
+                status: true,
+                message: "successfully logged in",
+                data: result
+                
             });
 
              
 
         } else{
            return res.status(403).json({
+                status: false,
                 message: 'wrong password',
-                success: false
+                
             });
         }
 
@@ -126,8 +137,9 @@ exports.LoginUser = async (role, req, res) => {
     } catch(error){
         console.error(error)
        return res.status(500).json({
+            status: false,
             message: "error occured",
-            error
+            error: error
         })
     }
 };
@@ -156,17 +168,22 @@ exports.getUsers = async (req, res)=>{
     try {
         const users = await User.findAll({where: {role: 'user'}})
         if (users){
-            return res.status(200).json(users)
+            return res.status(200).json({
+                status: true,
+                data: users})
         } else{
-            return res.status(404).json("No user found")
+            return res.status(404).json({
+                status: false,
+                message: "No user found"})
         }
        
     } catch (error) {
         console.error(error)
         return res.status(500).json({
-            message: "an error occured",
-            error
-        })
+             status: false,
+             message: "error occured",
+             error: error
+         })
     }
 };
 
@@ -178,16 +195,21 @@ exports.getUser = async (req, res) => {
             }
         })
         if (user){
-            return res.status(200).json(user)
+            return res.status(200).json({
+                status: true,
+                message: user})
         } else{
-            return res.status(404).json("No user found")
+            return res.status(404).json({
+                status: false,
+                message: "No user found"})
         }
 
     } catch (error) {
         console.error(error)
        return res.status(500).json({
+            status: false,
             message: "error occured",
-            error
+            error: error
         })
     }
 };
@@ -195,7 +217,7 @@ exports.getUser = async (req, res) => {
 exports.updateUser = async(req, res) => {
     //const { fullname, email, phone_no, country, serviceType} = req.body
     try{
-        const user = await User.update( /* {
+        await User.update( /* {
             fullname: fullname,
             phone_no: phone_no,
             country: country,
@@ -207,13 +229,15 @@ exports.updateUser = async(req, res) => {
             }
         });
        return res.status(200).json({
+            status: true,
             message: "updated successfully"
         })
     } catch(error){
         console.error(error)
        return res.status(500).json({
+            status: false,
             message: "error occured",
-            error
+            error: error
         })
     }
 }
@@ -225,21 +249,25 @@ exports.deleteUser = async(req, res) => {
         });
         
         return res.status(200).json({
+            status: true,
             message: "updated successfully",
-            user: user 
+             
         })
     } catch(error){
         console.error(error)
        return res.status(500).json({
+            status: false,
             message: "error occured",
-            error
+            error: error
         })
     }
 };
 
 exports.checkRole = roles => (req, res, next) => {
 if(!roles.includes(req.user.role)){ 
-    return res.status(401).json("Unauthorized") 
+    return res.status(401).json({
+        status: false,
+        message: "Unauthorized"}) 
     }
    return next();
 };

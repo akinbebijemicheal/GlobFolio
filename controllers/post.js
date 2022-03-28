@@ -13,14 +13,16 @@ exports.createPost = async(req, res) => {
         })
         await post.save();
         res.status(201).json({
-            msg: "Posted successfully"
+            status: true,
+            message: "Posted successfully"
         })
 
     } catch (error) {
         console.error(error)
         return res.status(500).json({
-             message: "An error occured",
-             error
+             status: false,
+             message: "error occured",
+             error: error
          })
     }
 }
@@ -29,18 +31,22 @@ exports.getPosts = async(req, res) => {
     try {
         const post = await Post.findAll();
         if(post){
-            res.status(200).json(post)
+            res.status(200).json({
+                status: true,
+                data: post})
         } else{
             res.status(404).json({
-                msg: "Posts not Found"
+                status: true,
+                message: "Posts not Found"
             })
         }
     } catch (error) {
         console.error(error)
-        return res.status(500).json({
-             message: "An error occured",
-             error
-         }) 
+       return res.status(500).json({
+            status: false,
+            message: "error occured",
+            error: error
+        })
     }
 }
 
@@ -49,18 +55,22 @@ exports.getPostForServices = async(req, res) => {
     try {
         const post = await Post.findAll({where: {serviceType: serviceType}}, {include: User})
         if(post){
-            res.status(200).json(post)
+            res.status(200).json({
+                status: true,
+                data: post})
         } else{
             res.status(404).json({
-                msg: "Post not Found"
+                status: false,
+                message: "Post not Found"
             })
         }
     } catch (error) {
         console.error(error)
         return res.status(500).json({
-             message: "An error occured",
-             error
-         }) 
+             status: false,
+             message: "error occured",
+             error: error
+         })
     }
 }
 
@@ -68,18 +78,22 @@ exports.getPostForUser = async(req, res) => {
     try {
         const post = await Post.findAll({ where: {userid: req.user.id}}, {include: User})
         if(post){
-            res.status(200).json(post)
+            res.status(200).json({
+                status: true,
+                data: post})
         } else{
             res.status(404).json({
-                msg: "Post not Found"
+                status: false,
+                message: "Post not Found"
             })
         }
     } catch (error) {
         console.error(error)
         return res.status(500).json({
-             message: "An error occured",
-             error
-         }) 
+             status: false,
+             message: "error occured",
+             error: error
+         })
     }
 }
 
@@ -88,18 +102,22 @@ exports.getPostByTitle = async(req, res) => {
     try {
         const post = await Post.findAll({where: {title: title}}, {include: User})
         if(post){
-            res.status(200).json(post)
+            res.status(200).json({
+                status: true,
+                data: post})
         } else{
             res.status(404).json({
-                msg: "Post not Found"
+                status: false,
+                message: "Post not Found"
             })
         }
     } catch (error) {
         console.error(error)
         return res.status(500).json({
-             message: "An error occured",
-             error
-         }) 
+             status: false,
+             message: "error occured",
+             error: error
+         })
     }
 }
 
@@ -111,19 +129,23 @@ exports.updatePost = async(req, res) => {
         }})
         if(post){
             res.status(200).json({
-                msg: "Post updated"
+                status: true,
+                message: "Post updated"
             })
         } else{
             res.status(404).json({
-                msg: "No Post Found"
+                status: false,
+                message: "No Post Found"
             })
         }
     } catch{
         console.error(error)
+        console.error(error)
         return res.status(500).json({
-             message: "An error occured",
-             error
-         }) 
+             status: false,
+             message: "error occured",
+             error: error
+         })
     }
 }
 

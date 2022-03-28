@@ -12,7 +12,8 @@ exports.uploadPicture = async(req, res) => {
         }});
         if(picture){
             res.status(302).json({
-                msg: "picture uploaded already"
+                status: false,
+                message: "picture uploaded already"
             })
         } else{
             const result = await cloudinary.uploader.upload(req.file.path);
@@ -25,8 +26,11 @@ exports.uploadPicture = async(req, res) => {
         await picture.save();
 
         res.status(201).json({
-            msg:"Profile picture uploaded",
-            url: result.secure_url
+            status: true,
+            message: "Profile picture uploaded",
+            data: {
+               img_url: result.secure_url
+            }
         })
         
         }
@@ -34,8 +38,9 @@ exports.uploadPicture = async(req, res) => {
     } catch (error) {
         console.error(error)
         return res.status(500).json({
+             status: false,
              message: "error occured",
-             error
+             error: error
          })
     }
 }
@@ -46,14 +51,18 @@ exports.getPicture = async(req, res) => {
             userid: req.user.id
         }})
         res.status(200).json({
-            content_id: picture.content_id,
-            url: picture.secure_url
+            status: true,
+            data: {   
+                content_id: picture.content_id,
+                img_url: picture.secure_url
+            }
         });
     } catch (error) {
         console.error(error)
         return res.status(500).json({
+             status: false,
              message: "error occured",
-             error
+             error: error
          })
     }
 }
@@ -66,13 +75,15 @@ exports.deletePicture = async(req, res) => {
         await cloudinary.uploader.destroy(picture.content_id);
         await Picture.destroy({where: {userid: req.user.id}})
         res.status(200).json({
-            msg: "Deleted successfully"
+            status: true,
+            message: "Deleted successfully"
         })
     } catch (error) {
         console.error(error)
         return res.status(500).json({
+             status: false,
              message: "error occured",
-             error
+             error: error
          })
     }
 };
@@ -95,14 +106,16 @@ exports.updatePicture = async(req, res) => {
         }});
 
         res.status(200).json({
-            msg: "Picture Updated successfully"
+            status: true,
+            message: "Picture Updated successfully"
         })
    } catch (error) {
         console.error(error)
         return res.status(500).json({
+            status: false,
             message: "error occured",
-            error
-        }) 
+            error: error
+        })
    }
 
 }

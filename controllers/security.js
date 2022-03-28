@@ -38,20 +38,23 @@ exports.checkEmail = async(req, res) => {
                     console.log(info);
                     res.status(200).json({
                         status: true,
-                        msg: "An email has been sent to you, Check your inbox"
+                        message: "An email has been sent to you, Check your inbox"
                     })
                 }
             });
 
             
         } else {
-            res.status(404).json("User email not found")
+            res.status(404).json({
+                status: false,
+                message: "User email not found"})
         }
     } catch (error) {
         console.error(error)
        return res.status(500).json({
+            status: false,
             message: "error occured",
-            error
+            error: error
         })
     }
 };
@@ -70,23 +73,29 @@ exports.forgotPassword = async(req, res) => {
                     await User.update({password: hashedPass}, {where: {
                         id: `${req.params.id}`
                     }})
-                    res.status(200).json({ msg: "User password successfully updated"})
+                    res.status(200).json({ 
+                        status: true,
+                        message: "User password successfully updated"})
                 } else {
-                    res.status(406).json({msg: "Password don't match"})
+                    res.status(406).json({
+                        status: false,
+                        message: "Password don't match"})
                 }
             }else{
                 res.status(403).json({
-                    msg: "Invalid Link"
+                    status: false,
+                    message: "Invalid Link"
                 })
             }
            
         
         } catch (error) {
-        console.error(error)
-        return res.status(500).json({
-             message: "error occured",
-             error
-         })
+            console.error(error)
+            return res.status(500).json({
+                 status: false,
+                 message: "error occured",
+                 error: error
+             })
     }
 
 }
@@ -107,21 +116,30 @@ exports.changePassword = async(req, res) => {
                     await User.update({password: hashedPass}, {where: {
                         id: user.id
                     }})
-                    res.status(202).json("password updated")
+                    res.status(202).json({
+                        status: true,
+                        message: "password updated"})
                 }else{
-                    res.status(406).json("new password not equal to confirm password")
+                    res.status(406).json({
+                        status: false,
+                        message: "new password not equal to confirm password"})
                 }
             } else{
-                res.status(406).json("wrong password")
+                res.status(406).json({
+                    status: false,
+                    message: "wrong password"})
             }
         }else{
-            res.status(404).json("user not logged in")
+            res.status(404).json({
+                status: false,
+                message: "user not logged in"})
         }
     } catch (error) {
         console.error(error)
         return res.status(500).json({
+             status: false,
              message: "error occured",
-             error
+             error: error
          })
     }
 }

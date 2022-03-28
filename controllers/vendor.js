@@ -11,13 +11,16 @@ exports.getUnverifieds = async( req, res) => {
          
     }})
 
-    return res.status(200).json(users);
+    return res.status(200).json({
+        status: false,
+        data: users});
 
     } catch (error) {
         console.error(error)
         return res.status(500).json({
+             status: false,
              message: "error occured",
-             error
+             error: error
          })
     }
 }
@@ -33,33 +36,45 @@ exports.verification = async (req, res) => {
                     email: email
                 }
             });
-            res.status(200).json("Vendor verified!")
+            res.status(200).json({
+                status: true,
+                message: "Vendor verified!"
+            })
         } else {
-            res.status(301).json("Vendor already verified!")
+            res.status(301).json({
+                status: false,
+                message: "Vendor already verified!"})
         }
     } catch (error) {
         console.error(error)
-        return res.status(500).json({
-             message: "error occured",
-             error
-         })
-    }
+       return res.status(500).json({
+            status: false,
+            message: "error occured",
+            error: error
+        })
 };
+}
 
 exports.getVendors = async(req, res) => {
     try {
         const users = await User.findAll( {where: {role: 'vendor'}})
         if (users){
-            return res.status(200).json(users)
+            return res.status(200).json({
+                status: true,
+                data: users
+            })
         } else{
-            return res.status(404).json("No user found")
+            return res.status(404).json({
+                status: false,
+                message: "No user found"})
         }
        
     } catch (error) {
         console.error(error)
-        return res.status(500).json({
-            message: "an error occured",
-            error
+       return res.status(500).json({
+            status: false,
+            message: "error occured",
+            error: error
         })
     }
 }
@@ -73,16 +88,24 @@ exports.getVendorsByServices = async(req, res) => {
                 serviceType: serviceType
             }})
         if (users){
-            return res.status(200).json(users)
+            return res.status(200).json({
+                status: true,
+                data: users
+            })
         } else{
-            return res.status(404).json("No user found")
+            return res.status(404).json({
+                status: false,
+                message: "No user found"})
         }
        
     } catch (error) {
         console.error(error)
-        return res.status(500).json({
-            message: "an error occured",
-            error
+       return res.status(500).json({
+            status: false,
+            message: "error occured",
+            error: error
         })
     }
 }
+
+
