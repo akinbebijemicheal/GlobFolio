@@ -193,10 +193,17 @@ exports.getUser = async (req, res) => {
 };
 
 exports.updateUser = async(req, res) => {
+    //const { fullname, email, phone_no, country, serviceType} = req.body
     try{
-        const user = await User.update( req.body, { where: 
+        const user = await User.update( /* {
+            fullname: fullname,
+            phone_no: phone_no,
+            country: country,
+            serviceType: serviceType,
+            email: email,
+        }*/ req.body, { where: 
             {
-            email: req.params.email
+            email: req.user.email
             }
         });
        return res.status(200).json({
@@ -215,7 +222,7 @@ exports.updateUser = async(req, res) => {
 exports.deleteUser = async(req, res) => {
     try{
         const user = await User.findOneAndDelete({ where: {
-            email: req.params.email}
+            email: req.user.email}
         });
         
         return res.status(200).json({
