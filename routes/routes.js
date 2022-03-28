@@ -48,7 +48,7 @@ router
 });
 
 router
-.route('/dashboard/profile/upadte')
+.route('/dashboard/profile/update')
 .post(userAuth, updateUser);
 
 router
