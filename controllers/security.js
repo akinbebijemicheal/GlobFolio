@@ -11,11 +11,11 @@ exports.checkEmail = async(req, res) => {
         const user = await User.findOne({ where: {
             email: `${email}`
         }})
-        console.log(user);
+        //console.log(user);
         if(user){
             const token = jwt.sign({email: email}, process.env.TOKEN, { expiresIn: "15m"});
             const link = `${process.env.BASE_URL}/reset-password/${user.id}/${token}`;
-            console.log(link);
+            //console.log(link);
             var transporter = nodemailer.createTransport({
                 host: 'smtp.mailtrap.io',
                 port: 2525,
@@ -35,7 +35,7 @@ exports.checkEmail = async(req, res) => {
                 if(err){
                     console.log(err)
                 } else {
-                    //console.log(info);
+                    console.log(info);
                     res.status(200).json({
                         status: true,
                         msg: "An email has been sent to you, Check your inbox"
