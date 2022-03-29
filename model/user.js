@@ -41,7 +41,7 @@ const User = db.define('User', {
     },
     serviceType: {
         type: Sequelize.ENUM,
-        values: ["food", "studio", "hotel", "cinema", "vr_gaming", "consumer"],
+        values: ["food", "studio", "hotel", "cinema", "vr_gaming", "rent", "consumer"],
         defaultValue: "consumer"
     },
     verified: {

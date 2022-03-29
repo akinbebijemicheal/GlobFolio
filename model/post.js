@@ -23,9 +23,15 @@ const Post = db.define('post', {
     },
     serviceType: {
         type: Sequelize.ENUM,
-        values: ["food", "studio", "hotel", "cinema", "vr_gaming"]
+        values: ["food", "studio", "hotel", "cinema", "vr_gaming", "rent"]
     },
     description: {
+        type: Sequelize.STRING
+    },
+    img_id: {
+        type: Sequelize.STRING,
+    },
+    img_url: {
         type: Sequelize.STRING
     }
 }, {timestamps: true});

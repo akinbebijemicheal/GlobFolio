@@ -19,7 +19,7 @@ exports.getUnverifieds = async( req, res) => {
         console.error(error)
         return res.status(500).json({
              status: false,
-             message: "error occured",
+             message: "An error occured",
              error: error
          })
     }
@@ -49,7 +49,7 @@ exports.verification = async (req, res) => {
         console.error(error)
        return res.status(500).json({
             status: false,
-            message: "error occured",
+            message: "An error occured",
             error: error
         })
 };
@@ -73,7 +73,7 @@ exports.getVendors = async(req, res) => {
         console.error(error)
        return res.status(500).json({
             status: false,
-            message: "error occured",
+            message: "An error occured",
             error: error
         })
     }
@@ -102,7 +102,7 @@ exports.getVendorsByServices = async(req, res) => {
         console.error(error)
        return res.status(500).json({
             status: false,
-            message: "error occured",
+            message: "An error occured",
             error: error
         })
     }

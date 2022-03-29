@@ -13,7 +13,7 @@ exports.uploadPicture = async(req, res) => {
         if(picture){
             res.status(302).json({
                 status: false,
-                message: "picture uploaded already"
+                message: "Picture uploaded already"
             })
         } else{
             const result = await cloudinary.uploader.upload(req.file.path);
@@ -39,7 +39,7 @@ exports.uploadPicture = async(req, res) => {
         console.error(error)
         return res.status(500).json({
              status: false,
-             message: "error occured",
+             message: "An error occured",
              error: error
          })
     }
@@ -61,7 +61,7 @@ exports.getPicture = async(req, res) => {
         console.error(error)
         return res.status(500).json({
              status: false,
-             message: "error occured",
+             message: "An error occured",
              error: error
          })
     }
@@ -82,7 +82,7 @@ exports.deletePicture = async(req, res) => {
         console.error(error)
         return res.status(500).json({
              status: false,
-             message: "error occured",
+             message: "An error occured",
              error: error
          })
     }
@@ -113,7 +113,7 @@ exports.updatePicture = async(req, res) => {
         console.error(error)
         return res.status(500).json({
             status: false,
-            message: "error occured",
+            message: "An error occured",
             error: error
         })
    }

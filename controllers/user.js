@@ -17,7 +17,7 @@ exports.RegisterUser = async (role, req, res) => {
         if(user) {
             return res.status(302).json({
                 status: false,
-                message: "user already exist"})
+                message: "User already exist"})
         }
         const salt = await bcrypt.genSalt(12);
         const hashedPass = await bcrypt.hash(password, salt);
@@ -44,14 +44,14 @@ exports.RegisterUser = async (role, req, res) => {
 
         return res.status(201).json({
             status: true,
-            message: 'account created'
+            message: 'Account created'
         });
 
     } catch(error){
         console.error(error)
         return res.status(500).json({
              status: false,
-             message: "error occured",
+             message: "Error occured",
              error: error
          })
     }
@@ -67,7 +67,7 @@ exports.LoginUser = async (role, req, res) => {
         if(!user){
             return res.status(404).json({
                 status: false,
-                message: 'user does not exist',
+                message: 'User does not exist',
                 
             });
         }
@@ -108,7 +108,7 @@ exports.LoginUser = async (role, req, res) => {
             return res.status(200).json({
                 
                 status: true,
-                message: "successfully logged in",
+                message: "Successfully logged in",
                 data: result
                 
             });
@@ -118,7 +118,7 @@ exports.LoginUser = async (role, req, res) => {
         } else{
            return res.status(403).json({
                 status: false,
-                message: 'wrong password',
+                message: 'Wrong password',
                 
             });
         }
@@ -128,7 +128,7 @@ exports.LoginUser = async (role, req, res) => {
         console.error(error)
        return res.status(500).json({
             status: false,
-            message: "error occured",
+            message: "Error occured",
             error: error
         })
     }
@@ -144,7 +144,7 @@ exports.webLoginUser = async (role, req, res) => {
         if(!user){
             return res.status(404).json({
                 status: false,
-                message: 'user does not exist',
+                message: 'User does not exist',
                 
             });
         }
@@ -196,7 +196,7 @@ exports.webLoginUser = async (role, req, res) => {
             return res.status(200).json({
                 
                 status: true,
-                message: "successfully logged in",
+                message: "Successfully logged in",
                 data: result
                 
             });
@@ -206,7 +206,7 @@ exports.webLoginUser = async (role, req, res) => {
         } else{
            return res.status(403).json({
                 status: false,
-                message: 'wrong password',
+                message: 'Wrong password',
                 
             });
         }
@@ -216,7 +216,7 @@ exports.webLoginUser = async (role, req, res) => {
         console.error(error)
        return res.status(500).json({
             status: false,
-            message: "error occured",
+            message: "Error occured",
             error: error
         })
     }
@@ -307,15 +307,22 @@ exports.updateUser = async(req, res) => {
             email: req.user.email
             }
         });
+
+        const user = await User.findOne({
+            where: {
+                email: req.user.email
+            }
+        })
        return res.status(200).json({
             status: true,
-            message: "updated successfully"
+            message: "Updated successfully",
+            data: user
         })
     } catch(error){
         console.error(error)
        return res.status(500).json({
             status: false,
-            message: "error occured",
+            message: "Error occured",
             error: error
         })
     }
@@ -329,14 +336,14 @@ exports.deleteUser = async(req, res) => {
         
         return res.status(200).json({
             status: true,
-            message: "updated successfully",
+            message: "Updated successfully",
              
         })
     } catch(error){
         console.error(error)
        return res.status(500).json({
             status: false,
-            message: "error occured",
+            message: "Error occured",
             error: error
         })
     }

@@ -99,7 +99,7 @@ router
 
 router
 .route('/create-post')
-.post(jwtAuth, createPost);
+.post(jwtAuth, multer.single("image"), createPost);
 
 router
 .route('/getposts')

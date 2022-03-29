@@ -53,7 +53,7 @@ exports.checkEmail = async(req, res) => {
         console.error(error)
        return res.status(500).json({
             status: false,
-            message: "error occured",
+            message: "An error occured",
             error: error
         })
     }
@@ -93,7 +93,7 @@ exports.forgotPassword = async(req, res) => {
             console.error(error)
             return res.status(500).json({
                  status: false,
-                 message: "error occured",
+                 message: "An error occured",
                  error: error
              })
     }
@@ -118,27 +118,27 @@ exports.changePassword = async(req, res) => {
                     }})
                     res.status(202).json({
                         status: true,
-                        message: "password updated"})
+                        message: "Password updated"})
                 }else{
                     res.status(406).json({
                         status: false,
-                        message: "new password not equal to confirm password"})
+                        message: "New password not equal to confirm password"})
                 }
             } else{
                 res.status(406).json({
                     status: false,
-                    message: "wrong password"})
+                    message: "Wrong password"})
             }
         }else{
             res.status(404).json({
                 status: false,
-                message: "user not logged in"})
+                message: "User not logged in"})
         }
     } catch (error) {
         console.error(error)
         return res.status(500).json({
              status: false,
-             message: "error occured",
+             message: "An error occured",
              error: error
          })
     }

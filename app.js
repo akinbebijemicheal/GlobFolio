@@ -4,11 +4,17 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const { session, store } = require('./model/session');
 require('dotenv').config();
+const http = require("http");
+const socketio = require("socket.io");
 const passport = require('passport');
 const cookieParser = require('cookie-parser');
 //const cookieEncrypter = require('cookie-encrypter')
 const webrouter = require('./routes/webroutes');
-const apirouter = require('./routes/apiroutes')
+const apirouter = require('./routes/apiroutes');
+
+const server = http.createServer(app);
+const io = socketio(server);
+
 
 
 app.use(cookieParser(process.env.CSECRET));
