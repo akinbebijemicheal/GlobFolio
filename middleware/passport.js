@@ -12,7 +12,7 @@ const cookieExtractor = (req) => {
 };
 
 
-var jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken() || cookieExtractor;
+var jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken()
 
 
 const options = {
