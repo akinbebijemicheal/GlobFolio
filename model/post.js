@@ -33,6 +33,12 @@ const Post = db.define('post', {
     },
     img_url: {
         type: Sequelize.STRING
+    },
+    price: {
+        type: Sequelize.STRING
+    }, 
+    rate: {
+        type: Sequelize.DECIMAL
     }
 }, {timestamps: true});
 
