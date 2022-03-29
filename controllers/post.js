@@ -4,7 +4,7 @@ const cloudinary = require('../util/cloudinary');
 
 
 exports.createPost = async(req, res) => {
-    const { title, serviceType, description} = req.body;
+    const { title, serviceType, description, price, rate} = req.body;
     try {
 
         const result = await cloudinary.uploader.upload(req.file.path);
@@ -13,6 +13,8 @@ exports.createPost = async(req, res) => {
             userid: req.user.id,
             serviceType,
             description,
+            price,
+            rate,
             img_id: result.public_id,
             img_url: result.secure_url
         })
