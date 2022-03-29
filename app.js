@@ -7,7 +7,8 @@ require('dotenv').config();
 const passport = require('passport');
 const cookieParser = require('cookie-parser');
 //const cookieEncrypter = require('cookie-encrypter')
-const router = require('./routes/routes');
+const webrouter = require('./routes/webroutes');
+const apirouter = require('./routes/apiroutes')
 
 
 app.use(cookieParser(process.env.CSECRET));
@@ -32,7 +33,8 @@ app.use(cors());
 app.use(passport.initialize());
 app.use(passport.session());
 require('./middleware/passport')(passport);
-app.use('/', router);
+app.use('/', webrouter);
+app.use('/api', apirouter);
 
 
 

@@ -31,6 +31,9 @@ const User = db.define('User', {
     country: {
       type: Sequelize.STRING  
     },
+    address: {
+        type: Sequelize.STRING
+    },
     role: {
         type: Sequelize.ENUM,
         values: ['user', "vendor", 'admin'],

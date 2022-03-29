@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('../util/multer');
-const { profile, userAuth, RegisterUser, LoginUser, checkRole, getUser, getUsers, updateUser, deleteUser } = require('../controllers/user');
+const { profile, RegisterUser, LoginUser, checkRole, getUser, getUsers, updateUser, deleteUser } = require('../controllers/user');
 const {checkEmail, changePassword, forgotPassword} = require('../controllers/security');
 const { createPost, getPosts, getPostByTitle, getPostForServices, getPostForUser} = require('../controllers/post');
 const {  verification, getUnverifieds, getVendors, getVendorsByServices} = require('../controllers/vendor')
 const { updatePicture, uploadPicture, deletePicture, getPicture} = require('../controllers/picture')
-
+const jwtAuth = require('../middleware/jwtAuth');
 
 //user
 router
@@ -44,46 +44,46 @@ router
 
 router
 .route('/dashboard/profile')
-.get(userAuth, async(req, res) => { 
+.get(jwtAuth, async(req, res) => { 
     return res.json(profile(req.user)) 
 });
 
 router
 .route('/dashboard/profile/update')
-.post(userAuth, updateUser);
+.post(jwtAuth, updateUser);
 
 router
 .route('/dashboard/profile/upload-pic')
-.post(userAuth, multer.single("image") ,uploadPicture);
+.post(jwtAuth, multer.single("image") ,uploadPicture);
 
 router
 .route('/dashboard/profile/update-pic')
-.patch(userAuth, multer.single("image"), updatePicture);
+.patch(jwtAuth, multer.single("image"), updatePicture);
 
 router
 .route('/dashboard/profile/delete-pic')
-.delete(userAuth, deletePicture);
+.delete(jwtAuth, deletePicture);
 
 router
 .route('/dashboard/profile/get-pic/')
-.get(userAuth, getPicture);
+.get(jwtAuth, getPicture);
 
 
 router
 .route('/get-unverified-vendor')
-.get(userAuth, checkRole(["admin"]), getUnverifieds)
+.get(jwtAuth, checkRole(["admin"]), getUnverifieds)
 
 router
 .route('/get-vendors')
-.get(userAuth, checkRole(["admin"]), getVendors)
+.get(jwtAuth, checkRole(["admin"]), getVendors)
 
 router
 .route('/get-vendorsByservice')
-.get(userAuth, checkRole(["admin"]), getVendorsByServices)
+.get(jwtAuth, checkRole(["admin"]), getVendorsByServices)
 
 router
 .route('/verification')
-.post(userAuth, checkRole(["admin"]), verification)
+.post(jwtAuth, checkRole(["admin"]), verification)
 
 router
 .route('/reset-password')
@@ -95,37 +95,27 @@ router
 
 router
 .route('/change-password')
-.post(userAuth, changePassword);
+.post(jwtAuth, changePassword);
 
 router
 .route('/create-post')
-.post(userAuth, createPost);
+.post(jwtAuth, createPost);
 
 router
 .route('/getposts')
-.get(userAuth, getPosts)
+.get(jwtAuth, getPosts)
 
 router
 .route('/getpostsbyservices')
-.post(userAuth, getPostForServices);
+.post(jwtAuth, getPostForServices);
 
 router
 .route('/getpostsbytiltle')
-.post(userAuth, getPostByTitle)
+.post(jwtAuth, getPostByTitle)
 
 router
 .route('/getpostsbuser')
-.get(userAuth, getPostForUser)
+.get(jwtAuth, getPostForUser)
 
-router
-.post('/logout', (req, res) => {
-    req.logout();
-    req.session.destroy((err) => {
-       return res.json('successfully logged out')
-    })
-    res.clearCookie('jwt');
-    
-   // return res.redirect('/dashboard')
-});
 
 module.exports = router;

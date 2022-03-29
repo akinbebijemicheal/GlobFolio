@@ -83,6 +83,83 @@ exports.LoginUser = async (role, req, res) => {
         const validate = await bcrypt.compare(password, user.password);
         if(validate){
 
+            const payload = {
+                user: user
+            }
+
+            let token = jwt.sign(payload, process.env.TOKEN, { expiresIn: 24 * 60 * 60});
+
+            let result = {
+                id: user.id,
+                fullname: user.fullname,
+                email: user.email,
+                role: user.role,
+                phone_no: user.phone_no,
+                country: user.country,
+                serviceType: user.serviceType,
+                address: user.address,
+                expiresIn: '24 hours',
+                verified: user.verified,
+                updatedAt: user.updatedAt,
+                createdAt: user.createdAt,
+                access_token: token
+            };
+
+            return res.status(200).json({
+                
+                status: true,
+                message: "successfully logged in",
+                data: result
+                
+            });
+
+             
+
+        } else{
+           return res.status(403).json({
+                status: false,
+                message: 'wrong password',
+                
+            });
+        }
+
+
+    } catch(error){
+        console.error(error)
+       return res.status(500).json({
+            status: false,
+            message: "error occured",
+            error: error
+        })
+    }
+};
+
+exports.webLoginUser = async (role, req, res) => {
+    try{
+
+        const {email, password } = req.body;
+        const user = await User.findOne({where: {
+            email: email }
+        });
+        if(!user){
+            return res.status(404).json({
+                status: false,
+                message: 'user does not exist',
+                
+            });
+        }
+
+        if(user.role !== role){
+            return res.status(401).json({
+                status: false,
+                message: "Please ensure you are logging-in from the right portal",
+                
+            });
+        }
+        
+        const validate = await bcrypt.compare(password, user.password);
+        if(validate){
+
             let token = jwt.sign(
                 { 
                 fullname: user.fullname,
@@ -99,11 +176,11 @@ exports.LoginUser = async (role, req, res) => {
                 phone_no: user.phone_no,
                 country: user.country,
                 serviceType: user.serviceType,
+                address: user.address,
                 expiresIn: '24 hours',
                 verified: user.verified,
                 updatedAt: user.updatedAt,
                 createdAt: user.createdAt,
-                access_token: `Bearer ${token}`
             };
 
             var option = {
@@ -114,7 +191,7 @@ exports.LoginUser = async (role, req, res) => {
                 secret: process.env.CSECRET
             }
             
-            //res.cookie("jwt", token, option);
+            res.cookie("jwt", token, option);
 
             return res.status(200).json({
                 
@@ -152,12 +229,13 @@ exports.userAuth = passport.authenticate('jwt', {session: true});
 
 exports.profile = user => {
    return {
+        id: user.id,
         fullname: user.fullname,
         phone_no: user.phone_no,
         country: user.country,
         serviceType: user.serviceType,
         email: user.email,
-        id: user.id,
+        address: user.address,
         updatedAt: user.updatedAt,
         createdAt: user.createdAt
        };
