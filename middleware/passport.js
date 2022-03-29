@@ -11,8 +11,12 @@ const cookieExtractor = (req) => {
     return token;
 };
 
+
+var jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken() || cookieExtractor;
+
+
 const options = {
-    jwtFromRequest: cookieExtractor || ExtractJwt.fromAuthHeaderAsBearerToken(),
+    jwtFromRequest: jwtFromRequest,
     secretOrKey: process.env.TOKEN
 }
 
