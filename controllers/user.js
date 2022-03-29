@@ -114,7 +114,7 @@ exports.LoginUser = async (role, req, res) => {
                 secret: process.env.CSECRET
             }
             
-            res.cookie("jwt", token, option);
+            //res.cookie("jwt", token, option);
 
             return res.status(200).json({
                 
