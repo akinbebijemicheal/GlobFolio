@@ -1,12 +1,46 @@
-const Post = require('../model/post');
+const Product = require('../model/product');
+const User = require('../model/user')
 const cloudinary = require('../util/cloudinary');
 
+exports.createCinemaService = async(req, res) => {
+    const { title, genre, storyline, rating, cast, duration, age_rate,  price } = req.body;
+    try {
+        const result = await cloudinary.uploader.upload(req.file.path);
+        const cinema = new Product({
+            user_id: req.user.id,
+            title,
+            genre,
+            storyline,
+            cast,
+            duration,
+            age_rate,
+            rating,
+            price,
+            productType:
+            img_id: result.public_id,
+            img_url: result.secure_url
+        })
+        await cinema.save();
+        res.status(201).json({
+            status: true,
+            message: "Posted successfully",
+            data: cinema
+        })
+    } catch (error) {
+        console.error(error)
+        return res.status(500).json({
+             status: false,
+             message: "An error occured",
+             error: error
+         })
+    }
+}
 
 
 exports.createPost = async(req, res) => {
     const { title, serviceType, description, price, rate} = req.body;
     try {
-
+        
         const result = await cloudinary.uploader.upload(req.file.path);
         const post = new Post({
             title,
@@ -166,4 +200,6 @@ exports.deletePost = async(req, res) => {
         
     }
 }
+
+
 

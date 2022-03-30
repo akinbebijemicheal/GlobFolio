@@ -3,7 +3,7 @@ const db = require('../config/config');
 const {nanoid} = require('nanoid');
 const User = require('./user');
 
-const Post = db.define('post', {
+const Product = db.define('product', {
     id: {
         type: Sequelize.STRING(10),
         autoincrement: false,
@@ -21,11 +21,41 @@ const Post = db.define('post', {
     title: {
         type: Sequelize.STRING
     },
-    serviceType: {
+    productType: {
         type: Sequelize.ENUM,
-        values: ["food", "studio", "hotel", "cinema", "vr_gaming", "rent"]
+        values: ["food", "studio", "hotel", "cinema", "game", "rent"]
     },
     description: {
+        type: Sequelize.STRING
+    },
+    ingredients: {
+        type: Sequelize.STRING
+    },
+    genre: {
+        type: Sequelize.STRING
+    },
+    location: {
+        type: Sequelize.STRING
+    },
+    storyline: {
+        type: Sequelize.STRING
+    },
+    rating: {
+        type: Sequelize.DECIMAL
+    },
+    cast: {
+        type: Sequelize.STRING
+    },
+    duration: {
+        type: Sequelize.STRING
+    },
+    per_time: {
+        type: Sequelize.STRING
+    },
+    equipment: {
+        type: Sequelize.STRING
+    },
+    age_rate: {
         type: Sequelize.STRING
     },
     img_id: {
@@ -37,13 +67,13 @@ const Post = db.define('post', {
     price: {
         type: Sequelize.STRING
     }, 
-    rate: {
+    rating: {
         type: Sequelize.DECIMAL
     }
 }, {timestamps: true});
 
 
-Post.belongsTo(User, {foreignKey: 'userid'})
-User.hasMany(Post, {foreignKey: 'userid'});
+Product.belongsTo(User, {foreignKey: 'userid'})
+User.hasMany(Product, {foreignKey: 'userid'});
 
-module.exports = Post;
+module.exports = Product;

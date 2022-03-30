@@ -100,6 +100,7 @@ exports.LoginUser = async (role, req, res) => {
                 address: user.address,
                 expiresIn: '24 hours',
                 verified: user.verified,
+                email_verify: user.email_verify,
                 updatedAt: user.updatedAt,
                 createdAt: user.createdAt,
                 access_token: token
@@ -179,6 +180,7 @@ exports.webLoginUser = async (role, req, res) => {
                 address: user.address,
                 expiresIn: '24 hours',
                 verified: user.verified,
+                email_verify: user.email_verify,
                 updatedAt: user.updatedAt,
                 createdAt: user.createdAt,
             };

@@ -2,11 +2,18 @@ const express = require('express');
 const router = express.Router();
 const multer = require('../util/multer');
 const { profile, RegisterUser, LoginUser, checkRole, getUser, getUsers, updateUser, deleteUser } = require('../controllers/user');
-const {checkEmail, changePassword, forgotPassword} = require('../controllers/security');
-const { createPost, getPosts, getPostByTitle, getPostForServices, getPostForUser} = require('../controllers/post');
+const {checkEmail, changePassword, forgotPassword, emailVerification_V1, emailVerification_V2} = require('../controllers/security');
+//const { createPost, getPosts, getPostByTitle, getPostForServices, getPostForUser} = require('../controllers/post');
 const {  verification, getUnverifieds, getVendors, getVendorsByServices} = require('../controllers/vendor')
 const { updatePicture, uploadPicture, deletePicture, getPicture} = require('../controllers/picture')
 const jwtAuth = require('../middleware/jwtAuth');
+const { getCinemaServices, getCinemaByTitle, getCinemaForUser} = require('../controllers/services/cinema');
+const {getFoodByTitle, getFoodForUser, getFoodServices} = require('../controllers/services/food');
+const { getHotelByTitle, getHotelForUser, getHotelServices } = require('../controllers/services/hotel');
+const { getRentByTitle, getRentForUser, getRentServices} = require('../controllers/services/renting');
+const {getStudioByTitle, getStudioForUser, getStudioServices} = require('../controllers/services/studio_book');
+const { getGamingByTitle, getGamingForUser, getGamingServices} = require('../controllers/services/vr_gaming');
+
 
 //user
 router
@@ -86,6 +93,14 @@ router
 .post(jwtAuth, checkRole(["admin"]), verification)
 
 router
+.route('/email-verification')
+.post(jwtAuth, emailVerification_V1);
+
+router
+.route('/email-verification/:id/:token')
+.post(emailVerification_V2);
+
+router
 .route('/reset-password')
 .post(checkEmail);
 
@@ -97,9 +112,85 @@ router
 .route('/change-password')
 .post(jwtAuth, changePassword);
 
+
 router
+.route('/get-cinema-posts')
+.get(jwtAuth, getCinemaServices)
+
+router
+.route('/get-hotel-posts')
+.get(jwtAuth, getHotelServices)
+
+router
+.route('/get-studio-posts')
+.get(jwtAuth, getStudioServices)
+
+router
+.route('/get-food-posts')
+.get(jwtAuth, getFoodServices)
+
+router
+.route('/get-gaming-posts')
+.get(jwtAuth, getGamingServices)
+
+router
+.route('/get-rent-posts')
+.get(jwtAuth, getRentServices)
+
+
+router
+.route('/get-cinema-bytitle')
+.post(jwtAuth, getCinemaByTitle)
+
+router
+.route('/get-hotel-bytitle')
+.post(jwtAuth, getHotelByTitle)
+
+router
+.route('/get-studio-bytitle')
+.post(jwtAuth, getStudioByTitle)
+
+router
+.route('/get-food-bytitle')
+.post(jwtAuth, getFoodByTitle)
+
+router
+.route('/get-gaming-bytitle')
+.post(jwtAuth, getGamingByTitle)
+
+router
+.route('/get-rent-bytitle')
+.post(jwtAuth, getRentByTitle)
+
+
+router
+.route('/get-cinema-byuser')
+.get(jwtAuth, getCinemaForUser)
+
+router
+.route('/get-hotel-byuser')
+.get(jwtAuth, getHotelForUser)
+
+router
+.route('/get-studio-byuser')
+.get(jwtAuth, getStudioForUser)
+
+router
+.route('/get-gaming-byuser')
+.get(jwtAuth, getGamingForUser)
+
+router
+.route('/get-food-byuser')
+.get(jwtAuth, getFoodForUser);
+
+router
+.route('/get-rent-byuser')
+.get(jwtAuth, getRentForUser)
+
+
+/*router
 .route('/create-post')
-.post(jwtAuth, multer.single("image"), createPost);
+.post(jwtAuth, checkRole(["vendor"]) ,multer.single("image"), createPost);
 
 router
 .route('/getposts')
@@ -107,15 +198,15 @@ router
 
 router
 .route('/getpostsbyservices')
-.post(jwtAuth, getPostForServices);
+.get(jwtAuth, getPostForServices);
 
 router
-.route('/getpostsbytiltle')
-.post(jwtAuth, getPostByTitle)
+.route('/getpostsbytitle')
+.get(jwtAuth, getPostByTitle)
 
 router
-.route('/getpostsbuser')
-.get(jwtAuth, getPostForUser)
+.route('/getpostsbyuser')
+.get(jwtAuth, getPostForUser) */
 
 
 module.exports = router;

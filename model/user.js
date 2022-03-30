@@ -44,6 +44,10 @@ const User = db.define('User', {
         values: ["food", "studio", "hotel", "cinema", "vr_gaming", "rent", "consumer"],
         defaultValue: "consumer"
     },
+    email_verify: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
+    },
     verified: {
         type: Sequelize.BOOLEAN,
         defaultValue: false
