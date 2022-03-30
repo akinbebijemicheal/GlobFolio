@@ -3,7 +3,6 @@ const router = express.Router();
 const multer = require('../util/multer');
 const { profile, RegisterUser, LoginUser, checkRole, getUser, getUsers, updateUser, deleteUser } = require('../controllers/user');
 const {checkEmail, changePassword, forgotPassword, emailVerification_V1, emailVerification_V2} = require('../controllers/security');
-//const { createPost, getPosts, getPostByTitle, getPostForServices, getPostForUser} = require('../controllers/post');
 const {  verification, getUnverifieds, getVendors, getVendorsByServices} = require('../controllers/vendor')
 const { updatePicture, uploadPicture, deletePicture, getPicture} = require('../controllers/picture')
 const jwtAuth = require('../middleware/jwtAuth');
@@ -140,27 +139,27 @@ router
 
 router
 .route('/get-cinema-bytitle')
-.post(jwtAuth, getCinemaByTitle)
+.get(jwtAuth, getCinemaByTitle)
 
 router
 .route('/get-hotel-bytitle')
-.post(jwtAuth, getHotelByTitle)
+.get(jwtAuth, getHotelByTitle)
 
 router
 .route('/get-studio-bytitle')
-.post(jwtAuth, getStudioByTitle)
+.get(jwtAuth, getStudioByTitle)
 
 router
 .route('/get-food-bytitle')
-.post(jwtAuth, getFoodByTitle)
+.get(jwtAuth, getFoodByTitle)
 
 router
 .route('/get-gaming-bytitle')
-.post(jwtAuth, getGamingByTitle)
+.get(jwtAuth, getGamingByTitle)
 
 router
 .route('/get-rent-bytitle')
-.post(jwtAuth, getRentByTitle)
+.get(jwtAuth, getRentByTitle)
 
 
 router
@@ -187,26 +186,6 @@ router
 .route('/get-rent-byuser')
 .get(jwtAuth, getRentForUser)
 
-
-/*router
-.route('/create-post')
-.post(jwtAuth, checkRole(["vendor"]) ,multer.single("image"), createPost);
-
-router
-.route('/getposts')
-.get(jwtAuth, getPosts)
-
-router
-.route('/getpostsbyservices')
-.get(jwtAuth, getPostForServices);
-
-router
-.route('/getpostsbytitle')
-.get(jwtAuth, getPostByTitle)
-
-router
-.route('/getpostsbyuser')
-.get(jwtAuth, getPostForUser) */
 
 
 module.exports = router;

@@ -3,7 +3,6 @@ const router = express.Router();
 const multer = require('../util/multer');
 const { profile, userAuth, RegisterUser, webLoginUser, checkRole, getUser, getUsers, updateUser, deleteUser } = require('../controllers/user');
 const {checkEmail, changePassword, forgotPassword, emailVerification_V1, emailVerification_V2} = require('../controllers/security');
-//const { createPost, getPosts, getPostByTitle, getPostForServices, getPostForUser} = require('../controllers/post');
 const {  verification, getUnverifieds, getVendors, getVendorsByServices} = require('../controllers/vendor')
 const { updatePicture, uploadPicture, deletePicture, getPicture} = require('../controllers/picture')
 const { createCinemaService, getCinemaServices, getCinemaByTitle, getCinemaForUser, updateCinema} = require('../controllers/services/cinema');
@@ -212,49 +211,27 @@ router
 
 router
 .route('/update-cinema-byuser')
-.patch(userAuth, updateCinema)
+.patch(userAuth, checkRole(["vendor"]) ,multer.single("image"),  updateCinema)
 
 router
 .route('/update-hotel-byuser')
-.patch(userAuth, updateHotel)
+.patch(userAuth, checkRole(["vendor"]) ,multer.single("image"), updateHotel)
 
 router
 .route('/update-studio-byuser')
-.patch(userAuth, updateStudio)
+.patch(userAuth, checkRole(["vendor"]) ,multer.single("image"), updateStudio)
 
 router
 .route('/update-gaming-byuser')
-.patch(userAuth, updateGaming)
+.patch(userAuth, checkRole(["vendor"]) ,multer.single("image"), updateGaming)
 
 router
 .route('/update-food-byuser')
-.patch(userAuth, updateFood);
+.patch(userAuth, checkRole(["vendor"]) ,multer.single("image"), updateFood);
 
 router
 .route('/update-rent-byuser')
-.patch(userAuth, updateRent)
-
-
-
-/*router
-.route('/create-post')
-.post(userAuth, checkRole(["vendor"]) ,multer.single("image"), createPost);
-
-router
-.route('/getposts')
-.get(userAuth, getPosts)
-
-router
-.route('/getpostsbyservices')
-.post(userAuth, getPostForServices);
-
-router
-.route('/getpostsbytitle')
-.post(userAuth, getPostByTitle)
-
-router
-.route('/getpostsbyuser')
-.get(userAuth, getPostForUser)
+.patch(userAuth, checkRole(["vendor"]) ,multer.single("image"), updateRent);
 
 router
 .post('/logout', (req, res) => {
@@ -264,7 +241,6 @@ router
     })
     res.clearCookie('jwt');
     
-   // return res.redirect('/dashboard')
-});*/
+});
 
 module.exports = router;
