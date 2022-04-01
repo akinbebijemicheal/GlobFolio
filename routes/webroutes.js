@@ -61,7 +61,8 @@ router
 
 router
 .get('/register-vendor', (req, res) => {
-    res.render('base/vendor') 
+    res.render('base/vendor')
+    
 });
 
 router
@@ -171,6 +172,7 @@ router
 router
 .post('/register-user', async (req, res) => {
     await RegisterUser("user", req, res)
+    res.redirect('/login-user')
 });
 
 router
@@ -182,6 +184,7 @@ router
 router
 .post('/register-vendor', async (req, res) => {
     await RegisterUser("vendor", req, res)
+    res.redirect('/login-vendor')
 });
 
 router
