@@ -66,6 +66,12 @@ router
 });
 
 router
+.get('/register-admin', (req, res) => {
+    res.render('base/admin-register')
+    
+});
+
+router
 .get('/login-user', (req, res) => {
     res.render('base/userlogin')
 });
@@ -73,6 +79,11 @@ router
 router
 .get('/login-vendor', (req, res) => {
     res.render('base/vendorlogin')
+});
+
+router
+.get('/login-admin', (req, res) => {
+    res.render('base/admin-login')
 });
 
 router
@@ -166,6 +177,129 @@ router
 })
 
 
+router
+.get('/dashboard/admin', userAuth, checkRole(["admin"]), (req, res)=>{
+    let name = req.user.fullname.split(' ')
+    let email = req.user.email
+    res.render('dashboard/admin/index', {
+        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+        email: email
+    })
+})
+
+
+
+router
+.get('/dashboard/admin/cinema', userAuth, checkRole(["admin"]), (req, res)=>{
+    let name = req.user.fullname.split(' ')
+    let email = req.user.email
+    res.render('dashboard/admin/cinema',  {
+        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+        email: email
+    })
+})
+
+router
+.get('/dashboard/admin/food', userAuth, checkRole(["admin"]), (req, res)=>{
+    let name = req.user.fullname.split(' ')
+    let email = req.user.email
+    res.render('dashboard/admin/food',  {
+        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+        email: email
+    })
+})
+
+router
+.get('/dashboard/admin/forgot', userAuth, checkRole(["admin"]), (req, res)=>{
+    let name = req.user.fullname.split(' ')
+    let email = req.user.email
+    res.render('dashboard/admin/forgot',  {
+        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+        email: email
+    })
+})
+
+router
+.get('/dashboard/admin/game',userAuth, checkRole(["admin"]),(req, res)=>{
+    let name = req.user.fullname.split(' ')
+    let email = req.user.email
+    res.render('dashboard/admin/game',  {
+        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+        email: email
+    })
+})
+
+router
+.get('/dashboard/admin/hotel', userAuth, checkRole(["admin"]), (req, res)=>{
+    let name = req.user.fullname.split(' ')
+    let email = req.user.email
+    res.render('dashboard/admin/hotel',  {
+        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+        email: email
+    })
+})
+
+router
+.get('/dashboard/admin/rent', userAuth, checkRole(["admin"]),(req, res)=>{
+    let name = req.user.fullname.split(' ')
+    let email = req.user.email
+    res.render('dashboard/admin/rent',  {
+        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+        email: email
+    })
+})
+
+router
+.get('/dashboard/admin/studio', userAuth, checkRole(["admin"]),(req, res)=>{
+    let name = req.user.fullname.split(' ')
+    let email = req.user.email
+    res.render('dashboard/admin/studio',  {
+        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+        email: email
+    })
+})
+
+router
+.get('/dashboard/admin/add-seller', userAuth, checkRole(["admin"]),(req, res)=>{
+    let name = req.user.fullname.split(' ')
+    let email = req.user.email
+    res.render('dashboard/admin/add-seller',  {
+        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+        email: email
+    })
+})
+
+router
+.get('/dashboard/admin/create-user', userAuth, checkRole(["admin"]),(req, res)=>{
+    let name = req.user.fullname.split(' ')
+    let email = req.user.email
+    res.render('dashboard/admin/create-user',  {
+        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+        email: email
+    })
+})
+
+router
+.get('/dashboard/admin/view-seller', userAuth, checkRole(["admin"]),(req, res)=>{
+    let name = req.user.fullname.split(' ')
+    let email = req.user.email
+    res.render('dashboard/admin/view-seller',  {
+        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+        email: email
+    })
+})
+
+router
+.get('/dashboard/admin/view-user', userAuth, checkRole(["admin"]),(req, res)=>{
+    let name = req.user.fullname.split(' ')
+    let email = req.user.email
+    res.render('dashboard/admin/view-user',  {
+        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+        email: email
+    })
+})
+
+
 //-----------------------------------------------------------------------------------------------
 // post requests for information
 //User
@@ -178,6 +312,7 @@ router
 router
 .post('/login-user', async (req, res) => {
     await webLoginUser("user", req, res);
+    res.redirect('/dashboard/user')
 });
 
 //vendor
@@ -190,17 +325,20 @@ router
 router
 .post('/login-vendor', async (req, res) => {
     await webLoginUser("vendor", req, res);
+    res.redirect('/dashboard/vendor')
 });
 
 //admin
 router
 .post('/register-admin', async (req, res) => {
     await RegisterUser("admin", req, res)
+    res.redirect('login-admin')
 });
 
 router
-.post('/signin-admin', async (req, res) => {
+.post('/login-admin', async (req, res) => {
     await webLoginUser("admin", req, res);
+    res.redirect('/dashboard/admin')
 });
 
 router

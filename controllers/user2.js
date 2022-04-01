@@ -177,7 +177,7 @@ exports.webLoginUser = async (role, req, res) => {
 
             //res.status(200)
             //req.flash("success", "Successfully logged in");
-            res.redirect('/dashboard/user')
+            
 
              
 

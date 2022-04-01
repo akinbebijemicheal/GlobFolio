@@ -20,17 +20,22 @@ app.set('view engine', 'ejs');
 app.set("views", path.join(__dirname, "views"));
 app.use(express.static(path.join(__dirname, "public")));
 app.use('/dashboard/user', express.static(path.join(__dirname, "public")));
+app.use('/dashboard/admin', express.static(path.join(__dirname, "public")));
 app.use(express.static(path.join(__dirname + 'uploads')));
 // Static Files
 // dashboard 
 app.use('/css', express.static(__dirname + 'public/css'));
 app.use('/css', express.static(__dirname + 'public/assets2/css'));
 app.use('/font', express.static(__dirname + 'public/assets2/fonts'));
+app.use('/css', express.static(__dirname + 'public/assets3/css'));
+app.use('/font', express.static(__dirname + 'public/assets3/fonts'));
 app.use('/js', express.static(__dirname + 'public/js'));
 app.use('/js', express.static(__dirname + 'public/assets2/js'));
+app.use('/js', express.static(__dirname + 'public/assets3/js'));
 app.use('/images', express.static(__dirname + 'public/images'));
 app.use('/img', express.static(__dirname + 'public/img'));
 app.use('/img', express.static(__dirname + 'public/assets2/img'));
+app.use('/img', express.static(__dirname + 'public/assets3/img'));
 app.use(cookieParser(process.env.CSECRET));
 app.use(session({
     resave: false,
