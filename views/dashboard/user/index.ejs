@@ -1,0 +1,201 @@
+
+<%- include("../../partials/user_header") %>    
+                <!-- begin app-main -->
+                <div class="app-main" id="main">
+                    <!-- begin container-fluid -->
+                    <div class="container-fluid">
+                        <!-- begin row -->
+                        <div class="row">
+                            <div class="col-md-12 m-b-10">
+                                <!-- begin page title -->
+                                <div class="d-block d-lg-flex flex-nowrap align-items-center">
+                                    <div class="page-title mr-4 pr-4 border-right">
+                                        <h4 class="hey">Welcome back, <%= user %> 
+                                            👋</h4>
+                                    </div>
+                                </div>
+                                <!-- end page title -->
+                            </div>
+                        </div>
+                        <!-- begin row -->
+                        <!-- Advertising -->
+                        <div class="row">
+                            <div class="col-lg-12 advert">
+                                <div class="advert-1">
+                                    <h4>Advertising Part</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Advertising Ends -->
+
+                        <!-- Services -->
+                        <div class="row">
+                            <div class="col-lg-6 Services">
+                                <div class="serve">
+                                    <h4>Daily Activities</h4>
+                                    <h6>New Post </h6>
+                                    <p>Aliu Musa just posted in the category of <span class="Best-5">Hotel Reservation</span>
+                                       <a href="#"><i class="bi bi-trash just"></i></a>
+                                       <a href="#"> <i class="bi bi-pencil-square just"></i></a>
+                                    </p>
+                                    <h6>Best Deals </h6>
+                                    <p>Sweet Sensaction just posted in the category of <span class="Best">Food</span>  
+                                       <a href="#"><i class="bi bi-trash just"></i></a>
+                                       <a href="#"> <i class="bi bi-pencil-square just"></i></a>
+                                    </p>
+                                    <h6>New Post </h6>
+                                    <p>Aliu Musa just posted in the category of <span class="Best-1">VR Games Tickets</span> 
+                                       <a href="#"><i class="bi bi-trash just"></i></a>
+                                       <a href="#"> <i class="bi bi-pencil-square just"></i></a>
+                                    </p>
+                                    <h6>Price Update</h6>
+                                    <p>Aliu Musa just posted in the category of <span class="Best-2">movie tickets</span> 
+                                       <a href="#"><i class="bi bi-trash just"></i></a>
+                                       <a href="#"> <i class="bi bi-pencil-square just"></i></a>
+                                    </p>
+                                    <h6>Reminder</h6>
+                                    <p>You have a due date in the category of <span class="Best-3">movie tickets</span> 
+                                       <a href="#"><i class="bi bi-trash just"></i></a>
+                                       <a href="#"> <i class="bi bi-pencil-square just"></i></a>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 Services-1">
+                                <div class="serve-1">
+                                    <h4>Monthly Analysis</h4>
+                                    <div id="chat">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 Services-2">
+                                <div class="serve-2">
+                                    <h4>Monthly Usage</h4>
+                                    <div class="month">
+                                        <h6>Cinema Tickets</h6>
+                                        <img src="assets2/img/Vector (4).png" alt="icon">
+                                        <div class="progress">
+                                            <div class="progress-bar" role="progressbar" aria-valuenow="" aria-valuemin="0" aria-valuemax="0"></div>
+                                        </div>
+                                    </div>
+                                    <div class="month">
+                                        <h6>Hotel Booking</h6>
+                                        <img src="assets2/img/Vector (3).png" alt="icon">
+                                        <div class="progress">
+                                            <div class="progress-bar-1" role="progressbar" aria-valuenow="" aria-valuemin="0" aria-valuemax="0"></div>
+                                        </div>
+                                    </div>
+                                    <div class="month">
+                                        <h6>Equipment Renting</h6>
+                                        <img src="assets2/img/for-rent 3.png" alt="icon">
+                                        <div class="progress">
+                                            <div class="progress-bar-2" role="progressbar" aria-valuenow="" aria-valuemin="0" aria-valuemax="0"></div>
+                                        </div>
+                                    </div>
+                                    <div class="month">
+                                        <h6>VR Games Tickets</h6>
+                                        <img src="assets2/img/Group 9527.png" alt="icon">
+                                        <div class="progress">
+                                            <div class="progress-bar-3" role="progressbar" aria-valuenow="" aria-valuemin="0" aria-valuemax="0"></div>
+                                        </div>
+                                    </div>
+                                    <div class="month">
+                                        <h6>Food</h6>
+                                        <img src="assets2/img/Group.png" alt="icon">
+                                        <div class="progress">
+                                            <div class="progress-bar-4" role="progressbar" aria-valuenow="" aria-valuemin="0" aria-valuemax="0"></div>
+                                        </div>
+                                    </div>
+                                    <div class="month">
+                                        <h6>Studio Booking</h6>
+                                        <img src="assets2/img/Vector (2).png" alt="icon">
+                                        <div class="progress">
+                                            <div class="progress-bar-5" role="progressbar" aria-valuenow="" aria-valuemin="0" aria-valuemax="0"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Services Ends -->
+                        <!-- end row -->
+                    </div>
+                    <!-- end container-fluid -->
+                </div>
+                <!-- end app-main -->
+            </div>
+            <!-- end app-container -->
+           
+            <%- include("../../partials/user_footer") %>
+
+
+        
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script>var options = {
+        series: [
+          {
+            name: "Yearly Profit",
+            data: [
+              {
+                x: "2015",
+                y: 1292
+              },
+              {
+                x: "2016",
+                y: 4432
+              },
+              {
+                x: "2017",
+                y: 5423,
+                fillColor: "#EB8C87",
+              },
+              {
+                x: "2018",
+                y: 6653
+              },
+              {
+                x: "2019",
+                y: 8133,
+                fillColor: "#EB8C87",
+              },
+              {
+                x: "2020",
+                y: 7132
+              },
+              {
+                x: "2021",
+                y: 7332
+              },
+              {
+                x: "2022",
+                y: 6553
+              }
+            ]
+          }
+        ],
+        chart: {
+          height: 290,
+          type: "bar"
+        },
+        plotOptions: {
+          bar: {
+            horizontal: false,
+            columnWidth: "60%"
+          }
+        },
+        stroke: {
+          show: false,
+        },
+        dataLabels: {
+          enabled: false
+        },
+        fill: {
+          opacity: 1
+        },
+        xaxis: {
+          type: "datetime"
+        }
+      };
+      
+      var chart = new ApexCharts(document.querySelector("#chat"), options);
+      chart.render();</script>
+</body>
+</html>

@@ -51,6 +51,10 @@ const User = db.define('User', {
     verified: {
         type: Sequelize.BOOLEAN,
         defaultValue: false
+    },
+    business: {
+        type: Sequelize.STRING,
+        defaultValue: null,
     }
 },
 {timestamps: true});

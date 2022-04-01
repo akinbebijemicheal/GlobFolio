@@ -12,7 +12,7 @@ exports.createFoodService = async(req, res) => {
             title,
             description,
             ingredents,
-            price,
+            price: parseFloat(price),
             productType: 'food',
             img_id: result.public_id,
             img_url: result.secure_url
@@ -129,7 +129,7 @@ exports.updateFood = async(req, res) => {
                 title: title,
                 description: description,
                 ingredents: ingredents,
-                price: price,
+                price: parseFloat(price),
                 img_id: result.public_id,
                 img_url: result.secure_url
             }, { where: {
@@ -146,7 +146,7 @@ exports.updateFood = async(req, res) => {
                 title: title,
                 description: description,
                 ingredents: ingredents,
-                price: price
+                price: parseFloat(price),
             }, { where: {
                 id: req.params.id,
                 userid: req.user.id,

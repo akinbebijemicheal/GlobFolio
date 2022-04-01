@@ -12,6 +12,7 @@ const { getHotelByTitle, getHotelForUser, getHotelServices } = require('../contr
 const { getRentByTitle, getRentForUser, getRentServices} = require('../controllers/services/renting');
 const {getStudioByTitle, getStudioForUser, getStudioServices} = require('../controllers/services/studio_book');
 const { getGamingByTitle, getGamingForUser, getGamingServices} = require('../controllers/services/vr_gaming');
+const userVerify = require("../middleware/verify")
 
 
 //user
@@ -114,52 +115,52 @@ router
 
 router
 .route('/get-cinema-posts')
-.get(jwtAuth, getCinemaServices)
+.get(jwtAuth, userVerify, getCinemaServices)
 
 router
 .route('/get-hotel-posts')
-.get(jwtAuth, getHotelServices)
+.get(jwtAuth, userVerify, getHotelServices)
 
 router
 .route('/get-studio-posts')
-.get(jwtAuth, getStudioServices)
+.get(jwtAuth, userVerify, getStudioServices)
 
 router
 .route('/get-food-posts')
-.get(jwtAuth, getFoodServices)
+.get(jwtAuth, userVerify, getFoodServices)
 
 router
 .route('/get-gaming-posts')
-.get(jwtAuth, getGamingServices)
+.get(jwtAuth, userVerify, getGamingServices)
 
 router
 .route('/get-rent-posts')
-.get(jwtAuth, getRentServices)
+.get(jwtAuth, userVerify, getRentServices)
 
 
 router
 .route('/get-cinema-bytitle')
-.get(jwtAuth, getCinemaByTitle)
+.get(jwtAuth, userVerify, getCinemaByTitle)
 
 router
 .route('/get-hotel-bytitle')
-.get(jwtAuth, getHotelByTitle)
+.get(jwtAuth, userVerify, getHotelByTitle)
 
 router
 .route('/get-studio-bytitle')
-.get(jwtAuth, getStudioByTitle)
+.get(jwtAuth, userVerify, getStudioByTitle)
 
 router
 .route('/get-food-bytitle')
-.get(jwtAuth, getFoodByTitle)
+.get(jwtAuth, userVerify, getFoodByTitle)
 
 router
 .route('/get-gaming-bytitle')
-.get(jwtAuth, getGamingByTitle)
+.get(jwtAuth, userVerify, getGamingByTitle)
 
 router
 .route('/get-rent-bytitle')
-.get(jwtAuth, getRentByTitle)
+.get(jwtAuth, userVerify, getRentByTitle)
 
 
 router

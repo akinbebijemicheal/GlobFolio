@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('../util/multer');
-const { profile, userAuth, RegisterUser, webLoginUser, checkRole, getUser, getUsers, updateUser, deleteUser } = require('../controllers/user');
-const {checkEmail, changePassword, forgotPassword, emailVerification_V1, emailVerification_V2} = require('../controllers/security');
+const { profile, userAuth, RegisterUser, webLoginUser, checkRole, getUser, getUsers, updateUser, deleteUser } = require('../controllers/user2');
+const {checkEmail, changePassword, forgotPassword, emailVerification_V1, emailVerification_V2} = require('../controllers/security2');
 const {  verification, getUnverifieds, getVendors, getVendorsByServices} = require('../controllers/vendor')
 const { updatePicture, uploadPicture, deletePicture, getPicture} = require('../controllers/picture')
 const { createCinemaService, getCinemaServices, getCinemaByTitle, getCinemaForUser, updateCinema} = require('../controllers/services/cinema');
@@ -13,14 +13,168 @@ const {  createStudioService, getStudioByTitle, getStudioForUser, getStudioServi
 const {  createGamingService, getGamingByTitle, getGamingForUser, getGamingServices, updateGaming} = require('../controllers/services/vr_gaming');
 
 
+
 //user
+
+router
+.get('/', (req, res) =>{
+    const name = "newguy"
+    res.render('base/index', {
+        user: name
+    })
+})
+
+router
+.get('/about', (req, res) =>{
+    res.render('base/about')
+})
+
+router
+.get('/contact', (req, res) =>{
+    res.render('base/contact')
+})
+
+router
+.get('/faq', (req, res) =>{
+    res.render('base/faq')
+})
+
+router
+.get('/services', (req, res) =>{
+    res.render('base/services')
+})
+
+router
+.get('/pricing', (req, res) =>{
+    res.render('base/pricing')
+})
+
+router
+.get('/registration-type', (req, res) => {
+    res.render('base/registration-type')
+})
+
+router
+.get('/register-user', (req, res) => {
+    res.render('base/signup') 
+});
+
+router
+.get('/register-vendor', (req, res) => {
+    res.render('base/vendor') 
+});
+
+router
+.get('/login-user', (req, res) => {
+    res.render('base/userlogin')
+});
+
+router
+.get('/login-vendor', (req, res) => {
+    res.render('base/vendorlogin')
+});
+
+router
+.get('/dashboard/user', userAuth, (req, res)=>{
+    let name = req.user.fullname.split(' ')
+    let email = req.user.email
+    res.render('dashboard/user/index', {
+        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+        email: email
+    })
+})
+
+router
+.get('/dashboard/user/bonus', userAuth, (req, res)=>{
+    let name = req.user.fullname.split(' ')
+    let email = req.user.email
+    res.render('dashboard/user/bonus',  {
+        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+        email: email
+    })
+})
+
+router
+.get('/dashboard/user/cinema', userAuth, (req, res)=>{
+    let name = req.user.fullname.split(' ')
+    let email = req.user.email
+    res.render('dashboard/user/cinema',  {
+        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+        email: email
+    })
+})
+
+router
+.get('/dashboard/user/food', userAuth, (req, res)=>{
+    let name = req.user.fullname.split(' ')
+    let email = req.user.email
+    res.render('dashboard/user/food',  {
+        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+        email: email
+    })
+})
+
+router
+.get('/dashboard/user/forgot', userAuth, (req, res)=>{
+    let name = req.user.fullname.split(' ')
+    let email = req.user.email
+    res.render('dashboard/user/forgot',  {
+        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+        email: email
+    })
+})
+
+router
+.get('/dashboard/user/game',userAuth, (req, res)=>{
+    let name = req.user.fullname.split(' ')
+    let email = req.user.email
+    res.render('dashboard/user/game',  {
+        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+        email: email
+    })
+})
+
+router
+.get('/dashboard/user/hotel', userAuth, (req, res)=>{
+    let name = req.user.fullname.split(' ')
+    let email = req.user.email
+    res.render('dashboard/user/hotel',  {
+        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+        email: email
+    })
+})
+
+router
+.get('/dashboard/user/rent', userAuth, (req, res)=>{
+    let name = req.user.fullname.split(' ')
+    let email = req.user.email
+    res.render('dashboard/user/rent',  {
+        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+        email: email
+    })
+})
+
+router
+.get('/dashboard/user/studio', userAuth, (req, res)=>{
+    let name = req.user.fullname.split(' ')
+    let email = req.user.email
+    res.render('dashboard/user/studio',  {
+        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+        email: email
+    })
+})
+
+
+//-----------------------------------------------------------------------------------------------
+// post requests for information
+//User
 router
 .post('/register-user', async (req, res) => {
     await RegisterUser("user", req, res)
 });
 
 router
-.post('/signin-user', async (req, res) => {
+.post('/login-user', async (req, res) => {
     await webLoginUser("user", req, res);
 });
 
@@ -29,10 +183,9 @@ router
 .post('/register-vendor', async (req, res) => {
     await RegisterUser("vendor", req, res)
 });
-        
 
 router
-.post('/signin-vendor', async (req, res) => {
+.post('/login-vendor', async (req, res) => {
     await webLoginUser("vendor", req, res);
 });
 
@@ -97,9 +250,15 @@ router
 router
 .route('/email-verification/:id/:token')
 .post(emailVerification_V2);
+//------------------------------------------Forgot Password-------------------------------
+router
+.route('/forgot-password')
+.get((req, res) =>{
+    res.render('base/forgot')
+});
 
 router
-.route('/reset-password')
+.route('/forgot-password')
 .post(checkEmail);
 
 router
@@ -109,6 +268,8 @@ router
 router
 .route('/change-password')
 .post(userAuth, changePassword);
+
+//----------------------------------------------------------------------------------------
 
 router
 .route('/create-cinema-post')
@@ -234,12 +395,11 @@ router
 .patch(userAuth, checkRole(["vendor"]) ,multer.single("image"), updateRent);
 
 router
-.post('/logout', (req, res) => {
+.get('/logout', (req, res) => {
     req.logout();
-    req.session.destroy((err) => {
-       return res.json('successfully logged out')
-    })
+    req.session.destroy();
     res.clearCookie('jwt');
+    res.redirect('/')
     
 });
 

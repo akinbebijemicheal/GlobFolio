@@ -1,4 +1,4 @@
-const Sequelize = require('sequelize');
+/*const Sequelize = require('sequelize');
 const db = require('../config/config');
 const session = require('express-session');
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
@@ -11,6 +11,7 @@ db.define("Session", {
     userId: Sequelize.STRING,
     expires: Sequelize.DATE,
     data: Sequelize.TEXT,
+    flash: Sequelize.STRING
   });
   
   function extendDefaultFields(defaults, session) {
@@ -32,4 +33,4 @@ db.define("Session", {
   module.exports = {
       session,
       store
-  }
+  } */

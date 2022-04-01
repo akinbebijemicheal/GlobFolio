@@ -19,7 +19,8 @@ const Product = db.define('product', {
         }
     },
     title: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false
     },
     productType: {
         type: Sequelize.ENUM,
@@ -65,10 +66,12 @@ const Product = db.define('product', {
         type: Sequelize.STRING
     },
     price: {
-        type: Sequelize.STRING
+        type: Sequelize.FLOAT,
+        allowNull: false,
+        defaultValue: 0.0 
     }, 
     rating: {
-        type: Sequelize.DECIMAL
+        type: Sequelize.FLOAT
     }
 }, {timestamps: true});
 

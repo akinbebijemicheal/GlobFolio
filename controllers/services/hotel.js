@@ -12,8 +12,8 @@ exports.createHotelService = async(req, res) => {
                 title,
                 description,
                 location,
-                rating,
-                price,
+                rating: parseFloat(rating),
+                price: parseFloat(price),
                 productType: 'hotel',
                 img_id: result.public_id,
                 img_url: result.secure_url
@@ -131,8 +131,8 @@ exports.updateHotel = async(req, res) => {
                 title: title,
                 description: description,
                 location: location,
-                rating: rating,
-                price: price,
+                rating: parseFloat(rating),
+                price: parseFloat(price),
                 img_id: result.public_id,
                 img_url: result.secure_url
             }, { where: {
@@ -149,8 +149,8 @@ exports.updateHotel = async(req, res) => {
                 title: title,
                 description: description,
                 location: location,
-                rating: rating,
-                price: price,
+                rating: parseFloat(rating),
+                price: parseFloat(price),
             }, { where: {
                 id: req.params.id,
                 userid: req.user.id,

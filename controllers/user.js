@@ -3,11 +3,25 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const passport = require('passport');
 require('dotenv').config();
+const nodemailer = require('nodemailer')
+const { google } = require("googleapis");
+const OAuth2 = google.auth.OAuth2;
+
+const myOAuth2Client = new OAuth2(
+    process.env.CLIENT_ID,
+    process.env.CLIENT_SECRET,
+    )
+
+myOAuth2Client.setCredentials({
+        refresh_token: process.env.REFRESH_TOKEN
+});
+
+const myAccessToken = myOAuth2Client.getAccessToken()
 
 exports.RegisterUser = async (role, req, res) => {
     try{
 
-        const {firstname, lastname, email, phone_no, country, serviceType, password } = req.body;
+        const {firstname, lastname, email, phone_no, country, business, serviceType, password } = req.body;
 
         let user = await User.findOne({
             where: {
@@ -35,6 +49,7 @@ exports.RegisterUser = async (role, req, res) => {
             phone_no,
             country,
             serviceType,
+            business,
             role,
             password: hashedPass,
             verified: verify
@@ -42,12 +57,65 @@ exports.RegisterUser = async (role, req, res) => {
     
         await user.save();
 
-        return res.status(201).json({
-            status: true,
-            message: 'Account created'
-        });
+         user = await User.findOne({ where: {
+            email: email
+        }})
+        
+            const token = jwt.sign({email: user.email}, process.env.TOKEN, { expiresIn: "15m"});
+            const link = `${process.env.BASE_URL}/email-verification/${user.id}/${token}`;
 
-    } catch(error){
+            if( process.env.ONTEST === 'REAL'){
+                var transporter = nodemailer.createTransport({
+                    service: 'gmail',
+                    auth: {
+                      type: 'OAuth2',
+                      user: process.env.E_USER,
+                      clientId: process.env.CLIENT_ID,
+                      clientSecret: process.env.CLIENT_SECRET,
+                      refreshToken: process.env.REFRESH_TOKEN,
+                      accessToken: myAccessToken
+                    }
+                  });
+            } else{
+                var transporter = nodemailer.createTransport({
+                    host: process.env.SMTP,
+                    port: process.env.SMTPPORT,
+                    auth: {
+                        user: process.env.MAILTRAP_USER,
+                        pass: process.env.MAILTRAP_PASS
+                    }
+                });
+            }
+            
+            let fname = user.fullname.split(' ')
+            const mailOptions = {
+                from:  `${process.env.E_TEAM}`,
+                to: `${user.email}`,
+                subject: "Email Verification",
+                html: `
+                <h2> Hi ${fname[0]}, </h2>
+                <p> Thanks for getting started with Deepend! </p>
+                <p> We need a little more information to complete your registration, including a confirmation of your email address. </p>
+                <p> Click below to confirm your email address: </p>
+                <a href = ${link}> Verify Email </a>               
+                <p> If you have problems, please paste the below URL into your web browser. </p>
+                <p>  ${link} </p>
+                <p> PLEASE NOTE: This link will expire in 15 minutes </p> `
+            };
+
+            transporter.sendMail(mailOptions, function(err, info) {
+                if(err){
+                    console.log(err)
+                } else {
+                    console.log(info);
+                    return res.status(201).json({
+                        status: true,
+                        message: "Account created and An email has been sent to you, Check your inbox"
+                    })
+                }
+            });
+
+    }catch(error){
         console.error(error)
         return res.status(500).json({
              status: false,
@@ -56,6 +124,7 @@ exports.RegisterUser = async (role, req, res) => {
          })
     }
 };
+
 
 exports.LoginUser = async (role, req, res) => {
     try{
@@ -225,7 +294,7 @@ exports.webLoginUser = async (role, req, res) => {
 };
 
 
-exports.userAuth = passport.authenticate('jwt', {session: true});
+exports.userAuth = passport.authenticate('jwt', {session: false});
 
 
 

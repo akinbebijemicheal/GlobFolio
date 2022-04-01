@@ -15,8 +15,8 @@ exports.createCinemaService = async(req, res) => {
             cast,
             duration,
             age_rate,
-            rating,
-            price,
+            rating: parseFloat(rating),
+            price: parseFloat(price),
             productType: 'cinema',
             img_id: result.public_id,
             img_url: result.secure_url
@@ -137,8 +137,8 @@ exports.updateCinema = async(req, res) => {
                 cast: cast,
                 duration: duration,
                 age_rate: age_rate,
-                rating: rating,
-                price: price,
+                rating: parseFloat(rating),
+                price: parseFloat(price),
                 img_id: result.public_id,
                 img_url: result.secure_url
             }, { where: {
@@ -158,8 +158,8 @@ exports.updateCinema = async(req, res) => {
                 cast: cast,
                 duration: duration,
                 age_rate: age_rate,
-                rating: rating,
-                price: price,
+                rating: parseFloat(rating),
+                price: parseFloat(price),
             }, { where: {
                 id: req.params.id,
                 userid: req.user.id,

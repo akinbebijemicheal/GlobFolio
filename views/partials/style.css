@@ -1,0 +1,133 @@
+
+
+      .swiper {
+        width: 100%;
+        height: 100%;
+      }
+      .card-body .book {
+          font-weight: 700;
+          color: #fff;
+      }
+      .card-body .bookk {
+        font-weight: 700;
+        color: #FF0033;
+    }
+    .studio{
+        background-color: #FF0033;
+    }
+    .boot{
+        float: right;
+        color: #fff;
+    }
+    .test{
+        color: #fff;
+        font-weight: 500;
+    }
+    .studioo{
+        background-color:#FF0033;
+    }
+    .boot{
+        float: right;
+        color: #fff;
+    }
+    .testt{
+        color: #fff;
+        font-weight: 500;
+    }
+
+      .swiper-slide {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: -webkit-flex;
+        display: flex;
+        -webkit-box-pack: center;
+        -ms-flex-pack: center;
+        -webkit-justify-content: center;
+        justify-content: center;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        -webkit-align-items: center;
+        align-items: center;
+        margin-right: 15px !important;
+        width: 300px !important
+      }
+      .greenleaf{
+          float: right;
+      }
+      .leaf h3{
+          float: left;
+          color: #fff;
+          margin-bottom: -80px;
+      }
+      .swiper-slide img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .img-div{
+          width: 100%;
+          height: 250px;
+      }
+      .img-div img{
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+      }
+
+      #green{
+          font-size: 35px;
+          font-weight: 700;
+          margin: 5px;
+          background-color: #FF0033;
+          color: #fff;
+          padding: 5px 10px;
+          border-radius: 900px;
+      }
+      #greenn{
+        font-size: 35px;
+        font-weight: 700;
+        margin: 5px;
+        color: #fff;
+        padding: 5px 10px;
+        border-radius: 900px;
+    }
+
+      .swiper-button-next,
+.swiper-button-prev {
+    position:inherit !important;
+    top: 0 !important;
+    width: 0px !important;
+    height: 0px !important;
+    margin-top: 0px !important;
+    z-index: 10;
+    cursor: pointer;
+    display:inline !important;
+    align-items:inherit !important;
+    justify-content: inherit !important;
+    color: #fff !important;
+}
+.swiper-button-next:after,
+.swiper-button-prev:after {
+    font-family: none !important;
+    font-size: var(--swiper-navigation-size);
+    text-transform: none !important;
+    letter-spacing: 0;
+    text-transform: none;
+    font-variant: initial;
+    line-height: 1;
+}
+.swiper-button-prev:after,
+.swiper-rtl .swiper-button-next:after {
+    content: "" !important;
+}
+.swiper-button-next:after,
+.swiper-rtl .swiper-button-prev:after {
+    content: "" !important;
+}
+.swiper-horizontal>.swiper-pagination-bullets,.swiper-pagination-bullets.swiper-pagination-horizontal,.swiper-pagination-custom,.swiper-pagination-fraction{
+    bottom:-15px !important;
+    left:0;
+    width:100%;
+}
