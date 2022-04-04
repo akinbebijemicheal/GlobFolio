@@ -169,6 +169,7 @@ exports.LoginUser = async (role, req, res) => {
                 address: user.address,
                 expiresIn: '24 hours',
                 verified: user.verified,
+                sub_status: user.sub_status,
                 email_verify: user.email_verify,
                 updatedAt: user.updatedAt,
                 createdAt: user.createdAt,
@@ -306,6 +307,7 @@ exports.profile = user => {
         country: user.country,
         serviceType: user.serviceType,
         email: user.email,
+        sub_status: user.sub_status,
         address: user.address,
         updatedAt: user.updatedAt,
         createdAt: user.createdAt

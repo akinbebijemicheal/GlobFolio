@@ -19,10 +19,24 @@ exports.createRentService = async(req, res) => {
                 img_url: result.secure_url
             })
             await rent.save();
-            res.status(201).json({
-                status: true,
-                message: "Posted successfully",
-                data: rent
+            await Product.findOne({where: {
+                title: title
+            }}).then(async(product) => {
+                var link = `${process.env.BASE_URL}/add-to-cart/${product.id}`
+                await Product.update({link: link}, {where: {
+                    id: product.id
+                }})
+    
+                await Product.findOne({where: {
+                    id: product.id
+                }}).then((product) => {
+                    res.status(201).json({
+                        status: true,
+                        message: "Posted successfully",
+                        data: product
+                    })
+                })
+                
             })
         } else{
             res.status(301).json({

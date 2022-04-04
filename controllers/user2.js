@@ -208,6 +208,7 @@ exports.profile = user => {
         serviceType: user.serviceType,
         email: user.email,
         address: user.address,
+        sub_status: user.sub_status,
         updatedAt: user.updatedAt,
         createdAt: user.createdAt
        };

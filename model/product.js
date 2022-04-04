@@ -2,6 +2,7 @@ const Sequelize = require('sequelize');
 const db = require('../config/config');
 const {nanoid} = require('nanoid');
 const User = require('./user');
+//const Cart = require('./cart')
 
 const Product = db.define('product', {
     id: {
@@ -14,7 +15,7 @@ const Product = db.define('product', {
     userid: {
         type: Sequelize.STRING(10),
         references:{ 
-            model: 'Users',
+            model: 'users',
             key: 'id',
         }
     },
@@ -72,6 +73,9 @@ const Product = db.define('product', {
     }, 
     rating: {
         type: Sequelize.FLOAT
+    },
+    link: {
+        type: Sequelize.STRING
     }
 }, {timestamps: true});
 

@@ -2,7 +2,7 @@ const Sequelize = require('sequelize');
 const db = require('../config/config');
 const {nanoid} = require('nanoid');
 
-const User = db.define('User', {
+const User = db.define('user', {
     id: {
         type: Sequelize.STRING(10),
         autoincrement: false,
@@ -55,6 +55,11 @@ const User = db.define('User', {
     business: {
         type: Sequelize.STRING,
         defaultValue: null,
+    },
+    sub_status: {
+        type: Sequelize.ENUM,
+        values: ['active', 'unactive'],
+        defaultValue: 'unactive'
     }
 },
 {timestamps: true});

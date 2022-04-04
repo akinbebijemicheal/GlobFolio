@@ -3,8 +3,7 @@ const db = require('../config/config');
 const {nanoid} = require('nanoid');
 const User = require('./user');
 
-
-const Picture = db.define('picture', {
+const Subscription = db.define('subscription', {
     id: {
         type: Sequelize.STRING(10),
         autoincrement: false,
@@ -19,15 +18,16 @@ const Picture = db.define('picture', {
             key: 'id',
         }
     },
-    content_id: {
-        type: Sequelize.STRING
+    sub_type: {
+        type: Sequelize.ENUM,
+        values: ["free", "basic", "standard", "premium"]
     },
-    secure_url: {
-        type: Sequelize.STRING,
+    expire_date: {
+        type: Sequelize.DATEONLY
     }
-}, {timestamps: true});
+},{timestamps: true});
 
-Picture.belongsTo(User, {foreignKey: 'userid'})
-User.hasMany(Picture, {foreignKey: 'userid'});
+Subscription.belongsTo(User, {foreignKey: 'userid'})
+User.hasMany(Subscription, {foreignKey: 'userid'});
 
-module.exports = Picture;
+module.exports = Subscription;
