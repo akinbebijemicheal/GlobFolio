@@ -2,6 +2,7 @@
 
    <!-- Signup -->
    <main class="login-details">
+    <%- include("../partials/alerts") %>
     <div class="container-fluid g-0">
         
         <div class="row">
@@ -16,7 +17,6 @@
                         <a href="/"> <img src="assets/images/deep.png" alt="FAclub logo"></a>
                             <h2>Registration Form</h2>
                             <div class="line-rule"></div>
-                            <%- include("../partials/alerts") %>
                             <form action="/register-user" method="POST" >
                                 <!--First Name-->
                                 <div>

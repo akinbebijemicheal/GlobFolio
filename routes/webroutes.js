@@ -13,15 +13,11 @@ const {  createStudioService, getStudioByTitle, getStudioForUser, getStudioServi
 const {  createGamingService, getGamingByTitle, getGamingForUser, getGamingServices, updateGaming} = require('../controllers/services/vr_gaming');
 
 
-
 //user
 
 router
 .get('/', (req, res) =>{
-    const name = "newguy"
-    res.render('base/index', {
-        user: name
-    })
+    res.render('base/index')
 })
 
 router
@@ -306,39 +302,39 @@ router
 router
 .post('/register-user', async (req, res) => {
     await RegisterUser("user", req, res)
-    res.redirect('/login-user')
+    //res.redirect('/login-user')
 });
 
 router
 .post('/login-user', async (req, res) => {
     await webLoginUser("user", req, res);
-    res.redirect('/dashboard/user')
+    //res.redirect('/dashboard/user')
 });
 
 //vendor
 router
 .post('/register-vendor', async (req, res) => {
     await RegisterUser("vendor", req, res)
-    res.redirect('/login-vendor')
+    //res.redirect('/login-vendor')
 });
 
 router
 .post('/login-vendor', async (req, res) => {
     await webLoginUser("vendor", req, res);
-    res.redirect('/dashboard/vendor')
+    //res.redirect('/dashboard/vendor')
 });
 
 //admin
 router
 .post('/register-admin', async (req, res) => {
     await RegisterUser("admin", req, res)
-    res.redirect('login-admin')
+    //res.redirect('login-admin')
 });
 
 router
 .post('/login-admin', async (req, res) => {
     await webLoginUser("admin", req, res);
-    res.redirect('/dashboard/admin')
+    //res.redirect('/dashboard/admin')
 });
 
 router

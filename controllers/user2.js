@@ -31,6 +31,7 @@ exports.RegisterUser = async (role, req, res) => {
         if(user) {
             res.status(302)
             req.flash("error", "User already exist")
+            res.redirect("back")
         }
         const salt = await bcrypt.genSalt(12);
         const hashedPass = await bcrypt.hash(password, salt);
@@ -109,6 +110,7 @@ exports.RegisterUser = async (role, req, res) => {
                 } else {
                     console.log(info);
                     req.flash('success', "Registration successful")
+                    res.redirect(`login-${role}`)
                 }
             });
 
@@ -116,7 +118,7 @@ exports.RegisterUser = async (role, req, res) => {
         console.error(error)
         //res.status(500)
         req.flash("error", "An error occured refresh the page")
-        //res.redirect("/registration-type")
+        res.redirect("back")
     }
 };
 
@@ -129,13 +131,17 @@ exports.webLoginUser = async (role, req, res) => {
             email: email }
         });
         if(!user){
-            //res.status(404)
-           return req.flash("warning", 'User does not exist');
+
+            res.status(404)
+           req.flash("warning", 'User does not exist');
+           res.redirect("back")
+
         }
 
         if(user.role !== role){
            // res.status(401)
-          return req.flash("warning", "Please ensure you are logging-in from the right portal" );
+          req.flash("warning", "Please ensure you are logging-in from the right portal" );
+          res.redirect("back")
         }
         
         const validate = await bcrypt.compare(password, user.password);
@@ -173,24 +179,29 @@ exports.webLoginUser = async (role, req, res) => {
                 secret: process.env.CSECRET
             }
             
-            res.cookie("jwt", token, option);
+            
 
             //res.status(200)
-            //req.flash("success", "Successfully logged in");
+            req.flash("success", "Successfully logged in");
+            res.cookie("jwt", token, option);
+            res.redirect(`/dashboard/${role}`)
+
             
 
              
 
         } else{
            //res.status(403)
-          return req.flash("warning", 'Wrong password');
+          req.flash("warning", 'Wrong password');
+          res.redirect("back")
         }
 
 
     } catch(error){
         console.error(error)
       // res.status(500)
-      return req.flash("error", "An error occured refresh the page")
+      req.flash("error", "An error occured refresh the page")
+      res.redirect("back")
     }
 };
 
@@ -257,6 +268,7 @@ exports.getUser = async (req, res) => {
         console.error(error)
         res.status(500)
        req.flash("error", "An error occured refresh the page")
+       res.redirect("back")
     }
 };
 
@@ -289,6 +301,7 @@ exports.updateUser = async(req, res) => {
         console.error(error)
         res.status(500)
         req.flash("error", "An error occured refresh the page")
+        res.redirect("back")
     }
 }
 
@@ -307,6 +320,7 @@ exports.deleteUser = async(req, res) => {
         console.error(error)
         res.status(500)
        req.flash("error", "An error occured refresh the page")
+       res.redirect("back")
     }
 };
 
