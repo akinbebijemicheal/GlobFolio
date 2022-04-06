@@ -114,13 +114,27 @@ exports.updatePicture = async(req, res) => {
             }
         })
 
+        let result = {
+            id: user.id,
+            fullname: user.fullname,
+            email: user.email,
+            role: user.role,
+            phone_no: user.phone_no,
+            country: user.country,
+            serviceType: user.serviceType,
+            address: user.address,
+            expiresIn: '24 hours',
+            verified: user.verified,
+            img_url: result.secure_url,
+            email_verify: user.email_verify,
+            updatedAt: user.updatedAt,
+            createdAt: user.createdAt,
+        };
+
         res.status(200).json({
             status: true,
             message: "Picture Updated successfully",
-            data: {
-                img_url: result.secure_url,
-                user
-            }
+            data: result
 
         })
    } catch (error) {
