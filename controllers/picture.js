@@ -1,6 +1,7 @@
 //const User = require('../model/user')
 const Picture = require('../model/profilepic')
 const cloudinary = require('../util/cloudinary');
+const User = require('../model/user');
 
 
 exports.uploadPicture = async(req, res) => {
@@ -95,6 +96,8 @@ exports.updatePicture = async(req, res) => {
         let picture = await Picture.findOne({ where: {
             userid: req.user.id
         }})
+
+        
         await cloudinary.uploader.destroy(picture.content_id);
         
         const result = await cloudinary.uploader.upload(req.file.path);
@@ -105,9 +108,20 @@ exports.updatePicture = async(req, res) => {
             userid: req.user.id
         }});
 
+        let user = await User.findOne({
+            where: {
+                id: req.user.id
+            }
+        })
+
         res.status(200).json({
             status: true,
-            message: "Picture Updated successfully"
+            message: "Picture Updated successfully",
+            data: {
+                img_url: result.secure_url,
+                user
+            }
+
         })
    } catch (error) {
         console.error(error)

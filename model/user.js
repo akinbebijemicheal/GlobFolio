@@ -17,7 +17,7 @@ const User = db.define('user', {
     email: {
         type: Sequelize.STRING,
         allowNull: false,
-        unique: true
+        unique: true,
     },
     password: {
         type: Sequelize.STRING,
@@ -58,8 +58,8 @@ const User = db.define('user', {
     },
     sub_status: {
         type: Sequelize.ENUM,
-        values: ['active', 'unactive'],
-        defaultValue: 'unactive'
+        values: ['active', 'inactive'],
+        defaultValue: 'inactive'
     }
 },
 {timestamps: true});
