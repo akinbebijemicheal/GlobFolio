@@ -65,7 +65,7 @@ router
 
 router
 .route('/dashboard/profile/update-pic')
-.patch(jwtAuth, multer.single("image"), updatePicture);
+.post(jwtAuth, multer.single("image"), updatePicture);
 
 router
 .route('/dashboard/profile/delete-pic')
