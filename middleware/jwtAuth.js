@@ -5,7 +5,7 @@ module.exports = function (req, res, next) {
     const token = req.header('Authorization');
     if(!token) {
         return res.status(401).send({
-            success: false,
+            status: false,
             message: "Access Denied"
         });
     }
@@ -18,7 +18,7 @@ module.exports = function (req, res, next) {
     } catch (error) {
         console.log(error);
         return res.status(401).send({
-            success: false,
+            status: false,
             message: "Token is not valid"
         });
     }
