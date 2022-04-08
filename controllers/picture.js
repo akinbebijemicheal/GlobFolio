@@ -99,22 +99,21 @@ exports.updatePicture = async(req, res) => {
         if(picture){
             await cloudinary.uploader.destroy(picture.content_id);
             await Picture.destroy({where: {userid: req.user.id}})
-            const result = await cloudinary.uploader.upload(req.file.path);
-            await Picture.create({
+            var result = await cloudinary.uploader.upload(req.file.path);
+            const picture = new Picture({
                 userid: req.user.id,
                 content_id: result.public_id,
                 secure_url: result.secure_url,
-            }, {where: {
-                userid: req.user.id
-            }});
+            });
+            await picture.save();
         } else{
-                const result = await cloudinary.uploader.upload(req.file.path);
-                await Picture.create({
+                var result = await cloudinary.uploader.upload(req.file.path);
+                const picture = new Picture({
                 userid: req.user.id,
                 content_id: result.public_id,
                 secure_url: result.secure_url
             });
-            //await picture.save();
+            await picture.save();
         }
 
         let user = await User.findOne({
@@ -123,7 +122,7 @@ exports.updatePicture = async(req, res) => {
             }
         })
 
-        let result = {
+        let output = {
             id: user.id,
             fullname: user.fullname,
             email: user.email,
@@ -143,7 +142,7 @@ exports.updatePicture = async(req, res) => {
         res.status(200).json({
             status: true,
             message: "Picture Updated successfully",
-            data: result
+            data: output
 
         })
    } catch (error) {
