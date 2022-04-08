@@ -100,20 +100,20 @@ exports.updatePicture = async(req, res) => {
             await cloudinary.uploader.destroy(picture.content_id);
             await Picture.destroy({where: {userid: req.user.id}})
             var result = await cloudinary.uploader.upload(req.file.path);
-            const picture = new Picture({
+            const savedresult  = new Picture({
                 userid: req.user.id,
                 content_id: result.public_id,
                 secure_url: result.secure_url,
             });
-            await picture.save();
+            await savedresult.save();
         } else{
                 var result = await cloudinary.uploader.upload(req.file.path);
-                const picture = new Picture({
+                const savedresult = new Picture({
                 userid: req.user.id,
                 content_id: result.public_id,
                 secure_url: result.secure_url
             });
-            await picture.save();
+            await savedresult.save();
         }
 
         let user = await User.findOne({
