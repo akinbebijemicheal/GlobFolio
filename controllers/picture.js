@@ -139,7 +139,7 @@ exports.updatePicture = async(req, res) => {
             createdAt: user.createdAt,
         };
 
-        res.status(200).json({
+        res.status(201).json({
             status: true,
             message: "Picture Updated successfully",
             data: output
