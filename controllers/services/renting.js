@@ -13,7 +13,7 @@ exports.createRentService = async(req, res) => {
                 description,
                 location,
                 per_time,
-                price: parseFloat(price),
+                price: price,
                 productType: 'rent',
                 img_id: result.public_id,
                 img_url: result.secure_url
@@ -146,7 +146,7 @@ exports.updateRent = async(req, res) => {
                 description: description,
                 location: location,
                 per_time: per_time,
-                price: parseFloat(price),
+                price: price,
                 img_id: result.public_id,
                 img_url: result.secure_url
             }, { where: {
@@ -164,7 +164,7 @@ exports.updateRent = async(req, res) => {
                 description: description,
                 location: location,
                 per_time: per_time,
-                price: parseFloat(price),
+                price: price,
             }, { where: {
                 id: req.params.id,
                 userid: req.user.id,

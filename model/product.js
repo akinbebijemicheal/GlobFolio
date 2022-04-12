@@ -67,9 +67,7 @@ const Product = db.define('product', {
         type: Sequelize.STRING
     },
     price: {
-        type: Sequelize.FLOAT,
-        allowNull: false,
-        defaultValue: 0.0 
+        type: Sequelize.STRING,
     }, 
     rating: {
         type: Sequelize.FLOAT

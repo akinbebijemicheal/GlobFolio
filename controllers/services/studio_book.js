@@ -14,7 +14,7 @@ exports.createStudioService = async(req, res) => {
                 location,
                 per_time,
                 rating: parseFloat(rating),
-                price: parseFloat(price),
+                price: price,
                 equipment,
                 productType: 'studio',
                 img_id: result.public_id,
@@ -149,7 +149,7 @@ exports.updateStudio = async(req, res) => {
                 location: location,
                 per_time: per_time,
                 rating: parseFloat(rating),
-                price: parseFloat(price),
+                price: price,
                 equipment: equipment,
                 img_id: result.public_id,
                 img_url: result.secure_url
@@ -169,7 +169,7 @@ exports.updateStudio = async(req, res) => {
                 location: location,
                 per_time: per_time,
                 rating: parseFloat(rating),
-                price: parseFloat(price),
+                price: price,
                 equipment: equipment,
             }, { where: {
                 id: req.params.id,

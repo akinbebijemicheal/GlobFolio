@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const passport = require('passport');
 require('dotenv').config();
 const nodemailer = require('nodemailer')
-const { google } = require("googleapis");
+/*const { google } = require("googleapis");
 const OAuth2 = google.auth.OAuth2;
 
 const myOAuth2Client = new OAuth2(
@@ -16,7 +16,7 @@ myOAuth2Client.setCredentials({
         refresh_token: process.env.REFRESH_TOKEN
 });
 
-const myAccessToken = myOAuth2Client.getAccessToken()
+const myAccessToken = myOAuth2Client.getAccessToken()*/
 
 exports.RegisterUser = async (role, req, res) => {
     try{
@@ -66,15 +66,16 @@ exports.RegisterUser = async (role, req, res) => {
 
             if( process.env.ONTEST === 'REAL'){
                 var transporter = nodemailer.createTransport({
-                    service: 'gmail',
-                    auth: {
-                      type: 'OAuth2',
-                      user: process.env.E_USER,
-                      clientId: process.env.CLIENT_ID,
-                      clientSecret: process.env.CLIENT_SECRET,
-                      refreshToken: process.env.REFRESH_TOKEN,
-                      accessToken: myAccessToken
-                    }
+                    host: process.env.EMAIL_HOST,
+                        port: process.env.EMAIL_PORT,
+                        secure: true, // true for 465, false for other ports
+                        tls: {
+                        rejectUnauthorized: false,
+                        },
+                        auth: {
+                        user: process.env.EMAIL_USERNAME, // generated ethereal user
+                        pass: process.env.EMAIL_PASSWORD, // generated ethereal password
+                        },
                   });
             } else{
                 var transporter = nodemailer.createTransport({

@@ -19,25 +19,25 @@ const Order = db.define('order', {
             key: 'id',
         }
     },
-    cartid: {
-        type: Sequelize.STRING(10),
-        references:{ 
-            model: 'carts',
-            key: 'id',
-        }
+    cart: {
+        type: Sequelize.STRING,
     },
     address: {
         type: Sequelize.STRING
     },
-    delivery: {
+    phone_no: {
         type: Sequelize.STRING
+    },
+    delivery_status: {
+        type: Sequelize.ENUM,
+        values: ["progress", "delivered"]
     }
 }, {timestamps: true});
 
 Order.belongsTo(User, {foreignKey: 'userid'})
 User.hasMany(Order, {foreignKey: 'userid'});
-Order.hasMany(Cart, {foreignKey: 'cartid'})
-Cart.belongsTo(Order, {foreignKey: 'cartid'})
+//Order.hasMany(Cart, {foreignKey: 'cartid'})
+//Cart.belongsTo(Order, {foreignKey: 'cartid'})
 
 
 module.exports = Order

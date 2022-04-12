@@ -2,9 +2,9 @@ const Sequelize = require('sequelize');
 const db = require('../config/config');
 const {nanoid} = require('nanoid');
 const User = require('./user');
-const CartItem = require('./cartitem')
+const Product = require('./product')
 
-const Cart = db.define('cart', {
+const CartItem = db.define('cartitem', {
     id :{
         type: Sequelize.STRING(10),
         autoincrement: false,
@@ -19,21 +19,29 @@ const Cart = db.define('cart', {
             key: 'id',
         }
     },
-    cartitemid: {
+    productid: {
         type: Sequelize.STRING(10),
         references:{ 
-            model: 'cartitems',
+            model: 'products',
             key: 'id',
         }
+    },
+    qty:{
+        type: Sequelize.INTEGER,
+        defaultValue: 0,
+    },
+    price:{
+        type: Sequelize.STRING
     }
 
 },{
     timestamps: true
 });
 
-Cart.belongsTo(User, {foreignKey: 'userid'})
-User.hasMany(Cart, {foreignKey: 'userid'});
-Cart.hasMany(CartItem, {foreignKey: 'cartitemid'})
+CartItem.belongsTo(User, {foreignKey: 'userid'})
+User.hasMany(CartItem, {foreignKey: 'userid'});
+CartItem.hasMany(Product, {foreignKey: 'productid'})
+Product.belongsTo(CartItem, {foreignKey: 'productid'})
 CartItem.belongsTo(Cart, {foreignKey: 'cartitemid'})
 
 

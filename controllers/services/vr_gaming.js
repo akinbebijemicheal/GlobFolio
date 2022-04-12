@@ -12,7 +12,7 @@ exports.createGamingService = async(req, res) => {
                 title,
                 description,
                 genre,
-                price: parseFloat(price),
+                price: price,
                 age_rate,
                 productType: 'game',
                 img_id: result.public_id,
@@ -145,7 +145,7 @@ exports.updateGaming = async(req, res) => {
                 title: title,
                 description: description,
                 genre: genre,
-                price: parseFloat(price),
+                price: price,
                 age_rate: age_rate,
                 img_id: result.public_id,
                 img_url: result.secure_url
@@ -163,7 +163,7 @@ exports.updateGaming = async(req, res) => {
                 title: title,
                 description: description,
                 genre: genre,
-                price: parseFloat(price),
+                price: price,
                 age_rate: age_rate,
             }, { where: {
                 id: req.params.id,
