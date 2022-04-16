@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const passport = require('passport');
 require('dotenv').config();
 const nodemailer = require('nodemailer')
-import logo from '../public/assets3/img/deep.png';
+
 /*const { google } = require("googleapis");
 const OAuth2 = google.auth.OAuth2;
 
@@ -213,7 +213,7 @@ exports.RegisterUser = async (role, req, res) => {
           <tr>
             <td align="center" valign="top" style="padding: 36px 24px;">
               <a href=${baseurl} target="_blank" style="display: inline-block;">
-                <img src=${logo} alt="Logo" border="0" width="48" style="display: block; width: 48px; max-width: 48px; min-width: 48px;">
+                <img src=${baseurl}/images/deep.png alt="Logo" border="0" width="48" style="display: block; width: 48px; max-width: 48px; min-width: 48px;">
               </a>
             </td>
           </tr>

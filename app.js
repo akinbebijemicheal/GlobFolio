@@ -15,7 +15,7 @@ const flash = require('express-flash-messages')
 
 
 //app.use(flash());
-
+app.use('/images', express.static('images'));
 app.set('view engine', 'ejs');
 app.set("views", path.join(__dirname, "views"));
 app.use(express.static(path.join(__dirname, "public")));
