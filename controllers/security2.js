@@ -41,7 +41,7 @@ exports.emailVerification_V1 = async(req, res) => {
                         },
                   });
             
-            const firstname = user.fullname.split(' ')
+            const fname = user.fullname.split(' ')
             const mailOptions = {
                 from:  `${process.env.E_TEAM}`,
                 to: `${user.email}`,
