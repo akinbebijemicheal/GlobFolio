@@ -213,7 +213,7 @@ exports.RegisterUser = async (role, req, res) => {
           <tr>
             <td align="center" valign="top" style="padding: 36px 24px;">
               <a href=${baseurl} target="_blank" style="display: inline-block;">
-                <img src=${baseurl}/images/deep.png alt="Logo" border="0" width="48" style="display: block; width: 48px; max-width: 48px; min-width: 48px;">
+                <img src=${baseurl}/images/deep.png alt="Logo" border="0" width="60" style="display: block; width: 60px; max-width: 60px; min-width: 60px;">
               </a>
             </td>
           </tr>
