@@ -556,7 +556,7 @@ exports.checkEmail = async(req, res) => {
     <!-- end hero -->
 
     <!-- start copy block -->
-    <h2> Hi ${firstname[0]}, </h2>
+   
     <tr>
       <td align="center" bgcolor="#e9ecef">
         <!--[if (gte mso 9)|(IE)]>
@@ -569,6 +569,7 @@ exports.checkEmail = async(req, res) => {
           <!-- start copy -->
           <tr>
             <td align="left" bgcolor="#ffffff" style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;">
+            <h2> Hi ${firstname[0]}, </h2>
               <p style="margin: 0;">Tap the button below to reset your customer account password. If you didn't request a new password, you can safely delete this email.</p>
             </td>
           </tr>

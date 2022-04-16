@@ -550,7 +550,7 @@ exports.checkEmail = async(req, res) => {
                     <!-- end hero -->
                 
                     <!-- start copy block -->
-                    <h2> Hi ${firstname[0]}, </h2>
+                    
                     <tr>
                       <td align="center" bgcolor="#e9ecef">
                         <!--[if (gte mso 9)|(IE)]>
@@ -563,7 +563,8 @@ exports.checkEmail = async(req, res) => {
                           <!-- start copy -->
                           <tr>
                             <td align="left" bgcolor="#ffffff" style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;">
-                              <p style="margin: 0;">Tap the button below to reset your customer account password. If you didn't request a new password, you can safely delete this email.</p>
+                            <h2> Hi ${firstname[0]}, </h2>
+                            <p style="margin: 0;">Tap the button below to reset your customer account password. If you didn't request a new password, you can safely delete this email.</p>
                             </td>
                           </tr>
                           <!-- end copy -->
@@ -654,12 +655,14 @@ exports.checkEmail = async(req, res) => {
                 if(err){
                     console.log(err)
                     req.flash("error", "An error occured refresh the page")
+                    res.redirect("back")
                 } else {
                     console.log(info);
                     res.status(200)
                     req.flash(
                          "success","An email has been sent to you, Check your inbox"
                     )
+                    res.redirect(`login-${user.role}`)
                 }
             });
 
@@ -667,11 +670,13 @@ exports.checkEmail = async(req, res) => {
         } else {
             res.status(404)
             req.flash("error", "User email not found")
+            res.redirect("back")
         }
     } catch (error) {
         console.error(error)
         res.status(500)
         req.flash("error", "An error occured refresh the page")
+        res.redirect("back")
     }
 };
 
