@@ -92,7 +92,7 @@ exports.RegisterUser = async (role, req, res) => {
             const mailOptions = {
                 from:  `${process.env.E_TEAM}`,
                 to: `${user.email}`,
-                subject: "Email Verification",
+                subject: "Deepend Email Verification",
                 html: `
                 <h2> Hi ${fname[0]}, </h2>
                 <p> Thanks for getting started with Deepend! </p>

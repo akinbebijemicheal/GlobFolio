@@ -54,7 +54,7 @@ exports.emailVerification_V1 = async(req, res) => {
             const mailOptions = {
                 from:  `${process.env.E_TEAM}`,
                 to: `${user.email}`,
-                subject: "Email Verification",
+                subject: "Deepend Email Verification",
                 html: `
                 <h2> Hi ${firstname[0]}, </h2>
                 <p> Thanks for getting started with Deepend! </p>
@@ -162,7 +162,7 @@ exports.checkEmail = async(req, res) => {
             const mailOptions = {
                 from:  `${process.env.E_TEAM}`,
                 to: `${user.email}`,
-                subject: "Reset Password",
+                subject: "Deepend Reset Password",
                 html: `
                 <h2> Hello ${firstname[0]}, </h2>
                 <p> Somebody requested a new password for the Deepend account associated with ${user.email}. </p>
