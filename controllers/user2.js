@@ -66,7 +66,6 @@ exports.RegisterUser = async (role, req, res) => {
             const token = jwt.sign({email: user.email}, process.env.TOKEN, { expiresIn: "15m"});
             const link = `${process.env.BASE_URL}/email-verification/${user.id}/${token}`;
 
-            if( process.env.ONTEST === 'REAL'){
                 var transporter = nodemailer.createTransport({
                     host: process.env.EMAIL_HOST,
                         port: process.env.EMAIL_PORT,
@@ -79,16 +78,7 @@ exports.RegisterUser = async (role, req, res) => {
                         pass: process.env.EMAIL_PASSWORD, // generated ethereal password
                         },
                   });
-            } else{
-                var transporter = nodemailer.createTransport({
-                    host: process.env.SMTP,
-                    port: process.env.SMTPPORT,
-                    auth: {
-                        user: process.env.MAILTRAP_USER,
-                        pass: process.env.MAILTRAP_PASS
-                    }
-                });
-            }
+        
             
             let fname = user.fullname.split(' ')
             const mailOptions = {
@@ -330,19 +320,10 @@ exports.RegisterUser = async (role, req, res) => {
           <!-- start permission -->
           <tr>
             <td align="center" bgcolor="#e9ecef" style="padding: 12px 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 20px; color: #666;">
-              <p style="margin: 0;">You received this email because we received a request for [type_of_action] for your account. If you didn't request [type_of_action] you can safely delete this email.</p>
+              <p style="margin: 0;">You received this email because we received a request for signing up for your DEEPEND account. If you didn't request signing up you can safely delete this email.</p>
             </td>
           </tr>
           <!-- end permission -->
-
-          <!-- start unsubscribe -->
-          <tr>
-            <td align="center" bgcolor="#e9ecef" style="padding: 12px 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 20px; color: #666;">
-              <p style="margin: 0;">To stop receiving these emails, you can <a href="https://sendgrid.com" target="_blank">unsubscribe</a> at any time.</p>
-              <p style="margin: 0;">Paste 1234 S. Broadway St. City, State 12345</p>
-            </td>
-          </tr>
-          <!-- end unsubscribe -->
 
         </table>
         <!--[if (gte mso 9)|(IE)]>
