@@ -11,7 +11,7 @@ const {getFoodByTitle, getFoodForUser, getFoodServices, getFoodById} = require('
 const { getHotelByTitle, getHotelForUser, getHotelServices, getHotelById } = require('../controllers/services/hotel');
 const { getRentByTitle, getRentForUser, getRentServices, getRentById} = require('../controllers/services/renting');
 const {getStudioByTitle, getStudioForUser, getStudioServices, getStudioById} = require('../controllers/services/studio_book');
-const { getGamingByTitle, getGamingForUser, getGamingServices} = require('../controllers/services/vr_gaming');
+const { getGamingByTitle, getGamingForUser, getGamingServices, getGameById} = require('../controllers/services/vr_gaming');
 const userVerify = require("../middleware/verify")
 
 
@@ -181,7 +181,7 @@ router
 
 router
 .route('/get-gaming-byid/:id')
-.get(jwtAuth, userVerify, getGamingById)
+.get(jwtAuth, userVerify, getGameById)
 
 router
 .route('/get-rent-byid/:id')
