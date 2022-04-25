@@ -65,7 +65,9 @@ exports.getStudioServices = async(req, res) => {
         const length = req.query.length
         const studio = await Product.findAll({where: {
             productType: 'studio'
-        }});
+        },  order: [
+            ['createdAt', 'ASC']
+        ]});
         if(studio){
             if(studio.length <= length || length === ""){
                 res.status(200).json({

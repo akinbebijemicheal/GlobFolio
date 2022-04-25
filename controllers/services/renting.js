@@ -63,7 +63,10 @@ exports.getRentServices = async(req, res) => {
         const length = req. query.length;
         const rent = await Product.findAll({where: {
             productType: 'rent'
-        }});
+        },
+        order: [
+            ['createdAt', 'ASC']
+        ]});
         if(rent){
             if(rent.length <= length || length === ""){
                 res.status(200).json({

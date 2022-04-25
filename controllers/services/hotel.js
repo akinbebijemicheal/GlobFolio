@@ -62,7 +62,9 @@ exports.getHotelServices = async(req, res) => {
         const length = req.query.length
         const hotel = await Product.findAll({where: {
             productType: 'hotel'
-        }});
+        },  order: [
+            ['rating', 'ASC']
+        ]});
         if(hotel){
             if(hotel.length <= length || length === ""){
                 res.status(200).json({
