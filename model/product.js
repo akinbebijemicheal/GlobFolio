@@ -33,6 +33,9 @@ const Product = db.define('product', {
     ingredients: {
         type: Sequelize.STRING
     },
+    view_date: {
+        type: Sequelize.DATE
+    },
     genre: {
         type: Sequelize.STRING
     },

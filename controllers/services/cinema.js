@@ -3,7 +3,7 @@ const cloudinary = require('../../util/cloudinary');
 const User = require('../../model/user');
 
 exports.createCinemaService = async(req, res) => {
-    const { title, genre, storyline, rating, cast, duration, age_rate,  price } = req.body;
+    const { title, genre, storyline, rating, view_date, cast, duration, age_rate,  price } = req.body;
     try {
         if(req.user.verified === true){
             const result = await cloudinary.uploader.upload(req.file.path);
@@ -15,6 +15,7 @@ exports.createCinemaService = async(req, res) => {
             cast,
             duration,
             age_rate,
+            view_date,
             rating: parseFloat(rating),
             price: price,
             productType: 'cinema',
@@ -43,6 +44,7 @@ exports.createCinemaService = async(req, res) => {
         //     })
             
         // })
+
         } else{
             res.status(301).json({
                 status: false,
@@ -62,15 +64,45 @@ exports.createCinemaService = async(req, res) => {
 
 
 exports.getCinemaServices = async(req, res) => {
+    const status = req.query.status;
+    const length = req.query.length
     try {
-        const cinema = await Product.findAll({where: {
-            productType: 'cinema'
-        }});
+        if(status === "showing"){
+            var cinema = await Product.findAll({where: {
+                productType: 'cinema',
+                view_date: (new Date).toISOString().substr(0, 10)
+            },
+            order: [
+                ['view_date', 'ASC']
+            ],
+        });
+        }
+
+        if(status === "soon"){
+            cinema = await Product.findAll({where: {
+                productType: 'cinema',
+                view_date: !((new Date).toISOString().substr(0, 10))
+            }, order: [
+                ['view_date', 'ASC']
+            ],});
+        }
+      
         if(cinema){
-            res.status(200).json({
-                status: true,
-                data: cinema
-            });
+            if(cinema.length <= length || length === ""){
+                res.status(200).json({
+                    status: true,
+                    data: cinema
+                });
+            }else{
+                let begin = length - 10;
+                let end = length + 1
+                var sliced = cinema.slice(begin, end)
+                res.status(200).json({
+                    status: true,
+                    data: sliced
+                });
+            }
+            
         } else{
             res.status(404).json({
                 status: true,
@@ -168,7 +200,7 @@ exports.getCinemaById = async(req, res) => {
 }
 
 exports.updateCinema = async(req, res) => {
-    const { title, genre, storyline, rating, cast, duration, age_rate,  price } = req.body;
+    const { title, genre, storyline, rating, view_date, cast, duration, age_rate,  price } = req.body;
     try{
         if(req.file.path) {
             const result = await cloudinary.uploader.upload(req.file.path);
@@ -177,6 +209,7 @@ exports.updateCinema = async(req, res) => {
                 genre: genre,
                 storyline: storyline,
                 cast: cast,
+                view_date: view_date,
                 duration: duration,
                 age_rate: age_rate,
                 rating: parseFloat(rating),
@@ -198,6 +231,7 @@ exports.updateCinema = async(req, res) => {
                 genre: genre,
                 storyline: storyline,
                 cast: cast,
+                view_date: view_date,
                 duration: duration,
                 age_rate: age_rate,
                 rating: parseFloat(rating),
