@@ -3,7 +3,7 @@ const cloudinary = require('../../util/cloudinary');
 const User = require('../../model/user');
 
 exports.createFoodService = async(req, res) => {
-    const { title, description, ingredents, price } = req.body;
+    const { title, description, ingredients, price } = req.body;
     try {
         if(req.user.verified === true){
             const result = await cloudinary.uploader.upload(req.file.path);
@@ -11,7 +11,7 @@ exports.createFoodService = async(req, res) => {
             user_id: req.user.id,
             title,
             description,
-            ingredents,
+            ingredients,
             price: price,
             productType: 'food',
             img_id: result.public_id,
