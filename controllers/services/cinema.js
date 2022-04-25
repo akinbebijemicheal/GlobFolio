@@ -1,6 +1,7 @@
 const Product = require('../../model/product');
 const cloudinary = require('../../util/cloudinary');
 const User = require('../../model/user');
+const { Op } = require('sequelize')
 
 exports.createCinemaService = async(req, res) => {
     const { title, genre, storyline, rating, view_date, cast, duration, age_rate,  price } = req.body;
@@ -81,7 +82,9 @@ exports.getCinemaServices = async(req, res) => {
         if(status === "soon"){
             cinema = await Product.findAll({where: {
                 productType: 'cinema',
-                view_date: (view_date > (new Date).toISOString().substr(0, 10))
+                view_date: {
+                    [Op.gt]: (new Date).toISOString().substr(0, 10)
+                } 
             }, order: [
                 ['view_date', 'ASC']
             ],});
