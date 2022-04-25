@@ -60,14 +60,25 @@ exports.createGamingService = async(req, res) => {
 
 exports.getGamingServices = async(req, res) => {
     try {
+        const length = req.query.length
         const game = await Product.findAll({where: {
             productType: 'game'
         }});
         if(game){
-            res.status(200).json({
-                status: true,
-                data: game
-            });
+            if(game.length <= length || length === ""){
+                res.status(200).json({
+                    status: true,
+                    data: game
+                });
+            }else{
+                let begin = length - 10;
+                let end = length + 1
+                var sliced = game.slice(begin, end)
+                res.status(200).json({
+                    status: true,
+                    data: sliced
+                });
+            }
         } else{
             res.status(404).json({
                 status: true,

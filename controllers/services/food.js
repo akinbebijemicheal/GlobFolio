@@ -57,14 +57,29 @@ exports.createFoodService = async(req, res) => {
 
 exports.getFoodServices = async(req, res) => {
     try {
+        const length = req.query.length;
+        
         const food = await Product.findAll({ where: {
             productType: 'food'
-        }});
+        },
+        order: [
+            ['createdAt', 'ASC']
+        ],});
         if(food){
-            res.status(200).json({
-                status: true,
-                data: food
-            });
+            if(food.length <= length || length === ""){
+                res.status(200).json({
+                    status: true,
+                    data: food
+                });
+            }else{
+                let begin = length - 10;
+                let end = length + 1
+                var sliced = food.slice(begin, end)
+                res.status(200).json({
+                    status: true,
+                    data: sliced
+                });
+            }
         } else{
             res.status(404).json({
                 status: true,

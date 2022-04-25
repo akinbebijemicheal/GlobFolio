@@ -59,14 +59,25 @@ exports.createHotelService = async(req, res) => {
 
 exports.getHotelServices = async(req, res) => {
     try {
+        const length = req.query.length
         const hotel = await Product.findAll({where: {
             productType: 'hotel'
         }});
         if(hotel){
-            res.status(200).json({
-                status: true,
-                data: hotel
-            });
+            if(hotel.length <= length || length === ""){
+                res.status(200).json({
+                    status: true,
+                    data: hotel
+                });
+            }else{
+                let begin = length - 10;
+                let end = length + 1
+                var sliced = hotel.slice(begin, end)
+                res.status(200).json({
+                    status: true,
+                    data: sliced
+                });
+            }
         } else{
             res.status(404).json({
                 status: true,

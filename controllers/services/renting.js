@@ -60,14 +60,25 @@ exports.createRentService = async(req, res) => {
 
 exports.getRentServices = async(req, res) => {
     try {
+        const length = req. query.length;
         const rent = await Product.findAll({where: {
             productType: 'rent'
         }});
         if(rent){
-            res.status(200).json({
-                status: true,
-                data: rent
-            });
+            if(rent.length <= length || length === ""){
+                res.status(200).json({
+                    status: true,
+                    data: rent
+                });
+            }else{
+                let begin = length - 10;
+                let end = length + 1
+                var sliced = rent.slice(begin, end)
+                res.status(200).json({
+                    status: true,
+                    data: sliced
+                });
+            }
         } else{
             res.status(404).json({
                 status: true,

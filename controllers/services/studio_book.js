@@ -62,14 +62,25 @@ exports.createStudioService = async(req, res) => {
 
 exports.getStudioServices = async(req, res) => {
     try {
+        const length = req.query.length
         const studio = await Product.findAll({where: {
             productType: 'studio'
         }});
         if(studio){
-            res.status(200).json({
-                status: true,
-                data: studio
-            });
+            if(studio.length <= length || length === ""){
+                res.status(200).json({
+                    status: true,
+                    data: studio
+                });
+            }else{
+                let begin = length - 10;
+                let end = length + 1
+                var sliced = studio.slice(begin, end)
+                res.status(200).json({
+                    status: true,
+                    data: sliced
+                });
+            }
         } else{
             res.status(404).json({
                 status: true,

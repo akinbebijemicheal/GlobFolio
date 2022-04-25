@@ -80,7 +80,8 @@ exports.getCinemaServices = async(req, res) => {
         }
 
         if(status === "soon"){
-            cinema = await Product.findAll({where: {
+            cinema = await Product.findAll({
+                where: {
                 productType: 'cinema',
                 view_date: {
                     [Op.gt]: (new Date).toISOString().substr(0, 10)
