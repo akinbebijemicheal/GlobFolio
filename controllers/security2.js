@@ -25,7 +25,7 @@ exports.emailVerification_V1 = async(req, res) => {
         }})
         if(user){
             const token = jwt.sign({email: user.email}, process.env.TOKEN, { expiresIn: "15m"});
-            const link = `${process.env.BASE_URL}/email-verification/${user.id}/${token}`;
+            const link = `${process.env.BASE_URL}/email-verification?userId=${user.id}&token=${token}`;
 
           
                 var transporter = nodemailer.createTransport({
@@ -330,11 +330,12 @@ exports.emailVerification_V1 = async(req, res) => {
 
 exports.emailVerification_V2 = async(req, res) => {
 try {
-        const token = req.params.token;
+        const token = req.query.token;
+        const id = req.query.userId
         const decode = jwt.verify(token, process.env.TOKEN);
         if(decode){
                 await User.update({email_verify: true}, {where: {
-                    id: `${req.params.id}`
+                    id: id
                 }})
                 res.status(200)
                 req.flash("success", "Email Verified successfully updated")

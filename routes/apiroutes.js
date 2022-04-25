@@ -97,7 +97,7 @@ router
 .post(jwtAuth, emailVerification_V1);
 
 router
-.route('/email-verification/:id/:token')
+.route('/email-verification')
 .get(emailVerification_V2);
 
 router

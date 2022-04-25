@@ -63,7 +63,7 @@ exports.RegisterUser = async (role, req, res) => {
         }})
         
             const token = jwt.sign({email: user.email}, process.env.TOKEN, { expiresIn: "15m"});
-            const link = `${process.env.BASE_URL}/email-verification/${user.id}/${token}`;
+            const link = `${process.env.BASE_URL}/email-verification?userId=${user.id}&token=${token}`;
 
             
                 var transporter = nodemailer.createTransport({
