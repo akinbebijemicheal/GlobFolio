@@ -338,6 +338,7 @@ try {
                     id: id
                 }})
                 res.status(200)
+                res.json("Email Verified successfully updated")
                 req.flash("success", "Email Verified successfully updated")
         }else{
             res.status(403)
@@ -696,6 +697,7 @@ exports.forgotPassword = async(req, res) => {
                         id: `${req.params.id}`
                     }})
                     res.status(200)
+                    res.json("User password successfully updated")
                     req.flash("success", "User password successfully updated")
                 } else {
                     res.status(406)
