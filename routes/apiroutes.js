@@ -98,7 +98,7 @@ router
 
 router
 .route('/email-verification/:id/:token')
-.post(emailVerification_V2);
+.get(emailVerification_V2);
 
 router
 .route('/reset-password')
@@ -106,7 +106,7 @@ router
 
 router
 .route('/reset-password/:id/:token')
-.post(forgotPassword);
+.get(forgotPassword);
 
 router
 .route('/change-password')
