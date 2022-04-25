@@ -139,6 +139,32 @@ exports.getCinemaByTitle = async(req, res) => {
          })
     }
 }
+exports.getCinemaById = async(req, res) => {
+    const id= req.parmas.id;
+    try {
+        const cinema = await Product.findAll({where: {
+            id: id,
+            productType: 'cinema'
+        }}, {include: User})
+        if(cinema){
+            res.status(200).json({
+                status: true,
+                data: cinema})
+        } else{
+            res.status(404).json({
+                status: false,
+                message: "Post not Found"
+            })
+        }
+    } catch (error) {
+        console.error(error)
+        return res.status(500).json({
+             status: false,
+             message: "An error occured",
+             error: error
+         })
+    }
+}
 
 exports.updateCinema = async(req, res) => {
     const { title, genre, storyline, rating, cast, duration, age_rate,  price } = req.body;

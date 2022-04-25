@@ -54,24 +54,24 @@ exports.AddCart = async(req, res)=>{
                         ]
                     }) 
 
-                await Order.findOne({
-                    where: {
-                        userid: req.user.id
-                    }
-                }).then((order) => {
-                    if(!order){
-                        await Order.create({
-                            userid: req.user.id,
-                            cart: JSON.stringify(viewcart)
-                        })
-                    }else{
-                        await Order.update(
-                            { cart: JSON.stringify(viewcart) },
-                        { where: {
-                            userid: req.user.id
-                        }})
-                    }
-                })    
+                // await Order.findOne({
+                //     where: {
+                //         userid: req.user.id
+                //     }
+                // }).then((order) => {
+                //     if(!order){
+                //         await Order.create({
+                //             userid: req.user.id,
+                //             cart: JSON.stringify(viewcart)
+                //         })
+                //     }else{
+                //         await Order.update(
+                //             { cart: JSON.stringify(viewcart) },
+                //         { where: {
+                //             userid: req.user.id
+                //         }})
+                //     }
+                // })    
 
                 res.status(201).json({
                     staus: true,
@@ -222,49 +222,41 @@ exports.addQty = async(req, res)=> {
 }
 
 exports.createOrder = async(req, res)=>{
-    const { address, phone_no } = req.body;
+    const { address, phone_no, cart } = req.body;
     try {
-        await Order.findOne({
-            where: {
-                userid: req.user.id
-            }
-        }).then((order)=>{
-            if(order){
-                await Order.update({
+
+                await Order.create({
                     address: address,
                     phone_no: phone_no,
-                }, { where: {
-                    id: order.id
-                }})
-            }else{
-                res.status(404).json({
-                    status: false,
-                    message: "Cart is empty"
+                    cart: cart
                 })
-            }
-        })
 
-        await Order.findOne({
-            where: {
-                userid: req.user.id
-            }
-        }).then((order) =>{
-            const result = {
-                id: order.id,
-                userid: order.userid,
-                fullname: req.user.fullname,
-                address: order.address,
-                phone_no: order.phone_no,
-                delivery_status: order.delivery_status,
-                cart: JSON.parse(order.cart),
-                createAt: order.createAt,
-                updateAt: order.updateAt
-            }
-            res.status(200).json({
-                status: true,
-                data: result,
-            })
-        })
+        // await Order.findOne({
+        //     where: {
+        //         userid: req.user.id
+        //     }
+        // }).then((order) =>{
+        //     const result = {
+        //         id: order.id,
+        //         userid: order.userid,
+        //         fullname: req.user.fullname,
+        //         address: order.address,
+        //         phone_no: order.phone_no,
+        //         delivery_status: order.delivery_status,
+        //         cart: JSON.parse(order.cart),
+        //         createAt: order.createAt,
+        //         updateAt: order.updateAt
+        //     }
+        //     res.status(200).json({
+        //         status: true,
+        //         data: result,
+        //     })
+        // })
+
+        res.status(200).json({
+                    status: true,
+                    message: "Order created",
+                })
 
 
     } catch (error) {

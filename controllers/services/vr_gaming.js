@@ -136,6 +136,33 @@ exports.getGamingByTitle = async(req, res) => {
     }
 }
 
+exports.getGameById = async(req, res) => {
+    const id= req.parmas.id;
+    try {
+        const game = await Product.findAll({where: {
+            id: id,
+            productType: 'game'
+        }}, {include: User})
+        if(game){
+            res.status(200).json({
+                status: true,
+                data: game})
+        } else{
+            res.status(404).json({
+                status: false,
+                message: "Post not Found"
+            })
+        }
+    } catch (error) {
+        console.error(error)
+        return res.status(500).json({
+             status: false,
+             message: "An error occured",
+             error: error
+         })
+    }
+}
+
 exports.updateGaming = async(req, res) => {
     const { title, description, genre, price, age_rate,} = req.body;
     try{

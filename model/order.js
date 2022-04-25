@@ -20,7 +20,7 @@ const Order = db.define('order', {
         }
     },
     cart: {
-        type: Sequelize.STRING,
+        type: Sequelize.JSON,
     },
     address: {
         type: Sequelize.STRING

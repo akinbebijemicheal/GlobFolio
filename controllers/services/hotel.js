@@ -136,6 +136,33 @@ exports.getHotelByTitle = async(req, res) => {
     }
 }
 
+exports.getHotelById = async(req, res) => {
+    const id= req.parmas.id;
+    try {
+        const hotel = await Product.findAll({where: {
+            id: id,
+            productType: 'hotel'
+        }}, {include: User})
+        if(hotel){
+            res.status(200).json({
+                status: true,
+                data: hotel})
+        } else{
+            res.status(404).json({
+                status: false,
+                message: "Post not Found"
+            })
+        }
+    } catch (error) {
+        console.error(error)
+        return res.status(500).json({
+             status: false,
+             message: "An error occured",
+             error: error
+         })
+    }
+}
+
 exports.updateHotel = async(req, res) => {
     const { title, description, location, rating, price } = req.body;
     try{

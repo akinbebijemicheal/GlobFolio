@@ -6,11 +6,11 @@ const {checkEmail, changePassword, forgotPassword, emailVerification_V1, emailVe
 const {  verification, getUnverifieds, getVendors, getVendorsByServices} = require('../controllers/vendor')
 const { updatePicture, uploadPicture, deletePicture, getPicture} = require('../controllers/picture')
 const jwtAuth = require('../middleware/jwtAuth');
-const { getCinemaServices, getCinemaByTitle, getCinemaForUser} = require('../controllers/services/cinema');
-const {getFoodByTitle, getFoodForUser, getFoodServices} = require('../controllers/services/food');
-const { getHotelByTitle, getHotelForUser, getHotelServices } = require('../controllers/services/hotel');
-const { getRentByTitle, getRentForUser, getRentServices} = require('../controllers/services/renting');
-const {getStudioByTitle, getStudioForUser, getStudioServices} = require('../controllers/services/studio_book');
+const { getCinemaServices, getCinemaByTitle, getCinemaForUser, getCinemaById} = require('../controllers/services/cinema');
+const {getFoodByTitle, getFoodForUser, getFoodServices, getFoodById} = require('../controllers/services/food');
+const { getHotelByTitle, getHotelForUser, getHotelServices, getHotelById } = require('../controllers/services/hotel');
+const { getRentByTitle, getRentForUser, getRentServices, getRentById} = require('../controllers/services/renting');
+const {getStudioByTitle, getStudioForUser, getStudioServices, getStudioById} = require('../controllers/services/studio_book');
 const { getGamingByTitle, getGamingForUser, getGamingServices} = require('../controllers/services/vr_gaming');
 const userVerify = require("../middleware/verify")
 
@@ -162,6 +162,32 @@ router
 .route('/get-rent-bytitle')
 .get(jwtAuth, userVerify, getRentByTitle)
 
+//----------------------------------ID----------------------------------
+router
+.route('/get-cinema-byid/:id')
+.get(jwtAuth, userVerify, getCinemaById)
+
+router
+.route('/get-hotel-byid/:id')
+.get(jwtAuth, userVerify, getHotelById)
+
+router
+.route('/get-studio-byid/:id')
+.get(jwtAuth, userVerify, getStudioById)
+
+router
+.route('/get-food-byid/:id')
+.get(jwtAuth, userVerify, getFoodById)
+
+router
+.route('/get-gaming-byid/:id')
+.get(jwtAuth, userVerify, getGamingById)
+
+router
+.route('/get-rent-byid/:id')
+.get(jwtAuth, userVerify, getRentById)
+
+//-------------------------------------------------------------------
 
 router
 .route('/get-cinema-byuser')

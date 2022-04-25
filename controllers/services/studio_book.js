@@ -138,6 +138,33 @@ exports.getStudioByTitle = async(req, res) => {
     }
 }
 
+exports.getStudioById = async(req, res) => {
+    const id= req.parmas.id;
+    try {
+        const studio = await Product.findAll({where: {
+            id: id,
+            productType: 'studio'
+        }}, {include: User})
+        if(studio){
+            res.status(200).json({
+                status: true,
+                data: studio})
+        } else{
+            res.status(404).json({
+                status: false,
+                message: "Post not Found"
+            })
+        }
+    } catch (error) {
+        console.error(error)
+        return res.status(500).json({
+             status: false,
+             message: "An error occured",
+             error: error
+         })
+    }
+}
+
 exports.updateStudio = async(req, res) => {
     const { title, description, location, per_time, price, rating, equipment } = req.body;
     try{

@@ -136,6 +136,33 @@ exports.getRentByTitle = async(req, res) => {
     }
 }
 
+exports.getRentById = async(req, res) => {
+    const id= req.parmas.id;
+    try {
+        const rent = await Product.findAll({where: {
+            id: id,
+            productType: 'rent'
+        }}, {include: User})
+        if(rent){
+            res.status(200).json({
+                status: true,
+                data: rent})
+        } else{
+            res.status(404).json({
+                status: false,
+                message: "Post not Found"
+            })
+        }
+    } catch (error) {
+        console.error(error)
+        return res.status(500).json({
+             status: false,
+             message: "An error occured",
+             error: error
+         })
+    }
+}
+
 exports.updateRent = async(req, res) => {
     const { title, description, location, per_time, price } = req.body;
     try{

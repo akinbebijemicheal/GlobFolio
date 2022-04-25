@@ -134,6 +134,33 @@ exports.getFoodByTitle = async(req, res) => {
     }
 }
 
+exports.getFoodById = async(req, res) => {
+    const id= req.parmas.id;
+    try {
+        const food = await Product.findAll({where: {
+            id: id,
+            productType: 'food'
+        }}, {include: User})
+        if(food){
+            res.status(200).json({
+                status: true,
+                data: food})
+        } else{
+            res.status(404).json({
+                status: false,
+                message: "Post not Found"
+            })
+        }
+    } catch (error) {
+        console.error(error)
+        return res.status(500).json({
+             status: false,
+             message: "An error occured",
+             error: error
+         })
+    }
+}
+
 exports.updateFood = async(req, res) => {
     const {title, description, ingredents, price } = req.body;
     try{
