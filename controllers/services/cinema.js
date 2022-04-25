@@ -90,6 +90,27 @@ exports.getCinemaServices = async(req, res) => {
                 ['view_date', 'ASC']
             ],});
         }
+
+        if(status === "rated"){
+            var cinema = await Product.findAll({where: {
+                productType: 'cinema',
+            },
+            order: [
+                ['rating', 'ASC'],
+                ['view_date', 'ASC']
+            ],
+        });
+        }
+
+        if(!status){
+            var cinema = await Product.findAll({where: {
+                productType: 'cinema',
+            },
+            order: [
+                ['view_date', 'ASC']
+            ],
+        });
+        }
       
         if(cinema){
             if(cinema.length <= length || length === ""){
