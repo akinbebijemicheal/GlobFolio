@@ -96,7 +96,7 @@ exports.getCinemaServices = async(req, res) => {
                 productType: 'cinema',
             },
             order: [
-                ['rating', 'ASC'],
+                ['rating', 'DESC'],
                 ['view_date', 'ASC']
             ],
         });
