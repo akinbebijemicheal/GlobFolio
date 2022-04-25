@@ -8,7 +8,7 @@ exports.createFoodService = async(req, res) => {
         if(req.user.verified === true){
             const result = await cloudinary.uploader.upload(req.file.path);
             const food = new Product({
-            user_id: req.user.id,
+            userid: req.user.id,
             title,
             description,
             ingredients,
@@ -58,7 +58,7 @@ exports.createFoodService = async(req, res) => {
 exports.getFoodServices = async(req, res) => {
     try {
         const length = req.query.length;
-        
+
         const food = await Product.findAll({ where: {
             productType: 'food'
         },

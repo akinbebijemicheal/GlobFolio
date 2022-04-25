@@ -9,7 +9,7 @@ exports.createCinemaService = async(req, res) => {
         if(req.user.verified === true){
             const result = await cloudinary.uploader.upload(req.file.path);
         const cinema = new Product({
-            user_id: req.user.id,
+            userid: req.user.id,
             title,
             genre,
             storyline,
