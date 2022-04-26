@@ -1,6 +1,7 @@
 const Product = require('../../model/food');
 const cloudinary = require('../../util/cloudinary');
 const User = require('../../model/user');
+const fs = require('fs')
 
 exports.createFoodService = async(req, res) => {
     const { title, description, ingredients, price } = req.body;

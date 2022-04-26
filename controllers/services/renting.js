@@ -1,6 +1,7 @@
 const Product = require('../../model/renting');
 const cloudinary = require('../../util/cloudinary');
 const User = require('../../model/user');
+const fs = require('fs')
 
 exports.createRentService = async(req, res) => {
     const { title, description, location, per_time, price } = req.body;

@@ -1,6 +1,7 @@
 const Product = require('../../model/studio_book');
 const cloudinary = require('../../util/cloudinary');
 const User = require('../../model/user');
+const fs = require('fs')
 
 exports.createStudioService = async(req, res) => {
     const { title, description, location, per_time, price, rating, equipment } = req.body;

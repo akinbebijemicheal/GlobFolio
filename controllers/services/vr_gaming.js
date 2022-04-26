@@ -1,6 +1,7 @@
 const Product = require('../../model/vr_gaming');
 const cloudinary = require('../../util/cloudinary');
 const User = require('../../model/user');
+const fs = require('fs')
 
 exports.createGamingService = async(req, res) => {
     const { title, description, genre, price, age_rate,} = req.body;

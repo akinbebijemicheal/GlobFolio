@@ -1,6 +1,7 @@
 const Product = require('../../model/hotel');
 const cloudinary = require('../../util/cloudinary');
 const User = require('../../model/user');
+const fs = require('fs')
 
 exports.createHotelService = async(req, res) => {
     const { title, description, location, rating, price } = req.body;
