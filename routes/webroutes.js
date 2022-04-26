@@ -414,11 +414,11 @@ router
 
 router
 .route('/create-hotel-post')
-.post(userAuth, checkRole(["vendor"]) ,multer.single("image"), createHotelService);
+.post(userAuth, checkRole(["vendor", "admin"]) ,multer.single("image"), createHotelService);
 
 router
 .route('/create-food-post')
-.post(userAuth, checkRole(["vendor"]) ,multer.single("image"), createFoodService);
+.post(userAuth, checkRole(["vendor", "admin"]) ,multer.single("image"), createFoodService);
 
 router
 .route('/create-studio-post')
@@ -430,7 +430,7 @@ router
 
 router
 .route('/create-rent-post')
-.post(userAuth, checkRole(["vendor"]) ,multer.single("image"), createRentService);
+.post(userAuth, checkRole(["vendor", "admin"]) ,multer.single("image"), createRentService);
 
 router
 .route('/get-cinema-posts')
