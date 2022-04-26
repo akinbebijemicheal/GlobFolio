@@ -85,9 +85,10 @@ exports.getStudioServices = async(req, res) => {
             ['createdAt', 'ASC']
         ]});
 
-        studio.img_id = JSON.parse(studio.img_id);
-        studio.img_url = JSON.parse(studio.img_url)
+        
         if(studio){
+            studio.img_id = JSON.parse(studio.img_id);
+            studio.img_url = JSON.parse(studio.img_url)
             if(studio.length <= length || length === ""){
                 res.status(200).json({
                     status: true,
@@ -97,6 +98,7 @@ exports.getStudioServices = async(req, res) => {
                 let begin = length - 10;
                 let end = length + 1
                 var sliced = studio.slice(begin, end)
+                
                 res.status(200).json({
                     status: true,
                     data: sliced
@@ -129,6 +131,8 @@ exports.getStudioForUser = async(req, res) => {
             }
         ]})
         if(studio){
+            studio.img_id = JSON.parse(studio.img_id);
+            studio.img_url = JSON.parse(studio.img_url)
             res.status(200).json({
                 status: true,
                 data: studio
@@ -161,6 +165,8 @@ exports.getStudioByTitle = async(req, res) => {
             }
         ]})
         if(studio){
+            studio.img_id = JSON.parse(studio.img_id);
+            studio.img_url = JSON.parse(studio.img_url)
             res.status(200).json({
                 status: true,
                 data: studio})
@@ -192,6 +198,8 @@ exports.getStudioById = async(req, res) => {
             }
         ]})
         if(studio){
+            studio.img_id = JSON.parse(studio.img_id);
+            studio.img_url = JSON.parse(studio.img_url)
             res.status(200).json({
                 status: true,
                 data: studio})

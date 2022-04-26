@@ -83,10 +83,11 @@ exports.getFoodServices = async(req, res) => {
             ['createdAt', 'ASC']
         ],});
 
-        food.img_id = JSON.parse(food.img_id);
-        food.img_url = JSON.parse(food.img_url)
-
+        
         if(food){
+            food.img_id = JSON.parse(food.img_id);
+            food.img_url = JSON.parse(food.img_url)
+
             if(food.length <= length || length === ""){
                 res.status(200).json({
                     status: true,
@@ -119,7 +120,7 @@ exports.getFoodServices = async(req, res) => {
 
 exports.getFoodForUser = async(req, res) => {
     try {
-        const food = await Product.findAll({ where: {
+        var food = await Product.findAll({ where: {
             userid: req.user.id,
             productType: 'food'
         }, include:[
@@ -128,9 +129,10 @@ exports.getFoodForUser = async(req, res) => {
             }
         ]} )
 
-        food.img_id = JSON.parse(food.img_id);
-        food.img_url = JSON.parse(food.img_url)
+        
         if(food){
+            food.img_id = JSON.parse(food.img_id);
+            food.img_url = JSON.parse(food.img_url)
             res.status(200).json({
                 status: true,
                 data: food
@@ -154,7 +156,7 @@ exports.getFoodForUser = async(req, res) => {
 exports.getFoodByTitle = async(req, res) => {
     const title = req.body;
     try {
-        const food = await Product.findAll({where: {
+        var food = await Product.findAll({where: {
             title: title,
             productType: 'food'
         }, include:[
@@ -163,9 +165,10 @@ exports.getFoodByTitle = async(req, res) => {
             }
         ]} )
 
-        food.img_id = JSON.parse(food.img_id);
-        food.img_url = JSON.parse(food.img_url)
+        
         if(food){
+            food.img_id = JSON.parse(food.img_id);
+            food.img_url = JSON.parse(food.img_url)
             res.status(200).json({
                 status: true,
                 data: food})
@@ -188,7 +191,7 @@ exports.getFoodByTitle = async(req, res) => {
 exports.getFoodById = async(req, res) => {
     const id= req.parmas.id;
     try {
-        const food = await Product.findAll({where: {
+        var food = await Product.findAll({where: {
             id: id,
             productType: 'food'
         }, include:[
@@ -196,9 +199,10 @@ exports.getFoodById = async(req, res) => {
                 model: User
             }
         ]})
-        food.img_id = JSON.parse(food.img_id);
-        food.img_url = JSON.parse(food.img_url)
+       
         if(food){
+            food.img_id = JSON.parse(food.img_id);
+            food.img_url = JSON.parse(food.img_url)
             res.status(200).json({
                 status: true,
                 data: food})

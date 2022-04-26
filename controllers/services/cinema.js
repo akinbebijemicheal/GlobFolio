@@ -185,7 +185,7 @@ exports.getCinemaServices = async(req, res) => {
 
 exports.getCinemaForUser = async(req, res) => {
     try {
-        const cinema = await Product.findAll({ where: {
+       var cinema = await Product.findAll({ where: {
             userid: req.user.id,
             productType: 'cinema'
         }, include:[
@@ -219,7 +219,7 @@ exports.getCinemaForUser = async(req, res) => {
 exports.getCinemaByTitle = async(req, res) => {
     const title= req.body;
     try {
-        const cinema = await Product.findAll({where: {
+        var cinema = await Product.findAll({where: {
             title: title,
             productType: 'cinema'
         }, include:[
@@ -251,7 +251,7 @@ exports.getCinemaByTitle = async(req, res) => {
 exports.getCinemaById = async(req, res) => {
     const id= req.parmas.id;
     try {
-        const cinema = await Product.findAll({where: {
+        var cinema = await Product.findAll({where: {
             id: id,
             productType: 'cinema'
         }, include:[

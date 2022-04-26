@@ -81,9 +81,10 @@ exports.getHotelServices = async(req, res) => {
         },  order: [
             ['rating', 'ASC']
         ]});
-        hotel.img_id = JSON.parse(hotel.img_id);
-        hotel.img_url = JSON.parse(hotel.img_url)
+
         if(hotel){
+            hotel.img_id = JSON.parse(hotel.img_id);
+            hotel.img_url = JSON.parse(hotel.img_url)
             if(hotel.length <= length || length === ""){
                 res.status(200).json({
                     status: true,
@@ -116,7 +117,7 @@ exports.getHotelServices = async(req, res) => {
 
 exports.getHotelForUser = async(req, res) => {
     try {
-        const hotel = await Product.findAll({ where: {
+        var hotel = await Product.findAll({ where: {
             userid: req.user.id,
             productType: 'hotel'
         }, include:[
@@ -124,9 +125,10 @@ exports.getHotelForUser = async(req, res) => {
                 model: User
             }
         ]})
-        hotel.img_id = JSON.parse(hotel.img_id);
-        hotel.img_url = JSON.parse(hotel.img_url)
+        
         if(hotel){
+            hotel.img_id = JSON.parse(hotel.img_id);
+            hotel.img_url = JSON.parse(hotel.img_url)
             res.status(200).json({
                 status: true,
                 data: hotel
@@ -150,7 +152,7 @@ exports.getHotelForUser = async(req, res) => {
 exports.getHotelByTitle = async(req, res) => {
     const title= req.body;
     try {
-        const hotel = await Product.findAll({where: {
+        var hotel = await Product.findAll({where: {
             title: title,
             productType: 'hotel'
         }, include:[
@@ -158,9 +160,10 @@ exports.getHotelByTitle = async(req, res) => {
                 model: User
             }
         ]})
-        hotel.img_id = JSON.parse(hotel.img_id);
-        hotel.img_url = JSON.parse(hotel.img_url)
+        
         if(hotel){
+            hotel.img_id = JSON.parse(hotel.img_id);
+            hotel.img_url = JSON.parse(hotel.img_url)
             res.status(200).json({
                 status: true,
                 data: hotel})
@@ -183,7 +186,7 @@ exports.getHotelByTitle = async(req, res) => {
 exports.getHotelById = async(req, res) => {
     const id= req.parmas.id;
     try {
-        const hotel = await Product.findAll({where: {
+        var hotel = await Product.findAll({where: {
             id: id,
             productType: 'hotel'
         }, include:[
@@ -191,9 +194,10 @@ exports.getHotelById = async(req, res) => {
                 model: User
             }
         ]})
-        hotel.img_id = JSON.parse(hotel.img_id);
-        hotel.img_url = JSON.parse(hotel.img_url)
+        
         if(hotel){
+            hotel.img_id = JSON.parse(hotel.img_id);
+            hotel.img_url = JSON.parse(hotel.img_url)
             res.status(200).json({
                 status: true,
                 data: hotel})

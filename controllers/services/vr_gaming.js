@@ -78,9 +78,12 @@ exports.getGamingServices = async(req, res) => {
         var game = await Product.findAll({where: {
             productType: 'game'
         }});
-        game.img_id = JSON.parse(game.img_id);
-        game.img_url = JSON.parse(game.img_url)
+
+       
+
         if(game){
+            game.img_id = JSON.parse(game.img_id);
+            game.img_url = JSON.parse(game.img_url)
             if(game.length <= length || length === ""){
                 res.status(200).json({
                     status: true,
@@ -90,6 +93,9 @@ exports.getGamingServices = async(req, res) => {
                 let begin = length - 10;
                 let end = length + 1
                 var sliced = game.slice(begin, end)
+
+                
+
                 res.status(200).json({
                     status: true,
                     data: sliced
@@ -113,7 +119,7 @@ exports.getGamingServices = async(req, res) => {
 
 exports.getGamingForUser = async(req, res) => {
     try {
-        const game = await Product.findAll({ where: {
+        var game = await Product.findAll({ where: {
             userid: req.user.id,
             productType: 'game'
         }, include:[
@@ -121,9 +127,10 @@ exports.getGamingForUser = async(req, res) => {
                 model: User
             }
         ]})
-        game.img_id = JSON.parse(game.img_id);
-        game.img_url = JSON.parse(game.img_url)
+       
         if(game){
+            game.img_id = JSON.parse(game.img_id);
+            game.img_url = JSON.parse(game.img_url)
             res.status(200).json({
                 status: true,
                 data: game
@@ -147,7 +154,7 @@ exports.getGamingForUser = async(req, res) => {
 exports.getGamingByTitle = async(req, res) => {
     const title= req.body;
     try {
-        const game = await Product.findAll({where: {
+        var game = await Product.findAll({where: {
             title: title,
             productType: 'game'
         }, include:[
@@ -155,9 +162,10 @@ exports.getGamingByTitle = async(req, res) => {
                 model: User
             }
         ]})
-        game.img_id = JSON.parse(game.img_id);
-        game.img_url = JSON.parse(game.img_url)
+       
         if(game){
+            game.img_id = JSON.parse(game.img_id);
+            game.img_url = JSON.parse(game.img_url)
             res.status(200).json({
                 status: true,
                 data: game})
@@ -180,7 +188,7 @@ exports.getGamingByTitle = async(req, res) => {
 exports.getGameById = async(req, res) => {
     const id= req.parmas.id;
     try {
-        const game = await Product.findAll({where: {
+        var game = await Product.findAll({where: {
             id: id,
             productType: 'game'
         }, include:[
@@ -188,9 +196,10 @@ exports.getGameById = async(req, res) => {
                 model: User
             }
         ]})
-        game.img_id = JSON.parse(game.img_id);
-        game.img_url = JSON.parse(game.img_url)
+        
         if(game){
+            game.img_id = JSON.parse(game.img_id);
+            game.img_url = JSON.parse(game.img_url)
             res.status(200).json({
                 status: true,
                 data: game})

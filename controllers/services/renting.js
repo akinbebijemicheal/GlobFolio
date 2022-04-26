@@ -82,9 +82,10 @@ exports.getRentServices = async(req, res) => {
             ['createdAt', 'ASC']
         ]});
 
-        rent.img_id = JSON.parse(rent.img_id);
-        rent.img_url = JSON.parse(rent.img_url)
+        
         if(rent){
+            rent.img_id = JSON.parse(rent.img_id);
+            rent.img_url = JSON.parse(rent.img_url)
             if(rent.length <= length || length === ""){
                 res.status(200).json({
                     status: true,
@@ -117,7 +118,7 @@ exports.getRentServices = async(req, res) => {
 
 exports.getRentForUser = async(req, res) => {
     try {
-        const rent = await Product.findAll({ where: {
+        var rent = await Product.findAll({ where: {
             userid: req.user.id,
             productType: 'rent'
         }, include:[
@@ -126,9 +127,10 @@ exports.getRentForUser = async(req, res) => {
             }
         ]})
 
-        rent.img_id = JSON.parse(rent.img_id);
-        rent.img_url = JSON.parse(rent.img_url)
+        
         if(rent){
+            rent.img_id = JSON.parse(rent.img_id);
+            rent.img_url = JSON.parse(rent.img_url)
             res.status(200).json({
                 status: true,
                 data: rent
@@ -152,7 +154,7 @@ exports.getRentForUser = async(req, res) => {
 exports.getRentByTitle = async(req, res) => {
     const title= req.body;
     try {
-        const rent = await Product.findAll({where: {
+        var rent = await Product.findAll({where: {
             title: title,
             productType: 'rent'
         }, include:[
@@ -160,9 +162,10 @@ exports.getRentByTitle = async(req, res) => {
                 model: User
             }
         ]})
-        rent.img_id = JSON.parse(rent.img_id);
-        rent.img_url = JSON.parse(rent.img_url)
+        
         if(rent){
+            rent.img_id = JSON.parse(rent.img_id);
+            rent.img_url = JSON.parse(rent.img_url)
             res.status(200).json({
                 status: true,
                 data: rent})
@@ -185,7 +188,7 @@ exports.getRentByTitle = async(req, res) => {
 exports.getRentById = async(req, res) => {
     const id= req.parmas.id;
     try {
-        const rent = await Product.findAll({where: {
+        var rent = await Product.findAll({where: {
             id: id,
             productType: 'rent'
         }, include:[
@@ -193,9 +196,11 @@ exports.getRentById = async(req, res) => {
                 model: User
             }
         ]})
-        rent.img_id = JSON.parse(rent.img_id);
-        rent.img_url = JSON.parse(rent.img_url)
+        
         if(rent){
+
+            rent.img_id = JSON.parse(rent.img_id);
+            rent.img_url = JSON.parse(rent.img_url)
             res.status(200).json({
                 status: true,
                 data: rent})
