@@ -84,9 +84,12 @@ exports.getHotelServices = async(req, res) => {
         ]});
 
         if(hotel){
-            hotel.img_id = JSON.parse(hotel.img_id);
-            hotel.img_url = JSON.parse(hotel.img_url)
-            if(hotel.length <= length || length === ""){
+            for(let i=0; i<hotel.length; i++){
+                hotel[i].img_id = JSON.parse(hotel[i].img_id);
+                hotel[i].img_url = JSON.parse(hotel[i].img_url);
+            }
+            if(hotel.length <= length || length === "" || !length){
+                
                 res.status(200).json({
                     status: true,
                     data: hotel

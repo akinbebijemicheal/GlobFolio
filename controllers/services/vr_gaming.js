@@ -80,12 +80,13 @@ exports.getGamingServices = async(req, res) => {
             productType: 'game'
         }});
 
-       
-
         if(game){
-            game.img_id = JSON.parse(game.img_id);
-            game.img_url = JSON.parse(game.img_url)
-            if(game.length <= length || length === ""){
+            for(let i=0; i<game.length; i++){
+                game[i].img_id = JSON.parse(game[i].img_id);
+                game[i].img_url = JSON.parse(game[i].img_url);
+            }
+            if(game.length <= length || length === "" || !length){
+
                 res.status(200).json({
                     status: true,
                     data: game
@@ -95,6 +96,7 @@ exports.getGamingServices = async(req, res) => {
                 let end = length + 1
                 var sliced = game.slice(begin, end)
 
+                
                 
 
                 res.status(200).json({

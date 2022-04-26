@@ -107,8 +107,7 @@ exports.getCinemaServices = async(req, res) => {
             ],
         });
 
-            cinema.img_id = JSON.parse(cinema.img_id);
-            cinema.img_url = JSON.parse(cinema.img_url)
+            
         }
 
         if(status === "soon"){
@@ -121,8 +120,7 @@ exports.getCinemaServices = async(req, res) => {
             }, order: [
                 ['view_date', 'ASC']
             ],});
-            cinema.img_id = JSON.parse(cinema.img_id);
-            cinema.img_url = JSON.parse(cinema.img_url)
+            
         }
 
         if(status === "rated"){
@@ -134,8 +132,7 @@ exports.getCinemaServices = async(req, res) => {
                 ['view_date', 'ASC']
             ],
         });
-            cinema.img_id = JSON.parse(cinema.img_id);
-            cinema.img_url = JSON.parse(cinema.img_url)
+            
         }
 
         if(!status){
@@ -146,12 +143,16 @@ exports.getCinemaServices = async(req, res) => {
                 ['view_date', 'ASC']
             ],
         });
-            cinema.img_id = JSON.parse(cinema.img_id);
-            cinema.img_url = JSON.parse(cinema.img_url)
+            
         }
       
         if(cinema){
-            if(cinema.length <= length || length === ""){
+
+            for(let i=0; i<cinema.length; i++){
+                cinema[i].img_id = JSON.parse(cinema[i].img_id);
+                cinema[i].img_url = JSON.parse(cinema[i].img_url);
+            }
+            if(cinema.length <= length || length === "" || !length){
                 res.status(200).json({
                     status: true,
                     data: cinema

@@ -86,15 +86,19 @@ exports.getFoodServices = async(req, res) => {
 
         
         if(food){
-            food.img_id = JSON.parse(food.img_id);
-            food.img_url = JSON.parse(food.img_url)
+            for(let i=0; i<food.length; i++){
+                food[i].img_id = JSON.parse(food[i].img_id);
+                food[i].img_url = JSON.parse(food[i].img_url);
+            }
 
-            if(food.length <= length || length === ""){
+            if(food.length <= length || length === "" || !length){
+               
                 res.status(200).json({
                     status: true,
                     data: food
                 });
             }else{
+                
                 let begin = length - 10;
                 let end = length + 1
                 var sliced = food.slice(begin, end)

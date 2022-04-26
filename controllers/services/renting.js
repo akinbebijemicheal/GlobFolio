@@ -85,9 +85,12 @@ exports.getRentServices = async(req, res) => {
 
         
         if(rent){
-            rent.img_id = JSON.parse(rent.img_id);
-            rent.img_url = JSON.parse(rent.img_url)
-            if(rent.length <= length || length === ""){
+            for(let i=0; i<rent.length; i++){
+                rent[i].img_id = JSON.parse(rent[i].img_id);
+                rent[i].img_url = JSON.parse(rent[i].img_url);
+            }
+            if(rent.length <= length || length === "" || !length){
+                
                 res.status(200).json({
                     status: true,
                     data: rent
