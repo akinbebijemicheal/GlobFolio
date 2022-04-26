@@ -79,7 +79,7 @@ exports.createStudioService = async(req, res) => {
 exports.getStudioServices = async(req, res) => {
     try {
         const length = req.query.length
-        const studio = await Product.findAll({where: {
+        var studio = await Product.findAll({where: {
             productType: 'studio'
         },  order: [
             ['createdAt', 'ASC']

@@ -75,7 +75,7 @@ exports.createGamingService = async(req, res) => {
 exports.getGamingServices = async(req, res) => {
     try {
         const length = req.query.length
-        const game = await Product.findAll({where: {
+        var game = await Product.findAll({where: {
             productType: 'game'
         }});
         game.img_id = JSON.parse(game.img_id);

@@ -75,7 +75,7 @@ exports.createRentService = async(req, res) => {
 exports.getRentServices = async(req, res) => {
     try {
         const length = req. query.length;
-        const rent = await Product.findAll({where: {
+        var rent = await Product.findAll({where: {
             productType: 'rent'
         },
         order: [

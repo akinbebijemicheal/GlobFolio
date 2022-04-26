@@ -76,7 +76,7 @@ exports.createHotelService = async(req, res) => {
 exports.getHotelServices = async(req, res) => {
     try {
         const length = req.query.length
-        const hotel = await Product.findAll({where: {
+        var hotel = await Product.findAll({where: {
             productType: 'hotel'
         },  order: [
             ['rating', 'ASC']

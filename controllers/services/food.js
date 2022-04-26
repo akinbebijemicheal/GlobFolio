@@ -76,7 +76,7 @@ exports.getFoodServices = async(req, res) => {
     try {
         const length = req.query.length;
 
-        const food = await Product.findAll({ where: {
+        var food = await Product.findAll({ where: {
             productType: 'food'
         },
         order: [
