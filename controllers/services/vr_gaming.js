@@ -1,4 +1,4 @@
-const Product = require('../../model/product');
+const Product = require('../../model/vr_gaming');
 const cloudinary = require('../../util/cloudinary');
 const User = require('../../model/user');
 

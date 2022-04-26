@@ -1,4 +1,4 @@
-const Product = require('../../model/product');
+const Product = require('../../model/cinema');
 const cloudinary = require('../../util/cloudinary');
 const User = require('../../model/user');
 const { Op } = require('sequelize')
@@ -120,8 +120,9 @@ exports.getCinemaServices = async(req, res) => {
                 });
             }else{
                 let begin = length - 10;
-                let end = length + 1
-                var sliced = cinema.slice(begin, end)
+                let end = length + 1;
+                var sliced = cinema.slice(begin, end);
+                
                 res.status(200).json({
                     status: true,
                     data: sliced
