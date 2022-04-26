@@ -6,7 +6,20 @@ exports.createFoodService = async(req, res) => {
     const { title, description, ingredients, price } = req.body;
     try {
         if(req.user.verified === true){
-            const result = await cloudinary.uploader.upload(req.file.path);
+            const uploader = async (path) => await cloudinary.uploads(path, 'Images');
+            //console.log(path)
+            
+                const urls = [];
+                const ids = []
+                const files = req.files;
+                for (const file of files){
+                    const { path } = file;
+                    const newPath = await uploader(path)
+                    urls.push(newPath.url);
+                    ids.push(newPath.id)
+                    fs.unlinkSync(path)
+                }
+
             const food = new Product({
             userid: req.user.id,
             title,
@@ -14,10 +27,14 @@ exports.createFoodService = async(req, res) => {
             ingredients,
             price: price,
             productType: 'food',
-            img_id: result.public_id,
-            img_url: result.secure_url
+            img_id: JSON.stringify(ids),
+            img_url: JSON.stringify(urls),
         })
         const foodout = await food.save();
+
+        foodout.img_id = JSON.parse(foodout.img_id);
+        foodout.img_url = JSON.parse(foodout.img_url)
+
         res.status(201).json(foodout)
         // await Product.findOne({where: {
         //     title: title
@@ -65,6 +82,10 @@ exports.getFoodServices = async(req, res) => {
         order: [
             ['createdAt', 'ASC']
         ],});
+
+        food.img_id = JSON.parse(food.img_id);
+        food.img_url = JSON.parse(food.img_url)
+
         if(food){
             if(food.length <= length || length === ""){
                 res.status(200).json({
@@ -101,7 +122,14 @@ exports.getFoodForUser = async(req, res) => {
         const food = await Product.findAll({ where: {
             userid: req.user.id,
             productType: 'food'
-        }}, {include: User})
+        }, include:[
+            {
+                model: User
+            }
+        ]} )
+
+        food.img_id = JSON.parse(food.img_id);
+        food.img_url = JSON.parse(food.img_url)
         if(food){
             res.status(200).json({
                 status: true,
@@ -129,7 +157,14 @@ exports.getFoodByTitle = async(req, res) => {
         const food = await Product.findAll({where: {
             title: title,
             productType: 'food'
-        }}, {include: User})
+        }, include:[
+            {
+                model: User
+            }
+        ]} )
+
+        food.img_id = JSON.parse(food.img_id);
+        food.img_url = JSON.parse(food.img_url)
         if(food){
             res.status(200).json({
                 status: true,
@@ -156,7 +191,13 @@ exports.getFoodById = async(req, res) => {
         const food = await Product.findAll({where: {
             id: id,
             productType: 'food'
-        }}, {include: User})
+        }, include:[
+            {
+                model: User
+            }
+        ]})
+        food.img_id = JSON.parse(food.img_id);
+        food.img_url = JSON.parse(food.img_url)
         if(food){
             res.status(200).json({
                 status: true,
@@ -180,15 +221,27 @@ exports.getFoodById = async(req, res) => {
 exports.updateFood = async(req, res) => {
     const {title, description, ingredents, price } = req.body;
     try{
-        if(req.file.path) {
-            const result = await cloudinary.uploader.upload(req.file.path);
+        if(req.file || req.files) {
+            const uploader = async (path) => await cloudinary.uploads(path, 'Images');
+            //console.log(path)
+            
+                const urls = [];
+                const ids = []
+                const files = req.files;
+                for (const file of files){
+                    const { path } = file;
+                    const newPath = await uploader(path)
+                    urls.push(newPath.url);
+                    ids.push(newPath.id)
+                    fs.unlinkSync(path)
+                }
              await Product.update({
                 title: title,
                 description: description,
                 ingredents: ingredents,
                 price: price,
-                img_id: result.public_id,
-                img_url: result.secure_url
+                img_id: JSON.stringify(ids),
+                img_url: JSON.stringify(urls)
             }, { where: {
                 id: req.params.id,
                 userid: req.user.id,

@@ -6,7 +6,19 @@ exports.createRentService = async(req, res) => {
     const { title, description, location, per_time, price } = req.body;
     try {
         if(req.user.verified === true){
-            const result = await cloudinary.uploader.upload(req.file.path);
+            const uploader = async (path) => await cloudinary.uploads(path, 'Images');
+            //console.log(path)
+            
+                const urls = [];
+                const ids = []
+                const files = req.files;
+                for (const file of files){
+                    const { path } = file;
+                    const newPath = await uploader(path)
+                    urls.push(newPath.url);
+                    ids.push(newPath.id)
+                    fs.unlinkSync(path)
+                }
             const rent = new Product({
                 userid: req.user.id,
                 title,
@@ -15,10 +27,12 @@ exports.createRentService = async(req, res) => {
                 per_time,
                 price: price,
                 productType: 'rent',
-                img_id: result.public_id,
-                img_url: result.secure_url
+                img_id: JSON.stringify(ids),
+                img_url: JSON.stringify(urls)
             })
             const rentout = await rent.save();
+            rentout.img_id = JSON.parse(rentout.img_id);
+            rentout.img_url = JSON.parse(rentout.img_url)
 
             res.status(201).json(rentout)
             // await Product.findOne({where: {
@@ -67,6 +81,9 @@ exports.getRentServices = async(req, res) => {
         order: [
             ['createdAt', 'ASC']
         ]});
+
+        rent.img_id = JSON.parse(rent.img_id);
+        rent.img_url = JSON.parse(rent.img_url)
         if(rent){
             if(rent.length <= length || length === ""){
                 res.status(200).json({
@@ -103,7 +120,14 @@ exports.getRentForUser = async(req, res) => {
         const rent = await Product.findAll({ where: {
             userid: req.user.id,
             productType: 'rent'
-        }}, {include: User})
+        }, include:[
+            {
+                model: User
+            }
+        ]})
+
+        rent.img_id = JSON.parse(rent.img_id);
+        rent.img_url = JSON.parse(rent.img_url)
         if(rent){
             res.status(200).json({
                 status: true,
@@ -131,7 +155,13 @@ exports.getRentByTitle = async(req, res) => {
         const rent = await Product.findAll({where: {
             title: title,
             productType: 'rent'
-        }}, {include: User})
+        }, include:[
+            {
+                model: User
+            }
+        ]})
+        rent.img_id = JSON.parse(rent.img_id);
+        rent.img_url = JSON.parse(rent.img_url)
         if(rent){
             res.status(200).json({
                 status: true,
@@ -158,7 +188,13 @@ exports.getRentById = async(req, res) => {
         const rent = await Product.findAll({where: {
             id: id,
             productType: 'rent'
-        }}, {include: User})
+        }, include:[
+            {
+                model: User
+            }
+        ]})
+        rent.img_id = JSON.parse(rent.img_id);
+        rent.img_url = JSON.parse(rent.img_url)
         if(rent){
             res.status(200).json({
                 status: true,
@@ -182,16 +218,28 @@ exports.getRentById = async(req, res) => {
 exports.updateRent = async(req, res) => {
     const { title, description, location, per_time, price } = req.body;
     try{
-        if(req.file.path) {
-            const result = await cloudinary.uploader.upload(req.file.path);
+        if(req.file || req.files) {
+            const uploader = async (path) => await cloudinary.uploads(path, 'Images');
+            //console.log(path)
+            
+                const urls = [];
+                const ids = []
+                const files = req.files;
+                for (const file of files){
+                    const { path } = file;
+                    const newPath = await uploader(path)
+                    urls.push(newPath.url);
+                    ids.push(newPath.id)
+                    fs.unlinkSync(path)
+                }
              await Product.update({
                 title: title,
                 description: description,
                 location: location,
                 per_time: per_time,
                 price: price,
-                img_id: result.public_id,
-                img_url: result.secure_url
+                img_id: JSON.stringify(ids),
+                img_url: JSON.stringify(urls)
             }, { where: {
                 id: req.params.id,
                 userid: req.user.id,

@@ -6,7 +6,19 @@ exports.createGamingService = async(req, res) => {
     const { title, description, genre, price, age_rate,} = req.body;
     try {
         if(req.user.verified === true){
-            const result = await cloudinary.uploader.upload(req.file.path);
+            const uploader = async (path) => await cloudinary.uploads(path, 'Images');
+            //console.log(path)
+            
+                const urls = [];
+                const ids = []
+                const files = req.files;
+                for (const file of files){
+                    const { path } = file;
+                    const newPath = await uploader(path)
+                    urls.push(newPath.url);
+                    ids.push(newPath.id)
+                    fs.unlinkSync(path)
+                }
             const game = new Product({
                 userid: req.user.id,
                 title,
@@ -15,10 +27,12 @@ exports.createGamingService = async(req, res) => {
                 price: price,
                 age_rate,
                 productType: 'game',
-                img_id: result.public_id,
-                img_url: result.secure_url
+                img_id: JSON.stringify(ids),
+                img_url: JSON.stringify(urls)
             })
             const gameout = await game.save();
+            gameout.img_id = JSON.parse(gameout.img_id);
+            gameout.img_url = JSON.parse(gameout.img_url)
 
             res.status(201).json(gameout)
             // await Product.findOne({where: {
@@ -64,6 +78,8 @@ exports.getGamingServices = async(req, res) => {
         const game = await Product.findAll({where: {
             productType: 'game'
         }});
+        game.img_id = JSON.parse(game.img_id);
+        game.img_url = JSON.parse(game.img_url)
         if(game){
             if(game.length <= length || length === ""){
                 res.status(200).json({
@@ -100,7 +116,13 @@ exports.getGamingForUser = async(req, res) => {
         const game = await Product.findAll({ where: {
             userid: req.user.id,
             productType: 'game'
-        }}, {include: User})
+        }, include:[
+            {
+                model: User
+            }
+        ]})
+        game.img_id = JSON.parse(game.img_id);
+        game.img_url = JSON.parse(game.img_url)
         if(game){
             res.status(200).json({
                 status: true,
@@ -128,7 +150,13 @@ exports.getGamingByTitle = async(req, res) => {
         const game = await Product.findAll({where: {
             title: title,
             productType: 'game'
-        }}, {include: User})
+        }, include:[
+            {
+                model: User
+            }
+        ]})
+        game.img_id = JSON.parse(game.img_id);
+        game.img_url = JSON.parse(game.img_url)
         if(game){
             res.status(200).json({
                 status: true,
@@ -155,7 +183,13 @@ exports.getGameById = async(req, res) => {
         const game = await Product.findAll({where: {
             id: id,
             productType: 'game'
-        }}, {include: User})
+        }, include:[
+            {
+                model: User
+            }
+        ]})
+        game.img_id = JSON.parse(game.img_id);
+        game.img_url = JSON.parse(game.img_url)
         if(game){
             res.status(200).json({
                 status: true,
@@ -179,16 +213,28 @@ exports.getGameById = async(req, res) => {
 exports.updateGaming = async(req, res) => {
     const { title, description, genre, price, age_rate,} = req.body;
     try{
-        if(req.file.path) {
-            const result = await cloudinary.uploader.upload(req.file.path);
+        if(req.file || req.files) {
+            const uploader = async (path) => await cloudinary.uploads(path, 'Images');
+            //console.log(path)
+            
+                const urls = [];
+                const ids = []
+                const files = req.files;
+                for (const file of files){
+                    const { path } = file;
+                    const newPath = await uploader(path)
+                    urls.push(newPath.url);
+                    ids.push(newPath.id)
+                    fs.unlinkSync(path)
+                }
              await Product.update({
                 title: title,
                 description: description,
                 genre: genre,
                 price: price,
                 age_rate: age_rate,
-                img_id: result.public_id,
-                img_url: result.secure_url
+                img_id: JSON.stringify(ids),
+                img_url: JSON.stringify(urls)
             }, { where: {
                 id: req.params.id,
                 userid: req.user.id,

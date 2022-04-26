@@ -6,7 +6,20 @@ exports.createStudioService = async(req, res) => {
     const { title, description, location, per_time, price, rating, equipment } = req.body;
     try {
         if(req.user.verified === true){
-            const result = await cloudinary.uploader.upload(req.file.path);
+            const uploader = async (path) => await cloudinary.uploads(path, 'Images');
+            //console.log(path)
+            
+                const urls = [];
+                const ids = []
+                const files = req.files;
+                for (const file of files){
+                    const { path } = file;
+                    const newPath = await uploader(path)
+                    urls.push(newPath.url);
+                    ids.push(newPath.id)
+                    fs.unlinkSync(path)
+                }
+
             const studio = new Product({
                 userid: req.user.id,
                 title,
@@ -17,10 +30,13 @@ exports.createStudioService = async(req, res) => {
                 price: price,
                 equipment,
                 productType: 'studio',
-                img_id: result.public_id,
-                img_url: result.secure_url
+                img_id: JSON.stringify(ids),
+                img_url: JSON.stringify(urls)
             })
             const studiout = await studio.save();
+
+            studiout.img_id = JSON.parse(studiout.img_id);
+            studiout.img_url = JSON.parse(studiout.img_url)
 
             res.status(201).json(studiout)
             // await Product.findOne({where: {
@@ -68,6 +84,9 @@ exports.getStudioServices = async(req, res) => {
         },  order: [
             ['createdAt', 'ASC']
         ]});
+
+        studio.img_id = JSON.parse(studio.img_id);
+        studio.img_url = JSON.parse(studio.img_url)
         if(studio){
             if(studio.length <= length || length === ""){
                 res.status(200).json({
@@ -104,7 +123,11 @@ exports.getStudioForUser = async(req, res) => {
         const studio = await Product.findAll({ where: {
             userid: req.user.id,
             productType: 'studio'
-        }}, {include: User})
+        }, include:[
+            {
+                model: User
+            }
+        ]})
         if(studio){
             res.status(200).json({
                 status: true,
@@ -132,7 +155,11 @@ exports.getStudioByTitle = async(req, res) => {
         const studio = await Product.findAll({where: {
             title: title,
             productType: 'studio'
-        }}, {include: User})
+        }, include:[
+            {
+                model: User
+            }
+        ]})
         if(studio){
             res.status(200).json({
                 status: true,
@@ -159,7 +186,11 @@ exports.getStudioById = async(req, res) => {
         const studio = await Product.findAll({where: {
             id: id,
             productType: 'studio'
-        }}, {include: User})
+        }, include:[
+            {
+                model: User
+            }
+        ]})
         if(studio){
             res.status(200).json({
                 status: true,
@@ -183,8 +214,20 @@ exports.getStudioById = async(req, res) => {
 exports.updateStudio = async(req, res) => {
     const { title, description, location, per_time, price, rating, equipment } = req.body;
     try{
-        if(req.file.path) {
-            const result = await cloudinary.uploader.upload(req.file.path);
+        if(req.file || req.files) {
+            const uploader = async (path) => await cloudinary.uploads(path, 'Images');
+            //console.log(path)
+            
+                const urls = [];
+                const ids = []
+                const files = req.files;
+                for (const file of files){
+                    const { path } = file;
+                    const newPath = await uploader(path)
+                    urls.push(newPath.url);
+                    ids.push(newPath.id)
+                    fs.unlinkSync(path)
+                }
              await Product.update({
                 title: title,
                 description: description,
@@ -193,8 +236,8 @@ exports.updateStudio = async(req, res) => {
                 rating: parseFloat(rating),
                 price: price,
                 equipment: equipment,
-                img_id: result.public_id,
-                img_url: result.secure_url
+                img_id: JSON.stringify(ids),
+                img_url: JSON.stringify(urls)
             }, { where: {
                 id: req.params.id,
                 userid: req.user.id,

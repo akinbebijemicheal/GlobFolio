@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const multer = require('../util/multer');
+const multer = require('../util/multer2');
 const { profile, RegisterUser, LoginUser, checkRole, getUser, getUsers, updateUser, deleteUser } = require('../controllers/user');
 const {checkEmail, changePassword, forgotPassword, emailVerification_V1, emailVerification_V2} = require('../controllers/security');
 const {  verification, getUnverifieds, getVendors, getVendorsByServices} = require('../controllers/vendor')

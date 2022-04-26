@@ -17,7 +17,7 @@ exports.uploadPicture = async(req, res) => {
                 message: "Picture uploaded already"
             })
         } else{
-            const result = await cloudinary.uploader.upload(req.file.path);
+            const result = await cloudinary.cloudinary.uploader.upload(req.file.path);
             picture = new Picture({
             userid: req.user.id,
             content_id: result.public_id,
@@ -73,7 +73,7 @@ exports.deletePicture = async(req, res) => {
         const picture = await Picture.findOne({ where: {
             userid: req.user.id
         }})
-        await cloudinary.uploader.destroy(picture.content_id);
+        await cloudinary.cloudinary.uploader.destroy(picture.content_id);
         await Picture.destroy({where: {userid: req.user.id}})
         res.status(200).json({
             status: true,
@@ -97,7 +97,7 @@ exports.updatePicture = async(req, res) => {
             userid: req.user.id
         }})
         if(picture){
-            await cloudinary.uploader.destroy(picture.content_id);
+            await cloudinary.cloudinary.uploader.destroy(picture.content_id);
             await Picture.destroy({where: {userid: req.user.id}})
             var result = await cloudinary.uploader.upload(req.file.path);
             const savedresult  = new Picture({

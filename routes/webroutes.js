@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const multer = require('../util/multer');
+const upload = require('../util/multer');
+const multer = require('../util/multer2')
 const { profile, userAuth, RegisterUser, webLoginUser, checkRole, getUser, getUsers, updateUser, deleteUser } = require('../controllers/user2');
 const {checkEmail, changePassword, forgotPassword, emailVerification_V1, emailVerification_V2} = require('../controllers/security2');
 const {  verification, getUnverifieds, getVendors, getVendorsByServices} = require('../controllers/vendor')
@@ -410,27 +411,27 @@ router
 
 router
 .route('/create-cinema-post')
-.post(userAuth, checkRole(["admin"]) ,multer.single("image"), createCinemaService);
+.post(userAuth, checkRole(["admin"]) , upload.array('image'), createCinemaService);
 
 router
 .route('/create-hotel-post')
-.post(userAuth, checkRole(["vendor", "admin"]) ,multer.single("image"), createHotelService);
+.post(userAuth, checkRole(["vendor", "admin"]) ,upload.array("image"), createHotelService);
 
 router
 .route('/create-food-post')
-.post(userAuth, checkRole(["vendor", "admin"]) ,multer.single("image"), createFoodService);
+.post(userAuth, checkRole(["vendor", "admin"]) ,upload.array("image"), createFoodService);
 
 router
 .route('/create-studio-post')
-.post(userAuth, checkRole(["admin"]) ,multer.single("image"), createStudioService);
+.post(userAuth, checkRole(["admin"]) ,upload.array("image"), createStudioService);
 
 router
 .route('/create-gaming-post')
-.post(userAuth, checkRole(["admin"]) ,multer.single("image"), createGamingService);
+.post(userAuth, checkRole(["admin"]) ,upload.array("image"), createGamingService);
 
 router
 .route('/create-rent-post')
-.post(userAuth, checkRole(["vendor", "admin"]) ,multer.single("image"), createRentService);
+.post(userAuth, checkRole(["vendor", "admin"]) ,upload.array("image"), createRentService);
 
 router
 .route('/get-cinema-posts')
@@ -509,27 +510,27 @@ router
 
 router
 .route('/update-cinema-byuser')
-.patch(userAuth, checkRole(["vendor"]) ,multer.single("image"),  updateCinema)
+.patch(userAuth, checkRole(["admin"]) ,upload.array("image"),  updateCinema)
 
 router
 .route('/update-hotel-byuser')
-.patch(userAuth, checkRole(["vendor"]) ,multer.single("image"), updateHotel)
+.patch(userAuth, checkRole(["vendor", "admin"]) ,upload.array("image"), updateHotel)
 
 router
 .route('/update-studio-byuser')
-.patch(userAuth, checkRole(["vendor"]) ,multer.single("image"), updateStudio)
+.patch(userAuth, checkRole(["admin"]) ,upload.array("image"), updateStudio)
 
 router
 .route('/update-gaming-byuser')
-.patch(userAuth, checkRole(["vendor"]) ,multer.single("image"), updateGaming)
+.patch(userAuth, checkRole(["admin"]) ,upload.array("image"), updateGaming)
 
 router
 .route('/update-food-byuser')
-.patch(userAuth, checkRole(["vendor"]) ,multer.single("image"), updateFood);
+.patch(userAuth, checkRole(["vendor", "admin"]) ,upload.array("image"), updateFood);
 
 router
 .route('/update-rent-byuser')
-.patch(userAuth, checkRole(["vendor"]) ,multer.single("image"), updateRent);
+.patch(userAuth, checkRole(["vendor", "admin"]) ,upload.array("image"), updateRent);
 
 router
 .get('/logout', (req, res) => {

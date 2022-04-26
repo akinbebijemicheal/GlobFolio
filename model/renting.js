@@ -37,10 +37,10 @@ const Rent = db.define('rent', {
         type: Sequelize.STRING
     },
     img_id: {
-        type: Sequelize.STRING,
+        type: Sequelize.TEXT,
     },
     img_url: {
-        type: Sequelize.STRING
+        type: Sequelize.TEXT
     },
     price: {
         type: Sequelize.STRING,
