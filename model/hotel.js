@@ -45,6 +45,12 @@ const Hotel = db.define('hotel', {
     rating: {
         type: Sequelize.FLOAT
     },
+    amenities: {
+        type: Sequelize.TEXT
+    },
+    room_pricing:{
+        type: Sequelize.TEXT
+    },
     link: {
         type: Sequelize.STRING
     }

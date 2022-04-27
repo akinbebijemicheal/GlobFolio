@@ -43,15 +43,11 @@ exports.createCinemaService = async(req, res) => {
             img_url: JSON.stringify(urls)
         })
         var cinemaout = await cinema.save();
-        // let img_url = JSON.parse(cinemaout.img_url);
-        // let img_id = JSON.parse(cinemaout.img_id);
         cinemaout.img_url =JSON.parse(cinemaout.img_url);
         cinemaout.img_id = JSON.parse(cinemaout.img_id);
         res.status(201).json({
             data: {
                 cinemaout,
-                // img_id,
-                // img_url
             }
             })
 

@@ -96,9 +96,6 @@ exports.getGamingServices = async(req, res) => {
                 let end = length + 1
                 var sliced = game.slice(begin, end)
 
-                
-                
-
                 res.status(200).json({
                     status: true,
                     data: sliced

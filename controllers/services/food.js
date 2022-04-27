@@ -4,7 +4,11 @@ const User = require('../../model/user');
 const fs = require('fs')
 
 exports.createFoodService = async(req, res) => {
-    const { title, description, ingredients, price } = req.body;
+    const { title, description, ingredients, restaurant, price, top1, top2, top3, top4, top5, price1, price2, price3, price4, price5 } = req.body;
+
+    var topping_price = [
+        { top1, price1}, { top2, price2}, { top3, price3}, { top4, price4}, {top5, price5}
+    ]
     try {
         if(req.user.verified === true){
             const uploader = async (path) => await cloudinary.uploads(path, 'Images');
@@ -26,7 +30,9 @@ exports.createFoodService = async(req, res) => {
             title,
             description,
             ingredients,
+            restaurant,
             price: price,
+            topping_price: JSON.stringify(topping_price),
             productType: 'food',
             img_id: JSON.stringify(ids),
             img_url: JSON.stringify(urls),
@@ -34,9 +40,11 @@ exports.createFoodService = async(req, res) => {
         const foodout = await food.save();
 
         foodout.img_id = JSON.parse(foodout.img_id);
-        foodout.img_url = JSON.parse(foodout.img_url)
+        foodout.img_url = JSON.parse(foodout.img_url);
+        foodout.topping_price= JSON.parse(foodout.topping_price)
 
-        res.status(201).json(foodout)
+
+        res.status(201).json(foodout);
         // await Product.findOne({where: {
         //     title: title
         // }}).then(async(product) => {
@@ -82,13 +90,24 @@ exports.getFoodServices = async(req, res) => {
         },
         order: [
             ['createdAt', 'ASC']
-        ],});
+        ],
+        include:[
+            {
+                model: User,
+                attributes:{
+                    exclude: ["createdAt", "updatedAt"]
+                }
+            }
+        ]
+    
+    });
 
         
         if(food){
             for(let i=0; i<food.length; i++){
                 food[i].img_id = JSON.parse(food[i].img_id);
                 food[i].img_url = JSON.parse(food[i].img_url);
+                food[i].topping_price= JSON.parse(food[i].topping_price)
             }
 
             if(food.length <= length || length === "" || !length){
@@ -136,8 +155,11 @@ exports.getFoodForUser = async(req, res) => {
 
         
         if(food){
-            food.img_id = JSON.parse(food.img_id);
-            food.img_url = JSON.parse(food.img_url)
+            for(let i=0; i<food.length; i++){
+                food[i].img_id = JSON.parse(food[i].img_id);
+                food[i].img_url = JSON.parse(food[i].img_url);
+                food[i].topping_price= JSON.parse(food[i].topping_price)
+            }
             res.status(200).json({
                 status: true,
                 data: food
@@ -172,8 +194,11 @@ exports.getFoodByTitle = async(req, res) => {
 
         
         if(food){
-            food.img_id = JSON.parse(food.img_id);
-            food.img_url = JSON.parse(food.img_url)
+            for(let i=0; i<food.length; i++){
+                food[i].img_id = JSON.parse(food[i].img_id);
+                food[i].img_url = JSON.parse(food[i].img_url);
+                food[i].topping_price= JSON.parse(food[i].topping_price)
+            }
             res.status(200).json({
                 status: true,
                 data: food})
@@ -228,7 +253,10 @@ exports.getFoodById = async(req, res) => {
 }
 
 exports.updateFood = async(req, res) => {
-    const {title, description, ingredents, price } = req.body;
+    const {title, description, ingredents, price, top1, top2, top3, top4, top5, price1, price2, price3, price4, price5 } = req.body;
+    var topping_price = [
+        { top1, price1}, { top2, price2}, { top3, price3}, { top4, price4}, {top5, price5}
+    ]
     try{
         if(req.file || req.files) {
             const uploader = async (path) => await cloudinary.uploads(path, 'Images');
@@ -249,6 +277,7 @@ exports.updateFood = async(req, res) => {
                 description: description,
                 ingredents: ingredents,
                 price: price,
+                topping_price: JSON.stringify(topping_price),
                 img_id: JSON.stringify(ids),
                 img_url: JSON.stringify(urls)
             }, { where: {
@@ -266,6 +295,7 @@ exports.updateFood = async(req, res) => {
                 description: description,
                 ingredents: ingredents,
                 price: price,
+                topping_price: JSON.stringify(topping_price),
             }, { where: {
                 id: req.params.id,
                 userid: req.user.id,

@@ -28,10 +28,13 @@ const Rent = db.define('rent', {
         defaultValue: "rent"
     },
     description: {
-        type: Sequelize.STRING
+        type: Sequelize.TEXT
     },
     location: {
         type: Sequelize.STRING
+    },
+    equipment:{
+        type: Sequelize.TEXT
     },
     per_time: {
         type: Sequelize.STRING
