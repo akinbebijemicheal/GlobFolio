@@ -7,7 +7,20 @@ exports.createFoodService = async(req, res) => {
     const { title, description, ingredients, restaurant, price, top1, top2, top3, top4, top5, price1, price2, price3, price4, price5 } = req.body;
 
     var topping_price = [
-        { top1, price1}, { top2, price2}, { top3, price3}, { top4, price4}, {top5, price5}
+        {   top1: top1, 
+            price1: price1
+        }, 
+        { top2: top2, 
+            price2: price2
+        }, 
+        { top3: top3, 
+            price3: price3}, 
+        { top4: top4, 
+            price4: price4
+        }, 
+        {   top5: top5, 
+            price5: price5
+        }
     ]
     try {
         if(req.user.verified === true){
@@ -255,7 +268,20 @@ exports.getFoodById = async(req, res) => {
 exports.updateFood = async(req, res) => {
     const {title, description, ingredents, price, top1, top2, top3, top4, top5, price1, price2, price3, price4, price5 } = req.body;
     var topping_price = [
-        { top1, price1}, { top2, price2}, { top3, price3}, { top4, price4}, {top5, price5}
+        {   top1: top1, 
+            price1: price1
+        }, 
+        { top2: top2, 
+            price2: price2
+        }, 
+        { top3: top3, 
+            price3: price3}, 
+        { top4: top4, 
+            price4: price4
+        }, 
+        {   top5: top5, 
+            price5: price5
+        }
     ]
     try{
         if(req.file || req.files) {

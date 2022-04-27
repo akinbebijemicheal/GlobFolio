@@ -6,15 +6,29 @@ const fs = require('fs')
 exports.createHotelService = async(req, res) => {
     const { title, description, location, rating, price, amenity1, amenity2, amenity3, amenity4, amenity5, room1, room2, room3, room4, room5, price1, price2, price3, price4, price5 } = req.body;
     var amenities = {
-        amenity1,
-        amenity2,
-        amenity3,
-        amenity4,
-        amenity5
+        amenity1: amenity1,
+        amenity2: amenity2,
+        amenity3: amenity3,
+        amenity4: amenity4,
+        amenity5: amenity5
     };
 
     var room_pricing = [
-        { room1, price1}, { room2, price2}, {room3, price3}, {room4, price4}, {room5, price5}
+        {   room1: room1, 
+            price1: price1
+        }, 
+        { room2: room2, 
+            price2: price2
+        }, 
+        {   room3: room3,
+            price3: price3
+        }, 
+            {room4: room4,
+            price4: price4
+        }, 
+        {   room5: room5, 
+            price5: price5
+        }
     ]
     try {
         if(req.user.verified === true){
@@ -261,15 +275,29 @@ exports.getHotelById = async(req, res) => {
 exports.updateHotel = async(req, res) => {
     const { title, description, location, rating, price, amenity1, amenity2, amenity3, amenity4, amenity5, room1, room2, room3, room4, room5, price1, price2, price3, price4, price5 } = req.body;
     var amenities = {
-        amenity1,
-        amenity2,
-        amenity3,
-        amenity4,
-        amenity5
+        amenity1: amenity1,
+        amenity2: amenity2,
+        amenity3: amenity3,
+        amenity4: amenity4,
+        amenity5: amenity5
     };
 
-    const room_pricing = [
-        { room1, price1}, { room2, price2}, {room3, price3}, {room4, price4}, {room5, price5}
+    var room_pricing = [
+        {   room1: room1, 
+            price1: price1
+        }, 
+        { room2: room2, 
+            price2: price2
+        }, 
+        {   room3: room3,
+            price3: price3
+        }, 
+            {room4: room4,
+            price4: price4
+        }, 
+        {   room5: room5, 
+            price5: price5
+        }
     ]
     try{
         if(req.file || req.files) {
