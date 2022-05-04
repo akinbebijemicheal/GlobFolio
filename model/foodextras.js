@@ -1,0 +1,35 @@
+const Sequelize = require('sequelize');
+const db = require('../config/config');
+const {nanoid} = require('nanoid');
+const Food = require('./food');
+//const Cart = require('./cart')
+
+const FoodExtra = db.define('foodextra', {
+    id: {
+        type: Sequelize.STRING(10),
+        autoincrement: false,
+        allowNull: false,
+        primaryKey: true,
+        defaultValue: () => nanoid(10)
+    },
+    foodId: {
+        type: Sequelize.STRING(10),
+        references:{ 
+            model: 'foods',
+            key: 'id',
+        }
+    },
+    topping: {
+        type: Sequelize.TEXT
+    },
+    price: {
+        type: Sequelize.TEXT
+    }
+    
+}, {timestamps: true});
+
+
+FoodExtra.belongsTo(Food, {foreignKey: 'foodId'})
+Food.hasMany(FoodExtra, {foreignKey: 'foodId'});
+
+module.exports = FoodExtra;

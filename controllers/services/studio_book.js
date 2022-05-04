@@ -158,7 +158,7 @@ exports.getStudioForUser = async(req, res) => {
 }
 
 exports.getStudioByTitle = async(req, res) => {
-    const title= req.body;
+    const {title} = req.body;
     try {
         const studio = await Product.findAll({where: {
             title: title,
@@ -191,7 +191,7 @@ exports.getStudioByTitle = async(req, res) => {
 }
 
 exports.getStudioById = async(req, res) => {
-    const id= req.parmas.id;
+    const id= req.params.id;
     try {
         const studio = await Product.findAll({where: {
             id: id,

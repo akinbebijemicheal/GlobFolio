@@ -152,7 +152,7 @@ exports.getGamingForUser = async(req, res) => {
 }
 
 exports.getGamingByTitle = async(req, res) => {
-    const title= req.body;
+    const {title} = req.body;
     try {
         var game = await Product.findAll({where: {
             title: title,
@@ -186,7 +186,7 @@ exports.getGamingByTitle = async(req, res) => {
 }
 
 exports.getGameById = async(req, res) => {
-    const id= req.parmas.id;
+    const id= req.params.id;
     try {
         var game = await Product.findAll({where: {
             id: id,

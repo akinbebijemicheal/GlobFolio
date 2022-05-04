@@ -214,7 +214,7 @@ exports.getCinemaForUser = async(req, res) => {
 }
 
 exports.getCinemaByTitle = async(req, res) => {
-    const title= req.body;
+    const { title }= req.body;
     try {
         var cinema = await Product.findAll({where: {
             title: title,
@@ -246,7 +246,7 @@ exports.getCinemaByTitle = async(req, res) => {
     }
 }
 exports.getCinemaById = async(req, res) => {
-    const id= req.parmas.id;
+    const id= req.params.id;
     try {
         var cinema = await Product.findAll({where: {
             id: id,

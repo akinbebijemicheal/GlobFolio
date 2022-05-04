@@ -156,7 +156,7 @@ exports.getRentForUser = async(req, res) => {
 }
 
 exports.getRentByTitle = async(req, res) => {
-    const title= req.body;
+    const {title} = req.body;
     try {
         var rent = await Product.findAll({where: {
             title: title,
@@ -190,7 +190,7 @@ exports.getRentByTitle = async(req, res) => {
 }
 
 exports.getRentById = async(req, res) => {
-    const id= req.parmas.id;
+    const id= req.params.id;
     try {
         var rent = await Product.findAll({where: {
             id: id,

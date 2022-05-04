@@ -92,7 +92,9 @@ exports.createFoodService = async(req, res) => {
              error: error
          })
     }
-}
+};
+
+exports.createExtras = 
 
 exports.getFoodServices = async(req, res) => {
     try {
@@ -194,7 +196,7 @@ exports.getFoodForUser = async(req, res) => {
 }
 
 exports.getFoodByTitle = async(req, res) => {
-    const title = req.body;
+    const {title} = req.body;
     try {
         var food = await Product.findAll({where: {
             title: title,
@@ -232,7 +234,7 @@ exports.getFoodByTitle = async(req, res) => {
 }
 
 exports.getFoodById = async(req, res) => {
-    const id= req.parmas.id;
+    const id= req.params.id;
     try {
         var food = await Product.findAll({where: {
             id: id,

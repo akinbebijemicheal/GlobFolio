@@ -197,7 +197,7 @@ exports.getHotelForUser = async(req, res) => {
 }
 
 exports.getHotelByTitle = async(req, res) => {
-    const title= req.body;
+    const {title}= req.body;
     try {
         var hotel = await Product.findAll({where: {
             title: title,
@@ -235,7 +235,7 @@ exports.getHotelByTitle = async(req, res) => {
 }
 
 exports.getHotelById = async(req, res) => {
-    const id= req.parmas.id;
+    const id= req.params.id;
     try {
         var hotel = await Product.findAll({where: {
             id: id,
