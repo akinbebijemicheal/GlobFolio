@@ -129,8 +129,10 @@ exports.getGamingForUser = async(req, res) => {
         ]})
        
         if(game){
-            game.img_id = JSON.parse(game.img_id);
-            game.img_url = JSON.parse(game.img_url)
+            for(let i=0; i<game.length; i++){
+                game[i].img_id = JSON.parse(game[i].img_id);
+                game[i].img_url = JSON.parse(game[i].img_url);
+            }
             res.status(200).json({
                 status: true,
                 data: game
@@ -164,8 +166,10 @@ exports.getGamingByTitle = async(req, res) => {
         ]})
        
         if(game){
-            game.img_id = JSON.parse(game.img_id);
-            game.img_url = JSON.parse(game.img_url)
+            for(let i=0; i<game.length; i++){
+                game[i].img_id = JSON.parse(game[i].img_id);
+                game[i].img_url = JSON.parse(game[i].img_url);
+            }
             res.status(200).json({
                 status: true,
                 data: game})
@@ -198,8 +202,10 @@ exports.getGameById = async(req, res) => {
         ]})
         
         if(game){
-            game.img_id = JSON.parse(game.img_id);
-            game.img_url = JSON.parse(game.img_url)
+            for(let i=0; i<game.length; i++){
+                game[i].img_id = JSON.parse(game[i].img_id);
+                game[i].img_url = JSON.parse(game[i].img_url);
+            }
             res.status(200).json({
                 status: true,
                 data: game})

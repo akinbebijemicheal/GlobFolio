@@ -225,11 +225,15 @@ exports.getCinemaByTitle = async(req, res) => {
             }
         ]})
         if(cinema){
-            cinema.img_id = JSON.parse(cinema.img_id);
-            cinema.img_url = JSON.parse(cinema.img_url)
+            //console.log(cinema)
+            for(let i=0; i<cinema.length; i++){
+                cinema[i].img_id = JSON.parse(cinema[i].img_id);
+                cinema[i].img_url = JSON.parse(cinema[i].img_url);
+            }
             res.status(200).json({
                 status: true,
-                data: cinema})
+                data: cinema
+            })
         } else{
             res.status(404).json({
                 status: false,
@@ -257,8 +261,10 @@ exports.getCinemaById = async(req, res) => {
             }
         ]})
         if(cinema){
-            cinema.img_id = JSON.parse(cinema.img_id);
-            cinema.img_url = JSON.parse(cinema.img_url)
+            for(let i=0; i<cinema.length; i++){
+                cinema[i].img_id = JSON.parse(cinema[i].img_id);
+                cinema[i].img_url = JSON.parse(cinema[i].img_url);
+            }
             res.status(200).json({
                 status: true,
                 data: cinema})

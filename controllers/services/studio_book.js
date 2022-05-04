@@ -135,8 +135,10 @@ exports.getStudioForUser = async(req, res) => {
             }
         ]})
         if(studio){
-            studio.img_id = JSON.parse(studio.img_id);
-            studio.img_url = JSON.parse(studio.img_url)
+            for(let i=0; i<studio.length; i++){
+                studio[i].img_id = JSON.parse(studio[i].img_id);
+                studio[i].img_url = JSON.parse(studio[i].img_url);
+            }
             res.status(200).json({
                 status: true,
                 data: studio
@@ -169,8 +171,10 @@ exports.getStudioByTitle = async(req, res) => {
             }
         ]})
         if(studio){
-            studio.img_id = JSON.parse(studio.img_id);
-            studio.img_url = JSON.parse(studio.img_url)
+            for(let i=0; i<studio.length; i++){
+                studio[i].img_id = JSON.parse(studio[i].img_id);
+                studio[i].img_url = JSON.parse(studio[i].img_url);
+            }
             res.status(200).json({
                 status: true,
                 data: studio})
@@ -202,8 +206,10 @@ exports.getStudioById = async(req, res) => {
             }
         ]})
         if(studio){
-            studio.img_id = JSON.parse(studio.img_id);
-            studio.img_url = JSON.parse(studio.img_url)
+            for(let i=0; i<studio.length; i++){
+                studio[i].img_id = JSON.parse(studio[i].img_id);
+                studio[i].img_url = JSON.parse(studio[i].img_url);
+            }
             res.status(200).json({
                 status: true,
                 data: studio})

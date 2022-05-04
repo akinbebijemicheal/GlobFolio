@@ -133,8 +133,10 @@ exports.getRentForUser = async(req, res) => {
 
         
         if(rent){
-            rent.img_id = JSON.parse(rent.img_id);
-            rent.img_url = JSON.parse(rent.img_url)
+            for(let i=0; i<rent.length; i++){
+                rent[i].img_id = JSON.parse(rent[i].img_id);
+                rent[i].img_url = JSON.parse(rent[i].img_url);
+            }
             res.status(200).json({
                 status: true,
                 data: rent
@@ -168,8 +170,10 @@ exports.getRentByTitle = async(req, res) => {
         ]})
         
         if(rent){
-            rent.img_id = JSON.parse(rent.img_id);
-            rent.img_url = JSON.parse(rent.img_url)
+            for(let i=0; i<rent.length; i++){
+                rent[i].img_id = JSON.parse(rent[i].img_id);
+                rent[i].img_url = JSON.parse(rent[i].img_url);
+            }
             res.status(200).json({
                 status: true,
                 data: rent})
@@ -203,8 +207,10 @@ exports.getRentById = async(req, res) => {
         
         if(rent){
 
-            rent.img_id = JSON.parse(rent.img_id);
-            rent.img_url = JSON.parse(rent.img_url)
+            for(let i=0; i<rent.length; i++){
+                rent[i].img_id = JSON.parse(rent[i].img_id);
+                rent[i].img_url = JSON.parse(rent[i].img_url);
+            }
             res.status(200).json({
                 status: true,
                 data: rent})
