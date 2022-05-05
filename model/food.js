@@ -45,9 +45,9 @@ const Food = db.define('food', {
     price: {
         type: Sequelize.STRING,
     }, 
-    toppings_price: {
-        type: Sequelize.TEXT
-    },
+    // toppings_price: {
+    //     type: Sequelize.TEXT
+    // },
     link: {
         type: Sequelize.STRING
     }
