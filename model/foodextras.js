@@ -26,7 +26,7 @@ const FoodExtra = db.define('foodextra', {
         type: Sequelize.TEXT
     }
     
-}, {timestamps: true});
+});
 
 
 FoodExtra.belongsTo(Food, {foreignKey: 'foodId'})

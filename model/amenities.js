@@ -23,7 +23,7 @@ const HotelAmenities = db.define('hotelamenity', {
         type: Sequelize.STRING,
    }
     
-}, {timestamps: true});
+});
 
 
 HotelAmenities.belongsTo(Hotel, {foreignKey: 'hotelId'})

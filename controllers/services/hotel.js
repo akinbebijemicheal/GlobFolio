@@ -73,7 +73,7 @@ exports.createHotelService = async(req, res) => {
                         amenities: amenity
                     }
                 })
-               var amenitiesOut = await Amenity.bulkCreate(amenities)
+               var amenitiesOut = await Amenity.bulkCreate(amenities, {returning: true})
             }
 
             if(req.body.room && req.body.price){
@@ -86,7 +86,7 @@ exports.createHotelService = async(req, res) => {
                         }
                     })
                 })
-                var extras = await Extras.bulkCreate(rooms)
+                var extras = await Extras.bulkCreate(rooms, {returning: true})
             }
             // hotelout.amenities = JSON.parse(hotelout.amenities)
             // hotelout.room_pricing = JSON.parse(hotelout.room_pricing)

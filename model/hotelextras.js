@@ -26,7 +26,7 @@ const HotelExtra = db.define('hotelextra', {
         type: Sequelize.TEXT
     }
     
-}, {timestamps: true});
+});
 
 
 HotelExtra.belongsTo(Hotel, {foreignKey: 'hotelId'})
