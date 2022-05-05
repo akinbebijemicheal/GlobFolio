@@ -73,6 +73,7 @@ exports.createHotelService = async(req, res) => {
                         amenities: amenity
                     }
                 })
+                console.log(amenities)
                var amenitiesOut = await Amenity.bulkCreate(amenities, {returning: true})
             }
 
@@ -86,9 +87,10 @@ exports.createHotelService = async(req, res) => {
                 //         }
                 //     })
                 // })
+
                 const room_price = (room, price)=>{
                     for(let i = 0; i<room.length; i++){
-                        var output ={
+                        var output = {
                             hotelId: hotelout.id,
                             room: room[i],
                             price: price[i]
