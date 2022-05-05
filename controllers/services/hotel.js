@@ -87,10 +87,11 @@ exports.createHotelService = async(req, res) => {
                 //         }
                 //     })
                 // })
-
+                
                 const room_price = (room, price)=>{
+                    var output = []
                     for(let i = 0; i<room.length; i++){
-                        var output = {
+                        output += {
                             hotelId: hotelout.id,
                             room: room[i],
                             price: price[i]
