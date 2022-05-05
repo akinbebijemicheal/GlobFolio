@@ -77,16 +77,27 @@ exports.createHotelService = async(req, res) => {
             }
 
             if(req.body.room && req.body.price){
-                const rooms = req.body.room.map((room) => {
-                    return req.body.price.map((price) => {
-                        return {
+                // const rooms = req.body.room.map((room) => {
+                //     return req.body.price.map((price) => {
+                //         return {
+                //             hotelId: hotelout.id,
+                //             room: room,
+                //             price: price
+                //         }
+                //     })
+                // })
+                const room_price = (room, price)=>{
+                    for(let i = 0; i<room.length; i++){
+                        var output ={
                             hotelId: hotelout.id,
-                            room: room,
-                            price: price
-                        }
-                    })
-                })
-                var extras = await Extras.bulkCreate(rooms, {returning: true})
+                            room: room[i],
+                            price: price[i]
+                        }; 
+                    };
+                    return output;
+                }
+                console.log(room_price(req.body.room, req.body.price));
+                var extras = await Extras.bulkCreate(room_price(req.body.room, req.body.price), {returning: true})
             }
             // hotelout.amenities = JSON.parse(hotelout.amenities)
             // hotelout.room_pricing = JSON.parse(hotelout.room_pricing)
