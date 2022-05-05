@@ -22,7 +22,7 @@ const HotelExtra = db.define('hotelextra', {
     room:{
         type: Sequelize.TEXT
     },
-    pricing: {
+    price: {
         type: Sequelize.TEXT
     }
     

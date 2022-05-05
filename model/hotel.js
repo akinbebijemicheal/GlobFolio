@@ -39,18 +39,18 @@ const Hotel = db.define('hotel', {
     img_url: {
         type: Sequelize.TEXT
     },
-    price: {
-        type: Sequelize.STRING,
-    }, 
+    // price: {
+    //     type: Sequelize.STRING,
+    // }, 
     rating: {
         type: Sequelize.FLOAT
     },
-    amenities: {
-        type: Sequelize.TEXT
-    },
-    room_pricing:{
-        type: Sequelize.TEXT
-    },
+    // amenities: {
+    //     type: Sequelize.TEXT
+    // },
+    // room_pricing:{
+    //     type: Sequelize.TEXT
+    // },
     link: {
         type: Sequelize.STRING
     }

@@ -1,35 +1,37 @@
 const Product = require('../../model/hotel');
 const cloudinary = require('../../util/cloudinary');
 const User = require('../../model/user');
+const Amenity = require('../../model/amenities');
+const Extras = require('../../model/hotelextras')
 const fs = require('fs')
 
 exports.createHotelService = async(req, res) => {
-    const { title, description, location, rating, price, amenity1, amenity2, amenity3, amenity4, amenity5, room1, room2, room3, room4, room5, price1, price2, price3, price4, price5 } = req.body;
-    var amenities = {
-        amenity1: amenity1,
-        amenity2: amenity2,
-        amenity3: amenity3,
-        amenity4: amenity4,
-        amenity5: amenity5
-    };
+    const { title, description, location, rating} = req.body;
+    // var amenities = {
+    //     amenity1: amenity1,
+    //     amenity2: amenity2,
+    //     amenity3: amenity3,
+    //     amenity4: amenity4,
+    //     amenity5: amenity5
+    // };
 
-    var room_pricing = [
-        {   room1: room1, 
-            price1: price1
-        }, 
-        { room2: room2, 
-            price2: price2
-        }, 
-        {   room3: room3,
-            price3: price3
-        }, 
-            {room4: room4,
-            price4: price4
-        }, 
-        {   room5: room5, 
-            price5: price5
-        }
-    ]
+    // var room_pricing = [
+    //     {   room1: room1, 
+    //         price1: price1
+    //     }, 
+    //     { room2: room2, 
+    //         price2: price2
+    //     }, 
+    //     {   room3: room3,
+    //         price3: price3
+    //     }, 
+    //         {room4: room4,
+    //         price4: price4
+    //     }, 
+    //     {   room5: room5, 
+    //         price5: price5
+    //     }
+    // ]
     try {
         if(req.user.verified === true){
             const uploader = async (path) => await cloudinary.uploads(path, 'Images');
@@ -52,9 +54,9 @@ exports.createHotelService = async(req, res) => {
                 description,
                 location,
                 rating: parseFloat(rating),
-                price: price,
-                amenities: JSON.stringify(amenities),
-                room_pricing: JSON.stringify(room_pricing),
+                // price: price,
+                // amenities: JSON.stringify(amenities),
+                // room_pricing: JSON.stringify(room_pricing),
                 productType: 'hotel',
                 img_id: JSON.stringify(ids),
                 img_url: JSON.stringify(urls)
@@ -63,10 +65,39 @@ exports.createHotelService = async(req, res) => {
 
             hotelout.img_id = JSON.parse(hotelout.img_id);
             hotelout.img_url = JSON.parse(hotelout.img_url);
-            hotelout.amenities = JSON.parse(hotelout.amenities)
-            hotelout.room_pricing = JSON.parse(hotelout.room_pricing)
+
+            if(req.body.amenities){
+                const amenities = req.body.amenities.map((amenity) => {
+                    return {
+                        hotelId: hotelout.id,
+                        amenities: amenity
+                    }
+                })
+               var amenitiesOut = await Amenity.bulkCreate(amenities, {returning: true})
+            }
+
+            if(req.body.room && req.body.price){
+                const rooms = req.body.room.map((room) => {
+                    return req.body.price.map((price) => {
+                        return {
+                            hotelId: hotelout.id,
+                            room: room,
+                            price: price
+                        }
+                    })
+                })
+                var extras = await Extras.bulkCreate(rooms, {returning: true})
+            }
+            // hotelout.amenities = JSON.parse(hotelout.amenities)
+            // hotelout.room_pricing = JSON.parse(hotelout.room_pricing)
             
-            res.status(201).json(hotelout)
+            res.status(201).json({
+                status: true,
+                hotel: hotelout,
+                amenities: amenitiesOut,
+                Extras: extras
+
+            })
             // await Product.findOne({where: {
             //     title: title
             // }}).then(async(product) => {
@@ -117,6 +148,18 @@ exports.getHotelServices = async(req, res) => {
                 attributes: {
                     exclude: ["createdAt", "updatedAt"]
                 }
+            },
+            {
+                model: Amenity,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                }
+            },
+            {
+                model: Extras,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                }
             }
         ]});
 
@@ -124,8 +167,8 @@ exports.getHotelServices = async(req, res) => {
             for(let i=0; i<hotel.length; i++){
                 hotel[i].img_id = JSON.parse(hotel[i].img_id);
                 hotel[i].img_url = JSON.parse(hotel[i].img_url);
-                hotel[i].amenities = JSON.parse(hotel[i].amenities);
-                hotel[i].room_pricing = JSON.parse(hotel[i].room_pricing);
+                // hotel[i].amenities = JSON.parse(hotel[i].amenities);
+                // hotel[i].room_pricing = JSON.parse(hotel[i].room_pricing);
             }
             if(hotel.length <= length || length === "" || !length){
                 
@@ -165,7 +208,22 @@ exports.getHotelForUser = async(req, res) => {
             productType: 'hotel'
         }, include:[
             {
-                model: User
+                model: User,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                }
+            },
+            {
+                model: Amenity,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                }
+            },
+            {
+                model: Extras,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                }
             }
         ]})
         
@@ -173,8 +231,8 @@ exports.getHotelForUser = async(req, res) => {
             for(let i=0; i<hotel.length; i++){
                 hotel[i].img_id = JSON.parse(hotel[i].img_id);
                 hotel[i].img_url = JSON.parse(hotel[i].img_url);
-                hotel[i].amenities = JSON.parse(hotel[i].amenities);
-                hotel[i].room_pricing = JSON.parse(hotel[i].room_pricing);
+                // hotel[i].amenities = JSON.parse(hotel[i].amenities);
+                // hotel[i].room_pricing = JSON.parse(hotel[i].room_pricing);
             }
             res.status(200).json({
                 status: true,
@@ -204,7 +262,22 @@ exports.getHotelByTitle = async(req, res) => {
             productType: 'hotel'
         }, include:[
             {
-                model: User
+                model: User,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                }
+            },
+            {
+                model: Amenity,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                }
+            },
+            {
+                model: Extras,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                }
             }
         ]})
         
@@ -212,8 +285,8 @@ exports.getHotelByTitle = async(req, res) => {
             for(let i=0; i<hotel.length; i++){
                 hotel[i].img_id = JSON.parse(hotel[i].img_id);
                 hotel[i].img_url = JSON.parse(hotel[i].img_url);
-                hotel[i].amenities = JSON.parse(hotel[i].amenities);
-                hotel[i].room_pricing = JSON.parse(hotel[i].room_pricing);
+                // hotel[i].amenities = JSON.parse(hotel[i].amenities);
+                // hotel[i].room_pricing = JSON.parse(hotel[i].room_pricing);
             }
             res.status(200).json({
                 status: true,
@@ -242,7 +315,22 @@ exports.getHotelById = async(req, res) => {
             productType: 'hotel'
         }, include:[
             {
-                model: User
+                model: User,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                }
+            },
+            {
+                model: Amenity,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                }
+            },
+            {
+                model: Extras,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                }
             }
         ]})
         
@@ -250,8 +338,8 @@ exports.getHotelById = async(req, res) => {
             for(let i=0; i<hotel.length; i++){
                 hotel[i].img_id = JSON.parse(hotel[i].img_id);
                 hotel[i].img_url = JSON.parse(hotel[i].img_url);
-                hotel[i].amenities = JSON.parse(hotel[i].amenities);
-                hotel[i].room_pricing = JSON.parse(hotel[i].room_pricing);
+                // hotel[i].amenities = JSON.parse(hotel[i].amenities);
+                // hotel[i].room_pricing = JSON.parse(hotel[i].room_pricing);
             }
             res.status(200).json({
                 status: true,
@@ -273,32 +361,32 @@ exports.getHotelById = async(req, res) => {
 }
 
 exports.updateHotel = async(req, res) => {
-    const { title, description, location, rating, price, amenity1, amenity2, amenity3, amenity4, amenity5, room1, room2, room3, room4, room5, price1, price2, price3, price4, price5 } = req.body;
-    var amenities = {
-        amenity1: amenity1,
-        amenity2: amenity2,
-        amenity3: amenity3,
-        amenity4: amenity4,
-        amenity5: amenity5
-    };
+    const { title, description, location, ratin } = req.body;
+    // var amenities = {
+    //     amenity1: amenity1,
+    //     amenity2: amenity2,
+    //     amenity3: amenity3,
+    //     amenity4: amenity4,
+    //     amenity5: amenity5
+    // };
 
-    var room_pricing = [
-        {   room1: room1, 
-            price1: price1
-        }, 
-        { room2: room2, 
-            price2: price2
-        }, 
-        {   room3: room3,
-            price3: price3
-        }, 
-            {room4: room4,
-            price4: price4
-        }, 
-        {   room5: room5, 
-            price5: price5
-        }
-    ]
+    // var room_pricing = [
+    //     {   room1: room1, 
+    //         price1: price1
+    //     }, 
+    //     { room2: room2, 
+    //         price2: price2
+    //     }, 
+    //     {   room3: room3,
+    //         price3: price3
+    //     }, 
+    //         {room4: room4,
+    //         price4: price4
+    //     }, 
+    //     {   room5: room5, 
+    //         price5: price5
+    //     }
+    // ]
     try{
         if(req.file || req.files) {
             const uploader = async (path) => await cloudinary.uploads(path, 'Images');
@@ -319,9 +407,9 @@ exports.updateHotel = async(req, res) => {
                 description: description,
                 location: location,
                 rating: parseFloat(rating),
-                price: price,
-                amenities: JSON.stringify(amenities),
-                room_pricing: JSON.stringify(room_pricing),
+                // price: price,
+                // amenities: JSON.stringify(amenities),
+                // room_pricing: JSON.stringify(room_pricing),
                 img_id: JSON.stringify(ids),
                 img_url: JSON.stringify(urls)
             }, { where: {
@@ -339,9 +427,9 @@ exports.updateHotel = async(req, res) => {
                 description: description,
                 location: location,
                 rating: parseFloat(rating),
-                price: price,
-                amenities: JSON.stringify(amenities),
-                room_pricing: JSON.stringify(room_pricing),
+                // price: price,
+                // amenities: JSON.stringify(amenities),
+                // room_pricing: JSON.stringify(room_pricing),
             }, { where: {
                 id: req.params.id,
                 userid: req.user.id,

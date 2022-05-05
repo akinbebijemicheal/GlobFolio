@@ -1,10 +1,10 @@
 const Sequelize = require('sequelize');
 const db = require('../config/config');
 const {nanoid} = require('nanoid');
-const Food = require('./food');
+const Hotel = require('./hotel');
 //const Cart = require('./cart')
 
-const FoodExtra = db.define('foodextra', {
+const HotelAmenities = db.define('hotelamenity', {
     id: {
         type: Sequelize.STRING(10),
         autoincrement: false,
@@ -12,24 +12,21 @@ const FoodExtra = db.define('foodextra', {
         primaryKey: true,
         defaultValue: () => nanoid(10)
     },
-    foodId: {
+    hotelId: {
         type: Sequelize.STRING(10),
         references:{ 
-            model: 'food',
+            model: 'hotels',
             key: 'id',
         }
     },
-    topping: {
-        type: Sequelize.TEXT
-    },
-    price: {
-        type: Sequelize.TEXT
-    }
+   amenities: {
+        type: Sequelize.STRING,
+   }
     
 }, {timestamps: true});
 
 
-FoodExtra.belongsTo(Food, {foreignKey: 'foodId'})
-Food.hasMany(FoodExtra, {foreignKey: 'foodId'});
+HotelAmenities.belongsTo(Hotel, {foreignKey: 'hotelId'})
+Hotel.hasMany(HotelAmenities, {foreignKey: 'hotelId'});
 
-module.exports = FoodExtra;
+module.exports = HotelAmenities;
