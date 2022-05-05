@@ -375,7 +375,7 @@ exports.getHotelById = async(req, res) => {
 }
 
 exports.updateHotel = async(req, res) => {
-    const { title, description, location, ratin } = req.body;
+    const { title, description, location, rating } = req.body;
     // var amenities = {
     //     amenity1: amenity1,
     //     amenity2: amenity2,
