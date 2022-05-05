@@ -57,17 +57,34 @@ exports.createFoodService = async(req, res) => {
         foodout.img_url = JSON.parse(foodout.img_url);
         // foodout.toppings_price= JSON.parse(foodout.toppings_price)
 
+
         if(req.body.top && req.body.topPrice){
-            const tops = req.body.top.map((top) =>{
-                return req.body.topPrice.map((price) =>{
-                    return {
-                        foodId: foodout.id,
-                        topping: top,
-                        price: price
-                    }
-                })
-            })
-            var toppings = await Extras.bulkCreate(tops, {returning: true})
+           
+                
+                const top_price = (top, price)=>{
+                    var output = []
+                    for(let i = 0; i<top.length; i++){
+                        output.push({
+                            foodId: foodout.id,
+                            topping: top[i],
+                            price: price[i]
+                        }); 
+                    };
+                    return output;
+                }
+                console.log(top_price(req.body.top, req.body.topPrice));
+                var toppings = await Extras.bulkCreate(top_price(req.body.top, req.body.topPrice), {returning: true})
+            
+            // const tops = req.body.top.map((top) =>{
+            //     return req.body.topPrice.map((price) =>{
+            //         return {
+            //             foodId: foodout.id,
+            //             topping: top,
+            //             price: price
+            //         }
+            //     })
+            // })
+            // var toppings = await Extras.bulkCreate(tops, {returning: true})
         }
 
         res.status(201).json({
