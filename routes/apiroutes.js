@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('../util/multer2');
-const { profile, RegisterUser, LoginUser, checkRole, getUser, getUsers, updateUser, deleteUser } = require('../controllers/user');
+const { profile, RegisterUser, LoginUser, checkRole, getUser, getUsers, updateUser, deleteUser, userAuth } = require('../controllers/user');
 const {checkEmail, changePassword, forgotPassword, emailVerification_V1, emailVerification_V2} = require('../controllers/security');
 const {  verification, getUnverifieds, getVendors, getVendorsByServices} = require('../controllers/vendor')
 const { updatePicture, uploadPicture, deletePicture, getPicture} = require('../controllers/picture')
@@ -13,7 +13,8 @@ const { getRentByTitle, getRentForUser, getRentServices, getRentById} = require(
 const {getStudioByTitle, getStudioForUser, getStudioServices, getStudioById} = require('../controllers/services/studio_book');
 const { getGamingByTitle, getGamingForUser, getGamingServices, getGameById} = require('../controllers/services/vr_gaming');
 const userVerify = require("../middleware/verify")
-const {bookHotel, hotelverify} = require('../controllers/Hotelbookings')
+const {bookHotel, hotelverify} = require('../controllers/Hotelbookings');
+const {getRestuarant, getRestuarants} = require('../controllers/restuarant')
 
 
 //user
@@ -219,6 +220,12 @@ router
 
 router
 .get('/pay/hotel/verify', jwtAuth, hotelverify)
+
+router
+.get('/getRestuarant/:id', jwtAuth, getRestuarant)
+
+router
+.get('/getRestuarants', jwtAuth, getRestuarants)
 
 
 module.exports = router;
