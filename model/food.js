@@ -2,6 +2,7 @@ const Sequelize = require('sequelize');
 const db = require('../config/config');
 const {nanoid} = require('nanoid');
 const User = require('./user');
+const Restaurant = require('./restuarant')
 //const Cart = require('./cart')
 
 const Food = db.define('food', {
@@ -33,8 +34,12 @@ const Food = db.define('food', {
     ingredients: {
         type: Sequelize.TEXT
     },
-    restaurant:{
-        type: Sequelize.TEXT
+    restuarantId:{
+        type: Sequelize.STRING,
+        references:{ 
+            model: 'restuarants',
+            key: 'id',
+        }
     },
     img_id: {
         type: Sequelize.TEXT,
@@ -56,5 +61,7 @@ const Food = db.define('food', {
 
 Food.belongsTo(User, {foreignKey: 'userid'})
 User.hasMany(Food, {foreignKey: 'userid'});
+Food.belongsTo(Restaurant, {foreignKey: 'restuarantId'})
+Restaurant.hasMany(Food, {foreignKey: 'restuarantId'});
 
 module.exports = Food;

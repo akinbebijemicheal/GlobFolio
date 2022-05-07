@@ -12,8 +12,8 @@ const { createHotelService, getHotelByTitle, getHotelForUser, getHotelServices, 
 const {  createRentService, getRentByTitle, getRentForUser, getRentServices, updateRent} = require('../controllers/services/renting');
 const {  createStudioService, getStudioByTitle, getStudioForUser, getStudioServices, updateStudio} = require('../controllers/services/studio_book');
 const {  createGamingService, getGamingByTitle, getGamingForUser, getGamingServices, updateGaming} = require('../controllers/services/vr_gaming');
-
-
+const {UpdateResturant, deleteRestuarant, getRestuarantUser} = require('../controllers/restuarant')
+const {createPrice, getSubPrice, updatePrice, deletePrice, verify} = require('../controllers/subscription');
 //user
 
 router
@@ -540,5 +540,29 @@ router
     res.redirect('/')
     
 });
+
+router
+.put('/updateRestuarant', userAuth, UpdateResturant);
+
+router
+.get('/getUserRestuarant', userAuth, getRestuarantUser);
+
+router
+.delete('/deleteRestuarant/:id', userAuth, deleteRestuarant);
+
+router
+.post('/createPlanPrice', userAuth, checkRole(["admin"]), createPrice);
+
+router
+.get('/getPrice', getSubPrice);
+
+router
+.put('/updatePlanPrice', userAuth, checkRole(["admin"]), updatePrice);
+
+router
+.delete('/deletePlan', userAuth, checkRole(["admin"]), deletePrice);
+
+router
+.get('/pay/verify', userAuth, verify)
 
 module.exports = router;

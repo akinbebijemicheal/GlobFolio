@@ -1,4 +1,5 @@
 const User = require('../model/user');
+const Restaurant = require('../model/restuarant');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const passport = require('passport');
@@ -38,12 +39,12 @@ exports.RegisterUser = async (role, req, res) => {
         const salt = await bcrypt.genSalt(12);
         const hashedPass = await bcrypt.hash(password, salt);
         
-        if( role === 'user' || 'admin'){
+        if( role === 'user' || role === 'admin'){
             var verify = true
+        }else{
+          verify = false
         }
-        if(role === 'vendor'){
-            var verify = false
-        }
+        
 
         user = new User({
             fullname: `${firstname} ${lastname}`,
@@ -57,7 +58,19 @@ exports.RegisterUser = async (role, req, res) => {
             verified: verify
         });
     
-        await user.save();
+        const Newuser = await user.save();
+
+        if(role === 'vendor'){
+          if(serviceType === "food" ){
+                const newRest = new Restaurant({
+                    userId: Newuser.id,
+                    restaurant: Newuser.business,
+                    contact_no: Newuser.phone_no
+                })
+                await newRest.save()
+          }
+
+      };
 
          user = await User.findOne({ where: {
             email: email

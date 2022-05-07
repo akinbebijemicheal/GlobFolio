@@ -1,4 +1,5 @@
 const User = require('../model/user');
+const Subscription = require('../model/subscription')
 require('dotenv').config();
 
 
@@ -36,9 +37,28 @@ exports.verification = async (req, res) => {
                     email: email
                 }
             });
+            await Subscription.findOne({
+                where: {
+                    userId: req.user.id
+                }
+            }).then(async(vendorsub) => {
+                if(!vendorsub){
+
+                    var somedate = new Date()
+                    somedate.setDate(somedate.getDate() + 7);
+                    const sub = new Subscription({
+                        userId: user.id,
+                        sub_type: "free",
+                        status: "active",
+                        expire_date: `${somedate}`
+                    })
+                    var savedsub = await sub.save()
+                }
+            })
+            
             res.status(200).json({
                 status: true,
-                message: "Vendor verified!"
+                message: "Vendor verified!",
             })
         } else {
             res.status(301).json({
@@ -47,11 +67,11 @@ exports.verification = async (req, res) => {
         }
     } catch (error) {
         console.error(error)
-       return res.status(500).json({
-            status: false,
-            message: "An error occured",
-            error: error
-        })
+        return res.status(500).json({
+                status: false,
+                message: "An error occured",
+                error: error
+            })
 };
 }
 

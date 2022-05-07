@@ -37,11 +37,10 @@ exports.RegisterUser = async (role, req, res) => {
         const salt = await bcrypt.genSalt(12);
         const hashedPass = await bcrypt.hash(password, salt);
         
-        if( role === 'user' || 'admin'){
+        if( role === 'user' || role ===  'admin'){
             var verify = true
-        }
-        if(role === 'vendor'){
-            var verify = false
+        }else{
+            verify = false
         }
 
         user = new User({
@@ -56,8 +55,18 @@ exports.RegisterUser = async (role, req, res) => {
             verified: verify
         });
     
-        await user.save();
+        const Newuser = await user.save();
+        if(role === 'vendor'){
+          if(serviceType === "food" ){
+                const newRest = new Restaurant({
+                    userId: Newuser.id,
+                    restaurant: Newuser.business,
+                    contact_no: Newuser.phone_no
+                })
+                await newRest.save()
+          }
 
+      };
          user = await User.findOne({ where: {
             email: email
         }})

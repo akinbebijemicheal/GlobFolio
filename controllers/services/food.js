@@ -2,32 +2,19 @@ const Product = require('../../model/food');
 const Extras = require('../../model/foodextras')
 const cloudinary = require('../../util/cloudinary');
 const User = require('../../model/user');
+const Restaurant = require('../../model/restuarant')
 const fs = require('fs')
 
 exports.createFoodService = async(req, res) => {
-    const { title, description, ingredients, restaurant, price } = req.body;
-
-    // var toppings_price = [
-    //     {   top1: top1, 
-    //         price1: price1
-    //     }, 
-    //     { top2: top2, 
-    //         price2: price2
-    //     }, 
-    //     { top3: top3, 
-    //         price3: price3}, 
-    //     { top4: top4, 
-    //         price4: price4
-    //     }, 
-    //     {   top5: top5, 
-    //         price5: price5
-    //     }
-    // ];
+    const { title, description, ingredients, price } = req.body;
     try {
+        const restuarant = await Restaurant.findOne({
+            where:{
+                userId: req.user.id
+            }
+        })
         if(req.user.verified === true){
             const uploader = async (path) => await cloudinary.uploads(path, 'Images');
-            //console.log(path)
-            
                 const urls = [];
                 const ids = []
                 const files = req.files;
@@ -44,9 +31,8 @@ exports.createFoodService = async(req, res) => {
             title,
             description,
             ingredients,
-            restaurant,
+            restaurantId: restuarant.id,
             price: price,
-            // toppings_price: JSON.stringify(toppings_price),
             productType: 'food',
             img_id: JSON.stringify(ids),
             img_url: JSON.stringify(urls),
@@ -55,12 +41,10 @@ exports.createFoodService = async(req, res) => {
 
         foodout.img_id = JSON.parse(foodout.img_id);
         foodout.img_url = JSON.parse(foodout.img_url);
-        // foodout.toppings_price= JSON.parse(foodout.toppings_price)
+       
 
 
         if(req.body.top && req.body.topPrice){
-           
-                
                 const top_price = (top, price)=>{
                     var output = []
                     for(let i = 0; i<top.length; i++){
@@ -74,17 +58,8 @@ exports.createFoodService = async(req, res) => {
                 }
                 console.log(top_price(req.body.top, req.body.topPrice));
                 var toppings = await Extras.bulkCreate(top_price(req.body.top, req.body.topPrice), {returning: true})
+           
             
-            // const tops = req.body.top.map((top) =>{
-            //     return req.body.topPrice.map((price) =>{
-            //         return {
-            //             foodId: foodout.id,
-            //             topping: top,
-            //             price: price
-            //         }
-            //     })
-            // })
-            // var toppings = await Extras.bulkCreate(tops, {returning: true})
         }
 
         res.status(201).json({
@@ -92,25 +67,6 @@ exports.createFoodService = async(req, res) => {
             food: foodout,
             toppings: toppings
         });
-        // await Product.findOne({where: {
-        //     title: title
-        // }}).then(async(product) => {
-        //     var link = `${process.env.BASE_URL}/add-to-cart/${product.id}`
-        //     await Product.update({link: link}, {where: {
-        //         id: product.id
-        //     }})
-
-        //     await Product.findOne({where: {
-        //         id: product.id
-        //     }}).then((product) => {
-        //         res.status(201).json({
-        //             status: true,
-        //             message: "Posted successfully",
-        //             data: product
-        //         })
-        //     })
-            
-        // })
         } else{
             res.status(301).json({
                 status: false,
@@ -128,7 +84,7 @@ exports.createFoodService = async(req, res) => {
     }
 };
 
-exports.createExtras = 
+
 
 exports.getFoodServices = async(req, res) => {
     try {
@@ -149,6 +105,12 @@ exports.getFoodServices = async(req, res) => {
             },
             {
                 model: Extras,
+                attributes:{
+                    exclude: ["createdAt", "updatedAt"]
+                }
+            },
+            {
+                model: Restaurant,
                 attributes:{
                     exclude: ["createdAt", "updatedAt"]
                 }
@@ -214,6 +176,12 @@ exports.getFoodForUser = async(req, res) => {
                 attributes:{
                     exclude: ["createdAt", "updatedAt"]
                 }
+            },
+            {
+                model: Restaurant,
+                attributes:{
+                    exclude: ["createdAt", "updatedAt"]
+                }
             }
         ]} )
 
@@ -259,6 +227,12 @@ exports.getFoodByTitle = async(req, res) => {
             },
             {
                 model: Extras,
+                attributes:{
+                    exclude: ["createdAt", "updatedAt"]
+                }
+            },
+            {
+                model: Restaurant,
                 attributes:{
                     exclude: ["createdAt", "updatedAt"]
                 }
@@ -310,6 +284,12 @@ exports.getFoodById = async(req, res) => {
                 attributes:{
                     exclude: ["createdAt", "updatedAt"]
                 }
+            },
+            {
+                model: Restaurant,
+                attributes:{
+                    exclude: ["createdAt", "updatedAt"]
+                }
             }
         ]})
        
@@ -340,27 +320,9 @@ exports.getFoodById = async(req, res) => {
 
 exports.updateFood = async(req, res) => {
     const {title, description, ingredents, price} = req.body;
-    // var topping_price = [
-    //     {   top1: top1, 
-    //         price1: price1
-    //     }, 
-    //     { top2: top2, 
-    //         price2: price2
-    //     }, 
-    //     { top3: top3, 
-    //         price3: price3}, 
-    //     { top4: top4, 
-    //         price4: price4
-    //     }, 
-    //     {   top5: top5, 
-    //         price5: price5
-    //     }
-    // ]
     try{
         if(req.file || req.files) {
             const uploader = async (path) => await cloudinary.uploads(path, 'Images');
-            //console.log(path)
-            
                 const urls = [];
                 const ids = []
                 const files = req.files;
@@ -376,7 +338,6 @@ exports.updateFood = async(req, res) => {
                 description: description,
                 ingredents: ingredents,
                 price: price,
-                // toppings_price: JSON.stringify(topping_price),
                 img_id: JSON.stringify(ids),
                 img_url: JSON.stringify(urls)
             }, { where: {
@@ -394,7 +355,6 @@ exports.updateFood = async(req, res) => {
                 description: description,
                 ingredents: ingredents,
                 price: price,
-                // toppings_price: JSON.stringify(topping_price),
             }, { where: {
                 id: req.params.id,
                 userid: req.user.id,

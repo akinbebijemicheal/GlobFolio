@@ -464,3 +464,4 @@ exports.updateHotel = async(req, res) => {
          })
     }
 }
+

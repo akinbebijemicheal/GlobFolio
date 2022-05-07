@@ -13,6 +13,7 @@ const { getRentByTitle, getRentForUser, getRentServices, getRentById} = require(
 const {getStudioByTitle, getStudioForUser, getStudioServices, getStudioById} = require('../controllers/services/studio_book');
 const { getGamingByTitle, getGamingForUser, getGamingServices, getGameById} = require('../controllers/services/vr_gaming');
 const userVerify = require("../middleware/verify")
+const {bookHotel, hotelverify} = require('../controllers/Hotelbookings')
 
 
 //user
@@ -213,6 +214,11 @@ router
 .route('/get-rent-byuser')
 .get(jwtAuth, getRentForUser)
 
+router
+.post('/bookHotel', jwtAuth, bookHotel)
+
+router
+.get('/pay/hotel/verify', jwtAuth, hotelverify)
 
 
 module.exports = router;

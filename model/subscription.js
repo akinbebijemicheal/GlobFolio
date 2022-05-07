@@ -11,7 +11,7 @@ const Subscription = db.define('subscription', {
         primaryKey: true,
         defaultValue: () => nanoid(10)
     },
-    userid: {
+    userId: {
         type: Sequelize.STRING(10),
         references:{ 
             model: 'users',
@@ -20,14 +20,20 @@ const Subscription = db.define('subscription', {
     },
     sub_type: {
         type: Sequelize.ENUM,
-        values: ["free", "basic", "standard", "premium"]
+        values: ["free", "basic", "standard", "premium"],
+        defaultValue: null
+    },
+    status:{
+        type: Sequelize.ENUM,
+        values: ["active", "expired"],
+        defaultValue: null
     },
     expire_date: {
-        type: Sequelize.DATEONLY
+        type: Sequelize.DATE
     }
 },{timestamps: true});
 
-Subscription.belongsTo(User, {foreignKey: 'userid'})
-User.hasMany(Subscription, {foreignKey: 'userid'});
+Subscription.belongsTo(User, {foreignKey: 'userId'})
+User.hasOne(Subscription, {foreignKey: 'userId'});
 
 module.exports = Subscription;
