@@ -329,7 +329,7 @@ router
 router
 .post('/register-admin', async (req, res) => {
     await RegisterUser("admin", req, res)
-    res.redirect('login-admin')
+    //res.redirect('login-admin')
 });
 
 router

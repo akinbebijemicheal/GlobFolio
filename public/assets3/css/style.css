@@ -15402,10 +15402,11 @@ ol.breadcrumb {
     padding: 0.8rem;
     text-decoration: none;
     display: block;
+    background-color: #fff;
 }
 .top-bar .navbar .nav-right .dropdown-menu.extended .dropdown-body li a:hover {
-    background: #eceef3;
-    color: #8e54e9;
+    background: #FF0033;
+    color: #000;
 }
 .top-bar .navbar .nav-right .dropdown-menu.extended .dropdown-body .notification .notify-icon {
     width: 40px;
@@ -15419,12 +15420,12 @@ ol.breadcrumb {
 }
 .top-bar .navbar .nav-right .dropdown-menu.extended .dropdown-body .notify-message p {
     margin: 0;
-    font-weight: 400;
-    color: #2c2e3e;
+    font-weight: 100;
+    color: #000;
     line-height: 1rem;
 }
 .top-bar .navbar .nav-right .dropdown-menu.extended .dropdown-body .notify-message small {
-    color: #a6a9b7;
+    color: #000;
 }
 .top-bar .navbar .sidebar-toggle {
     font-size: 17px;
@@ -15789,9 +15790,7 @@ ol.breadcrumb {
     position: relative;
     z-index: 99;
 }
-.sidebar-nav {
-    background: #212529;
-}
+
 .sidebar-nav ul {
     padding: 0;
     margin: 0;
@@ -15898,7 +15897,6 @@ ol.breadcrumb {
     -ms-flex-preferred-size: auto !important;
     flex-basis: auto !important;
     margin-bottom: auto;
-    background: #2c2e3e;
     height: 100%;
     overflow: hidden;
 }
@@ -15920,7 +15918,6 @@ ol.breadcrumb {
 .app-navbar .sidebar-nav ul.metismenu li a:hover {
     background: #FF0033;
     color: #fff;
-    transition: all 0.3s ease-out;
 }
 .app-navbar .sidebar-nav ul.metismenu li a .nav-title {
     opacity: 1;
@@ -15997,7 +15994,7 @@ ol.breadcrumb {
     -webkit-transform: rotate(225deg) translateY(-50%);
 }
 .app-navbar .sidebar-nav ul.metismenu li ul {
-    background: #2c2e3e;
+    background: #000;
 }
 .app-navbar .sidebar-nav ul.metismenu li ul li a {
     padding: 0.6rem 2rem;
@@ -16621,11 +16618,6 @@ code {
 .all{
     text-align: center !important;
     m
-}
-@media screen and (min-width: 480px) and (max-width: 576px) {
-    #analytics10 {
-        height: 160px !important;
-    }
 }
 @media screen and (max-width: 480px) {
     #analytics10 {
@@ -20461,7 +20453,6 @@ code {
     font-style: normal;
     font-variant: normal;
     font-weight: 400;
-    speak: none;
     text-decoration: none;
     text-transform: none;
 }
@@ -33934,7 +33925,7 @@ table.dataTable thead .sorting_desc_disabled:before {
     padding: 0px 0px 0px 20px;
 }
 .section .png img{
-    width: 15%;
+    width: 30px !important;
     float: right;
     margin-top: -50px;
 }
@@ -34001,6 +33992,12 @@ table.dataTable thead .sorting_desc_disabled:before {
     border-radius: 5px;
     border: none;
     width: 200px;
+}
+.bi{
+    color: #fff !important;
+}
+.nav-icon{
+    color: #fff !important;
 }
 @media screen and (max-width: 520px) {
     #input{
