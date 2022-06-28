@@ -12,5 +12,5 @@ db.sync();
 
 const port = process.env.PORT
 app.listen(port, ()=> {
-    console.log(`listening to port ${port}, at https://localhost:${port}}`)
+    console.log(`listening to port ${port}, at http://localhost:${port}}`)
 })

@@ -37,8 +37,8 @@ router
 })
 
 router
-.get('/services', (req, res) =>{
-    res.render('base/services')
+.get('/gallery', (req, res) =>{
+    res.render('base/gallery')
 })
 
 router
@@ -47,18 +47,28 @@ router
 })
 
 router
-.get('/registration-type', (req, res) => {
-    res.render('base/registration-type')
+.get('/privacy', (req, res) =>{
+    res.render('base/privacy')
 })
 
 router
-.get('/register-user', (req, res) => {
-    res.render('base/signup') 
-});
+.get('/terms', (req, res) =>{
+    res.render('base/terms')
+})
+
+// router
+// .get('/registration-type', (req, res) => {
+//     res.render('base/registration-type')
+// })
+
+// router
+// .get('/register-user', (req, res) => {
+//     res.render('base/signup') 
+// });
 
 router
 .get('/register-vendor', (req, res) => {
-    res.render('base/vendor')
+    res.render('base/vendor-sign-up')
     
 });
 
@@ -68,110 +78,110 @@ router
     
 });
 
-router
-.get('/login-user', (req, res) => {
-    res.render('base/userlogin')
-});
+// router
+// .get('/login-user', (req, res) => {
+//     res.render('base/userlogin')
+// });
 
-router
-.get('/login-vendor', (req, res) => {
-    res.render('base/vendorlogin')
-});
+// router
+// .get('/login-vendor', (req, res) => {
+//     res.render('base/vendorlogin')
+// });
 
 router
 .get('/login-admin', (req, res) => {
     res.render('base/admin-login')
 });
 
-router
-.get('/dashboard/user', userAuth, (req, res)=>{
-    let name = req.user.fullname.split(' ')
-    let email = req.user.email
-    res.render('dashboard/user/index', {
-        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
-        email: email
-    })
-})
+// router
+// .get('/dashboard/user', userAuth, (req, res)=>{
+//     let name = req.user.fullname.split(' ')
+//     let email = req.user.email
+//     res.render('dashboard/user/index', {
+//         user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+//         email: email
+//     })
+// })
 
-router
-.get('/dashboard/user/bonus', userAuth, (req, res)=>{
-    let name = req.user.fullname.split(' ')
-    let email = req.user.email
-    res.render('dashboard/user/bonus',  {
-        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
-        email: email
-    })
-})
+// router
+// .get('/dashboard/user/bonus', userAuth, (req, res)=>{
+//     let name = req.user.fullname.split(' ')
+//     let email = req.user.email
+//     res.render('dashboard/user/bonus',  {
+//         user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+//         email: email
+//     })
+// })
 
-router
-.get('/dashboard/user/cinema', userAuth, (req, res)=>{
-    let name = req.user.fullname.split(' ')
-    let email = req.user.email
-    res.render('dashboard/user/cinema',  {
-        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
-        email: email
-    })
-})
+// router
+// .get('/dashboard/user/cinema', userAuth, (req, res)=>{
+//     let name = req.user.fullname.split(' ')
+//     let email = req.user.email
+//     res.render('dashboard/user/cinema',  {
+//         user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+//         email: email
+//     })
+// })
 
-router
-.get('/dashboard/user/food', userAuth, (req, res)=>{
-    let name = req.user.fullname.split(' ')
-    let email = req.user.email
-    res.render('dashboard/user/food',  {
-        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
-        email: email
-    })
-})
+// router
+// .get('/dashboard/user/food', userAuth, (req, res)=>{
+//     let name = req.user.fullname.split(' ')
+//     let email = req.user.email
+//     res.render('dashboard/user/food',  {
+//         user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+//         email: email
+//     })
+// })
 
-router
-.get('/dashboard/user/forgot', userAuth, (req, res)=>{
-    let name = req.user.fullname.split(' ')
-    let email = req.user.email
-    res.render('dashboard/user/forgot',  {
-        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
-        email: email
-    })
-})
+// router
+// .get('/dashboard/user/forgot', userAuth, (req, res)=>{
+//     let name = req.user.fullname.split(' ')
+//     let email = req.user.email
+//     res.render('dashboard/user/forgot',  {
+//         user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+//         email: email
+//     })
+// })
 
-router
-.get('/dashboard/user/game',userAuth, (req, res)=>{
-    let name = req.user.fullname.split(' ')
-    let email = req.user.email
-    res.render('dashboard/user/game',  {
-        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
-        email: email
-    })
-})
+// router
+// .get('/dashboard/user/game',userAuth, (req, res)=>{
+//     let name = req.user.fullname.split(' ')
+//     let email = req.user.email
+//     res.render('dashboard/user/game',  {
+//         user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+//         email: email
+//     })
+// })
 
-router
-.get('/dashboard/user/hotel', userAuth, (req, res)=>{
-    let name = req.user.fullname.split(' ')
-    let email = req.user.email
-    res.render('dashboard/user/hotel',  {
-        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
-        email: email
-    })
-})
+// router
+// .get('/dashboard/user/hotel', userAuth, (req, res)=>{
+//     let name = req.user.fullname.split(' ')
+//     let email = req.user.email
+//     res.render('dashboard/user/hotel',  {
+//         user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+//         email: email
+//     })
+// })
 
-router
-.get('/dashboard/user/rent', userAuth, (req, res)=>{
-    let name = req.user.fullname.split(' ')
-    let email = req.user.email
-    res.render('dashboard/user/rent',  {
-        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
-        email: email
-    })
-})
+// router
+// .get('/dashboard/user/rent', userAuth, (req, res)=>{
+//     let name = req.user.fullname.split(' ')
+//     let email = req.user.email
+//     res.render('dashboard/user/rent',  {
+//         user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+//         email: email
+//     })
+// })
 
-router
-.get('/dashboard/user/studio', userAuth, (req, res)=>{
-    let name = req.user.fullname.split(' ')
-    let email = req.user.email
-    res.render('dashboard/user/studio',  {
-        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
-        email: email
-    })
-})
+// router
+// .get('/dashboard/user/studio', userAuth, (req, res)=>{
+//     let name = req.user.fullname.split(' ')
+//     let email = req.user.email
+//     res.render('dashboard/user/studio',  {
+//         user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+//         email: email
+//     })
+// })
 
 
 router
@@ -300,30 +310,30 @@ router
 //-----------------------------------------------------------------------------------------------
 // post requests for information
 //User
-router
-.post('/register-user', async (req, res) => {
-    await RegisterUser("user", req, res)
-    //res.redirect('/login-user')
-});
+// router
+// .post('/register-user', async (req, res) => {
+//     await RegisterUser("user", req, res)
+//     //res.redirect('/login-user')
+// });
 
-router
-.post('/login-user', async (req, res) => {
-    await webLoginUser("user", req, res);
-    //res.redirect('/dashboard/user')
-});
+// router
+// .post('/login-user', async (req, res) => {
+//     await webLoginUser("user", req, res);
+//     //res.redirect('/dashboard/user')
+// });
 
-//vendor
-router
-.post('/register-vendor', async (req, res) => {
-    await RegisterUser("vendor", req, res)
-    //res.redirect('/login-vendor')
-});
+// //vendor
+// router
+// .post('/register-vendor', async (req, res) => {
+//     await RegisterUser("vendor", req, res)
+//     //res.redirect('/login-vendor')
+// });
 
-router
-.post('/login-vendor', async (req, res) => {
-    await webLoginUser("vendor", req, res);
-    //res.redirect('/dashboard/vendor')
-});
+// router
+// .post('/login-vendor', async (req, res) => {
+//     await webLoginUser("vendor", req, res);
+//     //res.redirect('/dashboard/vendor')
+// });
 
 //admin
 router
