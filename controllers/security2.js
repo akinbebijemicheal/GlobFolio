@@ -19,9 +19,10 @@ const myAccessToken = myOAuth2Client.getAccessToken()*/
 const baseurl = process.env.BASE_URL
 
 exports.emailVerification_V1 = async(req, res) => {
+  const {email} = req.body;
     try {
         const user = await User.findOne({ where: {
-            email: req.user.email
+            email: email
         }})
         if(user){
             const token = jwt.sign({email: user.email}, process.env.TOKEN, { expiresIn: "15m"});

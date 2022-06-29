@@ -38,7 +38,7 @@ exports.RegisterUser = async (role, req, res) => {
         const hashedPass = await bcrypt.hash(password, salt);
         
         if( role === 'user' || role ===  'admin'){
-            var verify = true
+            var verify = true,
         }else{
             verify = false
         }

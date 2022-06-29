@@ -393,7 +393,7 @@ router
 
 router
 .route('/email-verification')
-.post(userAuth, emailVerification_V1);
+.post(emailVerification_V1);
 
 router
 .route('/email-verification')
