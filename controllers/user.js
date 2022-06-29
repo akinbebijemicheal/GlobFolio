@@ -19,7 +19,7 @@ myOAuth2Client.setCredentials({
 const myAccessToken = myOAuth2Client.getAccessToken()*/
 const baseurl = process.env.BASE_URL
 
-exports.RegisterUser = async (role, req, res) => {
+exports.RegisterUser = async (role, req, res, next) => {
     try{
 
         const {firstname, lastname, email, phone_no, country, business, serviceType, password } = req.body;
@@ -38,7 +38,7 @@ exports.RegisterUser = async (role, req, res) => {
         const hashedPass = await bcrypt.hash(password, salt);
         
         if( role === 'user' || role ===  'admin'){
-            var verify = true,
+            var verify = true
         }else{
             verify = false
         }
@@ -365,16 +365,17 @@ exports.RegisterUser = async (role, req, res) => {
 
     }catch(error){
         console.error(error)
-        return res.status(500).json({
+        res.status(500).json({
              status: false,
              message: "Error occured",
              error: error
-         })
+         });
+        next(error);
     }
 };
 
 
-exports.LoginUser = async (role, req, res) => {
+exports.LoginUser = async (role, req, res, next) => {
     try{
 
         const {email, password } = req.body;
@@ -445,15 +446,16 @@ exports.LoginUser = async (role, req, res) => {
 
     } catch(error){
         console.error(error)
-       return res.status(500).json({
+        res.status(500).json({
             status: false,
             message: "Error occured",
             error: error
-        })
+        });
+        next(error);
     }
 };
 
-exports.webLoginUser = async (role, req, res) => {
+exports.webLoginUser = async (role, req, res, next) => {
     try{
 
         const {email, password } = req.body;
@@ -534,11 +536,12 @@ exports.webLoginUser = async (role, req, res) => {
 
     } catch(error){
         console.error(error)
-       return res.status(500).json({
+        res.status(500).json({
             status: false,
             message: "Error occured",
             error: error
         })
+        next(error);
     }
 };
 

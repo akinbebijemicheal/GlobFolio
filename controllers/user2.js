@@ -43,7 +43,8 @@ exports.RegisterUser = async (role, req, res) => {
             var verify = true;
             var emailVerified = true
         }else{
-          verify = false
+          verify = false;
+          emailVerified = true
         }
         
 
