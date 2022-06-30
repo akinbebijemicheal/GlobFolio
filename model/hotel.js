@@ -1,8 +1,7 @@
 const Sequelize = require('sequelize');
 const db = require('../config/config');
 const {nanoid} = require('nanoid');
-const User = require('./user');
-//const Cart = require('./cart')
+
 
 const Hotel = db.define('hotel', {
     id: {
@@ -12,20 +11,9 @@ const Hotel = db.define('hotel', {
         primaryKey: true,
         defaultValue: () => nanoid(10)
     },
-    userid: {
-        type: Sequelize.STRING(10),
-        references:{ 
-            model: 'users',
-            key: 'id',
-        }
-    },
     title: {
         type: Sequelize.STRING,
         allowNull: false
-    },
-    productType: {
-        type: Sequelize.STRING,
-        defaultValue: "hotel"
     },
     description: {
         type: Sequelize.STRING
@@ -39,25 +27,9 @@ const Hotel = db.define('hotel', {
     img_url: {
         type: Sequelize.TEXT
     },
-    // price: {
-    //     type: Sequelize.STRING,
-    // }, 
     rating: {
         type: Sequelize.FLOAT
-    },
-    // amenities: {
-    //     type: Sequelize.TEXT
-    // },
-    // room_pricing:{
-    //     type: Sequelize.TEXT
-    // },
-    link: {
-        type: Sequelize.STRING
     }
 }, {timestamps: true});
-
-
-Hotel.belongsTo(User, {foreignKey: 'userid'})
-User.hasMany(Hotel, {foreignKey: 'userid'});
 
 module.exports = Hotel;

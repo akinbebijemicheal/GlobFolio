@@ -6,9 +6,8 @@ const fs = require('fs')
 exports.createStudioService = async(req, res) => {
     const { title, description, location, per_time, price, rating, equipment } = req.body;
     try {
-        if(req.user.verified === true){
+        
             const uploader = async (path) => await cloudinary.uploads(path, 'Images');
-            //console.log(path)
             
                 const urls = [];
                 const ids = []
@@ -22,7 +21,6 @@ exports.createStudioService = async(req, res) => {
                 }
 
             const studio = new Product({
-                userid: req.user.id,
                 title,
                 description,
                 location,
@@ -30,7 +28,6 @@ exports.createStudioService = async(req, res) => {
                 rating: parseFloat(rating),
                 price: price,
                 equipment,
-                productType: 'studio',
                 img_id: JSON.stringify(ids),
                 img_url: JSON.stringify(urls)
             })
@@ -40,31 +37,7 @@ exports.createStudioService = async(req, res) => {
             studiout.img_url = JSON.parse(studiout.img_url)
 
             res.status(201).json(studiout)
-            // await Product.findOne({where: {
-            //     title: title
-            // }}).then(async(product) => {
-            //     var link = `${process.env.BASE_URL}/add-to-cart/${product.id}`
-            //     await Product.update({link: link}, {where: {
-            //         id: product.id
-            //     }})
-    
-            //     await Product.findOne({where: {
-            //         id: product.id
-            //     }}).then((product) => {
-            //         res.status(201).json({
-            //             status: true,
-            //             message: "Posted successfully",
-            //             data: product
-            //         })
-            //     })
-                
-            // })
-        } else{
-            res.status(301).json({
-                status: false,
-                message: "You are not verified",
-            })
-        }
+        
         
     } catch (error) {
         console.error(error)
@@ -80,9 +53,8 @@ exports.createStudioService = async(req, res) => {
 exports.getStudioServices = async(req, res) => {
     try {
         const length = req.query.length
-        var studio = await Product.findAll({where: {
-            productType: 'studio'
-        },  order: [
+        var studio = await Product.findAll({
+            order: [
             ['createdAt', 'ASC']
         ]});
 
@@ -124,52 +96,47 @@ exports.getStudioServices = async(req, res) => {
     }
 }
 
-exports.getStudioForUser = async(req, res) => {
-    try {
-        const studio = await Product.findAll({ where: {
-            userid: req.user.id,
-            productType: 'studio'
-        }, include:[
-            {
-                model: User
-            }
-        ]})
-        if(studio){
-            for(let i=0; i<studio.length; i++){
-                studio[i].img_id = JSON.parse(studio[i].img_id);
-                studio[i].img_url = JSON.parse(studio[i].img_url);
-            }
-            res.status(200).json({
-                status: true,
-                data: studio
-            });
-        } else{
-            res.status(404).json({
-                status: false,
-                message: "Post not Found"
-            })
-        }
-    } catch (error) {
-        console.error(error)
-        return res.status(500).json({
-             status: false,
-             message: "An error occured",
-             error: error
-         })
-    }
-}
+// exports.getStudioForUser = async(req, res) => {
+//     try {
+//         const studio = await Product.findAll({ where: {
+//             userid: req.user.id,
+//             productType: 'studio'
+//         }, include:[
+//             {
+//                 model: User
+//             }
+//         ]})
+//         if(studio){
+//             for(let i=0; i<studio.length; i++){
+//                 studio[i].img_id = JSON.parse(studio[i].img_id);
+//                 studio[i].img_url = JSON.parse(studio[i].img_url);
+//             }
+//             res.status(200).json({
+//                 status: true,
+//                 data: studio
+//             });
+//         } else{
+//             res.status(404).json({
+//                 status: false,
+//                 message: "Post not Found"
+//             })
+//         }
+//     } catch (error) {
+//         console.error(error)
+//         return res.status(500).json({
+//              status: false,
+//              message: "An error occured",
+//              error: error
+//          })
+//     }
+// }
 
 exports.getStudioByTitle = async(req, res) => {
     const {title} = req.body;
     try {
         const studio = await Product.findAll({where: {
             title: title,
-            productType: 'studio'
-        }, include:[
-            {
-                model: User
-            }
-        ]})
+        }})
         if(studio){
             for(let i=0; i<studio.length; i++){
                 studio[i].img_id = JSON.parse(studio[i].img_id);
@@ -197,14 +164,9 @@ exports.getStudioByTitle = async(req, res) => {
 exports.getStudioById = async(req, res) => {
     const id= req.params.id;
     try {
-        const studio = await Product.findAll({where: {
+        const studio = await Product.findOne({where: {
             id: id,
-            productType: 'studio'
-        }, include:[
-            {
-                model: User
-            }
-        ]})
+        }})
         if(studio){
             for(let i=0; i<studio.length; i++){
                 studio[i].img_id = JSON.parse(studio[i].img_id);
@@ -234,7 +196,7 @@ exports.updateStudio = async(req, res) => {
     try{
         if(req.file || req.files) {
             const uploader = async (path) => await cloudinary.uploads(path, 'Images');
-            //console.log(path)
+           
             
                 const urls = [];
                 const ids = []
@@ -257,9 +219,7 @@ exports.updateStudio = async(req, res) => {
                 img_id: JSON.stringify(ids),
                 img_url: JSON.stringify(urls)
             }, { where: {
-                id: req.params.id,
-                userid: req.user.id,
-                productType: 'studio'
+                id: req.params.id
             }})
             res.status(200).json({
                 status: true,
@@ -275,9 +235,7 @@ exports.updateStudio = async(req, res) => {
                 price: price,
                 equipment: equipment,
             }, { where: {
-                id: req.params.id,
-                userid: req.user.id,
-                productType: 'studio'
+                id: req.params.id
             }})
             res.status(200).json({
                 status: true,

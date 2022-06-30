@@ -191,29 +191,29 @@ router
 
 //-------------------------------------------------------------------
 
-router
-.route('/get-cinema-byuser')
-.get(jwtAuth, getCinemaForUser)
+// router
+// .route('/get-cinema-byuser')
+// .get(jwtAuth, getCinemaForUser)
 
-router
-.route('/get-hotel-byuser')
-.get(jwtAuth, getHotelForUser)
+// router
+// .route('/get-hotel-byuser')
+// .get(jwtAuth, getHotelForUser)
 
-router
-.route('/get-studio-byuser')
-.get(jwtAuth, getStudioForUser)
+// router
+// .route('/get-studio-byuser')
+// .get(jwtAuth, getStudioForUser)
 
-router
-.route('/get-gaming-byuser')
-.get(jwtAuth, getGamingForUser)
+// router
+// .route('/get-gaming-byuser')
+// .get(jwtAuth, getGamingForUser)
 
-router
-.route('/get-food-byuser')
-.get(jwtAuth, getFoodForUser);
+// router
+// .route('/get-food-byuser')
+// .get(jwtAuth, getFoodForUser);
 
-router
-.route('/get-rent-byuser')
-.get(jwtAuth, getRentForUser)
+// router
+// .route('/get-rent-byuser')
+// .get(jwtAuth, getRentForUser)
 
 router
 .post('/bookHotel', jwtAuth, bookHotel)

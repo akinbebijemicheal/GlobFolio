@@ -1,8 +1,6 @@
 const Sequelize = require('sequelize');
 const db = require('../config/config');
 const {nanoid} = require('nanoid');
-const User = require('./user');
-//const Cart = require('./cart')
 
 const Studio = db.define('studio', {
     id: {
@@ -12,20 +10,9 @@ const Studio = db.define('studio', {
         primaryKey: true,
         defaultValue: () => nanoid(10)
     },
-    userid: {
-        type: Sequelize.STRING(10),
-        references:{ 
-            model: 'users',
-            key: 'id',
-        }
-    },
     title: {
         type: Sequelize.STRING,
         allowNull: false
-    },
-    productType: {
-        type: Sequelize.STRING,
-        defaultValue: "studio", 
     },
     description: {
         type: Sequelize.STRING
@@ -39,7 +26,6 @@ const Studio = db.define('studio', {
     equipment: {
         type: Sequelize.STRING
     },
-    
     img_id: {
         type: Sequelize.TEXT,
     },
@@ -51,14 +37,7 @@ const Studio = db.define('studio', {
     }, 
     rating: {
         type: Sequelize.FLOAT
-    },
-    link: {
-        type: Sequelize.STRING
     }
 }, {timestamps: true});
-
-
-Studio.belongsTo(User, {foreignKey: 'userid'})
-User.hasMany(Studio, {foreignKey: 'userid'});
 
 module.exports = Studio;

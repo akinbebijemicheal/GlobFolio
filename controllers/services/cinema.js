@@ -7,10 +7,8 @@ const fs = require('fs')
 exports.createCinemaService = async(req, res) => {
     const { title, genre, storyline, rating, view_date, cast, duration, age_rate,  price } = req.body;
     try {
-        if(req.user.verified === true){
             
             const uploader = async (path) => await cloudinary.uploads(path, 'Images');
-            //console.log(path)
             
                 const urls = [];
                 const ids = []
@@ -23,12 +21,7 @@ exports.createCinemaService = async(req, res) => {
                     fs.unlinkSync(path)
                 }
             
-            // console.log({
-            //     url: urls,
-            //     id: ids
-            // })
             const cinema = new Product({
-            userid: req.user.id,
             title,
             genre,
             storyline,
@@ -38,46 +31,18 @@ exports.createCinemaService = async(req, res) => {
             view_date,
             rating: parseFloat(rating),
             price: price,
-            productType: 'cinema',
             img_id: JSON.stringify(ids),
             img_url: JSON.stringify(urls)
         })
         var cinemaout = await cinema.save();
+
         cinemaout.img_url =JSON.parse(cinemaout.img_url);
         cinemaout.img_id = JSON.parse(cinemaout.img_id);
         res.status(201).json({
             data: {
                 cinemaout,
             }
-            })
-
-        // await Product.findOne({where: {
-        //     title: title
-        // }}).then(async(product) => {
-        //     var link = `${process.env.BASE_URL}/add-to-cart/${product.id}`
-        //     await Product.update({link: link}, {where: {
-        //         id: product.id
-        //     }})
-
-        //     await Product.findOne({where: {
-        //         id: product.id
-        //     }}).then((product) => {
-        //         res.status(201).json({
-        //             status: true,
-        //             message: "Posted successfully",
-        //             data: product
-        //         })
-        //     })
-            
-        // })
-
-        } else{
-            res.status(301).json({
-                status: false,
-                message: "You are not verified",
-            })
-        }
-        
+            })        
     } catch (error) {
         console.error(error)
         return res.status(500).json({
@@ -95,7 +60,6 @@ exports.getCinemaServices = async(req, res) => {
     try {
         if(status === "showing"){
             var cinema = await Product.findAll({where: {
-                productType: 'cinema',
                 view_date: (new Date).toISOString().substr(0, 10)
             },
             order: [
@@ -109,7 +73,6 @@ exports.getCinemaServices = async(req, res) => {
         if(status === "soon"){
             cinema = await Product.findAll({
                 where: {
-                productType: 'cinema',
                 view_date: {
                     [Op.gt]: (new Date).toISOString().substr(0, 10)
                 } 
@@ -120,9 +83,7 @@ exports.getCinemaServices = async(req, res) => {
         }
 
         if(status === "rated"){
-            var cinema = await Product.findAll({where: {
-                productType: 'cinema',
-            },
+            var cinema = await Product.findAll({
             order: [
                 ['rating', 'DESC'],
                 ['view_date', 'ASC']
@@ -132,9 +93,7 @@ exports.getCinemaServices = async(req, res) => {
         }
 
         if(!status){
-            var cinema = await Product.findAll({where: {
-                productType: 'cinema',
-            },
+            var cinema = await Product.findAll({
             order: [
                 ['view_date', 'ASC']
             ],
@@ -180,52 +139,46 @@ exports.getCinemaServices = async(req, res) => {
     }
 }
 
-exports.getCinemaForUser = async(req, res) => {
-    try {
-       var cinema = await Product.findAll({ where: {
-            userid: req.user.id,
-            productType: 'cinema'
-        }, include:[
-            {
-                model: User
-            }
-        ]})
-        if(cinema){
-            cinema.img_id = JSON.parse(cinema.img_id);
-            cinema.img_url = JSON.parse(cinema.img_url)
-            res.status(200).json({
-                status: true,
-                data: cinema
-            });
-        } else{
-            res.status(404).json({
-                status: false,
-                message: "Post not Found"
-            })
-        }
-    } catch (error) {
-        console.error(error)
-        return res.status(500).json({
-             status: false,
-             message: "An error occured",
-             error: error
-         })
-    }
-}
+// exports.getCinemaForUser = async(req, res) => {
+//     try {
+//        var cinema = await Product.findAll({ where: {
+//             userid: req.user.id,
+//             productType: 'cinema'
+//         }, include:[
+//             {
+//                 model: User
+//             }
+//         ]})
+//         if(cinema){
+//             cinema.img_id = JSON.parse(cinema.img_id);
+//             cinema.img_url = JSON.parse(cinema.img_url)
+//             res.status(200).json({
+//                 status: true,
+//                 data: cinema
+//             });
+//         } else{
+//             res.status(404).json({
+//                 status: false,
+//                 message: "Post not Found"
+//             })
+//         }
+//     } catch (error) {
+//         console.error(error)
+//         return res.status(500).json({
+//              status: false,
+//              message: "An error occured",
+//              error: error
+//          })
+//     }
+// }
 
 exports.getCinemaByTitle = async(req, res) => {
     const { title }= req.body;
     try {
         var cinema = await Product.findAll({where: {
-            title: title,
-            productType: 'cinema'
-        }, include:[
-            {
-                model: User
-            }
-        ]})
+            title: title
+        }})
         if(cinema){
-            //console.log(cinema)
             for(let i=0; i<cinema.length; i++){
                 cinema[i].img_id = JSON.parse(cinema[i].img_id);
                 cinema[i].img_url = JSON.parse(cinema[i].img_url);
@@ -252,14 +205,9 @@ exports.getCinemaByTitle = async(req, res) => {
 exports.getCinemaById = async(req, res) => {
     const id= req.params.id;
     try {
-        var cinema = await Product.findAll({where: {
+        var cinema = await Product.findOne({where: {
             id: id,
-            productType: 'cinema'
-        }, include:[
-            {
-                model: User
-            }
-        ]})
+        }})
         if(cinema){
             for(let i=0; i<cinema.length; i++){
                 cinema[i].img_id = JSON.parse(cinema[i].img_id);
@@ -313,9 +261,7 @@ exports.updateCinema = async(req, res) => {
                 img_id: JSON.stringify(ids),
                 img_url: JSON.stringify(urls),
             }, { where: {
-                id: req.params.id,
-                userid: req.user.id,
-                productType: 'cinema'
+                id: req.params.id
             }})
             res.status(200).json({
                 status: true,
@@ -333,9 +279,7 @@ exports.updateCinema = async(req, res) => {
                 rating: parseFloat(rating),
                 price: price,
             }, { where: {
-                id: req.params.id,
-                userid: req.user.id,
-                productType: 'cinema'
+                id: req.params.id
             }})
             res.status(200).json({
                 status: true,

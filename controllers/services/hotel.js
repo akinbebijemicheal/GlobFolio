@@ -7,35 +7,8 @@ const fs = require('fs')
 
 exports.createHotelService = async(req, res) => {
     const { title, description, location, rating} = req.body;
-    // var amenities = {
-    //     amenity1: amenity1,
-    //     amenity2: amenity2,
-    //     amenity3: amenity3,
-    //     amenity4: amenity4,
-    //     amenity5: amenity5
-    // };
-
-    // var room_pricing = [
-    //     {   room1: room1, 
-    //         price1: price1
-    //     }, 
-    //     { room2: room2, 
-    //         price2: price2
-    //     }, 
-    //     {   room3: room3,
-    //         price3: price3
-    //     }, 
-    //         {room4: room4,
-    //         price4: price4
-    //     }, 
-    //     {   room5: room5, 
-    //         price5: price5
-    //     }
-    // ]
     try {
-        if(req.user.verified === true){
             const uploader = async (path) => await cloudinary.uploads(path, 'Images');
-            //console.log(path)
             
                 const urls = [];
                 const ids = []
@@ -54,10 +27,6 @@ exports.createHotelService = async(req, res) => {
                 description,
                 location,
                 rating: parseFloat(rating),
-                // price: price,
-                // amenities: JSON.stringify(amenities),
-                // room_pricing: JSON.stringify(room_pricing),
-                productType: 'hotel',
                 img_id: JSON.stringify(ids),
                 img_url: JSON.stringify(urls)
             })
@@ -78,15 +47,6 @@ exports.createHotelService = async(req, res) => {
             }
 
             if(req.body.room && req.body.price){
-                // const rooms = req.body.room.map((room) => {
-                //     return req.body.price.map((price) => {
-                //         return {
-                //             hotelId: hotelout.id,
-                //             room: room,
-                //             price: price
-                //         }
-                //     })
-                // })
                 
                 const room_price = (room, price)=>{
                     var output = []
@@ -102,8 +62,6 @@ exports.createHotelService = async(req, res) => {
                 console.log(room_price(req.body.room, req.body.price));
                 var extras = await Extras.bulkCreate(room_price(req.body.room, req.body.price), {returning: true})
             }
-            // hotelout.amenities = JSON.parse(hotelout.amenities)
-            // hotelout.room_pricing = JSON.parse(hotelout.room_pricing)
             
             res.status(201).json({
                 status: true,
@@ -112,31 +70,6 @@ exports.createHotelService = async(req, res) => {
                 Extras: extras
 
             })
-            // await Product.findOne({where: {
-            //     title: title
-            // }}).then(async(product) => {
-            //     var link = `${process.env.BASE_URL}/add-to-cart/${product.id}`
-            //     await Product.update({link: link}, {where: {
-            //         id: product.id
-            //     }})
-    
-            //     await Product.findOne({where: {
-            //         id: product.id
-            //     }}).then((product) => {
-            //         res.status(201).json({
-            //             status: true,
-            //             message: "Posted successfully",
-            //             data: product
-            //         })
-            //     })
-                
-            // })
-        } else{
-            res.status(301).json({
-                status: false,
-                message: "You are not verified",
-            })
-        }
         
     } catch (error) {
         console.error(error)
@@ -151,18 +84,11 @@ exports.createHotelService = async(req, res) => {
 
 exports.getHotelServices = async(req, res) => {
     try {
-        const length = req.query.length
-        var hotel = await Product.findAll({where: {
-            productType: 'hotel'
-        },  order: [
+        const length = req.query.length;
+        var hotel = await Product.findAll({
+        order: [
             ['rating', 'ASC']
         ], include:[
-            {
-                model: User,
-                attributes: {
-                    exclude: ["createdAt", "updatedAt"]
-                }
-            },
             {
                 model: Amenity,
                 attributes: {
@@ -181,8 +107,6 @@ exports.getHotelServices = async(req, res) => {
             for(let i=0; i<hotel.length; i++){
                 hotel[i].img_id = JSON.parse(hotel[i].img_id);
                 hotel[i].img_url = JSON.parse(hotel[i].img_url);
-                // hotel[i].amenities = JSON.parse(hotel[i].amenities);
-                // hotel[i].room_pricing = JSON.parse(hotel[i].room_pricing);
             }
             if(hotel.length <= length || length === "" || !length){
                 
@@ -215,72 +139,65 @@ exports.getHotelServices = async(req, res) => {
     }
 }
 
-exports.getHotelForUser = async(req, res) => {
-    try {
-        var hotel = await Product.findAll({ where: {
-            userid: req.user.id,
-            productType: 'hotel'
-        }, include:[
-            {
-                model: User,
-                attributes: {
-                    exclude: ["createdAt", "updatedAt"]
-                }
-            },
-            {
-                model: Amenity,
-                attributes: {
-                    exclude: ["createdAt", "updatedAt"]
-                }
-            },
-            {
-                model: Extras,
-                attributes: {
-                    exclude: ["createdAt", "updatedAt"]
-                }
-            }
-        ]})
+// exports.getHotelForUser = async(req, res) => {
+//     try {
+//         var hotel = await Product.findAll({ where: {
+//             userid: req.user.id,
+//             productType: 'hotel'
+//         }, include:[
+//             {
+//                 model: User,
+//                 attributes: {
+//                     exclude: ["createdAt", "updatedAt"]
+//                 }
+//             },
+//             {
+//                 model: Amenity,
+//                 attributes: {
+//                     exclude: ["createdAt", "updatedAt"]
+//                 }
+//             },
+//             {
+//                 model: Extras,
+//                 attributes: {
+//                     exclude: ["createdAt", "updatedAt"]
+//                 }
+//             }
+//         ]})
         
-        if(hotel){
-            for(let i=0; i<hotel.length; i++){
-                hotel[i].img_id = JSON.parse(hotel[i].img_id);
-                hotel[i].img_url = JSON.parse(hotel[i].img_url);
-                // hotel[i].amenities = JSON.parse(hotel[i].amenities);
-                // hotel[i].room_pricing = JSON.parse(hotel[i].room_pricing);
-            }
-            res.status(200).json({
-                status: true,
-                data: hotel
-            });
-        } else{
-            res.status(404).json({
-                status: false,
-                message: "Post not Found"
-            })
-        }
-    } catch (error) {
-        console.error(error)
-        return res.status(500).json({
-             status: false,
-             message: "An error occured",
-             error: error
-         })
-    }
-}
+//         if(hotel){
+//             for(let i=0; i<hotel.length; i++){
+//                 hotel[i].img_id = JSON.parse(hotel[i].img_id);
+//                 hotel[i].img_url = JSON.parse(hotel[i].img_url);
+//                 // hotel[i].amenities = JSON.parse(hotel[i].amenities);
+//                 // hotel[i].room_pricing = JSON.parse(hotel[i].room_pricing);
+//             }
+//             res.status(200).json({
+//                 status: true,
+//                 data: hotel
+//             });
+//         } else{
+//             res.status(404).json({
+//                 status: false,
+//                 message: "Post not Found"
+//             })
+//         }
+//     } catch (error) {
+//         console.error(error)
+//         return res.status(500).json({
+//              status: false,
+//              message: "An error occured",
+//              error: error
+//          })
+//     }
+// }
 
 exports.getHotelByTitle = async(req, res) => {
     const {title}= req.body;
     try {
         var hotel = await Product.findAll({where: {
             title: title,
-            productType: 'hotel'
         }, include:[
-            {
-                model: User,
-                attributes: {
-                    exclude: ["createdAt", "updatedAt"]
-                }
-            },
             {
                 model: Amenity,
                 attributes: {
@@ -299,8 +216,6 @@ exports.getHotelByTitle = async(req, res) => {
             for(let i=0; i<hotel.length; i++){
                 hotel[i].img_id = JSON.parse(hotel[i].img_id);
                 hotel[i].img_url = JSON.parse(hotel[i].img_url);
-                // hotel[i].amenities = JSON.parse(hotel[i].amenities);
-                // hotel[i].room_pricing = JSON.parse(hotel[i].room_pricing);
             }
             res.status(200).json({
                 status: true,
@@ -324,16 +239,9 @@ exports.getHotelByTitle = async(req, res) => {
 exports.getHotelById = async(req, res) => {
     const id= req.params.id;
     try {
-        var hotel = await Product.findAll({where: {
+        var hotel = await Product.findOne({where: {
             id: id,
-            productType: 'hotel'
         }, include:[
-            {
-                model: User,
-                attributes: {
-                    exclude: ["createdAt", "updatedAt"]
-                }
-            },
             {
                 model: Amenity,
                 attributes: {
@@ -352,8 +260,6 @@ exports.getHotelById = async(req, res) => {
             for(let i=0; i<hotel.length; i++){
                 hotel[i].img_id = JSON.parse(hotel[i].img_id);
                 hotel[i].img_url = JSON.parse(hotel[i].img_url);
-                // hotel[i].amenities = JSON.parse(hotel[i].amenities);
-                // hotel[i].room_pricing = JSON.parse(hotel[i].room_pricing);
             }
             res.status(200).json({
                 status: true,
@@ -376,36 +282,9 @@ exports.getHotelById = async(req, res) => {
 
 exports.updateHotel = async(req, res) => {
     const { title, description, location, rating } = req.body;
-    // var amenities = {
-    //     amenity1: amenity1,
-    //     amenity2: amenity2,
-    //     amenity3: amenity3,
-    //     amenity4: amenity4,
-    //     amenity5: amenity5
-    // };
-
-    // var room_pricing = [
-    //     {   room1: room1, 
-    //         price1: price1
-    //     }, 
-    //     { room2: room2, 
-    //         price2: price2
-    //     }, 
-    //     {   room3: room3,
-    //         price3: price3
-    //     }, 
-    //         {room4: room4,
-    //         price4: price4
-    //     }, 
-    //     {   room5: room5, 
-    //         price5: price5
-    //     }
-    // ]
     try{
         if(req.file || req.files) {
             const uploader = async (path) => await cloudinary.uploads(path, 'Images');
-            //console.log(path)
-            
                 const urls = [];
                 const ids = []
                 const files = req.files;
@@ -421,15 +300,10 @@ exports.updateHotel = async(req, res) => {
                 description: description,
                 location: location,
                 rating: parseFloat(rating),
-                // price: price,
-                // amenities: JSON.stringify(amenities),
-                // room_pricing: JSON.stringify(room_pricing),
                 img_id: JSON.stringify(ids),
                 img_url: JSON.stringify(urls)
             }, { where: {
-                id: req.params.id,
-                userid: req.user.id,
-                productType: 'hotel'
+                id: req.params.id
             }})
             res.status(200).json({
                 status: true,
@@ -441,13 +315,8 @@ exports.updateHotel = async(req, res) => {
                 description: description,
                 location: location,
                 rating: parseFloat(rating),
-                // price: price,
-                // amenities: JSON.stringify(amenities),
-                // room_pricing: JSON.stringify(room_pricing),
             }, { where: {
-                id: req.params.id,
-                userid: req.user.id,
-                productType: 'hotel'
+                id: req.params.id
             }})
             res.status(200).json({
                 status: true,

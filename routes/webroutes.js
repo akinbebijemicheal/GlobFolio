@@ -493,29 +493,29 @@ router
 .post(userAuth, getRentByTitle)
 
 
-router
-.route('/get-cinema-byuser')
-.get(userAuth, getCinemaForUser)
+// router
+// .route('/get-cinema-byuser')
+// .get(userAuth, getCinemaForUser)
 
-router
-.route('/get-hotel-byuser')
-.get(userAuth, getHotelForUser)
+// router
+// .route('/get-hotel-byuser')
+// .get(userAuth, getHotelForUser)
 
-router
-.route('/get-studio-byuser')
-.get(userAuth, getStudioForUser)
+// router
+// .route('/get-studio-byuser')
+// .get(userAuth, getStudioForUser)
 
-router
-.route('/get-gaming-byuser')
-.get(userAuth, getGamingForUser)
+// router
+// .route('/get-gaming-byuser')
+// .get(userAuth, getGamingForUser)
 
-router
-.route('/get-food-byuser')
-.get(userAuth, getFoodForUser);
+// router
+// .route('/get-food-byuser')
+// .get(userAuth, getFoodForUser);
 
-router
-.route('/get-rent-byuser')
-.get(userAuth, getRentForUser)
+// router
+// .route('/get-rent-byuser')
+// .get(userAuth, getRentForUser)
 
 
 router

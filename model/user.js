@@ -36,30 +36,12 @@ const User = db.define('user', {
     },
     role: {
         type: Sequelize.ENUM,
-        values: ['user', "vendor", 'admin'],
+        values: ['user', 'admin', "moderator", "publisher"],
         defaultValue: 'user'
-    },
-    serviceType: {
-        type: Sequelize.ENUM,
-        values: ["food", "studio", "hotel", "cinema", "vr_gaming", "rent", "consumer"],
-        defaultValue: "consumer"
     },
     email_verify: {
         type: Sequelize.BOOLEAN,
         defaultValue: false
-    },
-    verified: {
-        type: Sequelize.BOOLEAN,
-        defaultValue: false
-    },
-    business: {
-        type: Sequelize.STRING,
-        defaultValue: null,
-    },
-    sub_status: {
-        type: Sequelize.ENUM,
-        values: ['active', 'inactive'],
-        defaultValue: 'inactive'
     }
 },
 {timestamps: true});

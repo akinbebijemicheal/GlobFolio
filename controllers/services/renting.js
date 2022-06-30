@@ -6,9 +6,8 @@ const fs = require('fs')
 exports.createRentService = async(req, res) => {
     const { title, description, location, per_time, price } = req.body;
     try {
-        if(req.user.verified === true){
+      
             const uploader = async (path) => await cloudinary.uploads(path, 'Images');
-            //console.log(path)
             
                 const urls = [];
                 const ids = []
@@ -21,13 +20,11 @@ exports.createRentService = async(req, res) => {
                     fs.unlinkSync(path)
                 }
             const rent = new Product({
-                userid: req.user.id,
                 title,
                 description,
                 location,
                 per_time,
                 price: price,
-                productType: 'rent',
                 img_id: JSON.stringify(ids),
                 img_url: JSON.stringify(urls)
             })
@@ -35,32 +32,7 @@ exports.createRentService = async(req, res) => {
             rentout.img_id = JSON.parse(rentout.img_id);
             rentout.img_url = JSON.parse(rentout.img_url)
 
-            res.status(201).json(rentout)
-            // await Product.findOne({where: {
-            //     title: title
-            // }}).then(async(product) => {
-            //     var link = `${process.env.BASE_URL}/add-to-cart/${product.id}`
-            //     await Product.update({link: link}, {where: {
-            //         id: product.id
-            //     }})
-    
-            //     await Product.findOne({where: {
-            //         id: product.id
-            //     }}).then((product) => {
-            //         res.status(201).json({
-            //             status: true,
-            //             message: "Posted successfully",
-            //             data: product
-            //         })
-            //     })
-                
-            // })
-        } else{
-            res.status(301).json({
-                status: false,
-                message: "You are not verified",
-            })
-        }
+            res.status(201).json(rentout);
        
     } catch (error) {
         console.error(error)
@@ -76,11 +48,9 @@ exports.createRentService = async(req, res) => {
 exports.getRentServices = async(req, res) => {
     try {
         const length = req. query.length;
-        var rent = await Product.findAll({where: {
-            productType: 'rent'
-        },
-        order: [
-            ['createdAt', 'ASC']
+        var rent = await Product.findAll({
+            order: [
+                ['createdAt', 'ASC']
         ]});
 
         
@@ -120,54 +90,49 @@ exports.getRentServices = async(req, res) => {
     }
 }
 
-exports.getRentForUser = async(req, res) => {
-    try {
-        var rent = await Product.findAll({ where: {
-            userid: req.user.id,
-            productType: 'rent'
-        }, include:[
-            {
-                model: User
-            }
-        ]})
+// exports.getRentForUser = async(req, res) => {
+//     try {
+//         var rent = await Product.findAll({ where: {
+//             userid: req.user.id,
+//             productType: 'rent'
+//         }, include:[
+//             {
+//                 model: User
+//             }
+//         ]})
 
         
-        if(rent){
-            for(let i=0; i<rent.length; i++){
-                rent[i].img_id = JSON.parse(rent[i].img_id);
-                rent[i].img_url = JSON.parse(rent[i].img_url);
-            }
-            res.status(200).json({
-                status: true,
-                data: rent
-            });
-        } else{
-            res.status(404).json({
-                status: false,
-                message: "Post not Found"
-            })
-        }
-    } catch (error) {
-        console.error(error)
-        return res.status(500).json({
-             status: false,
-             message: "An error occured",
-             error: error
-         })
-    }
-}
+//         if(rent){
+//             for(let i=0; i<rent.length; i++){
+//                 rent[i].img_id = JSON.parse(rent[i].img_id);
+//                 rent[i].img_url = JSON.parse(rent[i].img_url);
+//             }
+//             res.status(200).json({
+//                 status: true,
+//                 data: rent
+//             });
+//         } else{
+//             res.status(404).json({
+//                 status: false,
+//                 message: "Post not Found"
+//             })
+//         }
+//     } catch (error) {
+//         console.error(error)
+//         return res.status(500).json({
+//              status: false,
+//              message: "An error occured",
+//              error: error
+//          })
+//     }
+// }
 
 exports.getRentByTitle = async(req, res) => {
     const {title} = req.body;
     try {
         var rent = await Product.findAll({where: {
-            title: title,
-            productType: 'rent'
-        }, include:[
-            {
-                model: User
-            }
-        ]})
+            title: title
+        }})
         
         if(rent){
             for(let i=0; i<rent.length; i++){
@@ -196,14 +161,9 @@ exports.getRentByTitle = async(req, res) => {
 exports.getRentById = async(req, res) => {
     const id= req.params.id;
     try {
-        var rent = await Product.findAll({where: {
+        var rent = await Product.findOne({where: {
             id: id,
-            productType: 'rent'
-        }, include:[
-            {
-                model: User
-            }
-        ]})
+        }})
         
         if(rent){
 
@@ -235,7 +195,6 @@ exports.updateRent = async(req, res) => {
     try{
         if(req.file || req.files) {
             const uploader = async (path) => await cloudinary.uploads(path, 'Images');
-            //console.log(path)
             
                 const urls = [];
                 const ids = []
@@ -256,9 +215,7 @@ exports.updateRent = async(req, res) => {
                 img_id: JSON.stringify(ids),
                 img_url: JSON.stringify(urls)
             }, { where: {
-                id: req.params.id,
-                userid: req.user.id,
-                productType: 'rent'
+                id: req.params.id
             }})
             res.status(200).json({
                 status: true,
@@ -272,9 +229,7 @@ exports.updateRent = async(req, res) => {
                 per_time: per_time,
                 price: price,
             }, { where: {
-                id: req.params.id,
-                userid: req.user.id,
-                productType: 'rent'
+                id: req.params.id
             }})
             res.status(200).json({
                 status: true,

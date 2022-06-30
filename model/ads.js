@@ -1,37 +1,36 @@
 const Sequelize = require('sequelize');
 const db = require('../config/config');
 const {nanoid} = require('nanoid');
+const User = require('./user');
 
-const Game = db.define('gaming', {
-    id: {
+const Ads = db.define('Ads', {
+    id :{
         type: Sequelize.STRING(10),
         autoincrement: false,
         allowNull: false,
         primaryKey: true,
         defaultValue: () => nanoid(10)
     },
-    title: {
-        type: Sequelize.STRING,
-        allowNull: false
+    userid: {
+        type: Sequelize.STRING(10),
+        references:{ 
+            model: 'users',
+            key: 'id',
+        }
     },
-    description: {
-        type: Sequelize.STRING
-    },
-    genre: {
-        type: Sequelize.STRING
-    },
-    age_rate: {
+    link: {
         type: Sequelize.STRING
     },
     img_id: {
-        type: Sequelize.TEXT,
+        type: Sequelize.STRING
     },
-    img_url: {
-        type: Sequelize.TEXT
-    },
-    price: {
-        type: Sequelize.STRING,
+    img_url:{
+        type: Sequelize.STRING
     }
 }, {timestamps: true});
 
-module.exports = Game;
+Ads.belongsTo(User, {foreignKey: 'userid'})
+User.hasMany(Ads, {foreignKey: 'userid'});
+
+
+module.exports = Ads
