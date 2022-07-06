@@ -337,14 +337,14 @@ router
 
 //admin
 router
-.post('/register-admin', async (req, res) => {
-    await RegisterUser("admin", req, res)
+.post('/register-admin', async (req, res, next) => {
+    await RegisterUser("admin", req, res, next)
     //res.redirect('login-admin')
 });
 
 router
-.post('/login-admin', async (req, res) => {
-    await webLoginUser("admin", req, res);
+.post('/login-admin', async (req, res, next) => {
+    await webLoginUser("admin", req, res, next);
     //res.redirect('/dashboard/admin')
 });
 
