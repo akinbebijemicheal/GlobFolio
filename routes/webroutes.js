@@ -16,45 +16,45 @@ const {UpdateResturant, deleteRestuarant, getRestuarantUser} = require('../contr
 const {createPrice, getSubPrice, updatePrice, deletePrice, verify} = require('../controllers/subscription');
 //user
 
-router
-.get('/', (req, res) =>{
-    res.render('base/index')
-})
+// router
+// .get('/', (req, res) =>{
+//     res.render('base/index')
+// })
 
-router
-.get('/about', (req, res) =>{
-    res.render('base/about')
-})
+// router
+// .get('/about', (req, res) =>{
+//     res.render('base/about')
+// })
 
-router
-.get('/contact', (req, res) =>{
-    res.render('base/contact')
-})
+// router
+// .get('/contact', (req, res) =>{
+//     res.render('base/contact')
+// })
 
-router
-.get('/faq', (req, res) =>{
-    res.render('base/faq')
-})
+// router
+// .get('/faq', (req, res) =>{
+//     res.render('base/faq')
+// })
 
-router
-.get('/gallery', (req, res) =>{
-    res.render('base/gallery')
-})
+// router
+// .get('/gallery', (req, res) =>{
+//     res.render('base/gallery')
+// })
 
-router
-.get('/pricing', (req, res) =>{
-    res.render('base/pricing')
-})
+// router
+// .get('/pricing', (req, res) =>{
+//     res.render('base/pricing')
+// })
 
-router
-.get('/privacy', (req, res) =>{
-    res.render('base/privacy')
-})
+// router
+// .get('/privacy', (req, res) =>{
+//     res.render('base/privacy')
+// })
 
-router
-.get('/terms', (req, res) =>{
-    res.render('base/terms')
-})
+// router
+// .get('/terms', (req, res) =>{
+//     res.render('base/terms')
+// })
 
 // router
 // .get('/registration-type', (req, res) => {
@@ -66,17 +66,17 @@ router
 //     res.render('base/signup') 
 // });
 
-router
-.get('/register-vendor', (req, res) => {
-    res.render('base/vendor-sign-up')
+// router
+// .get('/register-vendor', (req, res) => {
+//     res.render('base/vendor-sign-up')
     
-});
+// });
 
-router
-.get('/register-admin', (req, res) => {
-    res.render('base/admin-register')
+// router
+// .get('/register-admin', (req, res) => {
+//     res.render('base/admin-register')
     
-});
+// });
 
 // router
 // .get('/login-user', (req, res) => {
@@ -88,10 +88,10 @@ router
 //     res.render('base/vendorlogin')
 // });
 
-router
-.get('/login-admin', (req, res) => {
-    res.render('base/admin-login')
-});
+// router
+// .get('/login-admin', (req, res) => {
+//     res.render('base/admin-login')
+// });
 
 // router
 // .get('/dashboard/user', userAuth, (req, res)=>{

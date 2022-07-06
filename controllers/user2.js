@@ -29,10 +29,10 @@ exports.RegisterUser = async (role, req, res, next) => {
         const hashedPass = await bcrypt.hash(password, salt);
         
         if(role === 'admin'){
-            var verify = true;
+            // var verify = true;
             var emailVerified = true
         }else{
-          verify = false;
+        //   verify = false;
           emailVerified = true
         }
         
@@ -40,6 +40,7 @@ exports.RegisterUser = async (role, req, res, next) => {
         user = new User({
             email,
             password: hashedPass,
+            role: role,
             email_verify: emailVerified
         });
     
