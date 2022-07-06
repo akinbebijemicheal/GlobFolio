@@ -1,19 +1,19 @@
 const User = require('../model/user');
 require('dotenv').config();
-const { Strategy} = require('passport-jwt');
+const { Strategy, ExtractJwt} = require('passport-jwt');
 
-const cookieExtractor = (req) => {
-    var token = null;
-    if (req && req.signedCookies && req.signedCookies.jwt) {
-        token = req.signedCookies.jwt;
-    }
+// const cookieExtractor = (req) => {
+//     var token = null;
+//     if (req && req.signedCookies && req.signedCookies.jwt) {
+//         token = req.signedCookies.jwt;
+//     }
     //console.log(token);
-    return token;
-};
+//     return token;
+// };
 
 
 const options = {
-    jwtFromRequest: cookieExtractor,
+    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     secretOrKey: process.env.TOKEN
 }
 

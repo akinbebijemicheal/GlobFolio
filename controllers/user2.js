@@ -7,7 +7,7 @@ require('dotenv').config();
 const nodemailer = require('nodemailer')
 const baseurl = process.env.BASE_URL
 
-exports.RegisterUser = async (role, req, res) => {
+exports.RegisterUser = async (role, req, res, next) => {
     try{
 
         const {email, password } = req.body;
@@ -18,9 +18,12 @@ exports.RegisterUser = async (role, req, res) => {
                 }
             });
         if(user) {
-            res.status(302)
-            req.flash("error", "User already exist")
-            res.redirect("back")
+            res.status(302).json({
+                status: false,
+                message: "User already exist"
+            })
+            // req.flash("error", "User already exist")
+            // res.redirect("back")
         }
         const salt = await bcrypt.genSalt(12);
         const hashedPass = await bcrypt.hash(password, salt);
@@ -41,20 +44,27 @@ exports.RegisterUser = async (role, req, res) => {
         });
     
         const Newuser = await user.save();
-
-        req.flash('success', "Registration successful")
-         res.redirect(`login-${role}`);
+        res.status(200).json({
+            status: true,
+            data: Newuser
+        })
+        // req.flash('success', "Registration successful")
+        //  res.redirect(`login-${role}`);
 
     }catch(error){
         console.error(error)
-        //res.status(500)
-        req.flash("error", "An error occured refresh the page")
-        res.redirect("back")
+        res.status(500).json({
+            status: false,
+            message: error
+        })
+        next(error)
+        // req.flash("error", "An error occured refresh the page")
+        // res.redirect("back")
     }
 };
 
 
-exports.webLoginUser = async (role, req, res) => {
+exports.webLoginUser = async (role, req, res, next) => {
     try{
 
         const {email, password } = req.body;
@@ -62,14 +72,21 @@ exports.webLoginUser = async (role, req, res) => {
             email: email }
         });
         if(!user){
-            res.status(404)
-            req.flash("warning", 'User does not exist');
-            res.redirect("back")
+            res.status(404).jdon({
+                status: false,
+                message: 'User does not exist'
+            })
+            // req.flash("warning", 'User does not exist');
+            // res.redirect("back")
         }
 
         if(user.role !== role){
-          req.flash("warning", "Please ensure you are logging-in from the right portal");
-          res.redirect("back")
+            res.status(401).jdon({
+                status: false,
+                message: 'Please ensure you are logging-in from the right portal'
+            })
+        //   req.flash("warning", "Please ensure you are logging-in from the right portal");
+        //   res.redirect("back")
         }
         
         const validate = await bcrypt.compare(password, user.password);
@@ -84,37 +101,36 @@ exports.webLoginUser = async (role, req, res) => {
                 process.env.TOKEN, { expiresIn: 24 * 60 * 60});
 
             let result = {
+                token: `Bearer ${token}`,
                 id: user.id,
                 fullname: user.fullname,
                 email: user.email,
                 role: user.role,
-                phone_no: user.phone_no,
-                country: user.country,
-                address: user.address,
                 expiresIn: '24 hours',
                 email_verify: user.email_verify,
                 updatedAt: user.updatedAt,
                 createdAt: user.createdAt,
             };
 
-            var option = {
-                httpOnly: true,
-                signed: true,
-                sameSite: true,
-                secure: (process.env.NODE_ENV !== 'development'),
-                secret: process.env.CSECRET
-            }
+            // var option = {
+            //     httpOnly: true,
+            //     signed: true,
+            //     sameSite: true,
+            //     secure: (process.env.NODE_ENV !== 'development'),
+            //     secret: process.env.CSECRET
+            // }
 
-            // res.json({
-            //     status: tri
-            // })
+            res.json({
+                status: true,
+                data: result
+            })
             
             
 
             //res.status(200)
-            req.flash("success", "Successfully logged in");
-            res.cookie("jwt", token, option);
-            res.redirect(`/dashboard/${role}`)
+            // req.flash("success", "Successfully logged in");
+            // res.cookie("jwt", token, option);
+            // res.redirect(`/dashboard/${role}`)
 
             
 
@@ -122,16 +138,24 @@ exports.webLoginUser = async (role, req, res) => {
 
         } else{
            //res.status(403)
-          req.flash("warning", 'Wrong password');
-          res.redirect("back")
+        //   req.flash("warning", 'Wrong password');
+        //   res.redirect("back")
+        res.status(404).json({
+            status: false,
+            message: "User not found"
+        })
         }
 
 
     } catch(error){
-        console.error(error)
-      // res.status(500)
-      req.flash("error", "An error occured refresh the page")
-      res.redirect("back")
+        console.error(error);
+        res.status(500).json({
+            status: false,
+            message: error
+        });
+        next(error);
+    //   req.flash("error", "An error occured refresh the page")
+    //   res.redirect("back")
     }
 };
 
@@ -155,7 +179,7 @@ exports.profile = user => {
 };
 
 
-exports.getUsers = async (req, res)=>{
+exports.getUsers = async (req, res, next)=>{
     try {
         const users = await User.findAll({where: {role: 'user'}})
         if (users){
@@ -170,12 +194,16 @@ exports.getUsers = async (req, res)=>{
        
     } catch (error) {
         console.error(error)
-        res.status(500)
-        req.flash("error", "An error occured refresh the page")
+        res.status(500).json({
+            status: false,
+            message: "An error occured refresh the page"
+        })
+        next(error)
+        // req.flash("error", "An error occured refresh the page")
     }
 };
 
-exports.getUser = async (req, res) => {
+exports.getUser = async (req, res, next) => {
     try {
         const user = await User.findOne({where: 
             { 
@@ -194,13 +222,17 @@ exports.getUser = async (req, res) => {
 
     } catch (error) {
         console.error(error)
-        res.status(500)
-       req.flash("error", "An error occured refresh the page")
-       res.redirect("back")
+        res.status(500).json({
+            status: false,
+            message: "An error occured refresh the page"
+        })
+        next(error)
+    //    req.flash("error", "An error occured refresh the page")
+    //    res.redirect("back")
     }
 };
 
-exports.updateUser = async(req, res) => {
+exports.updateUser = async(req, res, next) => {
     try{
         await User.update( req.body, { where: 
             {
@@ -220,13 +252,15 @@ exports.updateUser = async(req, res) => {
         })
     } catch(error){
         console.error(error)
-        res.status(500)
-        req.flash("error", "An error occured refresh the page")
-        res.redirect("back")
+        res.status(500).json({
+            status: false,
+            message: "An error occured refresh the page"
+        })
+        next(error)
     }
 }
 
-exports.deleteUser = async(req, res) => {
+exports.deleteUser = async(req, res, next) => {
     try{
         const user = await User.destroy({ where: {
             email: req.user.email}
@@ -239,9 +273,11 @@ exports.deleteUser = async(req, res) => {
         })
     } catch(error){
         console.error(error)
-        res.status(500)
-       req.flash("error", "An error occured refresh the page")
-       res.redirect("back")
+        res.status(500).json({
+            status: false,
+            message: "An error occured refresh the page"
+        })
+        next(error)
     }
 };
 
