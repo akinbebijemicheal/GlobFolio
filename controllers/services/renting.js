@@ -5,13 +5,14 @@ const User = require('../../model/user');
 const fs = require('fs')
 
 exports.createRentService = async(req, res) => {
-    const { title, description, location, per_time, price } = req.body;
+    const { title, description, location, equipment, per_time, price } = req.body;
     try {
         const rent = new Product({
             title,
             description,
             location,
             per_time,
+            equipment,
             price: price
         })
         var rentout = await rent.save();
@@ -46,9 +47,7 @@ exports.createRentService = async(req, res) => {
         }
             
         var output = await Product.findOne({ where: {id: rentout.id},
-            order: [
-                ['rating', 'ASC']
-            ], include:[
+            include:[
                 {
                     model: Image,
                     attributes: {
@@ -237,7 +236,7 @@ exports.getRentById = async(req, res) => {
 }
 
 exports.updateRent = async(req, res) => {
-    const { title, description, location, per_time, price } = req.body;
+    const { title, description, equipment, location, per_time, price } = req.body;
     try{
        
             await Product.update({
@@ -245,6 +244,7 @@ exports.updateRent = async(req, res) => {
                 description: description,
                 location: location,
                 per_time: per_time,
+                equipment,
                 price: price,
             }, { where: {
                 id: req.params.id
