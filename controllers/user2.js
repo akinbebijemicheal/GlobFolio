@@ -72,7 +72,7 @@ exports.webLoginUser = async (role, req, res, next) => {
             email: email }
         });
         if(!user){
-            res.status(404).jdon({
+            res.status(404).json({
                 status: false,
                 message: 'User does not exist'
             })
