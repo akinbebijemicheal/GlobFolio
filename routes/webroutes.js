@@ -375,17 +375,17 @@ router
 .get(userAuth, getPicture);
 
 
-router
-.route('/get-unverified-vendor')
-.get(userAuth, checkRole(["admin"]), getUnverifieds)
+// router
+// .route('/get-unverified-vendor')
+// .get(userAuth, checkRole(["admin"]), getUnverifieds)
 
-router
-.route('/get-vendors')
-.get(userAuth, checkRole(["admin"]), getVendors)
+// router
+// .route('/get-vendors')
+// .get(userAuth, checkRole(["admin"]), getVendors)
 
-router
-.route('/get-vendorsByservice')
-.get(userAuth, checkRole(["admin"]), getVendorsByServices)
+// router
+// .route('/get-vendorsByservice')
+// .get(userAuth, checkRole(["admin"]), getVendorsByServices)
 
 router
 .route('/verification')
@@ -425,11 +425,11 @@ router
 
 router
 .route('/create-hotel-post')
-.post(userAuth, checkRole(["vendor", "admin"]) ,upload.array("image"), createHotelService);
+.post(userAuth, checkRole(["admin"]) ,upload.array("image"), createHotelService);
 
 router
 .route('/create-food-post')
-.post(userAuth, checkRole(["vendor", "admin"]) ,upload.array("image"), createFoodService);
+.post(userAuth, checkRole(["admin"]) ,upload.array("image"), createFoodService);
 
 router
 .route('/create-studio-post')
@@ -441,7 +441,7 @@ router
 
 router
 .route('/create-rent-post')
-.post(userAuth, checkRole(["vendor", "admin"]) ,upload.array("image"), createRentService);
+.post(userAuth, checkRole(["admin"]) ,upload.array("image"), createRentService);
 
 router
 .route('/get-cinema-posts')
@@ -524,7 +524,7 @@ router
 
 router
 .route('/update-hotel-byuser')
-.patch(userAuth, checkRole(["vendor", "admin"]) ,upload.array("image"), updateHotel)
+.patch(userAuth, checkRole(["admin"]) ,upload.array("image"), updateHotel)
 
 router
 .route('/update-studio-byuser')
@@ -536,11 +536,11 @@ router
 
 router
 .route('/update-food-byuser')
-.patch(userAuth, checkRole(["vendor", "admin"]) ,upload.array("image"), updateFood);
+.patch(userAuth, checkRole(["admin"]) ,upload.array("image"), updateFood);
 
 router
 .route('/update-rent-byuser')
-.patch(userAuth, checkRole(["vendor", "admin"]) ,upload.array("image"), updateRent);
+.patch(userAuth, checkRole(["admin"]) ,upload.array("image"), updateRent);
 
 router
 .get('/logout', (req, res) => {
