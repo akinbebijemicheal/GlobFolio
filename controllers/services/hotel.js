@@ -37,7 +37,7 @@ exports.createHotelService = async(req, res) => {
                     var imageoutput = []
                     for(let i=0; i<id.length; i++){
                         imageoutput.push({
-                            hotalId: hotelout.id,
+                            hotelId: hotelout.id,
                             img_id: id[i],
                             img_url: url[i]
                         });
