@@ -14,8 +14,8 @@ const CinemaImage = db.define("cinemaimage", {
   cinemaId: {
     type: Sequelize.STRING(10),
     references: {
-      model: "cinema",
-      key: "id",
+      model: 'cinemas',
+      key: 'id',
     },
   },
   img_id: {
@@ -23,7 +23,7 @@ const CinemaImage = db.define("cinemaimage", {
   },
   img_url: {
     type: Sequelize.STRING,
-  },
+  }
 });
 
 CinemaImage.belongsTo(Cinema, { foreignKey: "cinemaId" });

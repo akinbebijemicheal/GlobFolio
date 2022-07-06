@@ -14,7 +14,7 @@ const StudioImage = db.define("studioimage", {
   studioId: {
     type: Sequelize.STRING(10),
     references: {
-      model: "studio",
+      model: "studios",
       key: "id",
     },
   },

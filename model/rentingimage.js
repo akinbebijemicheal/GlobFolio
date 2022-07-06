@@ -14,7 +14,7 @@ const RentImage = db.define("rentimage", {
   rentId: {
     type: Sequelize.STRING(10),
     references: {
-      model: "rent",
+      model: "rents",
       key: "id",
     },
   },

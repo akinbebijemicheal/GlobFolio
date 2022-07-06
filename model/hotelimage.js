@@ -14,7 +14,7 @@ const HotelImage = db.define("hotelimage", {
   hotelId: {
     type: Sequelize.STRING(10),
     references: {
-      model: "hotel",
+      model: "hotels",
       key: "id",
     },
   },

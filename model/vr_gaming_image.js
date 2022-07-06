@@ -14,7 +14,7 @@ const GameImage = db.define("gameimage", {
   gameId: {
     type: Sequelize.STRING(10),
     references: {
-      model: "gaming",
+      model: "gamings",
       key: "id",
     },
   },
