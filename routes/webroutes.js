@@ -551,28 +551,28 @@ router
     
 });
 
-router
-.put('/updateRestuarant', userAuth, UpdateResturant);
+// router
+// .put('/updateRestuarant', userAuth, UpdateResturant);
 
-router
-.get('/getUserRestuarant', userAuth, getRestuarantUser);
+// router
+// .get('/getUserRestuarant', userAuth, getRestuarantUser);
 
-router
-.delete('/deleteRestuarant/:id', userAuth, deleteRestuarant);
+// router
+// .delete('/deleteRestuarant/:id', userAuth, deleteRestuarant);
 
-router
-.post('/createPlanPrice', userAuth, checkRole(["admin"]), createPrice);
+// router
+// .post('/createPlanPrice', userAuth, checkRole(["admin"]), createPrice);
 
-router
-.get('/getPrice', getSubPrice);
+// router
+// .get('/getPrice', getSubPrice);
 
-router
-.put('/updatePlanPrice', userAuth, checkRole(["admin"]), updatePrice);
+// router
+// .put('/updatePlanPrice', userAuth, checkRole(["admin"]), updatePrice);
 
-router
-.delete('/deletePlan', userAuth, checkRole(["admin"]), deletePrice);
+// router
+// .delete('/deletePlan', userAuth, checkRole(["admin"]), deletePrice);
 
-router
-.get('/pay/verify', userAuth, verify)
+// router
+// .get('/pay/verify', userAuth, verify)
 
 module.exports = router;
