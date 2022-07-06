@@ -81,7 +81,7 @@ exports.webLoginUser = async (role, req, res, next) => {
         }
 
         if(user.role !== role){
-            res.status(401).jdon({
+            res.status(401).json({
                 status: false,
                 message: 'Please ensure you are logging-in from the right portal'
             })
