@@ -1,15 +1,28 @@
 const Product = require('../../model/food');
 const Extras = require('../../model/foodextras')
+const Image = require('../../model/foodimage')
 const cloudinary = require('../../util/cloudinary');
 const User = require('../../model/user');
-const fs = require('fs')
+const fs = require('fs');
+
+
 
 exports.createFoodService = async(req, res) => {
     const { title, description, ingredients, price } = req.body;
     try {
-            const uploader = async (path) => await cloudinary.uploads(path, 'Images');
-                const urls = [];
-                const ids = []
+
+        var food = new Product({
+            title,
+            description,
+            ingredients,
+            price: price,
+        })
+        var  foodout = await food.save();
+
+        if(req.files || req.file){
+              const uploader = async (path) => await cloudinary.uploads(path, 'foodImages');
+                var urls = [];
+                var ids = []
                 const files = req.files;
                 for (const file of files){
                     const { path } = file;
@@ -19,18 +32,20 @@ exports.createFoodService = async(req, res) => {
                     fs.unlinkSync(path)
                 }
 
-            const food = new Product({
-            title,
-            description,
-            ingredients,
-            price: price,
-            img_id: JSON.stringify(ids),
-            img_url: JSON.stringify(urls),
-        })
-        const foodout = await food.save();
+                var foodimage = (id, url)=>{
+                    var imageoutput = []
+                    for(let i=0; i<id.length; i++){
+                        imageoutput.push({
+                            foodId: foodout.id,
+                            img_id: id[i],
+                            img_url: url[i]
+                        });
+                    }
+                    return imageoutput;
+                }
 
-        foodout.img_id = JSON.parse(foodout.img_id);
-        foodout.img_url = JSON.parse(foodout.img_url);
+                await Image.bulkCreate(foodimage(ids, urls), {returning: true});
+        }
        
 
 
@@ -46,16 +61,34 @@ exports.createFoodService = async(req, res) => {
                     };
                     return output;
                 }
-                console.log(top_price(req.body.top, req.body.topPrice));
+                //console.log(top_price(req.body.top, req.body.topPrice));
                 var toppings = await Extras.bulkCreate(top_price(req.body.top, req.body.topPrice), {returning: true})
            
             
         }
 
+        var out = await Product.findOne({
+            where:{
+                id: foodout.id
+            }, include:[
+                {
+                    model: Extras,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                },
+                {
+                    model: Image,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                }
+            ]
+        })
+
         res.status(201).json({
             status: true,
-            food: foodout,
-            toppings: toppings
+            data: out
         });
        
         
@@ -76,27 +109,28 @@ exports.getFoodServices = async(req, res) => {
         const length = req.query.length;
 
         var food = await Product.findAll({
+            include:[
+                {
+                    model: Extras,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                },
+                {
+                    model: Image,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                }
+            ],
         order: [
             ['createdAt', 'ASC']
-        ],
-        include:[
-            {
-                model: Extras,
-                attributes:{
-                    exclude: ["createdAt", "updatedAt"]
-                }
-            }
-            
         ]
     
     });
 
         
         if(food){
-            for(let i=0; i<food.length; i++){
-                food[i].img_id = JSON.parse(food[i].img_id);
-                food[i].img_url = JSON.parse(food[i].img_url);
-            }
 
             if(food.length <= length || length === "" || !length){
                
@@ -130,57 +164,6 @@ exports.getFoodServices = async(req, res) => {
     }
 }
 
-// exports.getFoodForUser = async(req, res) => {
-//     try {
-//         var food = await Product.findAll({ where: {
-//             userid: req.user.id,
-//         }, include:[
-//             {
-//                 model: User,
-//                 attributes:{
-//                     exclude: ["createdAt", "updatedAt"]
-//                 }
-//             },
-//             {
-//                 model: Extras,
-//                 attributes:{
-//                     exclude: ["createdAt", "updatedAt"]
-//                 }
-//             },
-//             {
-//                 model: Restaurant,
-//                 attributes:{
-//                     exclude: ["createdAt", "updatedAt"]
-//                 }
-//             }
-//         ]} )
-
-        
-//         if(food){
-//             for(let i=0; i<food.length; i++){
-//                 food[i].img_id = JSON.parse(food[i].img_id);
-//                 food[i].img_url = JSON.parse(food[i].img_url);
-//                 // food[i].toppings_price= JSON.parse(food[i].toppings_price)
-//             }
-//             res.status(200).json({
-//                 status: true,
-//                 data: food
-//             });
-//         } else{
-//             res.status(404).json({
-//                 status: false,
-//                 message: "Post not Found"
-//             })
-//         }
-//     } catch (error) {
-//         console.error(error)
-//         return res.status(500).json({
-//              status: false,
-//              message: "An error occured",
-//              error: error
-//          })
-//     }
-// }
 
 exports.getFoodByTitle = async(req, res) => {
     const {title} = req.body;
@@ -190,17 +173,19 @@ exports.getFoodByTitle = async(req, res) => {
             }, include:[
                 {
                     model: Extras,
-                    attributes:{
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                },
+                {
+                    model: Image,
+                    attributes: {
                         exclude: ["createdAt", "updatedAt"]
                     }
                 }
-            ]} 
+            ]}
         )
         if(food){
-            for(let i=0; i<food.length; i++){
-                food[i].img_id = JSON.parse(food[i].img_id);
-                food[i].img_url = JSON.parse(food[i].img_url);
-            }
             res.status(200).json({
                 status: true,
                 data: food 
@@ -229,17 +214,19 @@ exports.getFoodById = async(req, res) => {
         }, include:[
             {
                 model: Extras,
-                attributes:{
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                }
+            },
+            {
+                model: Image,
+                attributes: {
                     exclude: ["createdAt", "updatedAt"]
                 }
             }
         ]})
        
         if(food){
-            for(let i=0; i<food.length; i++){
-                food[i].img_id = JSON.parse(food[i].img_id);
-                food[i].img_url = JSON.parse(food[i].img_url);
-            }
             res.status(200).json({
                 status: true,
                 data: food
@@ -263,33 +250,6 @@ exports.getFoodById = async(req, res) => {
 exports.updateFood = async(req, res) => {
     const {title, description, ingredents, price} = req.body;
     try{
-        if(req.file || req.files) {
-            const uploader = async (path) => await cloudinary.uploads(path, 'Images');
-                const urls = [];
-                const ids = []
-                const files = req.files;
-                for (const file of files){
-                    const { path } = file;
-                    const newPath = await uploader(path)
-                    urls.push(newPath.url);
-                    ids.push(newPath.id)
-                    fs.unlinkSync(path)
-                }
-             await Product.update({
-                title: title,
-                description: description,
-                ingredents: ingredents,
-                price: price,
-                img_id: JSON.stringify(ids),
-                img_url: JSON.stringify(urls)
-            }, { where: {
-                id: req.params.id,
-            }})
-            res.status(200).json({
-                status: true,
-                message: "Post updated"
-            })
-        } else{
             await Product.update({
                 title: title,
                 description: description,
@@ -302,8 +262,93 @@ exports.updateFood = async(req, res) => {
                 status: true,
                 message: "Post updated"
             })
-        }   
+          
         
+    } catch{
+        console.error(error)
+        return res.status(500).json({
+             status: false,
+             message: "An error occured",
+             error: error
+         })
+    }
+}
+
+exports.uploadFoodImage = async(req, res) => {
+    try{
+        if(req.files || req.file){
+            const uploader = async (path) => await cloudinary.uploads(path, 'foodImages');
+              var urls = [];
+              var ids = []
+              const files = req.files;
+              for (const file of files){
+                  const { path } = file;
+                  const newPath = await uploader(path)
+                  urls.push(newPath.url);
+                  ids.push(newPath.id)
+                  fs.unlinkSync(path)
+              }
+
+              var foodimage = (id, url)=>{
+                  var imageoutput = []
+                  for(let i=0; i<id.length; i++){
+                      imageoutput.push({
+                          foodId: req.params.foodId,
+                          img_id: id[i],
+                          img_url: url[i]
+                      });
+                  }
+                  return imageoutput;
+              }
+
+             var output = await Image.bulkCreate(foodimage(ids, urls), {returning: true});
+      }
+     
+            res.status(200).json({
+                status: true,
+                message: "Image added",
+                data: output
+            })
+          
+        
+    } catch{
+        console.error(error)
+        return res.status(500).json({
+             status: false,
+             message: "An error occured",
+             error: error
+         })
+    }
+}
+
+exports.RemoveFoodImage = async(req, res) => {
+    try{
+       
+        await Image.findOne({
+            where: {
+                id: req.params.imageId
+            }
+        }).then(async(image)=>{
+            if(image){
+                await cloudinary.cloudinary.uploader.destroy(image.img_id);
+                await Image.destroy({
+                    where:{
+                        id: image.id
+                    }
+                });
+
+                res.status(200).json({
+                    status: true,
+                    message: "Image Removed",
+                })
+            }else{
+                res.status(404).json({
+                    status: false,
+                    message: "Image Not Found",
+                })
+            }
+        })
+     
     } catch{
         console.error(error)
         return res.status(500).json({

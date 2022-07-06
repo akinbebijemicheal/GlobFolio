@@ -21,12 +21,6 @@ const Hotel = db.define('hotel', {
     location: {
         type: Sequelize.STRING
     },
-    img_id: {
-        type: Sequelize.TEXT,
-    },
-    img_url: {
-        type: Sequelize.TEXT
-    },
     rating: {
         type: Sequelize.FLOAT
     }

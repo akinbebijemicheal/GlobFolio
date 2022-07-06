@@ -23,12 +23,6 @@ const Game = db.define('gaming', {
     age_rate: {
         type: Sequelize.STRING
     },
-    img_id: {
-        type: Sequelize.TEXT,
-    },
-    img_url: {
-        type: Sequelize.TEXT
-    },
     price: {
         type: Sequelize.STRING,
     }

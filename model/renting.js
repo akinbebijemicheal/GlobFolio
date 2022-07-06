@@ -26,12 +26,6 @@ const Rent = db.define('rent', {
     per_time: {
         type: Sequelize.STRING
     },
-    img_id: {
-        type: Sequelize.TEXT,
-    },
-    img_url: {
-        type: Sequelize.TEXT
-    },
     price: {
         type: Sequelize.STRING,
     }

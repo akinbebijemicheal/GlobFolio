@@ -1,4 +1,5 @@
 const Product = require('../../model/cinema');
+const Image = require("../../model/cinemaimage");
 const cloudinary = require('../../util/cloudinary');
 const User = require('../../model/user');
 const { Op } = require('sequelize')
@@ -7,8 +8,22 @@ const fs = require('fs')
 exports.createCinemaService = async(req, res) => {
     const { title, genre, storyline, rating, view_date, cast, duration, age_rate,  price } = req.body;
     try {
-            
-            const uploader = async (path) => await cloudinary.uploads(path, 'Images');
+
+        const cinema = new Product({
+            title,
+            genre,
+            storyline,
+            cast,
+            duration,
+            age_rate,
+            view_date,
+            rating: parseFloat(rating),
+            price: price,
+        })
+        var cinemaout = await cinema.save();
+
+        if(req.file || req.files){
+             const uploader = async (path) => await cloudinary.uploads(path, 'cinemaImages');
             
                 const urls = [];
                 const ids = []
@@ -20,29 +35,41 @@ exports.createCinemaService = async(req, res) => {
                     ids.push(newPath.id)
                     fs.unlinkSync(path)
                 }
-            
-            const cinema = new Product({
-            title,
-            genre,
-            storyline,
-            cast,
-            duration,
-            age_rate,
-            view_date,
-            rating: parseFloat(rating),
-            price: price,
-            img_id: JSON.stringify(ids),
-            img_url: JSON.stringify(urls)
-        })
-        var cinemaout = await cinema.save();
 
-        cinemaout.img_url =JSON.parse(cinemaout.img_url);
-        cinemaout.img_id = JSON.parse(cinemaout.img_id);
+                var cinemaImages = (id, url)=>{
+                    var imageoutput = []
+                    for(let i=0; i<id.length; i++){
+                        imageoutput.push({
+                            cinemaId: cinemaout.id,
+                            img_id: id[i],
+                            img_url: url[i]
+                        });
+                    }
+                    return imageoutput;
+                }
+
+                await Image.bulkCreate(cinemaImages(ids, urls), {returning: true});
+        }
+           
+        var out = await Product.findOne({
+            where:{
+                id: cinemaout.id
+            }, include:[
+                {
+                    model: Image,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                }
+            ]
+        })
+
+            
+       
         res.status(201).json({
-            data: {
-                cinemaout,
-            }
-            })        
+            status: true,
+            data: out
+        })        
     } catch (error) {
         console.error(error)
         return res.status(500).json({
@@ -65,6 +92,14 @@ exports.getCinemaServices = async(req, res) => {
             order: [
                 ['view_date', 'ASC']
             ],
+            include:[
+                {
+                    model: Image,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                }
+            ]
         });
 
             
@@ -78,7 +113,16 @@ exports.getCinemaServices = async(req, res) => {
                 } 
             }, order: [
                 ['view_date', 'ASC']
-            ],});
+            ],
+            include:[
+                {
+                    model: Image,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                }
+            ]
+        });
             
         }
 
@@ -88,6 +132,14 @@ exports.getCinemaServices = async(req, res) => {
                 ['rating', 'DESC'],
                 ['view_date', 'ASC']
             ],
+            include:[
+                {
+                    model: Image,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                }
+            ]
         });
             
         }
@@ -97,16 +149,21 @@ exports.getCinemaServices = async(req, res) => {
             order: [
                 ['view_date', 'ASC']
             ],
+
+            include:[
+                {
+                    model: Image,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                }
+            ]
         });
             
         }
       
         if(cinema){
 
-            for(let i=0; i<cinema.length; i++){
-                cinema[i].img_id = JSON.parse(cinema[i].img_id);
-                cinema[i].img_url = JSON.parse(cinema[i].img_url);
-            }
             if(cinema.length <= length || length === "" || !length){
                 res.status(200).json({
                     status: true,
@@ -139,50 +196,22 @@ exports.getCinemaServices = async(req, res) => {
     }
 }
 
-// exports.getCinemaForUser = async(req, res) => {
-//     try {
-//        var cinema = await Product.findAll({ where: {
-//             userid: req.user.id,
-//             productType: 'cinema'
-//         }, include:[
-//             {
-//                 model: User
-//             }
-//         ]})
-//         if(cinema){
-//             cinema.img_id = JSON.parse(cinema.img_id);
-//             cinema.img_url = JSON.parse(cinema.img_url)
-//             res.status(200).json({
-//                 status: true,
-//                 data: cinema
-//             });
-//         } else{
-//             res.status(404).json({
-//                 status: false,
-//                 message: "Post not Found"
-//             })
-//         }
-//     } catch (error) {
-//         console.error(error)
-//         return res.status(500).json({
-//              status: false,
-//              message: "An error occured",
-//              error: error
-//          })
-//     }
-// }
-
 exports.getCinemaByTitle = async(req, res) => {
     const { title }= req.body;
     try {
         var cinema = await Product.findAll({where: {
             title: title
-        }})
-        if(cinema){
-            for(let i=0; i<cinema.length; i++){
-                cinema[i].img_id = JSON.parse(cinema[i].img_id);
-                cinema[i].img_url = JSON.parse(cinema[i].img_url);
+        },
+        include:[
+            {
+                model: Image,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                }
             }
+        ]
+    })
+        if(cinema){
             res.status(200).json({
                 status: true,
                 data: cinema
@@ -207,12 +236,17 @@ exports.getCinemaById = async(req, res) => {
     try {
         var cinema = await Product.findOne({where: {
             id: id,
-        }})
-        if(cinema){
-            for(let i=0; i<cinema.length; i++){
-                cinema[i].img_id = JSON.parse(cinema[i].img_id);
-                cinema[i].img_url = JSON.parse(cinema[i].img_url);
+        }, 
+        include:[
+            {
+                model: Image,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                }
             }
+        ]
+    })
+        if(cinema){
             res.status(200).json({
                 status: true,
                 data: cinema})
@@ -235,39 +269,7 @@ exports.getCinemaById = async(req, res) => {
 exports.updateCinema = async(req, res) => {
     const { title, genre, storyline, rating, view_date, cast, duration, age_rate,  price } = req.body;
     try{
-        if(req.file || req.files) {
-            const uploader = async (path) => await cloudinary.uploads(path, 'Images');
-            
-                const urls = [];
-                const ids = []
-                const files = req.files;
-                for (const file of files){
-                    const { path } = file;
-                    const newPath = await uploader(path)
-                    urls.push(newPath.url);
-                    ids.push(newPath.id)
-                    fs.unlinkSync(path)
-                }
-             await Product.update({
-                title: title,
-                genre: genre,
-                storyline: storyline,
-                cast: cast,
-                view_date: view_date,
-                duration: duration,
-                age_rate: age_rate,
-                rating: parseFloat(rating),
-                price: price,
-                img_id: JSON.stringify(ids),
-                img_url: JSON.stringify(urls),
-            }, { where: {
-                id: req.params.id
-            }})
-            res.status(200).json({
-                status: true,
-                message: "Post updated"
-            })
-        } else{
+        
             await Product.update({
                 title: title,
                 genre: genre,
@@ -285,8 +287,93 @@ exports.updateCinema = async(req, res) => {
                 status: true,
                 message: "Post updated"
             })
-        }   
         
+        
+    } catch{
+        console.error(error)
+        return res.status(500).json({
+             status: false,
+             message: "An error occured",
+             error: error
+         })
+    }
+}
+
+exports.uploadCinemaImage = async(req, res) => {
+    try{
+        if(req.files || req.file){
+            const uploader = async (path) => await cloudinary.uploads(path, 'cinemaImages');
+              var urls = [];
+              var ids = []
+              const files = req.files;
+              for (const file of files){
+                  const { path } = file;
+                  const newPath = await uploader(path)
+                  urls.push(newPath.url);
+                  ids.push(newPath.id)
+                  fs.unlinkSync(path)
+              }
+
+              var cinemaimage = (id, url)=>{
+                  var imageoutput = []
+                  for(let i=0; i<id.length; i++){
+                      imageoutput.push({
+                          cinemaId: req.params.cinemaId,
+                          img_id: id[i],
+                          img_url: url[i]
+                      });
+                  }
+                  return imageoutput;
+              }
+
+             var output = await Image.bulkCreate(cinemaimage(ids, urls), {returning: true});
+      }
+     
+            res.status(200).json({
+                status: true,
+                message: "Image added",
+                data: output
+            })
+          
+        
+    } catch{
+        console.error(error)
+        return res.status(500).json({
+             status: false,
+             message: "An error occured",
+             error: error
+         })
+    }
+}
+
+exports.RemoveCinemaImage = async(req, res) => {
+    try{
+       
+        await Image.findOne({
+            where: {
+                id: req.params.imageId
+            }
+        }).then(async(image)=>{
+            if(image){
+                await cloudinary.cloudinary.uploader.destroy(image.img_id);
+                await Image.destroy({
+                    where:{
+                        id: image.id
+                    }
+                });
+
+                res.status(200).json({
+                    status: true,
+                    message: "Image Removed",
+                })
+            }else{
+                res.status(404).json({
+                    status: false,
+                    message: "Image Not Found",
+                })
+            }
+        })
+     
     } catch{
         console.error(error)
         return res.status(500).json({

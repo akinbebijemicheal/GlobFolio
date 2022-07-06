@@ -12,71 +12,52 @@ exports.AddCart = async(req, res)=>{
                 id: req.params.productid
             }
         })
-                const item = new CartItem({
-                    productid: req.params.productid,
-                    userid: req.user.id,
-                    price: product.price
-                })
-                await item.save();
-                const getcart = await CartItem.findOne({
-                    userid: req.user.id,
-                    productid: req.params.productid
-                })
-                await Cart.create({
-                    userid: req.user.id,
-                    cartitemid: getcart.id
-                })
-                
-                const viewcart = await Cart.findAll({ where: {
-                    userid: req.user.id
-                }, 
-                        include: [
+        const item = new CartItem({
+            productid: req.params.productid,
+            userid: req.user.id,
+            price: product.price
+        })
+        await item.save();
+        const getcart = await CartItem.findOne({
+            userid: req.user.id,
+            productid: req.params.productid
+        })
+        await Cart.create({
+            userid: req.user.id,
+            cartitemid: getcart.id
+        })
+        
+        const viewcart = await Cart.findAll({ where: {
+            userid: req.user.id
+        }, 
+                include: [
+                    {
+                        model: CartItem,
+                        include:[
                             {
-                                model: CartItem,
-                                include:[
-                                    {
-                                        model: Product,
-                                        attributes: {
-                                            exclude: ["createdAt", "updatedAt"],
-                                        },
-                                    }
-                                ],
-                                attributes: {
-                                    exclude: ["createdAt", "updatedAt"],
-                                },
-                            },
-                            {
-                                model: User,
+                                model: Product,
                                 attributes: {
                                     exclude: ["createdAt", "updatedAt"],
                                 },
                             }
-                        ]
-                    }) 
+                        ],
+                        attributes: {
+                            exclude: ["createdAt", "updatedAt"],
+                        },
+                    },
+                    {
+                        model: User,
+                        attributes: {
+                            exclude: ["createdAt", "updatedAt"],
+                        },
+                    }
+                ]
+            }) 
 
-                // await Order.findOne({
-                //     where: {
-                //         userid: req.user.id
-                //     }
-                // }).then((order) => {
-                //     if(!order){
-                //         await Order.create({
-                //             userid: req.user.id,
-                //             cart: JSON.stringify(viewcart)
-                //         })
-                //     }else{
-                //         await Order.update(
-                //             { cart: JSON.stringify(viewcart) },
-                //         { where: {
-                //             userid: req.user.id
-                //         }})
-                //     }
-                // })    
-
-                res.status(201).json({
-                    staus: true,
-                    data: viewcart
-                })
+        res.status(201).json({
+            staus: true,
+            data: viewcart
+        })
 
     } catch (error) {
         console.error(error)
@@ -120,6 +101,7 @@ exports.viewCart = async(req, res) => {
                 staus: true,
                 data: viewcart
             })
+            
     } catch (error) {
         console.error(error)
         return res.status(500).json({
@@ -230,28 +212,6 @@ exports.createOrder = async(req, res)=>{
                     phone_no: phone_no,
                     cart: cart
                 })
-
-        // await Order.findOne({
-        //     where: {
-        //         userid: req.user.id
-        //     }
-        // }).then((order) =>{
-        //     const result = {
-        //         id: order.id,
-        //         userid: order.userid,
-        //         fullname: req.user.fullname,
-        //         address: order.address,
-        //         phone_no: order.phone_no,
-        //         delivery_status: order.delivery_status,
-        //         cart: JSON.parse(order.cart),
-        //         createAt: order.createAt,
-        //         updateAt: order.updateAt
-        //     }
-        //     res.status(200).json({
-        //         status: true,
-        //         data: result,
-        //     })
-        // })
 
         res.status(200).json({
                     status: true,

@@ -1,39 +1,34 @@
 const Sequelize = require('sequelize');
 const db = require('../config/config');
 const {nanoid} = require('nanoid');
-const User = require('./user');
+const Food = require('./food');
 
-const Ads = db.define('Ads', {
-    id :{
+const FoodExtra = db.define('foodimage', {
+    id: {
         type: Sequelize.STRING(10),
         autoincrement: false,
         allowNull: false,
         primaryKey: true,
         defaultValue: () => nanoid(10)
     },
-    userid: {
+    foodId: {
         type: Sequelize.STRING(10),
         references:{ 
-            model: 'users',
+            model: 'food',
             key: 'id',
         }
-    },
-    title: {
-        type: Sequelize.STRING
-    },
-    ref_link: {
-        type: Sequelize.STRING
     },
     img_id: {
         type: Sequelize.STRING
     },
-    img_url:{
+    img_url: {
         type: Sequelize.STRING
     }
-}, {timestamps: true});
-
-Ads.belongsTo(User, {foreignKey: 'userid'})
-User.hasMany(Ads, {foreignKey: 'userid'});
+    
+});
 
 
-module.exports = Ads
+FoodExtra.belongsTo(Food, {foreignKey: 'foodId'})
+Food.hasMany(FoodExtra, {foreignKey: 'foodId'});
+
+module.exports = FoodExtra;

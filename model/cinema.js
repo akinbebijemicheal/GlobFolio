@@ -32,12 +32,6 @@ const Cinema = db.define('cinema', {
     age_rate: {
         type: Sequelize.STRING
     },
-    img_id: {
-        type: Sequelize.TEXT,
-    },
-    img_url: {
-        type: Sequelize.TEXT
-    },
     price: {
         type: Sequelize.STRING,
     }, 

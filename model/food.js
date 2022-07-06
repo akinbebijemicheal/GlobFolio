@@ -20,12 +20,6 @@ const Food = db.define('food', {
     ingredients: {
         type: Sequelize.TEXT
     },
-    img_id: {
-        type: Sequelize.TEXT,
-    },
-    img_url: {
-        type: Sequelize.TEXT
-    },
     price: {
         type: Sequelize.STRING,
     }

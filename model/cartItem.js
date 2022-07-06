@@ -4,7 +4,7 @@ const {nanoid} = require('nanoid');
 const User = require('./user');
 const Product = require('./product')
 
-const CartItem = db.define('cartitem', {
+const CartItem = db.define('fooditem', {
     id :{
         type: Sequelize.STRING(10),
         autoincrement: false,
@@ -19,10 +19,10 @@ const CartItem = db.define('cartitem', {
             key: 'id',
         }
     },
-    productid: {
+    foodId: {
         type: Sequelize.STRING(10),
         references:{ 
-            model: 'products',
+            model: 'food',
             key: 'id',
         }
     },
