@@ -48,9 +48,7 @@ exports.createStudioService = async(req, res) => {
             }
            
             var output = await Product.findOne({ where: {id: studiout.id},
-                order: [
-                    ['rating', 'ASC']
-                ], include:[
+              include:[
                     {
                         model: Image,
                         attributes: {

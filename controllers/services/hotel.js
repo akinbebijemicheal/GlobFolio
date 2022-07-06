@@ -78,9 +78,7 @@ exports.createHotelService = async(req, res) => {
             }
             
             var output = await Product.findOne({ where: {id: hotelout.id},
-                order: [
-                    ['rating', 'ASC']
-                ], include:[
+               include:[
                     {
                         model: Amenity,
                         attributes: {

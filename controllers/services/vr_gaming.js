@@ -45,10 +45,8 @@ exports.createGamingService = async(req, res) => {
                         await Image.bulkCreate(gameimage(ids, urls), {returning: true});
                 }
             
-            var output = await Product.findOne({ where: {id: rentout.id},
-                order: [
-                    ['rating', 'ASC']
-                ], include:[
+            var output = await Product.findOne({ where: {id: gameout.id},
+                    include:[
                     {
                         model: Image,
                         attributes: {
