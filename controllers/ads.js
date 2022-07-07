@@ -20,26 +20,15 @@ exports.createAds = async (req, res, next) => {
         const ad = new Ads({
           title,
           ref_link,
-          userId: req.user.id,
           img_id: result.public_id,
           img_url: result.secure_url,
         });
-        await ad.save();
+        var out = await ad.save();
 
         const adres = await Ads.findOne({
           where: {
-            title: title,
-            ref_link: ref_link,
-            userId: req.user.id,
-          },
-          include: [
-            {
-              model: User,
-              attributes: {
-                exclude: ["createdAt", "updatedAt", "deletedAt"],
-              },
-            },
-          ],
+            id: out.id
+          }
         });
 
         res.status(201).json({
@@ -55,56 +44,6 @@ exports.createAds = async (req, res, next) => {
   }
 };
 
-exports.getAllAdsbyUser = async (req, res, next) => {
-  try {
-    await Ads.findAll({
-      where: {
-        userId: req.user.id,
-      },
-    }).then((ads) => {
-      if (ads) {
-        res.status(200).json({
-          status: true,
-          data: ads,
-        });
-      } else {
-        res.status(404).json({
-          status: false,
-          message: "No ads found",
-        });
-      }
-    });
-  } catch (error) {
-    console.error(error);
-    return next(error);
-  }
-};
-
-exports.getAdbyUser = async (req, res, next) => {
-  try {
-    await Ads.findAll({
-      where: {
-        userId: req.user.id,
-        id: req.params.id,
-      },
-    }).then((ad) => {
-      if (ad) {
-        res.status(200).json({
-          status: true,
-          data: ad,
-        });
-      } else {
-        res.status(404).json({
-          status: false,
-          message: "Ad Not found",
-        });
-      }
-    });
-  } catch (error) {
-    console.error(error);
-    return next(error);
-  }
-};
 
 exports.getAllAds = async (req, res, next) => {
   try {
@@ -118,6 +57,28 @@ exports.getAllAds = async (req, res, next) => {
         res.status(404).json({
           status: false,
           message: "No ads found",
+        });
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    return next(error);
+  }
+};
+exports.getAdById = async (req, res, next) => {
+  try {
+    await Ads.findOne({
+      id: req.params.id
+    }).then((ads) => {
+      if (ads) {
+        res.status(200).json({
+          status: true,
+          data: ads,
+        });
+      } else {
+        res.status(404).json({
+          status: false,
+          message: "No ad found",
         });
       }
     });

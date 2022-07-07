@@ -12,14 +12,14 @@ const Cart = db.define('cart', {
         primaryKey: true,
         defaultValue: () => nanoid(10)
     },
-    userid: {
+    userId: {
         type: Sequelize.STRING(10),
         references:{ 
             model: 'users',
             key: 'id',
         }
     },
-    cartitemid: {
+    cartitemId: {
         type: Sequelize.STRING(10),
         references:{ 
             model: 'cartitems',
@@ -31,10 +31,10 @@ const Cart = db.define('cart', {
     timestamps: true
 });
 
-Cart.belongsTo(User, {foreignKey: 'userid'})
-User.hasMany(Cart, {foreignKey: 'userid'});
-Cart.hasMany(CartItem, {foreignKey: 'cartitemid'})
-CartItem.belongsTo(Cart, {foreignKey: 'cartitemid'})
+Cart.belongsTo(User, {foreignKey: 'userId'})
+User.hasMany(Cart, {foreignKey: 'userId'});
+Cart.hasMany(CartItem, {foreignKey: 'cartitemId'})
+CartItem.belongsTo(Cart, {foreignKey: 'cartitemId'})
 
 
 module.exports = Cart;

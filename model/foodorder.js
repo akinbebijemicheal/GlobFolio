@@ -2,9 +2,9 @@ const Sequelize = require('sequelize');
 const db = require('../config/config');
 const {nanoid} = require('nanoid');
 const User = require('./user');
-const Cart = require('./cart')
+// const Cart = require('./cartItem')
 
-const Order = db.define('order', {
+const Order = db.define('foodorder', {
     id :{
         type: Sequelize.STRING(10),
         autoincrement: false,
@@ -12,15 +12,16 @@ const Order = db.define('order', {
         primaryKey: true,
         defaultValue: () => nanoid(10)
     },
-    userid: {
+    userId: {
         type: Sequelize.STRING(10),
         references:{ 
             model: 'users',
             key: 'id',
         }
     },
-    cart: {
-        type: Sequelize.JSON,
+    new: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: true
     },
     address: {
         type: Sequelize.STRING
@@ -28,14 +29,26 @@ const Order = db.define('order', {
     phone_no: {
         type: Sequelize.STRING
     },
-    delivery_status: {
+    sub_total: {
+        type: Sequelize.BIGINT
+    },
+    status: {
         type: Sequelize.ENUM,
-        values: ["progress", "delivered"]
+        values: ["in_progress", "delivered", "cancelled"],
+    },
+    checkout_url:{
+        type: Sequelize.STRING
+    },
+    ref_no:{
+        type: Sequelize.STRING
+    },
+    access_code:{
+        type: Sequelize.STRING
     }
 }, {timestamps: true});
 
-Order.belongsTo(User, {foreignKey: 'userid'})
-User.hasMany(Order, {foreignKey: 'userid'});
+Order.belongsTo(User, {foreignKey: 'userId'})
+User.hasMany(Order, {foreignKey: 'userId'});
 //Order.hasMany(Cart, {foreignKey: 'cartid'})
 //Cart.belongsTo(Order, {foreignKey: 'cartid'})
 

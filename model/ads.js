@@ -11,13 +11,6 @@ const Ads = db.define('Ads', {
         primaryKey: true,
         defaultValue: () => nanoid(10)
     },
-    userid: {
-        type: Sequelize.STRING(10),
-        references:{ 
-            model: 'users',
-            key: 'id',
-        }
-    },
     title: {
         type: Sequelize.STRING
     },
@@ -32,8 +25,8 @@ const Ads = db.define('Ads', {
     }
 }, {timestamps: true});
 
-Ads.belongsTo(User, {foreignKey: 'userid'})
-User.hasMany(Ads, {foreignKey: 'userid'});
+// Ads.belongsTo(User, {foreignKey: 'userid'})
+// User.hasMany(Ads, {foreignKey: 'userid'});
 
 
 module.exports = Ads

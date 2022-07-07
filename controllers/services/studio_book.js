@@ -308,7 +308,7 @@ exports.uploadStudioImage = async(req, res) => {
     }
 }
 
-exports.RemoveRentImage = async(req, res) => {
+exports.RemoveStudioImage = async(req, res) => {
     try{
        
         await Image.findOne({
