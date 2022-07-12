@@ -178,7 +178,7 @@ exports.DeleteCartItem = async(req, res, next)=> {
             where: {
                 id: req.params.cartitemId
             }
-        }).then((item) =>{
+        }).then(async(item) =>{
             if(item){
                 await CartItem.destroy({ where: {
                     id: item.id
@@ -211,7 +211,7 @@ exports.addQty = async(req, res, next)=> {
     try {
         await CartItem.findOne({
             where: {
-                id: req.params.id
+                id: req.params.cartitemId
             },
             include:[
                 {
@@ -227,7 +227,7 @@ exports.addQty = async(req, res, next)=> {
                     },
                 }
             ]
-        }).then((item) =>{
+        }).then(async(item) =>{
             if(item){
 
                if(item.foodextrasId){
@@ -450,4 +450,10 @@ exports.updateOrderStatus = async(req, res, next)=>{
     }
 }
 
-exports.Checkout
+exports.Checkout = async(req, res, next)=>{
+    try {
+        
+    } catch (error) {
+        
+    }
+}

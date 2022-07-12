@@ -49,8 +49,6 @@ const Order = db.define('foodorder', {
 
 Order.belongsTo(User, {foreignKey: 'userId'})
 User.hasMany(Order, {foreignKey: 'userId'});
-//Order.hasMany(Cart, {foreignKey: 'cartid'})
-//Cart.belongsTo(Order, {foreignKey: 'cartid'})
 
 
 module.exports = Order
