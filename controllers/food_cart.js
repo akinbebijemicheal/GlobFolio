@@ -5,6 +5,7 @@ const Food = require("../model/food");
 const FoodExtra = require("../model/foodextras");
 const Image = require("../model/foodimage")
 const Order = require("../model/foodorder");
+const Transaction = require("../model/usertransactions");
 require('dotenv').config()
 const paystack = require('paystack')(process.env.PAYSTACK_SECRET);
 
@@ -307,7 +308,11 @@ exports.createOrder = async(req, res, next)=>{
                     email: order.userId.email,
                     amount: total * 100,
                     quantity: order.fooditems.length,
-                    callback_url: `${process.env.REDIRECT_SITE}/VerifyPay/food`
+                    callback_url: `${process.env.REDIRECT_SITE}/VerifyPay/food`,
+                    metadata:{
+                        userId: req.user.id,
+                        orderId: order.id
+                    }
                 }).then(async(transaction)=>{
                     if(transaction){
                         await Order.update({
@@ -451,9 +456,49 @@ exports.updateOrderStatus = async(req, res, next)=>{
 }
 
 exports.Checkout = async(req, res, next)=>{
-    try {
-        
+    const ref = req.query.trxref;
+    // const userId = req.user.id
+try {
+        await Transaction.findOne({
+            where:{
+                ref_no: ref
+            }
+        }).then(async (trn)=>{
+            if(trn){
+                res.json("Payment Already Verified")
+            }else{
+                paystack.transaction.verify(ref).then(async(transaction) => {
+                    console.log(transaction);
+                    // res.json(transaction)
+                    if(!transaction){
+                        res.json({
+                            status: false,
+                            message: `Transaction on the reference no: ${ref} not found`
+                        })
+                    }
+
+                    var trnx = new Transaction({
+                        userId: transaction.data.metadata.userId,
+                        ref_no: ref,
+                        status: transaction.data.status,
+                        ProductType: "Food",
+                        price: `${transaction.data.currency} ${transaction.data.amount / 100}`,
+                        description: `Food purchase #${transaction.data.metadata.orderId}`
+                    })
+                    var savetrnx = await trnx.save()
+
+                    res.json({
+                        status: true,
+                        message: `Payment ${transaction.message}`,
+                        transaction: savetrnx,
+                    })
+                    
+                }).catch(error => console.error(error))
+            }
+        }).catch(error => console.error(error))
+    
     } catch (error) {
-        
+        console.error(error);
+        next(error)
     }
 }

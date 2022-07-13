@@ -4,7 +4,7 @@ const {nanoid} = require('nanoid');
 const Hotel = require('./hotel');
 const User = require('./user');
 const HotelExtra = require('./hotelextras');
-const Transaction = require('./transactions');
+const Transaction = require('./usertransactions');
 
 const HotelBooking = db.define('hotelbooking', {
     id: {
@@ -41,6 +41,15 @@ const HotelBooking = db.define('hotelbooking', {
             model: 'usertransactions',
             key: 'id',
         }
+    },
+    quantity:{
+        type: Sequelize.INTEGER,
+    },
+    scheduled_date:{
+        type: Sequelize.DATEONLY
+    },
+    scheduled_time:{
+        type: Sequelize.TIME
     },
     transaction_url: {
         type: Sequelize.STRING,

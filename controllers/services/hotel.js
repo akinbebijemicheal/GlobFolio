@@ -60,21 +60,22 @@ exports.createHotelService = async(req, res) => {
                await Amenity.bulkCreate(amenities, {returning: true})
             }
 
-            if(req.body.room && req.body.price){
+            if(req.body.room && req.body.price && req.body.available_no){
                 
-                const room_price = (room, price)=>{
+                const room_price = (room, price, available)=>{
                     var output = []
                     for(let i = 0; i<room.length; i++){
                         output.push({
                             hotelId: hotelout.id,
                             room: room[i],
-                            price: price[i]
+                            price: price[i],
+                            available_room: available[i]
                         }); 
                     };
                     return output;
                 }
                 // console.log(room_price(req.body.room, req.body.price));
-                await Extras.bulkCreate(room_price(req.body.room, req.body.price), {returning: true})
+                await Extras.bulkCreate(room_price(req.body.room, req.body.price, req.body.available_no), {returning: true})
             }
             
             var output = await Product.findOne({ where: {id: hotelout.id},

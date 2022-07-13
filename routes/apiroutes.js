@@ -221,7 +221,7 @@ router
 .post('/bookHotel', jwtAuth, bookHotel)
 
 router
-.get('/pay/hotel/verify', jwtAuth, hotelverify)
+.get('/VerifyPay/hotel', hotelverify)
 
 // router
 // .get('/getRestuarant/:id', jwtAuth, getRestuarant)

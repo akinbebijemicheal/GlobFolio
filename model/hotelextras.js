@@ -19,6 +19,9 @@ const HotelExtra = db.define('hotelextra', {
             key: 'id',
         }
     },
+    available_room:{
+        type: Sequelize.INTEGER
+    },
     room:{
         type: Sequelize.TEXT
     },

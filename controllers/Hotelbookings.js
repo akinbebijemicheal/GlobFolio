@@ -7,10 +7,10 @@ const Transaction = require('../model/usertransactions');
 const User = require('../model/user')
 
 exports.bookHotel = async(req, res, next)=>{
-    var {roomId, quantity}= req.body;
+    var {roomId, quantity, date, time}= req.body;
     try {
         if(!quantity){
-            quantity = "1"
+            quantity = 1
         }
         await HotelExtras.findOne({
             where: {
@@ -24,14 +24,14 @@ exports.bookHotel = async(req, res, next)=>{
                 }
             ]
         }).then(async(room) => {
-            if(room){
+            if(room && room.available_room >= 1){
                 let fname = req.user.fullname.split(' ')
                 paystack.transaction.initialize({
                     name: `${room.hotel.title} (${room.room})`,
                     email: req.user.email,
                     amount: parseInt(room.price) * 100,
-                    quantity: parseInt(quantity),
-                    callback_url: `${process.env.REDIRECT_SITE}/api/pay/hotel/verify`,
+                    quantity: quantity,
+                    callback_url: `${process.env.REDIRECT_SITE}/VerifyPay/hotel`,
                     metadata: {
                         userId: req.user.id,
                         room: room.id,
@@ -45,6 +45,9 @@ exports.bookHotel = async(req, res, next)=>{
                             buyerId: req.user.id,
                             hotelId: room.hotelId,
                             hotelextrasId: room.id,
+                            quantity: quantity,
+                            scheduled_date: date,
+                            scheduled_time: time,
                             transaction_url: transaction.data.authorization_url,
                             ref_no: transaction.data.reference,
                             access_code: transaction.data.access_code
@@ -61,7 +64,10 @@ exports.bookHotel = async(req, res, next)=>{
                     }
                 }).catch(err=> console.log(err))
             }else{
-                res.json("No room found")
+                res.json({
+                    status: false,
+                    message: "No room found or Room not available"
+                })
             }
         }).catch(err=> console.log(err))
     } catch (error) {
@@ -72,14 +78,8 @@ exports.bookHotel = async(req, res, next)=>{
 
 exports.hotelverify = async(req, res, next)=>{
     const ref = req.query.trxref;
-    const userId = req.user.id
+    // const userId = req.user.id
     try {
-        await User.findOne({
-            where: {
-                id: userId
-            }
-        }).then(async (user) => {
-            if(user){
                 await Transaction.findOne({
                     where:{
                         ref_no: ref
@@ -131,14 +131,10 @@ exports.hotelverify = async(req, res, next)=>{
                                         message: `Payment ${transaction.message}`,
                                         transaction: savetrnx,
                                     })
-
-                                
                             
                         }).catch(error => console.error(error))
                     }
                 }).catch(error => console.error(error))
-            }
-        }).catch(error => console.error(error))
     } catch (error) {
         console.error(error);
         next(error)
