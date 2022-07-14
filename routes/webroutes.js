@@ -93,6 +93,8 @@ const {
   updateAds,
   deleteAds,
 } = require("../controllers/ads");
+const { Checkout, viewOrders, viewOrder, viewAdminOrder } = require("../controllers/food_cart");
+const { getbookings, getbooking, hotelverify } = require("../controllers/Hotelbookings");
 //user
 
 // router
@@ -655,6 +657,18 @@ router.get("/getAllAds", userAuth, getAllAds);
 router.get("/getAdsById/:id", userAuth, getAdById);
 router.delete("/deleteAds/:id", userAuth, deleteAds);
 //---------------------------------------------------------------------------------
+//-----------------------Food Order---------------------------------------
+router.get("/getOrders", userAuth, viewAdminOrder );
+router.get("/getOrder/:orderId", userAuth, viewOrder );
+//----------------------------------------------------------------
+
+//--------------------------Hotel Bookings------------------------
+router.get("/getAllBookings", userAuth, getbookings);
+router.get("/getBooking/:bookingId", userAuth, getbooking)
+
+router
+.get('/VerifyPay/hotel', hotelverify)
+router.get("/VerifyPay/food", Checkout)
 
 router.get("/logout", (req, res) => {
   req.logout();

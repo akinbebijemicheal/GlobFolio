@@ -13,10 +13,10 @@ const { getRentByTitle, getRentForUser, getRentServices, getRentById} = require(
 const {getStudioByTitle, getStudioForUser, getStudioServices, getStudioById} = require('../controllers/services/studio_book');
 const { getGamingByTitle, getGamingForUser, getGamingServices, getGameById} = require('../controllers/services/vr_gaming');
 const userVerify = require("../middleware/verify")
-const {bookHotel, hotelverify} = require('../controllers/Hotelbookings');
+const {bookHotel, hotelverify, getUserbookings, getbooking} = require('../controllers/Hotelbookings');
 const {getRestuarant, getRestuarants} = require('../controllers/restuarant');
 const { getAllAds, getAdById } = require('../controllers/ads');
-const { AddCart, viewCart, DeleteCartItem, addQty, createOrder, viewOrder, updateOrderStatus } = require('../controllers/food_cart');
+const { AddCart, viewCart, DeleteCartItem, addQty, createOrder, viewOrder, updateOrderStatus, viewOrders } = require('../controllers/food_cart');
 
 
 //user
@@ -218,10 +218,10 @@ router
 // .get(jwtAuth, getRentForUser)
 
 router
-.post('/bookHotel', jwtAuth, bookHotel)
+.post('/bookHotel', jwtAuth, bookHotel);
+router.get("/getUserBookings", jwtAuth, getUserbookings)
+router.get("/getBooking/:bookingId", jwtAuth, getbooking)
 
-router
-.get('/VerifyPay/hotel', hotelverify)
 
 // router
 // .get('/getRestuarant/:id', jwtAuth, getRestuarant)
@@ -231,17 +231,18 @@ router
 
 //--------------------------Ads-------------------------
 router.get("/getAllAds", getAllAds);
-router.get("/getAdsById/:id", userAuth, getAdById);
+router.get("/getAdsById/:id", jwtAuth, getAdById);
 //------------------------------------------------------
 
 //-------------------------------Food Ordering--------------------
-router.post("/addFoodtocart/:foodId", userAuth, AddCart);
-router.get("/viewcart", userAuth, viewCart);
-router.delete("/deletecartitem/:cartitemId", userAuth, DeleteCartItem);
-router.put("/addItemQuantity/:cartitemId", userAuth, addQty);
-router.put("/createOrder", userAuth, createOrder);
-router.get("/viewOrder", userAuth, viewOrder );
-router.put("/updateOrderStatus", userAuth, updateOrderStatus);
+router.post("/addFoodtocart/:foodId", jwtAuth, AddCart);
+router.get("/viewcart", jwtAuth, viewCart);
+router.delete("/deletecartitem/:cartitemId", jwtAuth, DeleteCartItem);
+router.put("/addItemQuantity/:cartitemId", jwtAuth, addQty);
+router.put("/createOrder", jwtAuth, createOrder);
+router.get("/getOrders", jwtAuth, viewOrders );
+router.get("/getOrder/:orderId", jwtAuth, viewOrder );
+router.put("/updateOrderStatus/:orderId", jwtAuth, updateOrderStatus);
 
 
 

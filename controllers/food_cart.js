@@ -279,7 +279,8 @@ exports.createOrder = async(req, res, next)=>{
     try {
         await Order.findOne({
             where:{
-                userId: req.user.id
+                userId: req.user.id,
+                new: true
             },
             include:[
                 {
@@ -376,6 +377,96 @@ exports.viewOrder = async(req, res, next)=>{
     try {
         await Order.findOne({
             where: {
+                id: req.params.orderId
+            },
+            include:[
+                {
+                    model: CartItem,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"],
+                    },
+                },
+                {
+                    model: User,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"],
+                    },
+                }
+            ]
+        }).then((order) =>{
+            if(order){
+                 res.status(200).json({
+                status: true,
+                data: order,
+            })
+            }else{
+                res.json({
+                    status: false,
+                    message: "No order found"
+                })
+            }
+           
+        })
+    } catch (error) {
+        console.error(error)
+        // res.status(500).json({
+        //      status: false,
+        //      message: "An error occured",
+        //      error: error
+        //  });
+         next(error)
+    }
+}
+
+exports.viewAdminOrder = async(req, res, next)=>{
+    try {
+        await Order.findAll({
+            order:[
+                ["createdAt", 'ASC']
+            ],
+            include:[
+                {
+                    model: CartItem,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"],
+                    },
+                },
+                {
+                    model: User,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"],
+                    },
+                }
+            ]
+        }).then((order) =>{
+            if(order){
+                 res.status(200).json({
+                status: true,
+                data: order,
+            })
+            }else{
+                res.json({
+                    status: false,
+                    message: "No order found"
+                })
+            }
+           
+        })
+    } catch (error) {
+        console.error(error)
+        // res.status(500).json({
+        //      status: false,
+        //      message: "An error occured",
+        //      error: error
+        //  });
+         next(error)
+    }
+}
+
+exports.viewOrders = async(req, res, next)=>{
+    try {
+        await Order.findAll({
+            where: {
                 userId: req.user.id
             },
             include:[
@@ -430,17 +521,18 @@ exports.updateOrderStatus = async(req, res, next)=>{
             new: new_order
         }, {
             where: {
-                userId: req.user.id
+                id: req.params.orderId,
             }
         })
 
         await Order.findOne({ where: {
-            userId: req.user.id
+            id: req.params.orderId,
         }
            
         }).then((order) =>{
             res.status(200).json({
                 status: true,
+                message: `Order ${status}`,
                 data: order,
             })
         })
