@@ -95,6 +95,7 @@ const {
 } = require("../controllers/ads");
 const { Checkout, viewOrders, viewOrder, viewAdminOrder } = require("../controllers/food_cart");
 const { getbookings, getbooking, hotelverify } = require("../controllers/Hotelbookings");
+const { getRentbookings, getRentbooking } = require("../controllers/rentbooking");
 //user
 
 // router
@@ -665,6 +666,10 @@ router.get("/getOrder/:orderId", userAuth, viewOrder );
 //--------------------------Hotel Bookings------------------------
 router.get("/getAllBookings", userAuth, getbookings);
 router.get("/getBooking/:bookingId", userAuth, getbooking)
+
+//----------------------------Rent Bookings----------------------------
+router.get("/getAllRentBookings", userAuth, getRentbookings);
+router.get("/getRentBooking/:bookingId", userAuth, getRentbooking)
 
 router
 .get('/VerifyPay/hotel', hotelverify)

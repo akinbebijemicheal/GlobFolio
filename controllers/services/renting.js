@@ -5,7 +5,7 @@ const User = require('../../model/user');
 const fs = require('fs')
 
 exports.createRentService = async(req, res) => {
-    const { title, description, location, equipment, per_time, price } = req.body;
+    const { title, description, location, equipment, per_time, price, available_rent } = req.body;
     try {
         const rent = new Product({
             title,
@@ -13,7 +13,8 @@ exports.createRentService = async(req, res) => {
             location,
             per_time,
             equipment,
-            price: price
+            price: price,
+            available_rent
         })
         var rentout = await rent.save();
 
@@ -236,7 +237,7 @@ exports.getRentById = async(req, res) => {
 }
 
 exports.updateRent = async(req, res) => {
-    const { title, description, equipment, location, per_time, price } = req.body;
+    const { title, description, equipment, location, per_time, price, available_rent } = req.body;
     try{
        
             await Product.update({
@@ -246,6 +247,7 @@ exports.updateRent = async(req, res) => {
                 per_time: per_time,
                 equipment,
                 price: price,
+                available_rent,
             }, { where: {
                 id: req.params.id
             }})

@@ -20,6 +20,9 @@ const Rent = db.define('rent', {
     location: {
         type: Sequelize.STRING
     },
+    available_rent:{
+        type: Sequelize.INTEGER
+    },
     equipment:{
         type: Sequelize.TEXT
     },
