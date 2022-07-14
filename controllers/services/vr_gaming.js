@@ -4,7 +4,7 @@ const cloudinary = require('../../util/cloudinary');
 const User = require('../../model/user');
 const fs = require('fs')
 
-exports.createGamingService = async(req, res) => {
+exports.createGamingService = async(req, res, next) => {
     const { title, description, genre, price, age_rate,} = req.body;
         try {  
             const game = new Product({
@@ -62,16 +62,12 @@ exports.createGamingService = async(req, res) => {
         
     } catch (error) {
         console.error(error)
-        return res.status(500).json({
-             status: false,
-             message: "An error occured",
-             error: error
-         })
+        next(error);
     }
 }
 
 
-exports.getGamingServices = async(req, res) => {
+exports.getGamingServices = async(req, res, next) => {
     try {
         const length = req.query.length
         var game = await Product.findAll({
@@ -122,7 +118,7 @@ exports.getGamingServices = async(req, res) => {
     }
 }
 
-// exports.getGamingForUser = async(req, res) => {
+// exports.getGamingForUser = async(req, res, next) => {
 //     try {
 //         var game = await Product.findAll({ where: {
 //             userid: req.user.id,
@@ -158,7 +154,7 @@ exports.getGamingServices = async(req, res) => {
 //     }
 // }
 
-exports.getGamingByTitle = async(req, res) => {
+exports.getGamingByTitle = async(req, res, next) => {
     const {title} = req.body;
     try {
         var game = await Product.findAll({where: {
@@ -186,15 +182,11 @@ exports.getGamingByTitle = async(req, res) => {
         }
     } catch (error) {
         console.error(error)
-        return res.status(500).json({
-             status: false,
-             message: "An error occured",
-             error: error
-         })
+        next(error);
     }
 }
 
-exports.getGameById = async(req, res) => {
+exports.getGameById = async(req, res, next) => {
     const id= req.params.id;
     try {
         var game = await Product.findOne({where: {
@@ -222,15 +214,11 @@ exports.getGameById = async(req, res) => {
         }
     } catch (error) {
         console.error(error)
-        return res.status(500).json({
-             status: false,
-             message: "An error occured",
-             error: error
-         })
+        next(error);
     }
 }
 
-exports.updateGaming = async(req, res) => {
+exports.updateGaming = async(req, res, next) => {
     const { title, description, genre, price, age_rate,} = req.body;
     try{
             await Product.update({
@@ -250,15 +238,11 @@ exports.updateGaming = async(req, res) => {
         
     } catch{
         console.error(error)
-        return res.status(500).json({
-             status: false,
-             message: "An error occured",
-             error: error
-         })
+        next(error);
     }
 }
 
-exports.uploadGameImage = async(req, res) => {
+exports.uploadGameImage = async(req, res, next) => {
     try{
         if(req.files || req.file){
             const uploader = async (path) => await cloudinary.uploads(path, 'gameImages');
@@ -297,15 +281,11 @@ exports.uploadGameImage = async(req, res) => {
         
     } catch{
         console.error(error)
-        return res.status(500).json({
-             status: false,
-             message: "An error occured",
-             error: error
-         })
+        next(error);
     }
 }
 
-exports.RemoveGameImage = async(req, res) => {
+exports.RemoveGameImage = async(req, res, next) => {
     try{
        
         await Image.findOne({
@@ -335,10 +315,6 @@ exports.RemoveGameImage = async(req, res) => {
      
     } catch{
         console.error(error)
-        return res.status(500).json({
-             status: false,
-             message: "An error occured",
-             error: error
-         })
+        next(error);
     }
 }

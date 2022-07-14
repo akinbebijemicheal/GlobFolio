@@ -6,7 +6,7 @@ const Amenity = require('../../model/amenities');
 const Extras = require('../../model/hotelextras')
 const fs = require('fs')
 
-exports.createHotelService = async(req, res) => {
+exports.createHotelService = async(req, res, next) => {
     const { title, description, location, rating} = req.body;
     try {
 
@@ -107,17 +107,13 @@ exports.createHotelService = async(req, res) => {
             })
         
     } catch (error) {
-        console.error(error)
-        return res.status(500).json({
-             status: false,
-             message: "An error occured",
-             error: error
-         })
+         console.error(error)
+        next(error);
     }
 }
 
 
-exports.getHotelServices = async(req, res) => {
+exports.getHotelServices = async(req, res, next) => {
     try {
         const length = req.query.length;
         var hotel = await Product.findAll({
@@ -168,15 +164,11 @@ exports.getHotelServices = async(req, res) => {
         }
     } catch (error) {
         console.error(error)
-       return res.status(500).json({
-            status: false,
-            message: "An error occured",
-            error: error
-        })
+        next(error);
     }
 }
 
-// exports.getHotelForUser = async(req, res) => {
+// exports.getHotelForUser = async(req, res, next) => {
 //     try {
 //         var hotel = await Product.findAll({ where: {
 //             userid: req.user.id,
@@ -229,7 +221,7 @@ exports.getHotelServices = async(req, res) => {
 //     }
 // }
 
-exports.getHotelByTitle = async(req, res) => {
+exports.getHotelByTitle = async(req, res, next) => {
     const {title}= req.body;
     try {
         var hotel = await Product.findAll({where: {
@@ -267,16 +259,12 @@ exports.getHotelByTitle = async(req, res) => {
             })
         }
     } catch (error) {
-        console.error(error)
-        return res.status(500).json({
-             status: false,
-             message: "An error occured",
-             error: error
-         })
+         console.error(error)
+        next(error);
     }
 }
 
-exports.getHotelById = async(req, res) => {
+exports.getHotelById = async(req, res, next) => {
     const id= req.params.id;
     try {
         var hotel = await Product.findOne({where: {
@@ -314,16 +302,12 @@ exports.getHotelById = async(req, res) => {
             })
         }
     } catch (error) {
-        console.error(error)
-        return res.status(500).json({
-             status: false,
-             message: "An error occured",
-             error: error
-         })
+         console.error(error)
+        next(error);
     }
 }
 
-exports.updateHotel = async(req, res) => {
+exports.updateHotel = async(req, res, next) => {
     const { title, description, location, rating } = req.body;
     try{
         
@@ -342,16 +326,12 @@ exports.updateHotel = async(req, res) => {
         
         
     } catch{
-        console.error(error)
-        return res.status(500).json({
-             status: false,
-             message: "An error occured",
-             error: error
-         })
+         console.error(error)
+        next(error);
     }
 }
 
-exports.uploadHotelImage = async(req, res) => {
+exports.uploadHotelImage = async(req, res, next) => {
     try{
         if(req.files || req.file){
             const uploader = async (path) => await cloudinary.uploads(path, 'hotelImages');
@@ -389,16 +369,12 @@ exports.uploadHotelImage = async(req, res) => {
           
         
     } catch{
-        console.error(error)
-        return res.status(500).json({
-             status: false,
-             message: "An error occured",
-             error: error
-         })
+         console.error(error)
+        next(error);
     }
 }
 
-exports.RemoveHotelImage = async(req, res) => {
+exports.RemoveHotelImage = async(req, res, next) => {
     try{
        
         await Image.findOne({
@@ -427,12 +403,8 @@ exports.RemoveHotelImage = async(req, res) => {
         })
      
     } catch{
-        console.error(error)
-        return res.status(500).json({
-             status: false,
-             message: "An error occured",
-             error: error
-         })
+         console.error(error)
+        next(error);
     }
 }
 

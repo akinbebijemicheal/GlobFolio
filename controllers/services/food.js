@@ -7,7 +7,7 @@ const fs = require('fs');
 
 
 
-exports.createFoodService = async(req, res) => {
+exports.createFoodService = async(req, res, next) => {
     const { title, description, ingredients, price } = req.body;
     try {
 
@@ -94,17 +94,13 @@ exports.createFoodService = async(req, res) => {
         
     } catch (error) {
         console.error(error)
-        return res.status(500).json({
-             status: false,
-             message: "An error occured",
-             error: error
-         })
+        next(error);
     }
 };
 
 
 
-exports.getFoodServices = async(req, res) => {
+exports.getFoodServices = async(req, res, next) => {
     try {
         const length = req.query.length;
 
@@ -156,16 +152,12 @@ exports.getFoodServices = async(req, res) => {
         }
     } catch (error) {
         console.error(error)
-       return res.status(500).json({
-            status: false,
-            message: "An error occured",
-            error: error
-        })
+        next(error);
     }
 }
 
 
-exports.getFoodByTitle = async(req, res) => {
+exports.getFoodByTitle = async(req, res, next) => {
     const {title} = req.body;
     try {
         var food = await Product.findOne({where: {
@@ -198,15 +190,11 @@ exports.getFoodByTitle = async(req, res) => {
         }
     } catch (error) {
         console.error(error)
-        return res.status(500).json({
-             status: false,
-             message: "An error occured",
-             error: error
-         })
+        next(error);
     }
 }
 
-exports.getFoodById = async(req, res) => {
+exports.getFoodById = async(req, res, next) => {
     const id= req.params.id;
     try {
         var food = await Product.findOne({where: {
@@ -239,15 +227,11 @@ exports.getFoodById = async(req, res) => {
         }
     } catch (error) {
         console.error(error)
-        return res.status(500).json({
-             status: false,
-             message: "An error occured",
-             error: error
-         })
+        next(error);
     }
 }
 
-exports.updateFood = async(req, res) => {
+exports.updateFood = async(req, res, next) => {
     const {title, description, ingredents, price} = req.body;
     try{
             await Product.update({
@@ -266,15 +250,11 @@ exports.updateFood = async(req, res) => {
         
     } catch{
         console.error(error)
-        return res.status(500).json({
-             status: false,
-             message: "An error occured",
-             error: error
-         })
+        next(error);
     }
 }
 
-exports.uploadFoodImage = async(req, res) => {
+exports.uploadFoodImage = async(req, res, next) => {
     try{
         if(req.files || req.file){
             const uploader = async (path) => await cloudinary.uploads(path, 'foodImages');
@@ -313,15 +293,11 @@ exports.uploadFoodImage = async(req, res) => {
         
     } catch{
         console.error(error)
-        return res.status(500).json({
-             status: false,
-             message: "An error occured",
-             error: error
-         })
+        next(error);
     }
 }
 
-exports.RemoveFoodImage = async(req, res) => {
+exports.RemoveFoodImage = async(req, res, next) => {
     try{
        
         await Image.findOne({
@@ -351,10 +327,6 @@ exports.RemoveFoodImage = async(req, res) => {
      
     } catch{
         console.error(error)
-        return res.status(500).json({
-             status: false,
-             message: "An error occured",
-             error: error
-         })
+        next(error);
     }
 }

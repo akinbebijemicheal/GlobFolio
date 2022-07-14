@@ -4,7 +4,7 @@ const cloudinary = require('../../util/cloudinary');
 const User = require('../../model/user');
 const fs = require('fs')
 
-exports.createStudioService = async(req, res) => {
+exports.createStudioService = async(req, res, next) => {
     const { title, description, location, per_time, price, rating, equipment } = req.body;
     try {
             const studio = new Product({
@@ -64,17 +64,13 @@ exports.createStudioService = async(req, res) => {
         
         
     } catch (error) {
-        console.error(error)
-        return res.status(500).json({
-             status: false,
-             message: "An error occured",
-             error: error
-         })
+         console.error(error)
+        next(error);
     }
 }
 
 
-exports.getStudioServices = async(req, res) => {
+exports.getStudioServices = async(req, res, next) => {
     try {
         const length = req.query.length
         var studio = await Product.findAll({
@@ -117,15 +113,11 @@ exports.getStudioServices = async(req, res) => {
         }
     } catch (error) {
         console.error(error)
-       return res.status(500).json({
-            status: false,
-            message: "An error occured",
-            error: error
-        })
+        next(error);
     }
 }
 
-// exports.getStudioForUser = async(req, res) => {
+// exports.getStudioForUser = async(req, res, next) => {
 //     try {
 //         const studio = await Product.findAll({ where: {
 //             userid: req.user.id,
@@ -160,7 +152,7 @@ exports.getStudioServices = async(req, res) => {
 //     }
 // }
 
-exports.getStudioByTitle = async(req, res) => {
+exports.getStudioByTitle = async(req, res, next) => {
     const {title} = req.body;
     try {
         const studio = await Product.findAll({where: {
@@ -187,16 +179,12 @@ exports.getStudioByTitle = async(req, res) => {
             })
         }
     } catch (error) {
-        console.error(error)
-        return res.status(500).json({
-             status: false,
-             message: "An error occured",
-             error: error
-         })
+         console.error(error)
+        next(error);
     }
 }
 
-exports.getStudioById = async(req, res) => {
+exports.getStudioById = async(req, res, next) => {
     const id= req.params.id;
     try {
         const studio = await Product.findOne({where: {
@@ -222,16 +210,12 @@ exports.getStudioById = async(req, res) => {
             })
         }
     } catch (error) {
-        console.error(error)
-        return res.status(500).json({
-             status: false,
-             message: "An error occured",
-             error: error
-         })
+         console.error(error)
+        next(error);
     }
 }
 
-exports.updateStudio = async(req, res) => {
+exports.updateStudio = async(req, res, next) => {
     const { title, description, location, per_time, price, rating, equipment } = req.body;
     try{
             await Product.update({
@@ -252,16 +236,12 @@ exports.updateStudio = async(req, res) => {
            
         
     } catch{
-        console.error(error)
-        return res.status(500).json({
-             status: false,
-             message: "An error occured",
-             error: error
-         })
+         console.error(error)
+        next(error);
     }
 }
 
-exports.uploadStudioImage = async(req, res) => {
+exports.uploadStudioImage = async(req, res, next) => {
     try{
         if(req.files || req.file){
             const uploader = async (path) => await cloudinary.uploads(path, 'studioImages');
@@ -299,16 +279,12 @@ exports.uploadStudioImage = async(req, res) => {
           
         
     } catch{
-        console.error(error)
-        return res.status(500).json({
-             status: false,
-             message: "An error occured",
-             error: error
-         })
+         console.error(error)
+        next(error);
     }
 }
 
-exports.RemoveStudioImage = async(req, res) => {
+exports.RemoveStudioImage = async(req, res, next) => {
     try{
        
         await Image.findOne({
@@ -337,11 +313,7 @@ exports.RemoveStudioImage = async(req, res) => {
         })
      
     } catch{
-        console.error(error)
-        return res.status(500).json({
-             status: false,
-             message: "An error occured",
-             error: error
-         })
+         console.error(error)
+        next(error);
     }
 }

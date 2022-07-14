@@ -5,7 +5,7 @@ const User = require('../../model/user');
 const { Op } = require('sequelize')
 const fs = require('fs')
 
-exports.createCinemaService = async(req, res) => {
+exports.createCinemaService = async(req, res, next) => {
     const { title, genre, storyline, rating, view_date, cast, duration, age_rate,  price } = req.body;
     try {
 
@@ -71,17 +71,13 @@ exports.createCinemaService = async(req, res) => {
             data: out
         })        
     } catch (error) {
-        console.error(error)
-        return res.status(500).json({
-             status: false,
-             message: "An error occured",
-             error: error
-         })
+         console.error(error)
+        next(error);
     }
 }
 
 
-exports.getCinemaServices = async(req, res) => {
+exports.getCinemaServices = async(req, res, next) => {
     const status = req.query.status;
     const length = req.query.length
     try {
@@ -188,15 +184,11 @@ exports.getCinemaServices = async(req, res) => {
         }
     } catch (error) {
         console.error(error)
-       return res.status(500).json({
-            status: false,
-            message: "An error occured",
-            error: error
-        })
+        next(error);
     }
 }
 
-exports.getCinemaByTitle = async(req, res) => {
+exports.getCinemaByTitle = async(req, res, next) => {
     const { title }= req.body;
     try {
         var cinema = await Product.findAll({where: {
@@ -223,15 +215,11 @@ exports.getCinemaByTitle = async(req, res) => {
             })
         }
     } catch (error) {
-        console.error(error)
-        return res.status(500).json({
-             status: false,
-             message: "An error occured",
-             error: error
-         })
+         console.error(error)
+        next(error);
     }
 }
-exports.getCinemaById = async(req, res) => {
+exports.getCinemaById = async(req, res, next) => {
     const id= req.params.id;
     try {
         var cinema = await Product.findOne({where: {
@@ -257,16 +245,12 @@ exports.getCinemaById = async(req, res) => {
             })
         }
     } catch (error) {
-        console.error(error)
-        return res.status(500).json({
-             status: false,
-             message: "An error occured",
-             error: error
-         })
+         console.error(error)
+        next(error);
     }
 }
 
-exports.updateCinema = async(req, res) => {
+exports.updateCinema = async(req, res, next) => {
     const { title, genre, storyline, rating, view_date, cast, duration, age_rate,  price } = req.body;
     try{
         
@@ -290,16 +274,12 @@ exports.updateCinema = async(req, res) => {
         
         
     } catch{
-        console.error(error)
-        return res.status(500).json({
-             status: false,
-             message: "An error occured",
-             error: error
-         })
+         console.error(error)
+        next(error);
     }
 }
 
-exports.uploadCinemaImage = async(req, res) => {
+exports.uploadCinemaImage = async(req, res, next) => {
     try{
         if(req.files || req.file){
             const uploader = async (path) => await cloudinary.uploads(path, 'cinemaImages');
@@ -337,16 +317,12 @@ exports.uploadCinemaImage = async(req, res) => {
           
         
     } catch{
-        console.error(error)
-        return res.status(500).json({
-             status: false,
-             message: "An error occured",
-             error: error
-         })
+         console.error(error)
+        next(error);
     }
 }
 
-exports.RemoveCinemaImage = async(req, res) => {
+exports.RemoveCinemaImage = async(req, res, next) => {
     try{
        
         await Image.findOne({
@@ -375,11 +351,7 @@ exports.RemoveCinemaImage = async(req, res) => {
         })
      
     } catch{
-        console.error(error)
-        return res.status(500).json({
-             status: false,
-             message: "An error occured",
-             error: error
-         })
+         console.error(error)
+        next(error);
     }
 }

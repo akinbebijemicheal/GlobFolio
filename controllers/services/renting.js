@@ -4,7 +4,7 @@ const cloudinary = require('../../util/cloudinary');
 const User = require('../../model/user');
 const fs = require('fs')
 
-exports.createRentService = async(req, res) => {
+exports.createRentService = async(req, res, next) => {
     const { title, description, location, equipment, per_time, price, available_rent } = req.body;
     try {
         const rent = new Product({
@@ -64,16 +64,12 @@ exports.createRentService = async(req, res) => {
        
     } catch (error) {
         console.error(error)
-        return res.status(500).json({
-             status: false,
-             message: "An error occured",
-             error: error
-         })
+        next(error);
     }
 }
 
 
-exports.getRentServices = async(req, res) => {
+exports.getRentServices = async(req, res, next) => {
     try {
         const length = req. query.length;
         var rent = await Product.findAll({
@@ -116,15 +112,11 @@ exports.getRentServices = async(req, res) => {
         }
     } catch (error) {
         console.error(error)
-       return res.status(500).json({
-            status: false,
-            message: "An error occured",
-            error: error
-        })
+        next(error);
     }
 }
 
-// exports.getRentForUser = async(req, res) => {
+// exports.getRentForUser = async(req, res, next) => {
 //     try {
 //         var rent = await Product.findAll({ where: {
 //             userid: req.user.id,
@@ -161,7 +153,7 @@ exports.getRentServices = async(req, res) => {
 //     }
 // }
 
-exports.getRentByTitle = async(req, res) => {
+exports.getRentByTitle = async(req, res, next) => {
     const {title} = req.body;
     try {
         var rent = await Product.findAll({where: {
@@ -190,15 +182,11 @@ exports.getRentByTitle = async(req, res) => {
         }
     } catch (error) {
         console.error(error)
-        return res.status(500).json({
-             status: false,
-             message: "An error occured",
-             error: error
-         })
+        next(error);
     }
 }
 
-exports.getRentById = async(req, res) => {
+exports.getRentById = async(req, res, next) => {
     const id= req.params.id;
     try {
         var rent = await Product.findOne({where: {
@@ -228,15 +216,11 @@ exports.getRentById = async(req, res) => {
         }
     } catch (error) {
         console.error(error)
-        return res.status(500).json({
-             status: false,
-             message: "An error occured",
-             error: error
-         })
+        next(error);
     }
 }
 
-exports.updateRent = async(req, res) => {
+exports.updateRent = async(req, res, next) => {
     const { title, description, equipment, location, per_time, price, available_rent } = req.body;
     try{
        
@@ -259,15 +243,11 @@ exports.updateRent = async(req, res) => {
         
     } catch{
         console.error(error)
-        return res.status(500).json({
-             status: false,
-             message: "An error occured",
-             error: error
-         })
+        next(error);
     }
 }
 
-exports.uploadRentImage = async(req, res) => {
+exports.uploadRentImage = async(req, res, next) => {
     try{
         if(req.files || req.file){
             const uploader = async (path) => await cloudinary.uploads(path, 'rentImages');
@@ -306,15 +286,11 @@ exports.uploadRentImage = async(req, res) => {
         
     } catch{
         console.error(error)
-        return res.status(500).json({
-             status: false,
-             message: "An error occured",
-             error: error
-         })
+        next(error);
     }
 }
 
-exports.RemoveRentImage = async(req, res) => {
+exports.RemoveRentImage = async(req, res, next) => {
     try{
        
         await Image.findOne({
@@ -344,10 +320,6 @@ exports.RemoveRentImage = async(req, res) => {
      
     } catch{
         console.error(error)
-        return res.status(500).json({
-             status: false,
-             message: "An error occured",
-             error: error
-         })
+        next(error);
     }
 }
