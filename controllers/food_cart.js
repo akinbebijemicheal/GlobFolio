@@ -160,7 +160,7 @@ exports.viewCart = async(req, res, next) => {
                 ]
             }) 
             res.status(200).json({
-                staus: true,
+                status: true,
                 data: viewcart
             })
             
