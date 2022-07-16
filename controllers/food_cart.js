@@ -309,7 +309,7 @@ exports.createOrder = async(req, res, next)=>{
                 }
                 paystack.transaction.initialize({
                     name: `Food Order #${order.id}`,
-                    email: order.userId.email,
+                    email: order.user.email,
                     amount: total * 100,
                     quantity: order.fooditems.length,
                     callback_url: `${process.env.REDIRECT_SITE}/VerifyPay/food`,
