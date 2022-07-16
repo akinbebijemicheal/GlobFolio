@@ -38,13 +38,15 @@ exports.AddCart = async(req, res, next)=>{
                     var outer = await new_order.save();
                     orderId = outer.id
                 }
-            
-                var extra = await FoodExtra.findOne({
+                if(foodextrasId){
+                    var extra = await FoodExtra.findOne({
                     where:{
                         id: foodextrasId
                     }
                     
                 })
+                }
+                
                 if(extra){
                    var price = (parseInt(food.price) + parseInt(extra.price))
                    var extraId = extra.id
