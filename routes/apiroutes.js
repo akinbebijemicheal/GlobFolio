@@ -225,7 +225,7 @@ router.get("/getBooking/:bookingId", jwtAuth, getbooking)
 
 //---------------------Rent-------------------------------
 router
-.post('/bookRent', jwtAuth, bookRent);
+.post('/bookRent/:rentId', jwtAuth, bookRent);
 router.get("/getUserRentBookings", jwtAuth, getUserRentbookings)
 router.get("/getRentBooking/:bookingId", jwtAuth, getRentbooking)
 
