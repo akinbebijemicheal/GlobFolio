@@ -282,7 +282,8 @@ exports.createOrder = async(req, res, next)=>{
         await Order.findOne({
             where:{
                 userId: req.user.id,
-                new: true
+                new: true,
+                paid: false
             },
             include:[
                 {
