@@ -55,7 +55,7 @@ exports.AddCart = async(req, res, next)=>{
                     extraId = ""
                 }
                 const Items = new CartItem({
-                    userid: req.user.id,
+                    userId: req.user.id,
                     foodId: food.id,
                     foodextrasId: extraId,
                     orderId: orderId,

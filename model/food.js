@@ -25,4 +25,5 @@ const Food = db.define('food', {
     }
 }, {timestamps: true});
 
+
 module.exports = Food;

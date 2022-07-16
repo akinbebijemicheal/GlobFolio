@@ -57,11 +57,11 @@ const CartItem = db.define('fooditem', {
 CartItem.belongsTo(User, {foreignKey: 'userId'})
 User.hasMany(CartItem, {foreignKey: 'userId'});
 
-CartItem.belongsTo(Food, {foreignKey: 'foodId'})
-Food.hasMany(CartItem, {foreignKey: 'foodId'})
+// CartItem.hasMany(Food, {foreignKey: 'foodId'})
+// Food.belongsTo(CartItem, {foreignKey: 'foodId'})
 
-CartItem.belongsTo(FoodExtra, {foreignKey: 'foodextrasId'});
-FoodExtra.hasMany(CartItem, {foreignKey: 'foodextrasId'});
+// CartItem.hasMany(FoodExtra, {foreignKey: 'foodextrasId'});
+// FoodExtra.belongsTo(CartItem, {foreignKey: 'foodextrasId'});
 
 FoodOrder.hasMany(CartItem, {foreignKey: 'orderId'});
 CartItem.belongsTo(FoodOrder, {foreignKey: 'orderId'});

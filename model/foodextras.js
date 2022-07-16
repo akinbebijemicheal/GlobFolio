@@ -2,7 +2,6 @@ const Sequelize = require('sequelize');
 const db = require('../config/config');
 const {nanoid} = require('nanoid');
 const Food = require('./food');
-//const Cart = require('./cart')
 
 const FoodExtra = db.define('foodextra', {
     id: {
