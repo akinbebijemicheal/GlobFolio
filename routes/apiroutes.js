@@ -18,6 +18,7 @@ const {getRestuarant, getRestuarants} = require('../controllers/restuarant');
 const { getAllAds, getAdById } = require('../controllers/ads');
 const { AddCart, viewCart, DeleteCartItem, addQty, createOrder, viewOrder, updateOrderStatus, viewOrders } = require('../controllers/food_cart');
 const { bookRent, getUserRentbookings, getRentbooking } = require('../controllers/rentbooking');
+const { bookStudio, getUserStudiobookings, getStudiobooking } = require('../controllers/studiobooking');
 
 
 //user
@@ -228,6 +229,12 @@ router
 .post('/bookRent/:rentId', jwtAuth, bookRent);
 router.get("/getUserRentBookings", jwtAuth, getUserRentbookings)
 router.get("/getRentBooking/:bookingId", jwtAuth, getRentbooking)
+
+router
+.post('/bookStudio/:studioId', jwtAuth, bookStudio);
+router.get("/getUserStudioBookings", jwtAuth, getUserStudiobookings)
+router.get("/getStudioBooking/:bookingId", jwtAuth, getStudiobooking)
+
 
 // router
 // .get('/getRestuarant/:id', jwtAuth, getRestuarant)

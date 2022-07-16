@@ -567,16 +567,18 @@ try {
             }
         }).then(async (trn)=>{
             if(trn){
-                res.json("Payment Already Verified")
+                var verify = "Payment Already Verified"
+                // res.json("Payment Already Verified")
             }else{
                 paystack.transaction.verify(ref).then(async(transaction) => {
                     console.log(transaction);
                     // res.json(transaction)
                     if(!transaction){
-                        res.json({
-                            status: false,
-                            message: `Transaction on the reference no: ${ref} not found`
-                        })
+                        verify = `Transaction on the reference no: ${ref} not found`
+                        // res.json({
+                        //     status: false,
+                        //     message: `Transaction on the reference no: ${ref} not found`
+                        // })
                     }
 
                     var trnx = new Transaction({
@@ -595,7 +597,7 @@ try {
                         id: transaction.data.metadata.orderId
                     }})
 
-                    var verify = transaction.message
+                    verify = "Payment" +" " +transaction.message
 
                     // res.json({
                     //     status: true,

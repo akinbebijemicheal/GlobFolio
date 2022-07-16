@@ -80,16 +80,18 @@ exports.rentVerify = async(req, res, next)=>{
                     }
                 }).then(async (trn)=>{
                     if(trn){
-                        res.json("Payment Already Verified")
+                        var verify = "Payment Already Verified"
+                        // res.json("Payment Already Verified")
                     }else{
                         paystack.transaction.verify(ref).then(async(transaction) => {
                             console.log(transaction);
                             // res.json(transaction)
                             if(!transaction){
-                                res.json({
-                                    status: false,
-                                    message: `Transaction on the reference no: ${ref} not found`
-                                })
+                                verify = `Transaction on the reference no: ${ref} not found`
+                                // res.json({
+                                //     status: false,
+                                //     message: `Transaction on the reference no: ${ref} not found`
+                                // })
                             }
 
                             var trnx = new Transaction({
@@ -101,7 +103,7 @@ exports.rentVerify = async(req, res, next)=>{
                                 description: `${transaction.data.metadata.title} (${transaction.data.metadata.equipment})`
                             })
                             var savetrnx = await trnx.save()
-                            var verify = transaction.message
+                            verify = "Payment" +" " +transaction.message
                                 await RentBooking.findOne({
                                     where:{
                                         ref_no: ref
@@ -113,12 +115,7 @@ exports.rentVerify = async(req, res, next)=>{
                                         }, { where: {
                                             id: book.id
                                         }})
-                                    } else{
-                                        res.json({
-                                            status: false,
-                                            message: "Rent Booking Not Found"
-                                        })
-                                    }
+                                    } 
                                 }).catch(err => console.log(err))
                                     // res.json({
                                     //     status: true,

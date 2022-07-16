@@ -1,50 +1,43 @@
 require('dotenv').config()
 const paystack = require('paystack')(process.env.PAYSTACK_SECRET);
-const HotelExtras = require('../model/hotelextras');
-const Hotel = require('../model/hotel');
-const HotelBooking = require('../model/hotelbooking');
+const Studio = require('../model/studio_book');
+const StudioBooking = require('../model/studiobooking');
 const Transaction = require('../model/usertransactions');
 const User = require('../model/user')
 
-exports.bookHotel = async(req, res, next)=>{
-    var {roomId, quantity, date, time}= req.body;
+exports.bookStudio = async(req, res, next)=>{
+    var {quantity, date, time}= req.body;
+    const id = req.params.studioId;
     try {
         if(!quantity){
             quantity = 1
         }
-        await HotelExtras.findOne({
+        await Studio.findOne({
             where: {
-                id: roomId
-            }, include:[
-                {
-                    model: Hotel,
-                    attributes: {
-                        exclude:["createdAt", "updatedAt"]
-                    }
-                }
-            ]
-        }).then(async(room) => {
-            if(room && room.available_room >= 1){
+                id: id
+            }
+        }).then(async(studio) => {
+            if(studio){
                 let fname = req.user.fullname.split(' ')
                 paystack.transaction.initialize({
-                    name: `${room.hotel.title} (${room.room})`,
+                    name: `${studio.title} (${studio.equipment})`,
                     email: req.user.email,
-                    amount: parseInt(room.price) * 100,
+                    amount: parseInt(studio.price) * 100,
                     quantity: quantity,
-                    callback_url: `${process.env.REDIRECT_SITE}/VerifyPay/hotel`,
+                    callback_url: `${process.env.REDIRECT_SITE}/VerifyPay/studio`,
                     metadata: {
                         userId: req.user.id,
-                        room: room.id,
-                        hotel: room.hotel.title,
-                        display_name: room.room                          
+                        studio: studio.id,
+                        title: studio.title,
+                        equipment: studio.equipment
+                                                 
                     }
                 }).then(async (transaction)=>{
                     console.log(transaction)
                     if(transaction){
-                        const book = new HotelBooking({
+                        const book = new StudioBooking({
                             buyerId: req.user.id,
-                            hotelId: room.hotelId,
-                            hotelextrasId: room.id,
+                            studioId: studio.id,
                             quantity: quantity,
                             scheduled_date: date,
                             scheduled_time: time,
@@ -57,7 +50,7 @@ exports.bookHotel = async(req, res, next)=>{
                         res.json({
                             status: true,
                             data:{
-                                room: room,
+                                studio: studio,
                                 savedbook
                             }
                         })
@@ -66,17 +59,17 @@ exports.bookHotel = async(req, res, next)=>{
             }else{
                 res.json({
                     status: false,
-                    message: "No room found or Room not available"
+                    message: "No studio found or studio not available"
                 })
             }
         }).catch(err=> console.log(err))
     } catch (error) {
-        console.log(error),
+        console.error(error);
         next(error)
     }
-}
+};
 
-exports.hotelverify = async(req, res, next)=>{
+exports.studioVerify = async(req, res, next)=>{
     const ref = req.query.trxref;
     // const userId = req.user.id
     try {
@@ -89,7 +82,8 @@ exports.hotelverify = async(req, res, next)=>{
                         var verify = "Payment Already Verified"
                         // res.json("Payment Already Verified")
                     }else{
-                        paystack.transaction.verify(ref).then(async(transaction) => {
+                        paystack.transaction.verify(ref)
+                        .then(async(transaction) => {
                             console.log(transaction);
                             // res.json(transaction)
                             if(!transaction){
@@ -104,35 +98,34 @@ exports.hotelverify = async(req, res, next)=>{
                                 userId: transaction.data.metadata.userId,
                                 ref_no: ref,
                                 status: transaction.data.status,
-                                ProductType: "Hotel",
+                                ProductType: "Studio",
                                 price: `${transaction.data.currency} ${transaction.data.amount / 100}`,
-                                description: `${transaction.data.metadata.hotel} (${transaction.data.metadata.display_name})`
+                                description: `${transaction.data.metadata.title} (${transaction.data.metadata.equipment})`
                             })
                             var savetrnx = await trnx.save()
                             verify = "Payment" +" " +transaction.message
-                                await HotelBooking.findOne({
+                                await StudioBooking.findOne({
                                     where:{
                                         ref_no: ref
                                     }
                                 }).then(async (book) => {
                                     if(book){
-                                        await HotelBooking.update({
+                                        await StudioBooking.update({
                                             transactionId: savetrnx.id
                                         }, { where: {
                                             id: book.id
                                         }})
-                                    } 
-                                    
+                                    }
                                 }).catch(err => console.log(err))
                                     // res.json({
                                     //     status: true,
                                     //     message: `Payment ${transaction.message}`,
                                     //     transaction: savetrnx,
                                     // })
-                                    res.render("base/verify-hotel",{
+                            
+                                    res.render("base/verify-studio",{
                                         verify
                                     })
-                            
                         }).catch(error => console.error(error))
                     }
                 }).catch(error => console.error(error))
@@ -142,9 +135,9 @@ exports.hotelverify = async(req, res, next)=>{
     }
 }
 
-exports.getbookings = async(req, res, next)=>{
+exports.getStudiobookings = async(req, res, next)=>{
     try {
-        await HotelBooking.findAll({
+        await StudioBooking.findAll({
             order: [
                 ['createdAt', 'ASC']
             ],
@@ -156,17 +149,12 @@ exports.getbookings = async(req, res, next)=>{
                     }
                 },
                 {
-                    model: Hotel,
+                    model: Studio,
                     attributes: {
                         exclude: ["createdAt", "updatedAt"]
                     }
                 },
-                {
-                    model: HotelExtras,
-                    attributes: {
-                        exclude: ["createdAt", "updatedAt"]
-                    }
-                },
+                
                 {
                     model: Transaction,
                     attributes: {
@@ -183,7 +171,7 @@ exports.getbookings = async(req, res, next)=>{
             }else{
                 res.json({
                     status: false,
-                    message: "No HOtel Booking Available"
+                    message: "No Studio Booking Available"
                 })
             }
         })
@@ -193,9 +181,9 @@ exports.getbookings = async(req, res, next)=>{
     }
 }
 
-exports.getUserbookings = async(req, res, next)=>{
+exports.getUserStudiobookings = async(req, res, next)=>{
     try {
-        await HotelBooking.findAll({
+        await StudioBooking.findAll({
             where: {
                 userId: req.user.id
             },
@@ -210,13 +198,7 @@ exports.getUserbookings = async(req, res, next)=>{
                     }
                 },
                 {
-                    model: Hotel,
-                    attributes: {
-                        exclude: ["createdAt", "updatedAt"]
-                    }
-                },
-                {
-                    model: HotelExtras,
+                    model: Studio,
                     attributes: {
                         exclude: ["createdAt", "updatedAt"]
                     }
@@ -237,7 +219,7 @@ exports.getUserbookings = async(req, res, next)=>{
             }else{
                 res.json({
                     status: false,
-                    message: "No HOtel Booking Available"
+                    message: "No Studio Booking Available"
                 })
             }
         })
@@ -247,9 +229,9 @@ exports.getUserbookings = async(req, res, next)=>{
     }
 }
 
-exports.getbooking = async(req, res, next)=>{
+exports.getStudiobooking = async(req, res, next)=>{
     try {
-        await HotelBooking.findOne({
+        await StudioBooking.findOne({
             where:{
                 id: req.params.bookingId
             },
@@ -264,13 +246,7 @@ exports.getbooking = async(req, res, next)=>{
                     }
                 },
                 {
-                    model: Hotel,
-                    attributes: {
-                        exclude: ["createdAt", "updatedAt"]
-                    }
-                },
-                {
-                    model: HotelExtras,
+                    model: Studio,
                     attributes: {
                         exclude: ["createdAt", "updatedAt"]
                     }
@@ -291,7 +267,7 @@ exports.getbooking = async(req, res, next)=>{
             }else{
                 res.json({
                     status: false,
-                    message: "No HOtel Booking Available"
+                    message: "No Studio Booking Available"
                 })
             }
         })
