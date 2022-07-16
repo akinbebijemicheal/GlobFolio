@@ -171,7 +171,7 @@ exports.getRentbookings = async(req, res, next)=>{
             }else{
                 res.json({
                     status: false,
-                    message: "No HOtel Booking Available"
+                    message: "No Rent Booking Available"
                 })
             }
         })
@@ -219,7 +219,7 @@ exports.getUserRentbookings = async(req, res, next)=>{
             }else{
                 res.json({
                     status: false,
-                    message: "No HOtel Booking Available"
+                    message: "No Rent Booking Available"
                 })
             }
         })
@@ -267,7 +267,7 @@ exports.getRentbooking = async(req, res, next)=>{
             }else{
                 res.json({
                     status: false,
-                    message: "No HOtel Booking Available"
+                    message: "No Rent Booking Available"
                 })
             }
         })
