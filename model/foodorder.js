@@ -23,6 +23,10 @@ const Order = db.define('foodorder', {
         type: Sequelize.BOOLEAN,
         defaultValue: true
     },
+    paid:{
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
+    },
     address: {
         type: Sequelize.STRING
     },

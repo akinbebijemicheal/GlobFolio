@@ -379,7 +379,7 @@ exports.viewOrder = async(req, res, next)=>{
     try {
         await Order.findOne({
             where: {
-                id: req.params.orderId
+                id: req.params.orderId,
             },
             include:[
                 {
@@ -423,6 +423,10 @@ exports.viewOrder = async(req, res, next)=>{
 exports.viewAdminOrder = async(req, res, next)=>{
     try {
         await Order.findAll({
+            where:{
+                new: true,
+                paid: true
+            },
             order:[
                 ["createdAt", 'ASC']
             ],
@@ -469,7 +473,8 @@ exports.viewOrders = async(req, res, next)=>{
     try {
         await Order.findAll({
             where: {
-                userId: req.user.id
+                userId: req.user.id,
+                paid: true
             },
             include:[
                 {
@@ -580,6 +585,12 @@ try {
                         description: `Food purchase #${transaction.data.metadata.orderId}`
                     })
                     var savetrnx = await trnx.save()
+
+                    await Order.update({
+                        paid: true
+                    }, {where: {
+                        id: transaction.data.metadata.orderId
+                    }})
 
                     var verify = transaction.message
 
