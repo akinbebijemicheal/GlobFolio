@@ -318,6 +318,7 @@ exports.createOrder = async(req, res, next)=>{
                         orderId: order.id
                     }
                 }).then(async(transaction)=>{
+                    console.log(transaction)
                     if(transaction){
                         await Order.update({
                             address: address,
