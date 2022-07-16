@@ -476,6 +476,7 @@ exports.viewOrders = async(req, res, next)=>{
         await Order.findAll({
             where: {
                 userId: req.user.id,
+                new: true,
                 paid: true
             },
             include:[
