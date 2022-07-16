@@ -325,7 +325,7 @@ exports.createOrder = async(req, res, next)=>{
                             phone_no: phone_no,
                             sub_total: total,
                             status: "in_progress",
-                            Checkout_url: transaction.data.authorization_url,
+                            checkout_url: transaction.data.authorization_url,
                             ref_no: transaction.data.reference,
                             access_code: transaction.data.access_code
                         }, {
