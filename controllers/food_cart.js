@@ -38,7 +38,7 @@ exports.AddCart = async(req, res, next)=>{
                     var outer = await new_order.save();
                     orderId = outer.id
                 }
-                if(foodextrasId || foodextrasId !== null || foodextrasId !== undefined){
+                if(foodextrasId && foodextrasId !== null && foodextrasId !== undefined){
                     var extra = await FoodExtra.findOne({
                     where:{
                         id: foodextrasId
