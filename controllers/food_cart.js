@@ -304,7 +304,7 @@ exports.createOrder = async(req, res, next)=>{
                 var total = 0;
                 if(order.fooditems){
                     for(var i =0; i<order.fooditems.length; i++){
-                        total = total + order.fooditems[i].price;
+                        total = total + (order.fooditems[i].price * order.fooditems[i].qty);
                     }
                 }
                 paystack.transaction.initialize({
