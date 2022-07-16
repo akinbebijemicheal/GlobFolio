@@ -52,7 +52,7 @@ exports.AddCart = async(req, res, next)=>{
                    var extraId = extra.id
                 }else{
                     price = parseInt(food.price)
-                    extraId = ""
+                    extraId = null
                 }
                 const Items = new CartItem({
                     userId: req.user.id,
