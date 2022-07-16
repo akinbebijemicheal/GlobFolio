@@ -5,8 +5,8 @@ const multer = require("../util/multer2");
 const {
   profile,
   userAuth,
-  RegisterUser,
-  webLoginUser,
+  RegisterAdmin,
+  webLoginAdmin,
   checkRole,
   getUser,
   getUsers,
@@ -98,55 +98,55 @@ const { getbookings, getbooking, hotelverify } = require("../controllers/Hotelbo
 const { getRentbookings, getRentbooking } = require("../controllers/rentbooking");
 //user
 
-// router
-// .get('/', (req, res) =>{
-//     res.render('base/index')
-// })
+router
+.get('/', (req, res) =>{
+    res.render('base/index')
+})
 
-// router
-// .get('/about', (req, res) =>{
-//     res.render('base/about')
-// })
+router
+.get('/about', (req, res) =>{
+    res.render('base/about')
+})
 
-// router
-// .get('/contact', (req, res) =>{
-//     res.render('base/contact')
-// })
+router
+.get('/contact', (req, res) =>{
+    res.render('base/contact')
+})
 
-// router
-// .get('/faq', (req, res) =>{
-//     res.render('base/faq')
-// })
+router
+.get('/faq', (req, res) =>{
+    res.render('base/faq')
+})
 
-// router
-// .get('/gallery', (req, res) =>{
-//     res.render('base/gallery')
-// })
+router
+.get('/gallery', (req, res) =>{
+    res.render('base/gallery')
+})
 
-// router
-// .get('/pricing', (req, res) =>{
-//     res.render('base/pricing')
-// })
+router
+.get('/pricing', (req, res) =>{
+    res.render('base/pricing')
+})
 
-// router
-// .get('/privacy', (req, res) =>{
-//     res.render('base/privacy')
-// })
+router
+.get('/privacy', (req, res) =>{
+    res.render('base/privacy')
+})
 
-// router
-// .get('/terms', (req, res) =>{
-//     res.render('base/terms')
-// })
+router
+.get('/terms', (req, res) =>{
+    res.render('base/terms')
+})
 
 // router
 // .get('/registration-type', (req, res) => {
 //     res.render('base/registration-type')
 // })
 
-// router
-// .get('/register-user', (req, res) => {
-//     res.render('base/signup')
-// });
+router
+.get('/register-user', (req, res) => {
+    res.render('base/signup')
+});
 
 // router
 // .get('/register-vendor', (req, res) => {
@@ -154,26 +154,26 @@ const { getRentbookings, getRentbooking } = require("../controllers/rentbooking"
 
 // });
 
-// router
-// .get('/register-admin', (req, res) => {
-//     res.render('base/admin-register')
+router
+.get('/register-admin', (req, res) => {
+    res.render('base/admin-register')
 
-// });
+});
 
-// router
-// .get('/login-user', (req, res) => {
-//     res.render('base/userlogin')
-// });
+router
+.get('/login-user', (req, res) => {
+    res.render('base/userlogin')
+});
 
 // router
 // .get('/login-vendor', (req, res) => {
 //     res.render('base/vendorlogin')
 // });
 
-// router
-// .get('/login-admin', (req, res) => {
-//     res.render('base/admin-login')
-// });
+router
+.get('/login-admin', (req, res) => {
+    res.render('base/admin-login')
+});
 
 // router
 // .get('/dashboard/user', userAuth, (req, res)=>{
@@ -458,12 +458,12 @@ router.get(
 
 //admin
 router.post("/register-admin", async (req, res, next) => {
-  await RegisterUser("admin", req, res, next);
+  await RegisterAdmin(req, res, next);
   //res.redirect('login-admin')
 });
 
 router.post("/login-admin", async (req, res, next) => {
-  await webLoginUser("admin", req, res, next);
+  await webLoginAdmin(req, res, next);
   //res.redirect('/dashboard/admin')
 });
 
@@ -497,17 +497,17 @@ router.route("/dashboard/profile/get-pic/").get(userAuth, getPicture);
 // .route('/get-vendorsByservice')
 // .get(userAuth, checkRole(["admin"]), getVendorsByServices)
 
-router
-  .route("/verification")
-  .post(userAuth, checkRole(["admin"]), verification);
+// router
+//   .route("/verification")
+//   .post(userAuth, checkRole(["admin"]), verification);
 
 router.route("/email-verification").post(emailVerification_V1);
 
 router.route("/email-verification").get(emailVerification_V2);
 //------------------------------------------Forgot Password-------------------------------
-// router.route("/forgot-password").get((req, res) => {
-//   res.render("base/forgot");
-// });
+router.route("/forgot-password").get((req, res) => {
+  res.render("base/forgot");
+});
 
 router.route("/forgot-password").post(checkEmail);
 

@@ -7,7 +7,7 @@ require('dotenv').config();
 const nodemailer = require('nodemailer')
 const baseurl = process.env.BASE_URL
 
-exports.RegisterUser = async (role, req, res, next) => {
+exports.RegisterAdmin = async (req, res, next) => {
     try{
 
         const {email, password } = req.body;
@@ -18,76 +18,66 @@ exports.RegisterUser = async (role, req, res, next) => {
                 }
             });
         if(user) {
-            res.status(302).json({
-                status: false,
-                message: "User already exist"
-            })
-            // req.flash("error", "User already exist")
-            // res.redirect("back")
+            // res.status(302).json({
+            //     status: false,
+            //     message: "User already exist"
+            // })
+            req.flash("error", "User already exist")
+            res.redirect("back")
         }
         const salt = await bcrypt.genSalt(12);
         const hashedPass = await bcrypt.hash(password, salt);
         
-        if(role === 'admin'){
-            // var verify = true;
-            var emailVerified = true
-        }else{
-        //   verify = false;
-          emailVerified = true
-        }
+        
         
 
         user = new User({
+            fullname: "Admin",
             email,
             password: hashedPass,
-            role: role,
-            email_verify: emailVerified
+            role: "admin",
+            email_verify: true
         });
     
         const Newuser = await user.save();
-        res.status(200).json({
-            status: true,
-            data: Newuser
-        })
-        // req.flash('success', "Registration successful")
-        //  res.redirect(`login-${role}`);
+        // res.status(200).json({
+        //     status: true,
+        //     data: Newuser
+        // })
+        req.flash('success', "Registration successful")
+         res.redirect(`login-admin`);
 
     }catch(error){
         console.error(error)
-        res.status(500).json({
-            status: false,
-            message: error
-        })
+        // res.status(500).json({
+        //     status: false,
+        //     message: error
+        // })
+        // next(error)
+        req.flash("error", "An error occured refresh the page")
+        res.redirect("back")
         next(error)
-        // req.flash("error", "An error occured refresh the page")
-        // res.redirect("back")
     }
 };
 
 
-exports.webLoginUser = async (role, req, res, next) => {
+exports.webLoginAdmin = async (req, res, next) => {
     try{
 
         const {email, password } = req.body;
         const user = await User.findOne({where: {
             email: email }
         });
-        if(!user){
-            res.status(404).json({
-                status: false,
-                message: 'User does not exist'
-            })
-            // req.flash("warning", 'User does not exist');
-            // res.redirect("back")
-        }
-
-        if(user.role !== role){
-            res.status(401).json({
-                status: false,
-                message: 'Please ensure you are logging-in from the right portal'
-            })
-        //   req.flash("warning", "Please ensure you are logging-in from the right portal");
-        //   res.redirect("back")
+        if(!user || user === null){
+            req.flash("warning", 'User does not exist');
+            res.redirect("back")
+        }else if(user.role !== "admin"){
+            // res.status(401).json({
+            //     status: false,
+            //     message: 'Please ensure you are logging-in from the right portal'
+            // })
+          req.flash("warning", "Please ensure you are logging-in from the right portal");
+          res.redirect("back")
         }
         
         const validate = await bcrypt.compare(password, user.password);
@@ -113,50 +103,52 @@ exports.webLoginUser = async (role, req, res, next) => {
                 createdAt: user.createdAt,
             };
 
-            // var option = {
-            //     httpOnly: true,
-            //     signed: true,
-            //     sameSite: true,
-            //     secure: (process.env.NODE_ENV !== 'development'),
-            //     secret: process.env.CSECRET
-            // }
+            var option = {
+                httpOnly: true,
+                signed: true,
+                sameSite: true,
+                secure: (process.env.NODE_ENV !== 'development'),
+                secret: process.env.CSECRET
+            }
 
-            res.json({
-                status: true,
-                data: result
-            })
+            // res.json({
+            //     status: true,
+            //     data: result
+            // })
             
             
 
-            //res.status(200)
-            // req.flash("success", "Successfully logged in");
-            // res.cookie("jwt", token, option);
-            // res.redirect(`/dashboard/${role}`)
+            res.status(200)
+            req.flash("success", "Successfully logged in");
+            res.cookie("jwt", token, option);
+            res.redirect(`/dashboard/admin`)
 
             
 
              
 
         } else{
-           //res.status(403)
-        //   req.flash("warning", 'Wrong password');
-        //   res.redirect("back")
-        res.status(404).json({
-            status: false,
-            message: "User not found"
-        })
+           res.status(403)
+          req.flash("warning", 'Wrong password');
+          res.redirect("back")
+        // res.status(404).json({
+        //     status: false,
+        //     message: "User not found"
+        // })
+       
         }
 
 
     } catch(error){
         console.error(error);
-        res.status(500).json({
-            status: false,
-            message: error
-        });
-        next(error);
-    //   req.flash("error", "An error occured refresh the page")
-    //   res.redirect("back")
+        // res.status(500).json({
+        //     status: false,
+        //     message: error
+        // });
+        // next(error);
+      req.flash("error", "An error occured refresh the page")
+      res.redirect("back")
+      next(error)
     }
 };
 
@@ -188,12 +180,12 @@ exports.createAdmin = async(req, res, next)=>{
                 }
             });
         if(user) {
-            res.status(302).json({
-                status: false,
-                message: "User already exist"
-            })
-            // req.flash("error", "User already exist")
-            // res.redirect("back")
+            // res.status(302).json({
+            //     status: false,
+            //     message: "User already exist"
+            // })
+            req.flash("error", "User already exist")
+            res.redirect("back")
         }
         const salt = await bcrypt.genSalt(12);
         const hashedPass = await bcrypt.hash(password, salt);
