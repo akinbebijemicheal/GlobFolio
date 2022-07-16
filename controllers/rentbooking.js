@@ -101,7 +101,7 @@ exports.rentVerify = async(req, res, next)=>{
                                 description: `${transaction.data.metadata.title} (${transaction.data.metadata.equipment})`
                             })
                             var savetrnx = await trnx.save()
-
+                            var verify = transaction.message
                                 await RentBooking.findOne({
                                     where:{
                                         ref_no: ref
@@ -120,12 +120,15 @@ exports.rentVerify = async(req, res, next)=>{
                                         })
                                     }
                                 }).catch(err => console.log(err))
-                                    res.json({
-                                        status: true,
-                                        message: `Payment ${transaction.message}`,
-                                        transaction: savetrnx,
-                                    })
+                                    // res.json({
+                                    //     status: true,
+                                    //     message: `Payment ${transaction.message}`,
+                                    //     transaction: savetrnx,
+                                    // })
                             
+                                    res.render("base/verify-rent",{
+                                        verify
+                                    })
                         }).catch(error => console.error(error))
                     }
                 }).catch(error => console.error(error))

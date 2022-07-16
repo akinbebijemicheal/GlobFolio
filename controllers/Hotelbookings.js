@@ -107,7 +107,7 @@ exports.hotelverify = async(req, res, next)=>{
                                 description: `${transaction.data.metadata.hotel} (${transaction.data.metadata.display_name})`
                             })
                             var savetrnx = await trnx.save()
-
+                            var verify = transaction.message
                                 await HotelBooking.findOne({
                                     where:{
                                         ref_no: ref
@@ -126,10 +126,13 @@ exports.hotelverify = async(req, res, next)=>{
                                         })
                                     }
                                 }).catch(err => console.log(err))
-                                    res.json({
-                                        status: true,
-                                        message: `Payment ${transaction.message}`,
-                                        transaction: savetrnx,
+                                    // res.json({
+                                    //     status: true,
+                                    //     message: `Payment ${transaction.message}`,
+                                    //     transaction: savetrnx,
+                                    // })
+                                    res.render("base/verify-hotel",{
+                                        verify
                                     })
                             
                         }).catch(error => console.error(error))

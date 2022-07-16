@@ -581,10 +581,15 @@ try {
                     })
                     var savetrnx = await trnx.save()
 
-                    res.json({
-                        status: true,
-                        message: `Payment ${transaction.message}`,
-                        transaction: savetrnx,
+                    var verify = transaction.message
+
+                    // res.json({
+                    //     status: true,
+                    //     message: `Payment ${transaction.message}`,
+                    //     transaction: savetrnx,
+                    // })
+                    res.render("base/verify-food",{
+                        verify
                     })
                     
                 }).catch(error => console.error(error))

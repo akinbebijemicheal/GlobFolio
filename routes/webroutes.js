@@ -95,7 +95,7 @@ const {
 } = require("../controllers/ads");
 const { Checkout, viewOrders, viewOrder, viewAdminOrder } = require("../controllers/food_cart");
 const { getbookings, getbooking, hotelverify } = require("../controllers/Hotelbookings");
-const { getRentbookings, getRentbooking } = require("../controllers/rentbooking");
+const { getRentbookings, getRentbooking, rentVerify } = require("../controllers/rentbooking");
 //user
 
 router
@@ -674,6 +674,7 @@ router.get("/getRentBooking/:bookingId", userAuth, getRentbooking)
 router
 .get('/VerifyPay/hotel', hotelverify)
 router.get("/VerifyPay/food", Checkout)
+router.get("/VerifyPay/rent", rentVerify)
 
 router.get("/logout", (req, res) => {
   req.logout();
