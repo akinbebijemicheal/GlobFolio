@@ -6,7 +6,7 @@ const { Op } = require('sequelize')
 const fs = require('fs')
 
 exports.createCinemaService = async(req, res, next) => {
-    const { title, genre, storyline, rating, view_date, cast, duration, age_rate,  price } = req.body;
+    const { title, genre, storyline, rating, view_date, cast, seat, duration, age_rate,  price } = req.body;
     try {
 
         const cinema = new Product({
@@ -17,6 +17,7 @@ exports.createCinemaService = async(req, res, next) => {
             duration,
             age_rate,
             view_date,
+            seat,
             rating: parseFloat(rating),
             price: price,
         })
@@ -251,7 +252,7 @@ exports.getCinemaById = async(req, res, next) => {
 }
 
 exports.updateCinema = async(req, res, next) => {
-    const { title, genre, storyline, rating, view_date, cast, duration, age_rate,  price } = req.body;
+    const { title, genre, storyline, rating, view_date, cast, seat, duration, age_rate,  price } = req.body;
     try{
         
             await Product.update({
@@ -262,6 +263,7 @@ exports.updateCinema = async(req, res, next) => {
                 view_date: view_date,
                 duration: duration,
                 age_rate: age_rate,
+                seat: seat,
                 rating: parseFloat(rating),
                 price: price,
             }, { where: {

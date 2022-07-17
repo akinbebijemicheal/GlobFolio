@@ -21,7 +21,13 @@ const fileFilter = (req, file, cb) => {
     file.mimetype === "image/JPG" ||
     file.mimetype === "image/PNG" ||
     file.mimetype === "image/GIF" ||
-    file.mimetype === "image/SVG"
+    file.mimetype === "image/SVG" ||
+    file.mimetype === 'video/gif' ||
+    file.mimetype === 'video/mp4' ||
+    file.mimetype === 'video/wmv' ||
+    file.mimetype === 'video/avi' ||
+    file.mimetype === 'video/webm' ||
+    file.mimetype === 'video/mkv' 
   ) {
     cb(null, true);
   } else {

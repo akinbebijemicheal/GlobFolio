@@ -97,6 +97,8 @@ const { Checkout, viewOrders, viewOrder, viewAdminOrder } = require("../controll
 const { getbookings, getbooking, hotelverify } = require("../controllers/Hotelbookings");
 const { getRentbookings, getRentbooking, rentVerify } = require("../controllers/rentbooking");
 const { studioVerify, getStudiobookings, getStudiobooking } = require("../controllers/studiobooking");
+const { gameVerify, getGamebookings, getGamebooking } = require("../controllers/gamebooking");
+const { cinemaVerify, getCinemabookings, getCinemabooking } = require("../controllers/cinemabooking");
 //user
 
 router
@@ -676,11 +678,21 @@ router.get("/getRentBooking/:bookingId", userAuth, getRentbooking)
 router.get("/getAllStudioBookings", userAuth, getStudiobookings);
 router.get("/getStudioBooking/:bookingId", userAuth, getStudiobooking)
 
+//--------------------------------------Cinema Bookings--------------------
+router.get("/getAllCinemaBookings", userAuth, getCinemabookings);
+router.get("/getCinemaBooking/:bookingId", userAuth, getCinemabooking)
+
+//--------------------------------------Game Bookings--------------------
+router.get("/getAllGameBookings", userAuth, getGamebookings);
+router.get("/getGameBooking/:bookingId", userAuth, getGamebooking)
+
 router
 .get('/VerifyPay/hotel', hotelverify)
 router.get("/VerifyPay/food", Checkout)
 router.get("/VerifyPay/rent", rentVerify)
 router.get("/VerifyPay/studio", studioVerify)
+router.get("/VerifyPay/game", gameVerify)
+router.get("/VerifyPay/cinema", cinemaVerify)
 
 router.get("/logout", (req, res) => {
   req.logout();

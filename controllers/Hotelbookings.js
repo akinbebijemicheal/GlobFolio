@@ -29,7 +29,7 @@ exports.bookHotel = async(req, res, next)=>{
                 paystack.transaction.initialize({
                     name: `${room.hotel.title} (${room.room})`,
                     email: req.user.email,
-                    amount: parseInt(room.price) * 100,
+                    amount: (parseInt(room.price) * quantity) * 100,
                     quantity: quantity,
                     callback_url: `${process.env.REDIRECT_SITE}/VerifyPay/hotel`,
                     metadata: {
@@ -110,6 +110,12 @@ exports.hotelverify = async(req, res, next)=>{
                             })
                             var savetrnx = await trnx.save()
                             verify = "Payment" +" " +transaction.message
+
+                            var hotel = await HotelExtras.findOne({
+                                where: {
+                                    id: transaction.data.metadata.room
+                                }
+                            })
                                 await HotelBooking.findOne({
                                     where:{
                                         ref_no: ref
@@ -121,6 +127,14 @@ exports.hotelverify = async(req, res, next)=>{
                                         }, { where: {
                                             id: book.id
                                         }})
+
+                                        await HotelExtras.update({
+                                            available_room: (hotel.available_room - book.quantity)
+                                        }, {
+                                            where:{
+                                                id: hotel.id
+                                            }
+                                        })
                                     } 
                                     
                                 }).catch(err => console.log(err))

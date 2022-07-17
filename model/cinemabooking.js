@@ -2,10 +2,10 @@ const Sequelize = require('sequelize');
 const db = require('../config/config');
 const {nanoid} = require('nanoid');
 const User = require('./user');
-const Rent = require('./renting');
+const Cinema = require('./cinema');
 const Transaction = require('./usertransactions');
 
-const RentBooking = db.define('rentbooking', {
+const CinemaBooking = db.define('cinemabooking', {
     id: {
         type: Sequelize.STRING(10),
         autoincrement: false,
@@ -13,10 +13,10 @@ const RentBooking = db.define('rentbooking', {
         primaryKey: true,
         defaultValue: () => nanoid(10)
     },
-    rentId:{
+    cinemaId:{
         type: Sequelize.STRING(10),
         references:{
-            model: 'rents',
+            model: 'cinemas',
             key: 'id'
         }
     },
@@ -37,14 +37,11 @@ const RentBooking = db.define('rentbooking', {
     quantity:{
         type: Sequelize.INTEGER,
     },
-    pickup_date:{
+    scheduled_date:{
         type: Sequelize.DATEONLY
     },
-    delivery_date:{
-        type: Sequelize.DATEONLY
-    },
-    location:{
-        type: Sequelize.STRING,
+    scheduled_time:{
+        type: Sequelize.TIME
     },
     transaction_url: {
         type: Sequelize.STRING,
@@ -58,13 +55,13 @@ const RentBooking = db.define('rentbooking', {
 }, {timestamps: true});
 
 
-RentBooking.belongsTo(Rent, {foreignKey: "rentId"});
-Rent.hasMany(RentBooking, {foreignKey: "rentId"});
+CinemaBooking.belongsTo(Cinema, {foreignKey: "cinemaId"});
+Cinema.hasMany(CinemaBooking, {foreignKey: "cinemaId"});
 
-RentBooking.belongsTo(User, {foreignKey: 'buyerId'});
-User.hasMany(RentBooking, {foreignKey: 'buyerId'});
+CinemaBooking.belongsTo(User, {foreignKey: 'buyerId'});
+User.hasMany(CinemaBooking, {foreignKey: 'buyerId'});
 
-RentBooking.belongsTo(Transaction, {foreignKey: 'transactionId'});
-Transaction.hasOne(RentBooking, {foreignKey: 'transactionId'});
+CinemaBooking.belongsTo(Transaction, {foreignKey: 'transactionId'});
+Transaction.hasOne(CinemaBooking, {foreignKey: 'transactionId'});
 
-module.exports = RentBooking;
+module.exports = CinemaBooking;

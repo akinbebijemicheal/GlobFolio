@@ -22,7 +22,7 @@ exports.bookStudio = async(req, res, next)=>{
                 paystack.transaction.initialize({
                     name: `${studio.title} (${studio.equipment})`,
                     email: req.user.email,
-                    amount: parseInt(studio.price) * 100,
+                    amount: (parseInt(studio.price) * quantity) * 100,
                     quantity: quantity,
                     callback_url: `${process.env.REDIRECT_SITE}/VerifyPay/studio`,
                     metadata: {
@@ -104,6 +104,8 @@ exports.studioVerify = async(req, res, next)=>{
                             })
                             var savetrnx = await trnx.save()
                             verify = "Payment" +" " +transaction.message
+
+                            
                                 await StudioBooking.findOne({
                                     where:{
                                         ref_no: ref

@@ -5,7 +5,7 @@ const User = require('../../model/user');
 const fs = require('fs')
 
 exports.createGamingService = async(req, res, next) => {
-    const { title, description, genre, price, age_rate,} = req.body;
+    const { title, description, genre, available_game, price, age_rate,} = req.body;
         try {  
             const game = new Product({
                     title,
@@ -13,6 +13,7 @@ exports.createGamingService = async(req, res, next) => {
                     genre,
                     price: price,
                     age_rate,
+                    available_game,
                 })
                 var gameout = await game.save();
 
@@ -219,7 +220,7 @@ exports.getGameById = async(req, res, next) => {
 }
 
 exports.updateGaming = async(req, res, next) => {
-    const { title, description, genre, price, age_rate,} = req.body;
+    const { title, description, available_game, genre, price, age_rate,} = req.body;
     try{
             await Product.update({
                 title: title,
@@ -227,6 +228,7 @@ exports.updateGaming = async(req, res, next) => {
                 genre: genre,
                 price: price,
                 age_rate: age_rate,
+                available_game,
             }, { where: {
                 id: req.params.id,
             }})

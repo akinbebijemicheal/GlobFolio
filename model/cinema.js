@@ -29,6 +29,9 @@ const Cinema = db.define('cinema', {
     duration: {
         type: Sequelize.STRING
     },
+    seat:{
+        type: Sequelize.INTEGER
+    },
     age_rate: {
         type: Sequelize.STRING
     },
