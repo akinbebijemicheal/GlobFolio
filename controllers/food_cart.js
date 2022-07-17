@@ -128,7 +128,8 @@ exports.AddCart = async(req, res, next)=>{
 exports.viewCart = async(req, res, next) => {
     try {
         const viewcart = await CartItem.findAll({ where: {
-            userId: req.user.id
+            userId: req.user.id,
+            ordered: false
         }, 
                 include: [
                     {
@@ -596,6 +597,25 @@ try {
                     }, {where: {
                         id: transaction.data.metadata.orderId
                     }})
+
+                    await CartItem.findAll({
+                        where:{
+                            orderId: transaction.data.metadata.orderId
+                        },
+                        
+                    }).then(async(extra)=>{
+                        if(extra){
+                            for(var i=0; i<extra.length; i++){
+                                await CartItem.update({
+                                    ordered: true
+                                }, {where:{
+                                    id: extra[i].id
+                                }})
+                            }
+                        }
+                    })
+
+                    
 
                     verify = "Payment" +" " +transaction.message
 
