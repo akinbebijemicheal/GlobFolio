@@ -37,11 +37,11 @@ const StudioBooking = db.define('studiobooking', {
     quantity:{
         type: Sequelize.INTEGER,
     },
-    scheduled_date:{
+    start_date:{
         type: Sequelize.DATEONLY
     },
-    scheduled_time:{
-        type: Sequelize.TIME
+    end_date:{
+        type: Sequelize.DATEONLY
     },
     transaction_url: {
         type: Sequelize.STRING,

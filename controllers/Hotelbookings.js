@@ -7,7 +7,7 @@ const Transaction = require('../model/usertransactions');
 const User = require('../model/user')
 
 exports.bookHotel = async(req, res, next)=>{
-    var {roomId, quantity, date, time}= req.body;
+    var {roomId, quantity, dateFrom, dateTo}= req.body;
     try {
         if(!quantity){
             quantity = 1
@@ -46,8 +46,8 @@ exports.bookHotel = async(req, res, next)=>{
                             hotelId: room.hotelId,
                             hotelextrasId: room.id,
                             quantity: quantity,
-                            scheduled_date: date,
-                            scheduled_time: time,
+                            start_date: dateFrom,
+                            end_date: dateTo,
                             transaction_url: transaction.data.authorization_url,
                             ref_no: transaction.data.reference,
                             access_code: transaction.data.access_code

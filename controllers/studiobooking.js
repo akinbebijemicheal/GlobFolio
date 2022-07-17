@@ -6,7 +6,7 @@ const Transaction = require('../model/usertransactions');
 const User = require('../model/user')
 
 exports.bookStudio = async(req, res, next)=>{
-    var {quantity, date, time}= req.body;
+    var {quantity, dateTo, dateFrom}= req.body;
     const id = req.params.studioId;
     try {
         if(!quantity){
@@ -39,8 +39,8 @@ exports.bookStudio = async(req, res, next)=>{
                             buyerId: req.user.id,
                             studioId: studio.id,
                             quantity: quantity,
-                            scheduled_date: date,
-                            scheduled_time: time,
+                            start_date: dateFrom,
+                            end_date: dateTo,
                             transaction_url: transaction.data.authorization_url,
                             ref_no: transaction.data.reference,
                             access_code: transaction.data.access_code

@@ -45,10 +45,10 @@ const HotelBooking = db.define('hotelbooking', {
     quantity:{
         type: Sequelize.INTEGER,
     },
-    scheduled_date:{
+    start_date:{
         type: Sequelize.DATEONLY
     },
-    scheduled_time:{
+    end_date:{
         type: Sequelize.TIME
     },
     transaction_url: {
