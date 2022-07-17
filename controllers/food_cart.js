@@ -279,7 +279,7 @@ exports.addQty = async(req, res, next)=> {
 }
 
 exports.createOrder = async(req, res, next)=>{
-    var { address, phone_no } = req.body;
+    var { address, phone_no, note } = req.body;
     try {
         await Order.findOne({
             where:{
@@ -325,6 +325,7 @@ exports.createOrder = async(req, res, next)=>{
                         await Order.update({
                             address: address,
                             phone_no: phone_no,
+                            note: note,
                             sub_total: total,
                             status: "in_progress",
                             checkout_url: transaction.data.authorization_url,
