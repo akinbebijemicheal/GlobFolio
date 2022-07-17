@@ -26,7 +26,8 @@ exports.AddCart = async(req, res, next)=>{
                 const order = await Order.findOne({
                     where:{
                         userId: req.user.id,
-                        new: true
+                        new: true,
+                        paid: false
                     }
                 })
                 if(order){
