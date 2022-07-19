@@ -1,0 +1,162 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.3/font/bootstrap-icons.css");
+body, html {
+    font-family: Montserrat, sans-serif!important;
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+    background-image: cover;
+    background-color: #000;
+}
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+/**********lOGIN*************/
+#back{
+    background-color: #000;
+}
+.logIn{
+    margin-top: 30px;
+}
+.logIn .fine {
+    text-align: center;
+    margin-top: 30px;
+}
+.logIn .sign .sign-div img{
+    width: 150px;
+    display: block;
+    margin: auto;
+}
+.logIn .sign .sign-div {
+    box-shadow: 0 0 20px rgba(0, 0, 0, .404);
+    padding: 35px 35px;
+    background-image: linear-gradient(45deg, #e51919, #24833b);
+    border-radius: 10px;
+    width: 100%;
+    padding: 20px 20px;
+    margin-bottom: 20px;
+}
+.logIn .sign .sign-div h1{
+    font-size: 20px;
+    font-weight: 700;
+    text-align: center;
+    padding: 10px 0 0px 0px;
+    color: #fff;
+}
+.logIn .sign .sign-div .line-rule{
+    height: 3px;
+    background-color: #000;
+    margin: auto;
+    width: 100px;
+    margin-bottom: 60px;
+}
+.logIn .sign h4{
+    font-size: 20px;
+    color: #000000;
+    padding: 0px 0 10px 0px;
+    font-weight: 600;
+}
+.logIn .sign .sign-div ::placeholder{
+    font-size: 12px;
+    color: #000;
+}
+.logIn .sign .sign-div label{
+    color: #fff;
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+.logIn .sign .sign-div input{
+    display: block;
+    width: 100%;
+    padding: 15px 5px 15px 45px;
+    border-radius: 10px;
+    border: 1px solid #000;
+    letter-spacing: 0.8px;
+    background-color: #fff;
+    font-size: 16px;
+    transition: 0.6s;
+}
+.logIn .sign .sign-div .bi{
+    position: absolute;
+    margin-top: 14px;
+    margin-left: 15px;
+    font-size: 19px;
+    padding-right: 15px;
+    padding-top: 2px;
+    color: #000;
+}
+.logIn .sign .sign-div a{
+    text-decoration: none;
+    color: #fff;
+    font-weight: 700;
+}
+.logIn .sign .sign-div p{
+    font-size: 13px;
+    margin-top: 10px;
+}
+.logIn .sign .sign-div button{
+    display: block;
+    margin: auto;
+    margin-top: 30px;
+    width: 100%;
+    padding: 20px;
+    text-align: center;
+    border: none;
+    background-color: #000;
+    color: #fff;
+    border-radius: 10px;
+}
+.logIn .sign .sign-div button:hover{
+    background-color: #DF002D;
+    color: #fff;
+}
+@media(max-width: 1400px){
+    .logIn .sign .sign-div button{
+        display: block;
+        margin: auto;
+        margin-top: 30px;
+        width: 100%;
+        padding: 20px;
+        text-align: center;
+        border: none;
+        color: #fff;
+        border-radius: 10px;
+    }
+}
+@media(max-width: 520px){
+    .logIn .sign .sign-div button{
+        display: block;
+        margin: auto;
+        margin-top: 30px;
+        width: 100%;
+        padding: 20px;
+        text-align: center;
+        border: none;
+        background-color: #000;
+        color: #fff;
+        border-radius: 10px;
+    }
+    .logIn .sign .sign-div a{
+        text-decoration: none;
+        color: #fff;
+        font-weight: 500;
+        font-size: 15px !important;
+    }
+   
+    .logIn .sign .sign-div {
+        background-color: #fff;
+        box-shadow: 0px 0px 20px rgba(136, 136, 136, 0.219);
+        border-radius: 10px;
+        width: 100%;
+        padding: 30px 20px;
+        margin-top: 20px; 
+    }
+    #back{
+        height: 100vh;
+    }
+    
+}
+
+/**********lOGIN ENDS*************/

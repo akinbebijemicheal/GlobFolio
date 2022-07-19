@@ -107,7 +107,7 @@ const { cinemaVerify, getCinemabookings, getCinemabooking } = require("../contro
 //user
 
 router
-.get('/', (req, res) =>{
+.get("/", (req, res) =>{
     res.render('base/index')
 })
 
