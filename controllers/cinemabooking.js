@@ -1,16 +1,31 @@
 require('dotenv').config()
 const paystack = require('paystack')(process.env.PAYSTACK_SECRET);
 const Cinema = require('../model/cinema');
+const Snack = require('../model/cinemasnacks')
 const CinemaBooking = require('../model/cinemabooking');
 const Transaction = require('../model/usertransactions');
 const User = require('../model/user')
 
 exports.bookCinema = async(req, res, next)=>{
-    var {quantity, date, time}= req.body;
+    var {quantity, snackQuantity, time, snacksId}= req.body;
     const id = req.params.cinemaId;
     try {
         if(!quantity){
             quantity = 1
+        }
+
+        if(!snackQuantity){
+            snackQuantity = 1
+        }
+
+        if(snacksId){
+            const snack = await Snack.findOne({
+                where:{
+                    id: snacksId
+                }
+            })
+
+            var snack_price = snack.price 
         }
         await Cinema.findOne({
             where: {
@@ -22,25 +37,33 @@ exports.bookCinema = async(req, res, next)=>{
                 paystack.transaction.initialize({
                     name: `${cinema.title}`,
                     email: req.user.email,
-                    amount: (parseInt(cinema.price) * quantity) * 100,
+                    amount: ((parseInt(cinema.price) * quantity) + snack_price * snackQuantity) * 100,
                     quantity: quantity,
                     callback_url: `${process.env.REDIRECT_SITE}/VerifyPay/cinema`,
                     metadata: {
                         userId: req.user.id,
                         cinema: cinema.id,
-                        title: cinema.title,
-                       
-                                                 
+                        title: cinema.title,                       
                     }
                 }).then(async (transaction)=>{
                     console.log(transaction)
                     if(transaction){
+                        if(time === "morning"){
+                            var set_time = cinema.morning
+                        }else if(time == "afternoon"){
+                            set_time = cinema.afternoon
+                        }else if(time === "evening"){
+                            set_time = cinema.evening
+                        }
+
                         const book = new CinemaBooking({
                             buyerId: req.user.id,
                             cinemaId: cinema.id,
+                            cinemaSnackId: snacksId,
                             quantity: quantity,
-                            scheduled_date: date,
-                            scheduled_time: time,
+                            snackQuantity: snackQuantity,
+                            scheduled_date: cinema.view_date,
+                            scheduled_time: set_time,
                             transaction_url: transaction.data.authorization_url,
                             ref_no: transaction.data.reference,
                             access_code: transaction.data.access_code
@@ -50,7 +73,7 @@ exports.bookCinema = async(req, res, next)=>{
                         res.json({
                             status: true,
                             data:{
-                                rent: rent,
+                                cinema: cinema,
                                 savedbook
                             }
                         })
@@ -59,7 +82,7 @@ exports.bookCinema = async(req, res, next)=>{
             }else{
                 res.json({
                     status: false,
-                    message: "No rent found or rent not available"
+                    message: "No cinema found or cinema not available"
                 })
             }
         }).catch(err=> console.log(err))
@@ -97,7 +120,7 @@ exports.cinemaVerify = async(req, res, next)=>{
                                 userId: transaction.data.metadata.userId,
                                 ref_no: ref,
                                 status: transaction.data.status,
-                                ProductType: "Rent",
+                                ProductType: "Cinema",
                                 price: `${transaction.data.currency} ${transaction.data.amount / 100}`,
                                 description: `${transaction.data.metadata.title}`
                             })
@@ -167,7 +190,12 @@ exports.getCinemabookings = async(req, res, next)=>{
                         exclude: ["createdAt", "updatedAt"]
                     }
                 },
-                
+                {
+                    model: Snack,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                },
                 {
                     model: Transaction,
                     attributes: {
@@ -217,6 +245,12 @@ exports.getUserCinemabookings = async(req, res, next)=>{
                     }
                 },
                 {
+                    model: Snack,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                },
+                {
                     model: Transaction,
                     attributes: {
                         exclude: ["createdAt", "updatedAt"]
@@ -260,6 +294,12 @@ exports.getCinemabooking = async(req, res, next)=>{
                 },
                 {
                     model: Cinema,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                },
+                {
+                    model: Snack,
                     attributes: {
                         exclude: ["createdAt", "updatedAt"]
                     }

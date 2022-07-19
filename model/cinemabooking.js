@@ -3,6 +3,7 @@ const db = require('../config/config');
 const {nanoid} = require('nanoid');
 const User = require('./user');
 const Cinema = require('./cinema');
+const Snack = require('./cinemasnacks');
 const Transaction = require('./usertransactions');
 
 const CinemaBooking = db.define('cinemabooking', {
@@ -19,6 +20,16 @@ const CinemaBooking = db.define('cinemabooking', {
             model: 'cinemas',
             key: 'id'
         }
+    },
+    cinemaSnackId:{
+        type: Sequelize.STRING(10),
+        references:{
+            model: 'cinemasnacks',
+            key: 'id'
+        }
+    },
+    snackQuantity:{
+        type: Sequelize.INTEGER,
     },
     buyerId: {
         type: Sequelize.STRING(10),
@@ -57,6 +68,9 @@ const CinemaBooking = db.define('cinemabooking', {
 
 CinemaBooking.belongsTo(Cinema, {foreignKey: "cinemaId"});
 Cinema.hasMany(CinemaBooking, {foreignKey: "cinemaId"});
+
+CinemaBooking.belongsTo(Snack, {foreignKey: "cinemaSnackId"});
+Snack.hasMany(CinemaBooking, {foreignKey: "cinemaSnackId"});
 
 CinemaBooking.belongsTo(User, {foreignKey: 'buyerId'});
 User.hasMany(CinemaBooking, {foreignKey: 'buyerId'});

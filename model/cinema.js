@@ -40,6 +40,15 @@ const Cinema = db.define('cinema', {
     }, 
     rating: {
         type: Sequelize.FLOAT
+    },
+    morning: {
+        type: Sequelize.TIME,
+    },
+    afternoon: {
+        type: Sequelize.TIME,
+    },
+    evening:{
+        type: Sequelize.TIME,
     }
 }, {timestamps: true});
 

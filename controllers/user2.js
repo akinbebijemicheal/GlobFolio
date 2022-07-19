@@ -21,19 +21,12 @@ exports.RegisterAdmin = async (req, res, next) => {
                 }
             });
         if(user) {
-            // res.status(302).json({
-            //     status: false,
-            //     message: "User already exist"
-            // })
-            req.flash("error", "User already exist")
             res.redirect("back")
+            req.flash("error", "User already exist")
         }
         const salt = await bcrypt.genSalt(12);
         const hashedPass = await bcrypt.hash(password, salt);
         
-        
-        
-
         user = new User({
             fullname: "Admin",
             email,
