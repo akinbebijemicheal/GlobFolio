@@ -22,7 +22,7 @@ const baseurl = process.env.BASE_URL
 exports.RegisterUser = async (role, req, res, next) => {
     try{
 
-        const {firstname, lastname, email, phone_no, country, password } = req.body;
+        const {fullname, email, phone_no, address, country, password } = req.body;
 
         let user = await User.findOne({
             where: {
@@ -44,9 +44,10 @@ exports.RegisterUser = async (role, req, res, next) => {
         // }
 
         user = new User({
-            fullname: `${firstname} ${lastname}`,
+            fullname,
             email,
             phone_no,
+            address,
             country,
             role,
             password: hashedPass,
@@ -664,7 +665,7 @@ exports.checkRole = roles => (req, res, next) => {
 if(!roles.includes(req.user.role)){ 
     return res.status(401).json({
         status: false,
-        message: "Unauthorized"
+        message: "Unauthorized get a job"
       }) 
     }
    return next();

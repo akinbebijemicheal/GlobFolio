@@ -4,13 +4,15 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const session = require('express-session');
 //const flash = require('connect-flash')
-require('dotenv').config();
 const path = require('path');
+require('dotenv').config()
 const passport = require('passport');
 const cookieParser = require('cookie-parser');
 const webrouter = require('./routes/webroutes');
 const apirouter = require('./routes/apiroutes');
 const flash = require('express-flash-messages')
+const keys = require('./middleware/keys')
+const store = require('store')
 
 
 
@@ -43,9 +45,9 @@ app.use(cookieParser(process.env.CSECRET));
 app.use(session({
   resave: false,
   saveUninitialized: true,
-  secret: process.env.SECRET,
+  secret: process.env.TOKEN,
   cookie: {
-      httpOnly: true,
+      httpOnly: false,
       maxAge: 6000
   }
 }))

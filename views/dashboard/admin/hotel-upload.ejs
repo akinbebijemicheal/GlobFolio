@@ -1,0 +1,137 @@
+ <%- include("../../partials/admin_header") %> 
+
+ <!-- begin app-main -->
+ 
+<%- include("../../partials/alerts") %>
+<!-- begin app-main -->
+<div class="app-main" id="main">
+    <!-- begin container-fluid -->
+    <div class="container-fluid">
+        <!-- begin row -->
+        <div class="row">
+            <div class="col-md-12 m-b-10">
+                <!-- begin page title -->
+                <div class="d-block d-lg-flex flex-nowrap align-items-center">
+                    <div class="page-title mr-4 pr-4 border-right">
+                        <h4 class="hey">Upload Hotel</h4>
+                    </div>
+                </div>
+                <!-- end page title -->
+            </div>
+        </div>
+        <!-- begin row -->
+
+        <!-- Upload section -->
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="upload">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="sign">
+                                <form class="sign-div">
+                                    <div class="row">
+                                        <!--Username-->
+                                        <div class="col-lg-12">
+                                            <label>Hotel Name : </label>
+                                            <div class="row">
+                                                <div class="col-md-12 mb-3">
+                                                    <input type="text" name="food" class="input" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!--Username Ends-->
+                                        <!--Username-->
+                                        <div class="col-lg-12">
+                                            <label>Room Name :   </label>
+                                            <div class="row">
+                                                <div class="col-md-12 mb-3">
+                                                    <input type="text" name="food" class="input" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!--Username Ends-->
+                                        <!--Password-->
+                                        <div class="col-lg-12">
+                                            <label>Description : </label>
+                                            <div class="row">
+                                                <div class="col-md-12 mb-3">
+                                                    <textarea required class="input" cols="20" rows="5"></textarea>
+                                                </div>
+                                            </div>
+                                            <h4>
+                                                Upload Hotel Photos :
+                                            </h4>
+                                            <input type="file" class="input" style="border: none;">
+                                        </div>
+                                        
+                                        <!--Password-->
+                                        <div class="col-md-12 mb-3">
+                                            <button value="LogIn" style="background-color: #fff;border:  1px solid #000;color: #000;"> Cancel</button>
+                                        </div>
+                                    </div>
+                                </form>
+                                
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="sign">
+                                <form class="sign-div">
+                                    <div class="row">
+                                        <!--Username-->
+                                        <div class="col-lg-12">
+                                            <label>Location :   </label>
+                                            <div class="row">
+                                                <div class="col-md-12 mb-3">
+                                                    <input type="text" name="food" class="input" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!--Username Ends-->
+                                        <!--Password-->
+                                        <div class="col-lg-12">
+                                            <label>Amenities :  </label>
+                                            <div class="row">
+                                                <div class="col-md-12 mb-3">
+                                                    <input type="text"  name="text" class="input" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!--Username-->
+                                        <div class="col-lg-12">
+                                            <label>Price (Per night) :  </label>
+                                            <div class="row">
+                                                <div class="col-md-12 mb-3">
+                                                    <input type="text" name="food" class="input" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!--Username Ends-->
+                                        <!--Password-->
+                                        <div class="col-md-12 mb-3">
+                                            <button  value="upload" > Upload Hotel</a></button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Upload section Ends -->
+        <!-- end row -->
+    </div>
+    <!-- end container-fluid -->
+</div>
+<!-- end app-main -->
+</div>
+<!-- end app-container -->
+<!-- begin footer -->
+<%- include("../../partials/admin_footer") %> 
+
+<!-- end app -->
+
+<!-- plugins -->
+
+</body>
+</html>

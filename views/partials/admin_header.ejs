@@ -4,7 +4,7 @@
     <title>Deepend - Dashboard</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <meta name="description" content="Admin template that can be used to build dashboards for CRM, CMS, etc." />
+    <meta name="description" content="Deepend - Admin Dashboard" />
     <meta name="author" content="Potenza Global Solutions" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <!-- fontawesome Icon -->
@@ -12,32 +12,30 @@
     <!-- bootstrap-icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
     <!-- app favicon -->
-    <link rel="shortcut icon" href="assets3/img/deep.png">
+    <link rel="shortcut icon" href="assets4/img/deep.png">
     <!-- google fonts -->
-    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <!-- plugin stylesheets -->
-    <link rel="stylesheet" type="text/css" href="assets3/css/vendors.css" />
+    <link rel="stylesheet" type="text/css" href="assets4/css/vendors.css" />
     <!-- app style -->
-    <link rel="stylesheet" type="text/css" href="assets3/css/style.css" />4
+    <link rel="stylesheet" type="text/css" href="assets4/css/style.css" />
     <!-- chart -->
-    
 </head>
-
 <body>
     <!-- begin app -->
     <div class="app">
         <!-- begin app-wrap -->
+        <div class="app-wrap">
             <!-- begin app-header -->
             <header class="app-header top-bar">
                 <!-- begin navbar -->
                 <nav class="navbar navbar-expand-md">
-
                     <!-- begin navbar-header -->
                     <div class="navbar-header d-flex align-items-center">
                         <a href="javascript:void:(0)" class="mobile-toggle"><i class="ti ti-align-right"></i></a>
-                        <a class="navbar-brand" href="/">
-                            <img src="assets3/img/deep.png" class="img-fluid logo-desktop" alt="logo" />
-                            <img src="assets3/img/deep.png" class="img-fluid logo-mobile" alt="logo" />
+                        <a class="navbar-brand" href="https://deependnew.netlify.app/index.html">
+                            <img src="assets4/img/deep.png" class="img-fluid logo-desktop" alt="logo" />
+                            <img src="assets4/img/deep.png" class="img-fluid logo-mobile" alt="logo" />
                         </a>
                     </div>
                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -163,17 +161,17 @@
                                 
                                 <li class="nav-item dropdown user-profile">
                                     <a href="javascript:void(0)" class="nav-link dropdown-toggle " id="navbarDropdown4" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <img src="assets3/img/avtar/02.jpg" alt="avtar-img">
+                                        <img src="assets4/img/avtar/02.jpg" alt="avtar-img">
                                         <span class="bg-success user-status"></span>
                                     </a>
                                     <div class="dropdown-menu animated fadeIn" aria-labelledby="navbarDropdown">
                                         <div class="bg-gradient px-4 py-3">
                                             <div class="d-flex align-items-center justify-content-between">
                                                 <div class="mr-1">
-                                                    <h4 class="text-white mb-0">Mr <%= user %> </h4>
-                                                    <small class="text-white"><%= email %> </small>
+                                                    <h4 class="text-white mb-0">Mr Hamzat</h4>
+                                                    <small class="text-white">hmztadeleke@gmail.com</small>
                                                 </div>
-                                                <a href="#" class="text-white font-20 tooltip-wrapper" data-toggle="tooltip" data-placement="top" title="" data-original-title="Logout"> <i
+                                                <a href="/logout" class="text-white font-20 tooltip-wrapper" data-toggle="tooltip" data-placement="top" title="" data-original-title="Logout"> <i
                                                 class="zmdi zmdi-power"></i></a>
                                             </div>
                                         </div>
@@ -217,48 +215,70 @@
             <!-- begin app-container -->
             <div class="app-container">
                 <!-- begin app-nabar -->
-                <aside class="app-navbar">
+                <aside class="app-navbar ">
                     <!-- begin sidebar-nav -->
-                    <div class="sidebar-nav scrollbar scroll_light">
-                        <ul class="metismenu " id="sidebarNav">
-                            <li><a href="/dashboard/admin" aria-expanded="false"><i class="bi bi-speedometer2"></i><span class="nav-title">Dashboard</span></a> </li>
-                            <li><a class="has-arrow" href="javascript:void(0)" aria-expanded="false"><i class="bi bi-person-circle"></i><span class="nav-title">Users</span></a>
-                                <ul aria-expanded="false">
-                                    <li> <a href="/dashboard/admin/view-user">View Users</a> </li>
-                                    <li> <a href="/dashboard/admin/create-user">Create Users</a> </li>
-                                </ul>
-                            </li>
-                            <li><a class="has-arrow" href="javascript:void(0)" aria-expanded="false"><i class="nav-icon ti ti-layers"></i></i><span class="nav-title">Services</span></a>
-                                <ul aria-expanded="false">
-                                    <li> <a href="/dashboard/admin/food">Food</a> </li>
-                                    <li> <a href="/dashboard/admin/studio">Studio Booking</a> </li>
-                                    <li> <a href="/dashboard/admin/hotel">Hotel Booking</a> </li>
-                                    <li> <a href="/dashboard/admin/cinema">Cinema Tickets</a> </li>
-                                    <li> <a href="/dashboard/admin/game">VR Gaming Tickets</a> </li>
-                                </ul>
-                            </li>
-                            <li><a class="has-arrow" href="javascript:void(0)" aria-expanded="false"><i class="nav-icon ti ti-calendar"></i><span class="nav-title">Vendor</span></a>
-                                <ul aria-expanded="false">
-                                    <li> <a href="/dashboard/admin/view-seller">View Vendors</a> </li>
-                                    <li> <a href="/dashboard/admin/add-seller">Add Vendors</a> </li>
-                                    
-                                </ul>
-                            </li>
-                            <li><a class="has-arrow" href="javascript:void(0)" aria-expanded="false"><i class="bi bi-gear"></i><span class="nav-title">Settings</span></a>
-                                <ul aria-expanded="false">
-                                    <li> <a href="/dashboard/admin/forgot">Change Password</a> </li>
-                                </ul>
-                            </li>
-                            <li><a href="/logout" aria-expanded="false"><i class="bi bi-box-arrow-left"></i><span class="nav-title">Log out</span></a> </li>
-
-                            <li class="py-5"><a class="has-arrow" href="javascript:void(0)" aria-expanded="false"><i class="bi bi-person-workspace"></i><span class="nav-title">Disphatch Rider</span></a>
-                                <ul aria-expanded="false">
-                                    <li> <a href='#'>Disphatch Rider 1</a> </li>
-                                    <li> <a href='#'>Disphatch Rider 1</a> </li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </div>
+                        <div class="sidebar-nav scrollbar scroll_light">
+                            <ul class="metismenu " id="sidebarNav">
+                                <li><a href="/dashboard/admin/" aria-expanded="false"><img src="assets4/img/dash.png" draggable="false"><span class="nav-title">Dashboard</span></a> </li>
+                                <li><a class="has-arrow" href="javascript:void(0)" aria-expanded="false"><img src="assets4/img/use.png" draggable="false"><span class="nav-title">Users</span></a>
+                                    <ul aria-expanded="false">
+                                        <li> <a href="/dashboard/admin/view-user">View Users</a> </li>
+                                    </ul>
+                                </li>
+                                <li><a class="has-arrow" href="javascript:void(0)" aria-expanded="false"><img src="assets4/img/Vectorr.png" draggable="false"><span class="nav-title">Food</span></a>
+                                    <ul aria-expanded="false">
+                                        <li><a href="/dashboard/admin/food-recent-orders">New Orders</a> </li>
+                                        <li><a href="/dashboard/admin/food-products">View Uploaded Product</a></li>
+                                        <li><a href="/dashboard/admin/food-upload">Upload Product</a></li>
+                                    </ul>
+                                </li>
+                                <li><a class="has-arrow" href="javascript:void(0)" aria-expanded="false"><img src="assets4/img/Vectorrr.png" draggable="false"><span class="nav-title">Studio Booking</span></a>
+                                    <ul aria-expanded="false">
+                                        <li><a href="/dashboard/admin/studio-recent-bookings">New Studio Bookings</a></li>
+                                    </ul>
+                                </li>
+                                <li><a class="has-arrow" href="javascript:void(0)" aria-expanded="false"><img src="assets4/img/event.png" draggable="false"><span class="nav-title">Hotel Bookings</span></a>
+                                    <ul aria-expanded="false">
+                                        <li><a href="/dashboard/admin/hotel-new-bookings">New Hotel Bookings</a></li>
+                                        <li><a href="/dashboard/admin/hotel-upload">Upload Hotel</a></li>
+                                    </ul>
+                                </li>
+                                <li><a class="has-arrow" href="javascript:void(0)" aria-expanded="false"><img src="assets4/img/cinema.png" draggable="false"><span class="nav-title">Cinema Tickets</span></a>
+                                    <ul aria-expanded="false">
+                                        <li><a href="/dashboard/admin/cinema-recently-bought-tickets">Recently Bought Tickets</a></li>
+                                    </ul>
+                                </li>
+                                <li><a class="has-arrow" href="javascript:void(0)" aria-expanded="false"><img src="assets4/img/Vr.png" draggable="false"><span class="nav-title">VR Games Tickets</span></a>
+                                    <ul aria-expanded="false">
+                                        <li><a href="#"> View Recently Tickets</a></li>
+                                        <li><a href="#">VR Games (Upload)</a></li>
+                                    </ul>
+                                </li>
+                                <li><a class="has-arrow" href="javascript:void(0)" aria-expanded="false"><img src="assets4/img/for-rent.png" draggable="false"><span class="nav-title">Equipment Renting</span></a>
+                                    <ul aria-expanded="false">
+                                        <li><a href="#">Recently Bought Tickets</a></li>
+                                    </ul>
+                                </li>
+                                <li><a class="has-arrow" href="javascript:void(0)" aria-expanded="false"><img src="assets4/img/use.png" draggable="false"><span class="nav-title">Advert</span></a>
+                                    <ul aria-expanded="false">
+                                        <li><a href="#">Add Advert</a></li>
+                                        <li><a href="#">View Advert</a></li>
+                                    </ul>
+                                </li>
+                                <li><a class="has-arrow" href="javascript:void(0)" aria-expanded="false"><i class="bi bi-person-workspace"></i><span class="nav-title">Disphatch Rider</span></a>
+                                    <ul aria-expanded="false">
+                                        <li> <a href='#'>Disphatch Rider 1</a> </li>
+                                        <li> <a href='#'>Disphatch Rider 1</a> </li>
+                                    </ul>
+                                </li>
+                                <li><a class="has-arrow" href="javascript:void(0)" aria-expanded="false"><i class="bi bi-gear"></i><span class="nav-title">Settings</span></a>
+                                    <ul aria-expanded="false">
+                                        <li> <a href="/dashboard/admin/change-password">Change Password</a> </li>
+                                    </ul>
+                                </li>
+                                <li class="py-2"><a href="/logout" aria-expanded="false"><i class="bi bi-box-arrow-left"></i><span class="nav-title">Log out</span></a> </li>
+                            </ul>
+                        </div>
                     <!-- end sidebar-nav -->
                 </aside>
                 <!-- end app-navbar -->

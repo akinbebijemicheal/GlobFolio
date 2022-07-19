@@ -719,14 +719,14 @@ exports.forgotPassword = async(req, res) => {
 
 }
 
-exports.changePassword = async(req, res) => {
-    const { password, new_password, confirm_password} = req.body;
+exports.changePassword = async (req, res) => {
     try { 
+      const { email, old_password, new_password, confirm_password} = req.body;
         const user = await User.findOne({where: {
-            id: req.user.id
+            email: email
         }})
         if(user){
-            const validate = await bcrypt.compare(password, user.password);
+            const validate = await bcrypt.compare(old_password, user.password);
             if(validate){
                 if(new_password === confirm_password){
                     const salt = await bcrypt.genSalt(12);
