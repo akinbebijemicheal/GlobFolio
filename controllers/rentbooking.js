@@ -12,6 +12,12 @@ exports.bookRent = async(req, res, next)=>{
         if(!quantity){
             quantity = 1
         }
+
+        var dayFrom = new Date(dateFrom);
+        var dayTo = new Date(dateTo)
+        var difference = Math.abs(dayTo - dayFrom)
+        var days = difference/(1000 * 3600 * 24)
+
         await Rent.findOne({
             where: {
                 id: id
@@ -22,7 +28,7 @@ exports.bookRent = async(req, res, next)=>{
                 paystack.transaction.initialize({
                     name: `${rent.title} (${rent.equipment})`,
                     email: req.user.email,
-                    amount: (parseInt(rent.price) * quantity) * 100,
+                    amount: ((parseInt(rent.price) * quantity) * days) * 100,
                     quantity: quantity,
                     callback_url: `${process.env.REDIRECT_SITE}/VerifyPay/rent`,
                     metadata: {
@@ -41,6 +47,7 @@ exports.bookRent = async(req, res, next)=>{
                             quantity: quantity,
                             pickup_date: dateFrom,
                             delivery_date: dateTo,
+                            rent_day: days,
                             location: location,
                             transaction_url: transaction.data.authorization_url,
                             ref_no: transaction.data.reference,

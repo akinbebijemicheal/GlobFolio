@@ -4,6 +4,7 @@ const {nanoid} = require('nanoid');
 const User = require('./user');
 const Food = require('./food');
 const FoodExtra = require('./foodextras');
+const FoodPackage = require('./foodpackaging');
 const FoodOrder = require('./foodorder');
 
 const CartItem = db.define('fooditem', {
@@ -39,6 +40,13 @@ const CartItem = db.define('fooditem', {
             key: 'id',
         }
     },
+    foodpackageId: {
+        type: Sequelize.STRING(10),
+        references:{ 
+            model: 'foodpackagings',
+            key: 'id',
+        }
+    },
     orderId:{
         type: Sequelize.STRING(10),
         references:{ 
@@ -66,6 +74,9 @@ CartItem.belongsTo(Food, {foreignKey: 'foodId'})
 
 CartItem.belongsTo(FoodExtra, {foreignKey: 'foodextrasId'});
 FoodExtra.hasMany(CartItem, {foreignKey: 'foodextrasId'});
+
+CartItem.belongsTo(FoodPackage, {foreignKey: 'foodpackageId'});
+FoodPackage.hasMany(CartItem, {foreignKey: 'foodpackageId'});
 
 FoodOrder.hasMany(CartItem, {foreignKey: 'orderId'});
 CartItem.belongsTo(FoodOrder, {foreignKey: 'orderId'});

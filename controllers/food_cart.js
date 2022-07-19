@@ -3,6 +3,7 @@ const CartItem = require("../model/cartItem");
 const User = require("../model/user");
 const Food = require("../model/food");
 const FoodExtra = require("../model/foodextras");
+const Package = require("../model/foodpackaging")
 const Image = require("../model/foodimage")
 const Order = require("../model/foodorder");
 const Transaction = require("../model/usertransactions");
@@ -10,7 +11,7 @@ require('dotenv').config()
 const paystack = require('paystack')(process.env.PAYSTACK_SECRET);
 
 exports.AddCart = async(req, res, next)=>{
-    var {quantity, foodextrasId} = req.body;
+    var {quantity, foodextrasId, foodpackageId} = req.body;
     try {
         if(!quantity){
             quantity = 1
@@ -47,6 +48,20 @@ exports.AddCart = async(req, res, next)=>{
                     
                 })
                 }
+
+                if(foodpackageId && foodpackageId !== null && foodpackageId !== undefined){
+                    var package = await Package.findOne({
+                    where:{
+                        id: foodpackageId
+                    }
+                    
+                })
+                }else{
+                    res.json({
+                        status: false,
+                        message: "Please select a Package"
+                    })
+                }
                 
                 if(extra){
                    var price = (parseInt(food.price) + parseInt(extra.price))
@@ -55,10 +70,22 @@ exports.AddCart = async(req, res, next)=>{
                     price = parseInt(food.price)
                     extraId = null
                 }
+
+                if(package){
+                    price = price + package.price
+                    var packageId = package.id
+                }else{
+                    res.json({
+                        status: false,
+                        message: "Please select a Package"
+                    })
+                }
+
                 const Items = new CartItem({
                     userId: req.user.id,
                     foodId: food.id,
                     foodextrasId: extraId,
+                    foodpackageId: packageId,
                     orderId: orderId,
                     qty: quantity,
                     price: price * quantity,
@@ -94,6 +121,12 @@ exports.AddCart = async(req, res, next)=>{
                             },
                             {
                                 model: FoodExtra,
+                                attributes: {
+                                    exclude: ["createdAt", "updatedAt"]
+                                }
+                            },
+                            {
+                                model: Package,
                                 attributes: {
                                     exclude: ["createdAt", "updatedAt"]
                                 }
@@ -152,6 +185,12 @@ exports.viewCart = async(req, res, next) => {
                         attributes: {
                             exclude: ["createdAt", "updatedAt"],
                         },
+                    },
+                    {
+                        model: Package,
+                        attributes: {
+                            exclude: ["createdAt", "updatedAt"]
+                        }
                     },
                     {
                         model: User,
@@ -230,16 +269,24 @@ exports.addQty = async(req, res, next)=> {
                     attributes: {
                         exclude: ["createdAt", "updatedAt"],
                     },
+                },
+                {
+                    model: Package,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
                 }
             ]
         }).then(async(item) =>{
             if(item){
 
                if(item.foodextrasId){
-                   var price = (parseInt(item.foodId.price) + parseInt(item.foodextrasId.price))
+                   var price = (parseInt(item.foodId.price) + parseInt(item.foodextrasId.price) + item.foodpackageId.price)
                }else{
-                   price = parseInt(item.foodId.price)
+                   price = parseInt(item.foodId.price) + item.foodpackageId.price
                }
+
+               
 
                 await CartItem.update({
                      qty: quantity,
@@ -293,6 +340,26 @@ exports.createOrder = async(req, res, next)=>{
                     attributes: {
                         exclude: ["createdAt", "updatedAt"],
                     },
+                    include:[
+                        {
+                            model: Food,
+                            attributes: {
+                                exclude: ["createdAt", "updatedAt"],
+                            },
+                        },
+                        {
+                            model: FoodExtra,
+                            attributes: {
+                                exclude: ["createdAt", "updatedAt"],
+                            },
+                        },
+                        {
+                            model: Package,
+                            attributes: {
+                                exclude: ["createdAt", "updatedAt"]
+                            }
+                        }
+                    ]
                 },
                 {
                     model: User,
@@ -350,6 +417,26 @@ exports.createOrder = async(req, res, next)=>{
                             attributes: {
                                 exclude: ["createdAt", "updatedAt"],
                             },
+                            include:[
+                                {
+                                    model: Food,
+                                    attributes: {
+                                        exclude: ["createdAt", "updatedAt"],
+                                    },
+                                },
+                                {
+                                    model: FoodExtra,
+                                    attributes: {
+                                        exclude: ["createdAt", "updatedAt"],
+                                    },
+                                },
+                                {
+                                    model: Package,
+                                    attributes: {
+                                        exclude: ["createdAt", "updatedAt"]
+                                    }
+                                }
+                            ]
                         },
                         {
                             model: User,
@@ -392,6 +479,26 @@ exports.viewOrder = async(req, res, next)=>{
                     attributes: {
                         exclude: ["createdAt", "updatedAt"],
                     },
+                    include:[
+                        {
+                            model: Food,
+                            attributes: {
+                                exclude: ["createdAt", "updatedAt"],
+                            },
+                        },
+                        {
+                            model: FoodExtra,
+                            attributes: {
+                                exclude: ["createdAt", "updatedAt"],
+                            },
+                        },
+                        {
+                            model: Package,
+                            attributes: {
+                                exclude: ["createdAt", "updatedAt"]
+                            }
+                        }
+                    ]
                 },
                 {
                     model: User,
@@ -441,6 +548,26 @@ exports.viewAdminOrder = async(req, res, next)=>{
                     attributes: {
                         exclude: ["createdAt", "updatedAt"],
                     },
+                    include:[
+                        {
+                            model: Food,
+                            attributes: {
+                                exclude: ["createdAt", "updatedAt"],
+                            },
+                        },
+                        {
+                            model: FoodExtra,
+                            attributes: {
+                                exclude: ["createdAt", "updatedAt"],
+                            },
+                        },
+                        {
+                            model: Package,
+                            attributes: {
+                                exclude: ["createdAt", "updatedAt"]
+                            }
+                        }
+                    ]
                 },
                 {
                     model: User,
@@ -488,6 +615,26 @@ exports.viewOrders = async(req, res, next)=>{
                     attributes: {
                         exclude: ["createdAt", "updatedAt"],
                     },
+                    include:[
+                        {
+                            model: Food,
+                            attributes: {
+                                exclude: ["createdAt", "updatedAt"],
+                            },
+                        },
+                        {
+                            model: FoodExtra,
+                            attributes: {
+                                exclude: ["createdAt", "updatedAt"],
+                            },
+                        },
+                        {
+                            model: Package,
+                            attributes: {
+                                exclude: ["createdAt", "updatedAt"]
+                            }
+                        }
+                    ]
                 },
                 {
                     model: User,

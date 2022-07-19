@@ -1,5 +1,6 @@
 const Product = require('../../model/food');
-const Extras = require('../../model/foodextras')
+const Extras = require('../../model/foodextras');
+const Package = require("../../model/foodpackaging")
 const Image = require('../../model/foodimage')
 const cloudinary = require('../../util/cloudinary');
 const User = require('../../model/user');
@@ -50,7 +51,8 @@ exports.createFoodService = async(req, res, next) => {
 
 
         if(req.body.top && req.body.topPrice){
-                const top_price = (top, price)=>{
+            if(Array.isArray(req.body.top)){
+                var top_price = (top, price)=>{
                     var output = []
                     for(let i = 0; i<top.length; i++){
                         output.push({
@@ -61,10 +63,51 @@ exports.createFoodService = async(req, res, next) => {
                     };
                     return output;
                 }
+            }else{
+                top_price = (top, price)=>{
+                    var output = []
+                    output.push({
+                        foodId: foodout.id,
+                        topping: top,
+                        price: price
+                    }); 
+                
+                    return output;
+                }
+            }
+                
                 //console.log(top_price(req.body.top, req.body.topPrice));
                 var toppings = await Extras.bulkCreate(top_price(req.body.top, req.body.topPrice), {returning: true})
-           
-            
+        }
+
+        if(req.body.packageName && req.body.packagePrice){
+            if(Array.isArray(req.body.packageName)){
+                var package_price = (package, price)=>{
+                    var output = []
+                    for(let i = 0; i<package.length; i++){
+                        output.push({
+                            foodId: foodout.id,
+                            name: package[i],
+                            price: price[i]
+                        }); 
+                    };
+                    return output;
+                }
+            }else{
+                package_price = (package, price)=>{
+                    var output = []
+                    output.push({
+                        foodId: foodout.id,
+                        name: package,
+                        price: price
+                    }); 
+                
+                    return output;
+                }
+            }
+                
+                //console.log(top_price(req.body.top, req.body.topPrice));
+                var packaging = await Package.bulkCreate(package_price(req.body.packageName, req.body.packagePrice), {returning: true})
         }
 
         var out = await Product.findOne({
@@ -73,6 +116,12 @@ exports.createFoodService = async(req, res, next) => {
             }, include:[
                 {
                     model: Extras,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                },
+                {
+                    model: Package,
                     attributes: {
                         exclude: ["createdAt", "updatedAt"]
                     }
@@ -108,6 +157,12 @@ exports.getFoodServices = async(req, res, next) => {
             include:[
                 {
                     model: Extras,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                },
+                {
+                    model: Package,
                     attributes: {
                         exclude: ["createdAt", "updatedAt"]
                     }
@@ -170,6 +225,12 @@ exports.getFoodByTitle = async(req, res, next) => {
                     }
                 },
                 {
+                    model: Package,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                },
+                {
                     model: Image,
                     attributes: {
                         exclude: ["createdAt", "updatedAt"]
@@ -202,6 +263,12 @@ exports.getFoodById = async(req, res, next) => {
         }, include:[
             {
                 model: Extras,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                }
+            },
+            {
+                model: Package,
                 attributes: {
                     exclude: ["createdAt", "updatedAt"]
                 }

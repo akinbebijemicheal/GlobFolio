@@ -43,6 +43,9 @@ const RentBooking = db.define('rentbooking', {
     delivery_date:{
         type: Sequelize.DATEONLY
     },
+    rent_days:{
+        type: Sequelize.INTEGER,
+    },
     location:{
         type: Sequelize.STRING,
     },
