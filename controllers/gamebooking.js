@@ -1,47 +1,46 @@
 require('dotenv').config()
 const paystack = require('paystack')(process.env.PAYSTACK_SECRET);
-const Rent = require('../model/renting');
-const RentBooking = require('../model/rentbooking');
+const Game = require('../model/vr_gaming');
+const GameBooking = require('../model/vr_gamebooking');
 const Transaction = require('../model/usertransactions');
 const User = require('../model/user')
 
-exports.bookRent = async(req, res, next)=>{
-    var {quantity, dateTo, dateFrom, location}= req.body;
-    const id = req.params.rentId;
+exports.bookGame = async(req, res, next)=>{
+    var {quantity, date, time}= req.body;
+    const id = req.params.gameId;
     try {
         if(!quantity){
             quantity = 1
         }
-        await Rent.findOne({
+        await Game.findOne({
             where: {
                 id: id
             }
-        }).then(async(rent) => {
-            if(rent && rent.available_rent >= 1){
+        }).then(async(game) => {
+            if(game && game.available_game >= 1){
                 let fname = req.user.fullname.split(' ')
                 paystack.transaction.initialize({
-                    name: `${rent.title} (${rent.equipment})`,
+                    name: `${game.title}`,
                     email: req.user.email,
-                    amount: (parseInt(rent.price) * quantity) * 100,
+                    amount: (parseInt(game.price) * quantity) * 100,
                     quantity: quantity,
-                    callback_url: `${process.env.REDIRECT_SITE}/VerifyPay/rent`,
+                    callback_url: `${process.env.REDIRECT_SITE}/VerifyPay/game`,
                     metadata: {
                         userId: req.user.id,
-                        rent: rent.id,
-                        title: rent.title,
-                        equipment: rent.equipment
+                        game: game.id,
+                        title: game.title,
+                        
                                                  
                     }
                 }).then(async (transaction)=>{
                     console.log(transaction)
                     if(transaction){
-                        const book = new RentBooking({
+                        const book = new GameBooking({
                             buyerId: req.user.id,
-                            rentId: rent.id,
+                            gameId: game.id,
                             quantity: quantity,
-                            pickup_date: dateFrom,
-                            delivery_date: dateTo,
-                            location: location,
+                            scheduled_date: date,
+                            scheduled_time: time,
                             transaction_url: transaction.data.authorization_url,
                             ref_no: transaction.data.reference,
                             access_code: transaction.data.access_code
@@ -51,7 +50,7 @@ exports.bookRent = async(req, res, next)=>{
                         res.json({
                             status: true,
                             data:{
-                                rent: rent,
+                                game: game,
                                 savedbook
                             }
                         })
@@ -70,7 +69,7 @@ exports.bookRent = async(req, res, next)=>{
     }
 };
 
-exports.rentVerify = async(req, res, next)=>{
+exports.gameVerify = async(req, res, next)=>{
     const ref = req.query.trxref;
     // const userId = req.user.id
     try {
@@ -98,37 +97,35 @@ exports.rentVerify = async(req, res, next)=>{
                                 userId: transaction.data.metadata.userId,
                                 ref_no: ref,
                                 status: transaction.data.status,
-                                ProductType: "Rent",
+                                ProductType: "Game",
                                 price: `${transaction.data.currency} ${transaction.data.amount / 100}`,
-                                description: `${transaction.data.metadata.title} (${transaction.data.metadata.equipment})`
+                                description: `${transaction.data.metadata.title}`
                             })
                             var savetrnx = await trnx.save()
                             verify = "Payment" +" " +transaction.message
 
-                            var rent = await Rent.findOne({
-                                where:{
-                                    id: transaction.data.metadata.rent
-                                }
-                            })
-                                await RentBooking.findOne({
+                                var game = await Game.findOne({
+                                    where: {
+                                        id: transaction.data.metadata.game
+                                    }
+                                })
+                                await GameBooking.findOne({
                                     where:{
                                         ref_no: ref
                                     }
                                 }).then(async (book) => {
                                     if(book){
-                                        await RentBooking.update({
+                                        await GameBooking.update({
                                             transactionId: savetrnx.id
                                         }, { where: {
                                             id: book.id
                                         }})
 
-                                        await Rent.update({
-                                            available_rent: (rent.available_rent - book.quantity)
-                                        }, {
-                                            where:{
-                                                id: rent.id
-                                            }
-                                        })
+                                        await Game.update({
+                                            available_game: (game.available_game - book.quantity)
+                                        }, {where:{
+                                                id: game.id
+                                        }})
                                     } 
                                 }).catch(err => console.log(err))
                                     // res.json({
@@ -137,7 +134,7 @@ exports.rentVerify = async(req, res, next)=>{
                                     //     transaction: savetrnx,
                                     // })
                             
-                                    res.render("base/verify-rent",{
+                                    res.render("base/verify-game",{
                                         verify
                                     })
                         }).catch(error => console.error(error))
@@ -149,9 +146,9 @@ exports.rentVerify = async(req, res, next)=>{
     }
 }
 
-exports.getRentbookings = async(req, res, next)=>{
+exports.getGamebookings = async(req, res, next)=>{
     try {
-        await RentBooking.findAll({
+        await GameBooking.findAll({
             order: [
                 ['createdAt', 'ASC']
             ],
@@ -163,7 +160,7 @@ exports.getRentbookings = async(req, res, next)=>{
                     }
                 },
                 {
-                    model: Rent,
+                    model: Game,
                     attributes: {
                         exclude: ["createdAt", "updatedAt"]
                     }
@@ -185,7 +182,7 @@ exports.getRentbookings = async(req, res, next)=>{
             }else{
                 res.json({
                     status: false,
-                    message: "No Rent Booking Available"
+                    message: "No Game Booking Available"
                 })
             }
         })
@@ -195,9 +192,9 @@ exports.getRentbookings = async(req, res, next)=>{
     }
 }
 
-exports.getUserRentbookings = async(req, res, next)=>{
+exports.getUserGamebookings = async(req, res, next)=>{
     try {
-        await RentBooking.findAll({
+        await GameBooking.findAll({
             where: {
                 userId: req.user.id
             },
@@ -212,7 +209,7 @@ exports.getUserRentbookings = async(req, res, next)=>{
                     }
                 },
                 {
-                    model: Rent,
+                    model: Game,
                     attributes: {
                         exclude: ["createdAt", "updatedAt"]
                     }
@@ -233,7 +230,7 @@ exports.getUserRentbookings = async(req, res, next)=>{
             }else{
                 res.json({
                     status: false,
-                    message: "No Rent Booking Available"
+                    message: "No Game Booking Available"
                 })
             }
         })
@@ -243,9 +240,9 @@ exports.getUserRentbookings = async(req, res, next)=>{
     }
 }
 
-exports.getRentbooking = async(req, res, next)=>{
+exports.getGamebooking = async(req, res, next)=>{
     try {
-        await RentBooking.findOne({
+        await GameBooking.findOne({
             where:{
                 id: req.params.bookingId
             },
@@ -260,7 +257,7 @@ exports.getRentbooking = async(req, res, next)=>{
                     }
                 },
                 {
-                    model: Rent,
+                    model: Game,
                     attributes: {
                         exclude: ["createdAt", "updatedAt"]
                     }
@@ -281,7 +278,7 @@ exports.getRentbooking = async(req, res, next)=>{
             }else{
                 res.json({
                     status: false,
-                    message: "No Rent Booking Available"
+                    message: "No Game Booking Available"
                 })
             }
         })

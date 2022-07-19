@@ -26,7 +26,8 @@ exports.AddCart = async(req, res, next)=>{
                 const order = await Order.findOne({
                     where:{
                         userId: req.user.id,
-                        new: true
+                        new: true,
+                        paid: false
                     }
                 })
                 if(order){
@@ -128,7 +129,8 @@ exports.AddCart = async(req, res, next)=>{
 exports.viewCart = async(req, res, next) => {
     try {
         const viewcart = await CartItem.findAll({ where: {
-            userId: req.user.id
+            userId: req.user.id,
+            ordered: false
         }, 
                 include: [
                     {
@@ -277,12 +279,13 @@ exports.addQty = async(req, res, next)=> {
 }
 
 exports.createOrder = async(req, res, next)=>{
-    var { address, phone_no } = req.body;
+    var { address, phone_no, note } = req.body;
     try {
         await Order.findOne({
             where:{
                 userId: req.user.id,
-                new: true
+                new: true,
+                paid: false
             },
             include:[
                 {
@@ -303,12 +306,12 @@ exports.createOrder = async(req, res, next)=>{
                 var total = 0;
                 if(order.fooditems){
                     for(var i =0; i<order.fooditems.length; i++){
-                        total = total + order.fooditems[i].price;
+                        total = total + (order.fooditems[i].price * order.fooditems[i].qty);
                     }
                 }
                 paystack.transaction.initialize({
                     name: `Food Order #${order.id}`,
-                    email: order.userId.email,
+                    email: order.user.email,
                     amount: total * 100,
                     quantity: order.fooditems.length,
                     callback_url: `${process.env.REDIRECT_SITE}/VerifyPay/food`,
@@ -317,13 +320,15 @@ exports.createOrder = async(req, res, next)=>{
                         orderId: order.id
                     }
                 }).then(async(transaction)=>{
+                    console.log(transaction)
                     if(transaction){
                         await Order.update({
                             address: address,
                             phone_no: phone_no,
+                            note: note,
                             sub_total: total,
                             status: "in_progress",
-                            Checkout_url: transaction.data.authorization_url,
+                            checkout_url: transaction.data.authorization_url,
                             ref_no: transaction.data.reference,
                             access_code: transaction.data.access_code
                         }, {
@@ -474,6 +479,7 @@ exports.viewOrders = async(req, res, next)=>{
         await Order.findAll({
             where: {
                 userId: req.user.id,
+                new: true,
                 paid: true
             },
             include:[
@@ -564,16 +570,18 @@ try {
             }
         }).then(async (trn)=>{
             if(trn){
-                res.json("Payment Already Verified")
+                var verify = "Payment Already Verified"
+                // res.json("Payment Already Verified")
             }else{
                 paystack.transaction.verify(ref).then(async(transaction) => {
                     console.log(transaction);
                     // res.json(transaction)
                     if(!transaction){
-                        res.json({
-                            status: false,
-                            message: `Transaction on the reference no: ${ref} not found`
-                        })
+                        verify = `Transaction on the reference no: ${ref} not found`
+                        // res.json({
+                        //     status: false,
+                        //     message: `Transaction on the reference no: ${ref} not found`
+                        // })
                     }
 
                     var trnx = new Transaction({
@@ -592,7 +600,26 @@ try {
                         id: transaction.data.metadata.orderId
                     }})
 
-                    var verify = transaction.message
+                    await CartItem.findAll({
+                        where:{
+                            orderId: transaction.data.metadata.orderId
+                        },
+                        
+                    }).then(async(extra)=>{
+                        if(extra){
+                            for(var i=0; i<extra.length; i++){
+                                await CartItem.update({
+                                    ordered: true
+                                }, {where:{
+                                    id: extra[i].id
+                                }})
+                            }
+                        }
+                    })
+
+                    
+
+                    verify = "Payment" +" " +transaction.message
 
                     // res.json({
                     //     status: true,

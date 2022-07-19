@@ -61,8 +61,8 @@ exports.createHotelService = async(req, res, next) => {
             }
 
             if(req.body.room && req.body.price && req.body.available_no){
-                
-                const room_price = (room, price, available)=>{
+                if(Array.isArray(req.body.room)){
+                    var room_price = (room, price, available)=>{
                     var output = []
                     for(let i = 0; i<room.length; i++){
                         output.push({
@@ -74,6 +74,20 @@ exports.createHotelService = async(req, res, next) => {
                     };
                     return output;
                 }
+                }else{
+                    room_price = (room, price, available)=>{
+                        var output = [];
+                        output.push({
+                            hotelId: hotelout.id,
+                            room: room,
+                            price: price,
+                            available_room: available
+                        }); 
+                        return output;
+                    }
+                }
+                
+                
                 // console.log(room_price(req.body.room, req.body.price));
                 await Extras.bulkCreate(room_price(req.body.room, req.body.price, req.body.available_no), {returning: true})
             }

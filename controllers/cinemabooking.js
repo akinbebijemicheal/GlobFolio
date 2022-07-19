@@ -1,47 +1,69 @@
 require('dotenv').config()
 const paystack = require('paystack')(process.env.PAYSTACK_SECRET);
-const Rent = require('../model/renting');
-const RentBooking = require('../model/rentbooking');
+const Cinema = require('../model/cinema');
+const Snack = require('../model/cinemasnacks')
+const CinemaBooking = require('../model/cinemabooking');
 const Transaction = require('../model/usertransactions');
 const User = require('../model/user')
 
-exports.bookRent = async(req, res, next)=>{
-    var {quantity, dateTo, dateFrom, location}= req.body;
-    const id = req.params.rentId;
+exports.bookCinema = async(req, res, next)=>{
+    var {quantity, snackQuantity, time, snacksId}= req.body;
+    const id = req.params.cinemaId;
     try {
         if(!quantity){
             quantity = 1
         }
-        await Rent.findOne({
+
+        if(!snackQuantity){
+            snackQuantity = 1
+        }
+
+        if(snacksId){
+            const snack = await Snack.findOne({
+                where:{
+                    id: snacksId
+                }
+            })
+
+            var snack_price = snack.price 
+        }
+        await Cinema.findOne({
             where: {
                 id: id
             }
-        }).then(async(rent) => {
-            if(rent && rent.available_rent >= 1){
+        }).then(async(cinema) => {
+            if(cinema && cinema.seat >= 1){
                 let fname = req.user.fullname.split(' ')
                 paystack.transaction.initialize({
-                    name: `${rent.title} (${rent.equipment})`,
+                    name: `${cinema.title}`,
                     email: req.user.email,
-                    amount: (parseInt(rent.price) * quantity) * 100,
+                    amount: ((parseInt(cinema.price) * quantity) + snack_price * snackQuantity) * 100,
                     quantity: quantity,
-                    callback_url: `${process.env.REDIRECT_SITE}/VerifyPay/rent`,
+                    callback_url: `${process.env.REDIRECT_SITE}/VerifyPay/cinema`,
                     metadata: {
                         userId: req.user.id,
-                        rent: rent.id,
-                        title: rent.title,
-                        equipment: rent.equipment
-                                                 
+                        cinema: cinema.id,
+                        title: cinema.title,                       
                     }
                 }).then(async (transaction)=>{
                     console.log(transaction)
                     if(transaction){
-                        const book = new RentBooking({
+                        if(time === "morning"){
+                            var set_time = cinema.morning
+                        }else if(time == "afternoon"){
+                            set_time = cinema.afternoon
+                        }else if(time === "evening"){
+                            set_time = cinema.evening
+                        }
+
+                        const book = new CinemaBooking({
                             buyerId: req.user.id,
-                            rentId: rent.id,
+                            cinemaId: cinema.id,
+                            cinemaSnackId: snacksId,
                             quantity: quantity,
-                            pickup_date: dateFrom,
-                            delivery_date: dateTo,
-                            location: location,
+                            snackQuantity: snackQuantity,
+                            scheduled_date: cinema.view_date,
+                            scheduled_time: set_time,
                             transaction_url: transaction.data.authorization_url,
                             ref_no: transaction.data.reference,
                             access_code: transaction.data.access_code
@@ -51,7 +73,7 @@ exports.bookRent = async(req, res, next)=>{
                         res.json({
                             status: true,
                             data:{
-                                rent: rent,
+                                cinema: cinema,
                                 savedbook
                             }
                         })
@@ -60,7 +82,7 @@ exports.bookRent = async(req, res, next)=>{
             }else{
                 res.json({
                     status: false,
-                    message: "No rent found or rent not available"
+                    message: "No cinema found or cinema not available"
                 })
             }
         }).catch(err=> console.log(err))
@@ -70,7 +92,7 @@ exports.bookRent = async(req, res, next)=>{
     }
 };
 
-exports.rentVerify = async(req, res, next)=>{
+exports.cinemaVerify = async(req, res, next)=>{
     const ref = req.query.trxref;
     // const userId = req.user.id
     try {
@@ -98,35 +120,35 @@ exports.rentVerify = async(req, res, next)=>{
                                 userId: transaction.data.metadata.userId,
                                 ref_no: ref,
                                 status: transaction.data.status,
-                                ProductType: "Rent",
+                                ProductType: "Cinema",
                                 price: `${transaction.data.currency} ${transaction.data.amount / 100}`,
-                                description: `${transaction.data.metadata.title} (${transaction.data.metadata.equipment})`
+                                description: `${transaction.data.metadata.title}`
                             })
                             var savetrnx = await trnx.save()
                             verify = "Payment" +" " +transaction.message
 
-                            var rent = await Rent.findOne({
+                            var cinema = await Cinema.findOne({
                                 where:{
-                                    id: transaction.data.metadata.rent
+                                    id: transaction.data.metadata.cinema
                                 }
                             })
-                                await RentBooking.findOne({
+                                await CinemaBooking.findOne({
                                     where:{
                                         ref_no: ref
                                     }
                                 }).then(async (book) => {
                                     if(book){
-                                        await RentBooking.update({
+                                        await CinemaBooking.update({
                                             transactionId: savetrnx.id
                                         }, { where: {
                                             id: book.id
                                         }})
 
-                                        await Rent.update({
-                                            available_rent: (rent.available_rent - book.quantity)
+                                        await Cinema.update({
+                                            seat: (cinema.seat - book.quantity)
                                         }, {
                                             where:{
-                                                id: rent.id
+                                                id: cinema.id
                                             }
                                         })
                                     } 
@@ -137,7 +159,7 @@ exports.rentVerify = async(req, res, next)=>{
                                     //     transaction: savetrnx,
                                     // })
                             
-                                    res.render("base/verify-rent",{
+                                    res.render("base/verify-cinema",{
                                         verify
                                     })
                         }).catch(error => console.error(error))
@@ -149,9 +171,9 @@ exports.rentVerify = async(req, res, next)=>{
     }
 }
 
-exports.getRentbookings = async(req, res, next)=>{
+exports.getCinemabookings = async(req, res, next)=>{
     try {
-        await RentBooking.findAll({
+        await CinemaBooking.findAll({
             order: [
                 ['createdAt', 'ASC']
             ],
@@ -163,12 +185,17 @@ exports.getRentbookings = async(req, res, next)=>{
                     }
                 },
                 {
-                    model: Rent,
+                    model: Cinema,
                     attributes: {
                         exclude: ["createdAt", "updatedAt"]
                     }
                 },
-                
+                {
+                    model: Snack,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                },
                 {
                     model: Transaction,
                     attributes: {
@@ -185,7 +212,7 @@ exports.getRentbookings = async(req, res, next)=>{
             }else{
                 res.json({
                     status: false,
-                    message: "No Rent Booking Available"
+                    message: "No Cinema Booking Available"
                 })
             }
         })
@@ -195,9 +222,9 @@ exports.getRentbookings = async(req, res, next)=>{
     }
 }
 
-exports.getUserRentbookings = async(req, res, next)=>{
+exports.getUserCinemabookings = async(req, res, next)=>{
     try {
-        await RentBooking.findAll({
+        await CinemaBooking.findAll({
             where: {
                 userId: req.user.id
             },
@@ -212,7 +239,13 @@ exports.getUserRentbookings = async(req, res, next)=>{
                     }
                 },
                 {
-                    model: Rent,
+                    model: Cinema,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                },
+                {
+                    model: Snack,
                     attributes: {
                         exclude: ["createdAt", "updatedAt"]
                     }
@@ -233,7 +266,7 @@ exports.getUserRentbookings = async(req, res, next)=>{
             }else{
                 res.json({
                     status: false,
-                    message: "No Rent Booking Available"
+                    message: "No Cinema Booking Available"
                 })
             }
         })
@@ -243,9 +276,9 @@ exports.getUserRentbookings = async(req, res, next)=>{
     }
 }
 
-exports.getRentbooking = async(req, res, next)=>{
+exports.getCinemabooking = async(req, res, next)=>{
     try {
-        await RentBooking.findOne({
+        await CinemaBooking.findOne({
             where:{
                 id: req.params.bookingId
             },
@@ -260,7 +293,13 @@ exports.getRentbooking = async(req, res, next)=>{
                     }
                 },
                 {
-                    model: Rent,
+                    model: Cinema,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                },
+                {
+                    model: Snack,
                     attributes: {
                         exclude: ["createdAt", "updatedAt"]
                     }
@@ -281,7 +320,7 @@ exports.getRentbooking = async(req, res, next)=>{
             }else{
                 res.json({
                     status: false,
-                    message: "No Rent Booking Available"
+                    message: "No Cinema Booking Available"
                 })
             }
         })

@@ -1,12 +1,11 @@
 const Sequelize = require('sequelize');
 const db = require('../config/config');
 const {nanoid} = require('nanoid');
-const Hotel = require('./hotel');
 const User = require('./user');
-const HotelExtra = require('./hotelextras');
+const Game = require('./vr_gaming');
 const Transaction = require('./usertransactions');
 
-const HotelBooking = db.define('hotelbooking', {
+const GameBooking = db.define('gamebooking', {
     id: {
         type: Sequelize.STRING(10),
         autoincrement: false,
@@ -14,24 +13,17 @@ const HotelBooking = db.define('hotelbooking', {
         primaryKey: true,
         defaultValue: () => nanoid(10)
     },
+    gameId:{
+        type: Sequelize.STRING(10),
+        references:{
+            model: 'gamings',
+            key: 'id'
+        }
+    },
     buyerId: {
         type: Sequelize.STRING(10),
         references:{ 
             model: 'users',
-            key: 'id',
-        }
-    },
-    hotelId: {
-        type: Sequelize.STRING(10),
-        references:{ 
-            model: 'hotels',
-            key: 'id',
-        }
-    },
-    hotelextrasId: {
-        type: Sequelize.STRING(10),
-        references:{ 
-            model: 'hotelextras',
             key: 'id',
         }
     },
@@ -45,10 +37,10 @@ const HotelBooking = db.define('hotelbooking', {
     quantity:{
         type: Sequelize.INTEGER,
     },
-    start_date:{
+    scheduled_date:{
         type: Sequelize.DATEONLY
     },
-    end_date:{
+    scheduled_time:{
         type: Sequelize.TIME
     },
     transaction_url: {
@@ -60,23 +52,16 @@ const HotelBooking = db.define('hotelbooking', {
     access_code:{
         type: Sequelize.STRING,
     }
-
-    
-});
+}, {timestamps: true});
 
 
-HotelBooking.belongsTo(Hotel, {foreignKey: 'hotelId'})
-Hotel.hasMany(HotelBooking, {foreignKey: 'hotelId'});
+GameBooking.belongsTo(Game, {foreignKey: "gameId"});
+Game.hasMany(GameBooking, {foreignKey: "gameId"});
 
-HotelBooking.belongsTo(User, {foreignKey: 'buyerId'});
-User.hasMany(HotelBooking, {foreignKey: 'buyerId'});
+GameBooking.belongsTo(User, {foreignKey: 'buyerId'});
+User.hasMany(GameBooking, {foreignKey: 'buyerId'});
 
-HotelBooking.belongsTo(HotelExtra, {foreignKey: 'hotelextrasId'});
-HotelExtra.hasMany(HotelBooking, {foreignKey: 'hotelextrasId'});
+GameBooking.belongsTo(Transaction, {foreignKey: 'transactionId'});
+Transaction.hasOne(GameBooking, {foreignKey: 'transactionId'});
 
-HotelBooking.belongsTo(Transaction, {foreignKey: 'transactionId'});
-Transaction.hasOne(HotelBooking, {foreignKey: 'transactionId'});
-
-
-
-module.exports = HotelBooking;
+module.exports = GameBooking;

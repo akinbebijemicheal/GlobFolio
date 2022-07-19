@@ -1,12 +1,14 @@
 const Product = require('../../model/cinema');
 const Image = require("../../model/cinemaimage");
 const cloudinary = require('../../util/cloudinary');
+// const Time = require("../../model/cinematime");
+const Snack = require("../../model/cinemasnacks")
 const User = require('../../model/user');
 const { Op } = require('sequelize')
 const fs = require('fs')
 
 exports.createCinemaService = async(req, res, next) => {
-    const { title, genre, storyline, rating, view_date, cast, duration, age_rate,  price } = req.body;
+    const { title, genre, storyline, rating, view_date, cast, seat, duration, age_rate, price, morningTime, afternoonTime, eveningTime, snackName, snackPrice} = req.body;
     try {
 
         const cinema = new Product({
@@ -17,10 +19,46 @@ exports.createCinemaService = async(req, res, next) => {
             duration,
             age_rate,
             view_date,
+            seat,
+            morning: morningTime,
+            evening: eveningTime,
+            afternoon: afternoonTime,
             rating: parseFloat(rating),
             price: price,
         })
         var cinemaout = await cinema.save();
+
+        if(cinemaout){
+
+            if(snackName && snackPrice){
+                 if(Array.isArray(snackName)){
+                    var snack_price = (Name, Price)=>{
+                        var output= [];
+                        for(let i=0; i<Name.length; i++){
+                            output.push({
+                                cinemaId: cinemaout.id,
+                                name: Name[i],
+                                price: Price[i]
+                            });
+                        };
+                        return output;
+                    }
+                 }else{
+                     snack_price = (Name, Price)=>{
+                         var output = [];
+                         output.push({
+                            cinemaId: cinemaout.id,
+                            name: Name,
+                            price: Price
+                        });
+                        return output;
+                     }
+                    }
+                 await Snack.bulkCreate(snack_price(snackName, snackPrice), {returning: true})
+            }
+
+           
+        }
 
         if(req.file || req.files){
              const uploader = async (path) => await cloudinary.uploads(path, 'cinemaImages');
@@ -60,11 +98,15 @@ exports.createCinemaService = async(req, res, next) => {
                     attributes: {
                         exclude: ["createdAt", "updatedAt"]
                     }
+                },
+                {
+                    model: Snack,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
                 }
             ]
         })
-
-            
        
         res.status(201).json({
             status: true,
@@ -94,6 +136,12 @@ exports.getCinemaServices = async(req, res, next) => {
                     attributes: {
                         exclude: ["createdAt", "updatedAt"]
                     }
+                },
+                {
+                    model: Snack,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
                 }
             ]
         });
@@ -116,6 +164,12 @@ exports.getCinemaServices = async(req, res, next) => {
                     attributes: {
                         exclude: ["createdAt", "updatedAt"]
                     }
+                },
+                {
+                    model: Snack,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
                 }
             ]
         });
@@ -134,6 +188,12 @@ exports.getCinemaServices = async(req, res, next) => {
                     attributes: {
                         exclude: ["createdAt", "updatedAt"]
                     }
+                },
+                {
+                    model: Snack,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
                 }
             ]
         });
@@ -149,6 +209,12 @@ exports.getCinemaServices = async(req, res, next) => {
             include:[
                 {
                     model: Image,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                },
+                {
+                    model: Snack,
                     attributes: {
                         exclude: ["createdAt", "updatedAt"]
                     }
@@ -200,6 +266,12 @@ exports.getCinemaByTitle = async(req, res, next) => {
                 attributes: {
                     exclude: ["createdAt", "updatedAt"]
                 }
+            },
+            {
+                model: Snack,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                }
             }
         ]
     })
@@ -231,6 +303,12 @@ exports.getCinemaById = async(req, res, next) => {
                 attributes: {
                     exclude: ["createdAt", "updatedAt"]
                 }
+            },
+            {
+                model: Snack,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                }
             }
         ]
     })
@@ -251,7 +329,7 @@ exports.getCinemaById = async(req, res, next) => {
 }
 
 exports.updateCinema = async(req, res, next) => {
-    const { title, genre, storyline, rating, view_date, cast, duration, age_rate,  price } = req.body;
+    const { title, genre, storyline, rating, view_date, cast, seat, duration, age_rate, price, morningTime, afternoonTime, eveningTime} = req.body;
     try{
         
             await Product.update({
@@ -262,11 +340,16 @@ exports.updateCinema = async(req, res, next) => {
                 view_date: view_date,
                 duration: duration,
                 age_rate: age_rate,
+                seat: seat,
+                morning: morningTime,
+                afternoon: afternoonTime,
+                evening: eveningTime,
                 rating: parseFloat(rating),
                 price: price,
             }, { where: {
                 id: req.params.id
             }})
+           
             res.status(200).json({
                 status: true,
                 message: "Post updated"

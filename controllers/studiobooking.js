@@ -1,47 +1,46 @@
 require('dotenv').config()
 const paystack = require('paystack')(process.env.PAYSTACK_SECRET);
-const Rent = require('../model/renting');
-const RentBooking = require('../model/rentbooking');
+const Studio = require('../model/studio_book');
+const StudioBooking = require('../model/studiobooking');
 const Transaction = require('../model/usertransactions');
 const User = require('../model/user')
 
-exports.bookRent = async(req, res, next)=>{
-    var {quantity, dateTo, dateFrom, location}= req.body;
-    const id = req.params.rentId;
+exports.bookStudio = async(req, res, next)=>{
+    var {quantity, dateTo, dateFrom}= req.body;
+    const id = req.params.studioId;
     try {
         if(!quantity){
             quantity = 1
         }
-        await Rent.findOne({
+        await Studio.findOne({
             where: {
                 id: id
             }
-        }).then(async(rent) => {
-            if(rent && rent.available_rent >= 1){
+        }).then(async(studio) => {
+            if(studio){
                 let fname = req.user.fullname.split(' ')
                 paystack.transaction.initialize({
-                    name: `${rent.title} (${rent.equipment})`,
+                    name: `${studio.title} (${studio.equipment})`,
                     email: req.user.email,
-                    amount: (parseInt(rent.price) * quantity) * 100,
+                    amount: (parseInt(studio.price) * quantity) * 100,
                     quantity: quantity,
-                    callback_url: `${process.env.REDIRECT_SITE}/VerifyPay/rent`,
+                    callback_url: `${process.env.REDIRECT_SITE}/VerifyPay/studio`,
                     metadata: {
                         userId: req.user.id,
-                        rent: rent.id,
-                        title: rent.title,
-                        equipment: rent.equipment
+                        studio: studio.id,
+                        title: studio.title,
+                        equipment: studio.equipment
                                                  
                     }
                 }).then(async (transaction)=>{
                     console.log(transaction)
                     if(transaction){
-                        const book = new RentBooking({
+                        const book = new StudioBooking({
                             buyerId: req.user.id,
-                            rentId: rent.id,
+                            studioId: studio.id,
                             quantity: quantity,
-                            pickup_date: dateFrom,
-                            delivery_date: dateTo,
-                            location: location,
+                            start_date: dateFrom,
+                            end_date: dateTo,
                             transaction_url: transaction.data.authorization_url,
                             ref_no: transaction.data.reference,
                             access_code: transaction.data.access_code
@@ -51,7 +50,7 @@ exports.bookRent = async(req, res, next)=>{
                         res.json({
                             status: true,
                             data:{
-                                rent: rent,
+                                studio: studio,
                                 savedbook
                             }
                         })
@@ -60,7 +59,7 @@ exports.bookRent = async(req, res, next)=>{
             }else{
                 res.json({
                     status: false,
-                    message: "No rent found or rent not available"
+                    message: "No studio found or studio not available"
                 })
             }
         }).catch(err=> console.log(err))
@@ -70,7 +69,7 @@ exports.bookRent = async(req, res, next)=>{
     }
 };
 
-exports.rentVerify = async(req, res, next)=>{
+exports.studioVerify = async(req, res, next)=>{
     const ref = req.query.trxref;
     // const userId = req.user.id
     try {
@@ -83,7 +82,8 @@ exports.rentVerify = async(req, res, next)=>{
                         var verify = "Payment Already Verified"
                         // res.json("Payment Already Verified")
                     }else{
-                        paystack.transaction.verify(ref).then(async(transaction) => {
+                        paystack.transaction.verify(ref)
+                        .then(async(transaction) => {
                             console.log(transaction);
                             // res.json(transaction)
                             if(!transaction){
@@ -98,38 +98,26 @@ exports.rentVerify = async(req, res, next)=>{
                                 userId: transaction.data.metadata.userId,
                                 ref_no: ref,
                                 status: transaction.data.status,
-                                ProductType: "Rent",
+                                ProductType: "Studio",
                                 price: `${transaction.data.currency} ${transaction.data.amount / 100}`,
                                 description: `${transaction.data.metadata.title} (${transaction.data.metadata.equipment})`
                             })
                             var savetrnx = await trnx.save()
                             verify = "Payment" +" " +transaction.message
 
-                            var rent = await Rent.findOne({
-                                where:{
-                                    id: transaction.data.metadata.rent
-                                }
-                            })
-                                await RentBooking.findOne({
+                            
+                                await StudioBooking.findOne({
                                     where:{
                                         ref_no: ref
                                     }
                                 }).then(async (book) => {
                                     if(book){
-                                        await RentBooking.update({
+                                        await StudioBooking.update({
                                             transactionId: savetrnx.id
                                         }, { where: {
                                             id: book.id
                                         }})
-
-                                        await Rent.update({
-                                            available_rent: (rent.available_rent - book.quantity)
-                                        }, {
-                                            where:{
-                                                id: rent.id
-                                            }
-                                        })
-                                    } 
+                                    }
                                 }).catch(err => console.log(err))
                                     // res.json({
                                     //     status: true,
@@ -137,7 +125,7 @@ exports.rentVerify = async(req, res, next)=>{
                                     //     transaction: savetrnx,
                                     // })
                             
-                                    res.render("base/verify-rent",{
+                                    res.render("base/verify-studio",{
                                         verify
                                     })
                         }).catch(error => console.error(error))
@@ -149,9 +137,9 @@ exports.rentVerify = async(req, res, next)=>{
     }
 }
 
-exports.getRentbookings = async(req, res, next)=>{
+exports.getStudiobookings = async(req, res, next)=>{
     try {
-        await RentBooking.findAll({
+        await StudioBooking.findAll({
             order: [
                 ['createdAt', 'ASC']
             ],
@@ -163,7 +151,7 @@ exports.getRentbookings = async(req, res, next)=>{
                     }
                 },
                 {
-                    model: Rent,
+                    model: Studio,
                     attributes: {
                         exclude: ["createdAt", "updatedAt"]
                     }
@@ -185,7 +173,7 @@ exports.getRentbookings = async(req, res, next)=>{
             }else{
                 res.json({
                     status: false,
-                    message: "No Rent Booking Available"
+                    message: "No Studio Booking Available"
                 })
             }
         })
@@ -195,9 +183,9 @@ exports.getRentbookings = async(req, res, next)=>{
     }
 }
 
-exports.getUserRentbookings = async(req, res, next)=>{
+exports.getUserStudiobookings = async(req, res, next)=>{
     try {
-        await RentBooking.findAll({
+        await StudioBooking.findAll({
             where: {
                 userId: req.user.id
             },
@@ -212,7 +200,7 @@ exports.getUserRentbookings = async(req, res, next)=>{
                     }
                 },
                 {
-                    model: Rent,
+                    model: Studio,
                     attributes: {
                         exclude: ["createdAt", "updatedAt"]
                     }
@@ -233,7 +221,7 @@ exports.getUserRentbookings = async(req, res, next)=>{
             }else{
                 res.json({
                     status: false,
-                    message: "No Rent Booking Available"
+                    message: "No Studio Booking Available"
                 })
             }
         })
@@ -243,9 +231,9 @@ exports.getUserRentbookings = async(req, res, next)=>{
     }
 }
 
-exports.getRentbooking = async(req, res, next)=>{
+exports.getStudiobooking = async(req, res, next)=>{
     try {
-        await RentBooking.findOne({
+        await StudioBooking.findOne({
             where:{
                 id: req.params.bookingId
             },
@@ -260,7 +248,7 @@ exports.getRentbooking = async(req, res, next)=>{
                     }
                 },
                 {
-                    model: Rent,
+                    model: Studio,
                     attributes: {
                         exclude: ["createdAt", "updatedAt"]
                     }
@@ -281,7 +269,7 @@ exports.getRentbooking = async(req, res, next)=>{
             }else{
                 res.json({
                     status: false,
-                    message: "No Rent Booking Available"
+                    message: "No Studio Booking Available"
                 })
             }
         })

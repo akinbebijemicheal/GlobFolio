@@ -18,6 +18,9 @@ const {getRestuarant, getRestuarants} = require('../controllers/restuarant');
 const { getAllAds, getAdById } = require('../controllers/ads');
 const { AddCart, viewCart, DeleteCartItem, addQty, createOrder, viewOrder, updateOrderStatus, viewOrders } = require('../controllers/food_cart');
 const { bookRent, getUserRentbookings, getRentbooking } = require('../controllers/rentbooking');
+const { bookStudio, getUserStudiobookings, getStudiobooking } = require('../controllers/studiobooking');
+const { bookCinema, getUserCinemabookings, getCinemabooking } = require('../controllers/cinemabooking');
+const { bookGame, getUserGamebookings, getGamebooking } = require('../controllers/gamebooking');
 
 
 //user
@@ -228,6 +231,22 @@ router
 .post('/bookRent/:rentId', jwtAuth, bookRent);
 router.get("/getUserRentBookings", jwtAuth, getUserRentbookings)
 router.get("/getRentBooking/:bookingId", jwtAuth, getRentbooking)
+
+router
+.post('/bookStudio/:studioId', jwtAuth, bookStudio);
+router.get("/getUserStudioBookings", jwtAuth, getUserStudiobookings)
+router.get("/getStudioBooking/:bookingId", jwtAuth, getStudiobooking)
+
+router
+.post('/bookCinema/:cinemaId', jwtAuth, bookCinema);
+router.get("/getUserCinemaBookings", jwtAuth, getUserCinemabookings)
+router.get("/getCinemaBooking/:bookingId", jwtAuth, getCinemabooking)
+
+router
+.post('/bookGame/:gameId', jwtAuth, bookGame);
+router.get("/getUserGameBookings", jwtAuth, getUserGamebookings)
+router.get("/getGameBooking/:bookingId", jwtAuth, getGamebooking)
+
 
 // router
 // .get('/getRestuarant/:id', jwtAuth, getRestuarant)

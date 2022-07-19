@@ -6,7 +6,6 @@ const passport = require('passport');
 const keys = require('../middleware/keys');
 require('dotenv').config();
 const nodemailer = require('nodemailer');
-const { session } = require('passport');
 const baseurl = process.env.BASE_URL
 const store = require('store')
 
@@ -22,19 +21,12 @@ exports.RegisterAdmin = async (req, res, next) => {
                 }
             });
         if(user) {
-            // res.status(302).json({
-            //     status: false,
-            //     message: "User already exist"
-            // })
-            req.flash("error", "User already exist")
             res.redirect("back")
+            req.flash("error", "User already exist")
         }
         const salt = await bcrypt.genSalt(12);
         const hashedPass = await bcrypt.hash(password, salt);
         
-        
-        
-
         user = new User({
             fullname: "Admin",
             email,
@@ -156,9 +148,7 @@ exports.webLoginAdmin = async (req, res, next) => {
   }
 };
 
-
-exports.userAuth = passport.authenticate('jwt', {failureRedirect: '/login-admin', session: true});
-
+exports.userAuth = passport.authenticate('jwt', {session: true, failureRedirect: "/login-admin", failureFlash: true});
 
 
 exports.profile = user => {
@@ -671,7 +661,8 @@ exports.checkRole = roles => (req, res, next) => {
 if(!roles.includes(req.user.role)){ 
     return res.status(401).json({
         status: false,
-        message: "Unauthorized login pls"}) 
+        message: "Unauthorized"
+      }) 
     }
    return next();
 };

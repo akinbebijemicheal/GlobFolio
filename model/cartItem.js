@@ -14,6 +14,10 @@ const CartItem = db.define('fooditem', {
         primaryKey: true,
         defaultValue: () => nanoid(10)
     },
+    ordered:{
+        type: Sequelize.BOOLEAN,
+        default: false
+    },
     userId: {
         type: Sequelize.STRING(10),
         references:{ 

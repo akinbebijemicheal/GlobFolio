@@ -20,6 +20,12 @@ const Game = db.define('gaming', {
     genre: {
         type: Sequelize.STRING
     },
+    per_time:{
+        type: Sequelize.STRING
+    },
+    available_game:{
+        type: Sequelize.INTEGER
+    },
     age_rate: {
         type: Sequelize.STRING
     },

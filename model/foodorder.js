@@ -36,6 +36,9 @@ const Order = db.define('foodorder', {
     sub_total: {
         type: Sequelize.BIGINT
     },
+    note:{
+        type: Sequelize.TEXT
+    },
     status: {
         type: Sequelize.ENUM,
         values: ["in_progress", "delivered", "cancelled"],

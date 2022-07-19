@@ -7,7 +7,7 @@ const Transaction = require('../model/usertransactions');
 const User = require('../model/user')
 
 exports.bookHotel = async(req, res, next)=>{
-    var {roomId, quantity, date, time}= req.body;
+    var {roomId, quantity, dateFrom, dateTo}= req.body;
     try {
         if(!quantity){
             quantity = 1
@@ -29,7 +29,7 @@ exports.bookHotel = async(req, res, next)=>{
                 paystack.transaction.initialize({
                     name: `${room.hotel.title} (${room.room})`,
                     email: req.user.email,
-                    amount: parseInt(room.price) * 100,
+                    amount: (parseInt(room.price) * quantity) * 100,
                     quantity: quantity,
                     callback_url: `${process.env.REDIRECT_SITE}/VerifyPay/hotel`,
                     metadata: {
@@ -46,8 +46,8 @@ exports.bookHotel = async(req, res, next)=>{
                             hotelId: room.hotelId,
                             hotelextrasId: room.id,
                             quantity: quantity,
-                            scheduled_date: date,
-                            scheduled_time: time,
+                            start_date: dateFrom,
+                            end_date: dateTo,
                             transaction_url: transaction.data.authorization_url,
                             ref_no: transaction.data.reference,
                             access_code: transaction.data.access_code
@@ -86,16 +86,18 @@ exports.hotelverify = async(req, res, next)=>{
                     }
                 }).then(async (trn)=>{
                     if(trn){
-                        res.json("Payment Already Verified")
+                        var verify = "Payment Already Verified"
+                        // res.json("Payment Already Verified")
                     }else{
                         paystack.transaction.verify(ref).then(async(transaction) => {
                             console.log(transaction);
                             // res.json(transaction)
                             if(!transaction){
-                                res.json({
-                                    status: false,
-                                    message: `Transaction on the reference no: ${ref} not found`
-                                })
+                                verify = `Transaction on the reference no: ${ref} not found`
+                                // res.json({
+                                //     status: false,
+                                //     message: `Transaction on the reference no: ${ref} not found`
+                                // })
                             }
 
                             var trnx = new Transaction({
@@ -107,7 +109,13 @@ exports.hotelverify = async(req, res, next)=>{
                                 description: `${transaction.data.metadata.hotel} (${transaction.data.metadata.display_name})`
                             })
                             var savetrnx = await trnx.save()
-                            var verify = transaction.message
+                            verify = "Payment" +" " +transaction.message
+
+                            var hotel = await HotelExtras.findOne({
+                                where: {
+                                    id: transaction.data.metadata.room
+                                }
+                            })
                                 await HotelBooking.findOne({
                                     where:{
                                         ref_no: ref
@@ -119,12 +127,16 @@ exports.hotelverify = async(req, res, next)=>{
                                         }, { where: {
                                             id: book.id
                                         }})
-                                    } else{
-                                        res.json({
-                                            status: false,
-                                            message: "Booking Not Found"
+
+                                        await HotelExtras.update({
+                                            available_room: (hotel.available_room - book.quantity)
+                                        }, {
+                                            where:{
+                                                id: hotel.id
+                                            }
                                         })
-                                    }
+                                    } 
+                                    
                                 }).catch(err => console.log(err))
                                     // res.json({
                                     //     status: true,

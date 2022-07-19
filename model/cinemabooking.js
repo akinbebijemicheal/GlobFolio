@@ -1,12 +1,12 @@
 const Sequelize = require('sequelize');
 const db = require('../config/config');
 const {nanoid} = require('nanoid');
-const Hotel = require('./hotel');
 const User = require('./user');
-const HotelExtra = require('./hotelextras');
+const Cinema = require('./cinema');
+const Snack = require('./cinemasnacks');
 const Transaction = require('./usertransactions');
 
-const HotelBooking = db.define('hotelbooking', {
+const CinemaBooking = db.define('cinemabooking', {
     id: {
         type: Sequelize.STRING(10),
         autoincrement: false,
@@ -14,24 +14,27 @@ const HotelBooking = db.define('hotelbooking', {
         primaryKey: true,
         defaultValue: () => nanoid(10)
     },
+    cinemaId:{
+        type: Sequelize.STRING(10),
+        references:{
+            model: 'cinemas',
+            key: 'id'
+        }
+    },
+    cinemaSnackId:{
+        type: Sequelize.STRING(10),
+        references:{
+            model: 'cinemasnacks',
+            key: 'id'
+        }
+    },
+    snackQuantity:{
+        type: Sequelize.INTEGER,
+    },
     buyerId: {
         type: Sequelize.STRING(10),
         references:{ 
             model: 'users',
-            key: 'id',
-        }
-    },
-    hotelId: {
-        type: Sequelize.STRING(10),
-        references:{ 
-            model: 'hotels',
-            key: 'id',
-        }
-    },
-    hotelextrasId: {
-        type: Sequelize.STRING(10),
-        references:{ 
-            model: 'hotelextras',
             key: 'id',
         }
     },
@@ -45,10 +48,10 @@ const HotelBooking = db.define('hotelbooking', {
     quantity:{
         type: Sequelize.INTEGER,
     },
-    start_date:{
+    scheduled_date:{
         type: Sequelize.DATEONLY
     },
-    end_date:{
+    scheduled_time:{
         type: Sequelize.TIME
     },
     transaction_url: {
@@ -60,23 +63,19 @@ const HotelBooking = db.define('hotelbooking', {
     access_code:{
         type: Sequelize.STRING,
     }
-
-    
-});
+}, {timestamps: true});
 
 
-HotelBooking.belongsTo(Hotel, {foreignKey: 'hotelId'})
-Hotel.hasMany(HotelBooking, {foreignKey: 'hotelId'});
+CinemaBooking.belongsTo(Cinema, {foreignKey: "cinemaId"});
+Cinema.hasMany(CinemaBooking, {foreignKey: "cinemaId"});
 
-HotelBooking.belongsTo(User, {foreignKey: 'buyerId'});
-User.hasMany(HotelBooking, {foreignKey: 'buyerId'});
+CinemaBooking.belongsTo(Snack, {foreignKey: "cinemaSnackId"});
+Snack.hasMany(CinemaBooking, {foreignKey: "cinemaSnackId"});
 
-HotelBooking.belongsTo(HotelExtra, {foreignKey: 'hotelextrasId'});
-HotelExtra.hasMany(HotelBooking, {foreignKey: 'hotelextrasId'});
+CinemaBooking.belongsTo(User, {foreignKey: 'buyerId'});
+User.hasMany(CinemaBooking, {foreignKey: 'buyerId'});
 
-HotelBooking.belongsTo(Transaction, {foreignKey: 'transactionId'});
-Transaction.hasOne(HotelBooking, {foreignKey: 'transactionId'});
+CinemaBooking.belongsTo(Transaction, {foreignKey: 'transactionId'});
+Transaction.hasOne(CinemaBooking, {foreignKey: 'transactionId'});
 
-
-
-module.exports = HotelBooking;
+module.exports = CinemaBooking;

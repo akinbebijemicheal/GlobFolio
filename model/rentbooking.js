@@ -37,11 +37,11 @@ const RentBooking = db.define('rentbooking', {
     quantity:{
         type: Sequelize.INTEGER,
     },
-    scheduled_date:{
+    pickup_date:{
         type: Sequelize.DATEONLY
     },
-    scheduled_time:{
-        type: Sequelize.TIME
+    delivery_date:{
+        type: Sequelize.DATEONLY
     },
     location:{
         type: Sequelize.STRING,
