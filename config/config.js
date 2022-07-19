@@ -5,8 +5,6 @@ const database = process.env.DATABASE;
 const username = process.env.USER;
 const password = process.env.PASSWORD;
 const host = process.env.HOST
-const port = '3306';
-
 
 const url = process.env.DB_URL
 

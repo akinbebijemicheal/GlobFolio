@@ -66,94 +66,94 @@ exports.RegisterAdmin = async (req, res, next) => {
 
 
 exports.webLoginAdmin = async (req, res, next) => {
-    try{
+  try{
 
-        const {email, password } = req.body;
-        const user = await User.findOne({where: {
-            email: email }
-        });
-        if(!user || user === null){
-            req.flash("warning", 'User does not exist');
-            res.redirect("back")
-        }else if(user.role !== "admin"){
-            // res.status(401).json({
-            //     status: false,
-            //     message: 'Please ensure you are logging-in from the right portal'
-            // })
-          req.flash("warning", "Please ensure you are logging-in from the right portal");
+      const {email, password } = req.body;
+      const user = await User.findOne({where: {
+          email: email }
+      });
+      if(!user || user === null){
+          req.flash("warning", 'User does not exist');
           res.redirect("back")
-        }
-        
-        const validate = await bcrypt.compare(password, user.password);
-        if(validate){
+      }else if(user.role !== "admin"){
+          // res.status(401).json({
+          //     status: false,
+          //     message: 'Please ensure you are logging-in from the right portal'
+          // })
+        req.flash("warning", "Please ensure you are logging-in from the right portal");
+        res.redirect("back")
+      }
+      
+      const validate = await bcrypt.compare(password, user.password);
+      if(validate){
 
-            let token = jwt.sign(
-                { 
-                fullname: user.fullname,
-                email: user.email,
-                role: user.role, 
-                id: user.id}, 
-                process.env.TOKEN, { expiresIn: 24 * 60 * 60});
+          let token = jwt.sign(
+              { 
+              fullname: user.fullname,
+              email: user.email,
+              role: user.role, 
+              id: user.id}, 
+              process.env.TOKEN, { expiresIn: 24 * 60 * 60});
 
-            let result = {
-                token: `Bearer ${token}`,
-                id: user.id,
-                fullname: user.fullname,
-                email: user.email,
-                role: user.role,
-                expiresIn: '24 hours',
-                email_verify: user.email_verify,
-                updatedAt: user.updatedAt,
-                createdAt: user.createdAt,
-            };
+          let result = {
+              token: `Bearer ${token}`,
+              id: user.id,
+              fullname: user.fullname,
+              email: user.email,
+              role: user.role,
+              expiresIn: '24 hours',
+              email_verify: user.email_verify,
+              updatedAt: user.updatedAt,
+              createdAt: user.createdAt,
+          };
 
-            var option = {
-                httpOnly: true,
-                signed: true,
-                sameSite: true,
-                secure: (keys.NODE_ENV !== 'development'),
-                secret: process.env.CSECRET
-            }
+          var option = {
+              httpOnly: true,
+              signed: true,
+              sameSite: true,
+              secure: (keys.NODE_ENV !== 'development'),
+              secret: process.env.CSECRET
+          }
 
-            // res.json({
-            //     status: true,
-            //     data: result
-            // })
-            
-            
+          // res.json({
+          //     status: true,
+          //     data: result
+          // })
+          
+          
 
-            res.status(200)
-            req.flash("success", "Successfully logged in");
-            res.cookie("jwt", token, option);
-            res.redirect(`/dashboard/admin`)
+          res.status(200)
+          req.flash("success", "Successfully logged in");
+          res.cookie("jwt", token, option);
+          res.redirect(`/dashboard/admin`)
 
-            
+          next()
 
-             
+           
 
-        } else{
-           res.status(403)
-          req.flash("warning", 'Wrong password');
-          res.redirect("back")
-        // res.status(404).json({
-        //     status: false,
-        //     message: "User not found"
-        // })
-       
-        }
+      } else{
+         res.status(403)
+        req.flash("warning", 'Wrong password');
+        res.redirect("back")
+      // res.status(404).json({
+      //     status: false,
+      //     message: "User not found"
+      // })
+     
+      }
 
 
-    } catch(error){
-        console.error(error);
-        // res.status(500).json({
-        //     status: false,
-        //     message: error
-        // });
-        // next(error);
-      req.flash("error", "An error occured refresh the page")
-      res.redirect("back")
-      next(error)
-    }
+  } catch(error){
+      console.error(error);
+      // res.status(500).json({
+      //     status: false,
+      //     message: error
+      // });
+      // next(error);
+    req.flash("error", "An error occured refresh the page")
+    res.redirect("back")
+    next(error)
+  }
 };
 
 

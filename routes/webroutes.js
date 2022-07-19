@@ -104,7 +104,7 @@ const { getRentbookings, getRentbooking, rentVerify } = require("../controllers/
 //user
 
 router
-.get('/', (req, res) =>{
+.get("/", (req, res) =>{
     res.render('base/index')
 })
 

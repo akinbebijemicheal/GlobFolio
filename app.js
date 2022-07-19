@@ -11,7 +11,6 @@ const cookieParser = require('cookie-parser');
 const webrouter = require('./routes/webroutes');
 const apirouter = require('./routes/apiroutes');
 const flash = require('express-flash-messages')
-const keys = require('./middleware/keys')
 const store = require('store')
 
 
