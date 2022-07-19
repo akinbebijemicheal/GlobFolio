@@ -16,7 +16,7 @@ const userVerify = require("../middleware/verify")
 const {bookHotel, hotelverify, getUserbookings, getbooking} = require('../controllers/Hotelbookings');
 const {getRestuarant, getRestuarants} = require('../controllers/restuarant');
 const { getAllAds, getAdById } = require('../controllers/ads');
-const { AddCart, viewCart, DeleteCartItem, addQty, createOrder, viewOrder, updateOrderStatus, viewOrders } = require('../controllers/food_cart');
+const { AddCart, viewCart, DeleteCartItem, addQty, createOrder, viewOrder, updateOrderStatus, viewOrders, buyFood } = require('../controllers/food_cart');
 const { bookRent, getUserRentbookings, getRentbooking } = require('../controllers/rentbooking');
 const { bookStudio, getUserStudiobookings, getStudiobooking } = require('../controllers/studiobooking');
 const { bookCinema, getUserCinemabookings, getCinemabooking } = require('../controllers/cinemabooking');
@@ -268,6 +268,7 @@ router.put("/createOrder", jwtAuth, createOrder);
 router.get("/getOrders", jwtAuth, viewOrders );
 router.get("/getOrder/:orderId", jwtAuth, viewOrder );
 router.put("/updateOrderStatus/:orderId", jwtAuth, updateOrderStatus);
+router.post("/buyFoodNow/:foodId", jwtAuth, buyFood);
 
 
 
