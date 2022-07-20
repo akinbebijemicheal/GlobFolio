@@ -9,13 +9,12 @@ const fs = require('fs');
 
 
 exports.createFoodService = async(req, res, next) => {
-    const { title, description, ingredients, price } = req.body;
+    const { title, description, price } = req.body;
     try {
 
         var food = new Product({
             title,
             description,
-            ingredients,
             price: price,
         })
         var  foodout = await food.save();
@@ -299,12 +298,11 @@ exports.getFoodById = async(req, res, next) => {
 }
 
 exports.updateFood = async(req, res, next) => {
-    const {title, description, ingredents, price} = req.body;
+    const {title, description, price} = req.body;
     try{
             await Product.update({
                 title: title,
                 description: description,
-                ingredents: ingredents,
                 price: price,
             }, { where: {
                 id: req.params.id,
