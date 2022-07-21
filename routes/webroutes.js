@@ -14,6 +14,7 @@ const {
   getUsers,
   updateUser,
   deleteUser,
+  createAdmin,
 } = require("../controllers/user2");
 const {
   RegisterUser
@@ -104,6 +105,7 @@ const { getRentbookings, getRentbooking, rentVerify } = require("../controllers/
 const { studioVerify, getStudiobookings, getStudiobooking } = require("../controllers/studiobooking");
 const { gameVerify, getGamebookings, getGamebooking } = require("../controllers/gamebooking");
 const { cinemaVerify, getCinemabookings, getCinemabooking } = require("../controllers/cinemabooking");
+const { createRider, updateRider, getRiders, getRiderById, deleteRider } = require("../controllers/rider");
 //user
 
 router
@@ -529,6 +531,8 @@ router.post("/login-admin", async (req, res, next) => {
   //res.redirect('/dashboard/admin')
 });
 
+router.post("/createAdmin", userAuth, createAdmin);
+
 router.get(
   "/dashboard/admin/change-password",
   userAuth,
@@ -765,6 +769,13 @@ router.get("/getCinemaBooking/:bookingId", userAuth, getCinemabooking)
 //--------------------------------------Game Bookings--------------------
 router.get("/getAllGameBookings", userAuth, getGamebookings);
 router.get("/getGameBooking/:bookingId", userAuth, getGamebooking)
+
+//-------------------------Dispatch Rider---------------------------
+router.post("/createRider", userAuth, createRider);
+router.put("/updateRider/:riderId", userAuth, updateRider);
+router.get("/getRiders", userAuth, getRiders);
+router.get("/getRider/:riderId", userAuth, getRiderById);
+router.delete("/deleteRider/:riderId", userAuth, deleteRider)
 
 router
 .get('/VerifyPay/hotel', hotelverify)
