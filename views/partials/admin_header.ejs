@@ -33,7 +33,7 @@
                     <!-- begin navbar-header -->
                     <div class="navbar-header d-flex align-items-center">
                         <a href="javascript:void:(0)" class="mobile-toggle"><i class="ti ti-align-right"></i></a>
-                        <a class="navbar-brand" href="https://deependnew.netlify.app/index.html">
+                        <a class="navbar-brand" href="/dashboard/admin/">
                             <img src="assets4/img/deep.png" class="img-fluid logo-desktop" alt="logo" />
                             <img src="assets4/img/deep.png" class="img-fluid logo-mobile" alt="logo" />
                         </a>
@@ -168,8 +168,8 @@
                                         <div class="bg-gradient px-4 py-3">
                                             <div class="d-flex align-items-center justify-content-between">
                                                 <div class="mr-1">
-                                                    <h4 class="text-white mb-0">Mr Hamzat</h4>
-                                                    <small class="text-white">hmztadeleke@gmail.com</small>
+                                                    <h4 class="text-white mb-0">Hello <%= user%></h4>
+                                                    <small class="text-white"><%= email%></small>
                                                 </div>
                                                 <a href="/logout" class="text-white font-20 tooltip-wrapper" data-toggle="tooltip" data-placement="top" title="" data-original-title="Logout"> <i
                                                 class="zmdi zmdi-power"></i></a>
@@ -177,16 +177,18 @@
                                         </div>
                                         <div class="p-4">
                                             <a class="dropdown-item d-flex nav-link" href="javascript:void(0)">
-                                                <i class="fa fa-user pr-2 text-success"></i> Profile</a>
+                                                <a href="/dashboard/admin/admin-profile"><i class="fa fa-user pr-2 text-success"></i> Profile</a></a>
                                             <a class="dropdown-item d-flex nav-link" href="javascript:void(0)">
-                                                <i class="fa fa-envelope pr-2 text-primary"></i> Inbox
-                                                <span class="badge badge-primary ml-auto">6</span>
+                                                <a href="/dashboard/admin/update-admin-profile"><i class="fa fa-user pr-2 text-success"></i>  Update Profile</a></a>
+                                            <a class="dropdown-item d-flex nav-link" href="javascript:void(0)">
+                                                <a><i class="fa fa-envelope pr-2 text-primary"></i> Inbox
+                                                    <span class="badge badge-primary ml-auto">6</span></a>
                                             </a>
                                             <a class="dropdown-item d-flex nav-link" href="javascript:void(0)">
-                                                <i class=" ti ti-settings pr-2 text-info"></i> Settings
+                                               <a href="/dashboard/admin/change-password"><i class=" ti ti-settings pr-2 text-info"></i> Change Password</a>
                                             </a>
                                             <a class="dropdown-item d-flex nav-link" href="javascript:void(0)">
-                                                <i class="fa fa-compass pr-2 text-warning"></i> Need help?</a>
+                                                <a><i class="fa fa-compass pr-2 text-warning"></i> Need help?</a></a>
                                             <div class="row mt-2">
                                                 <div class="col">
                                                     <a class="bg-light p-3 text-center d-block" href="#">
@@ -227,31 +229,37 @@
                                 </li>
                                 <li><a class="has-arrow" href="javascript:void(0)" aria-expanded="false"><img src="assets4/img/Vectorr.png" draggable="false"><span class="nav-title">Food</span></a>
                                     <ul aria-expanded="false">
-                                        <li><a href="/dashboard/admin/food-recent-orders">New Orders</a> </li>
+                                        <li><a href="/dashboard/admin/food-get-orders">New Orders</a> </li>
                                         <li><a href="/dashboard/admin/food-products">View Uploaded Product</a></li>
                                         <li><a href="/dashboard/admin/food-upload">Upload Product</a></li>
                                     </ul>
                                 </li>
                                 <li><a class="has-arrow" href="javascript:void(0)" aria-expanded="false"><img src="assets4/img/Vectorrr.png" draggable="false"><span class="nav-title">Studio Booking</span></a>
                                     <ul aria-expanded="false">
-                                        <li><a href="/dashboard/admin/studio-recent-bookings">New Studio Bookings</a></li>
+                                        <li><a href="/dashboard/admin/studio-recent-bookings">Studio Bookings</a></li>
+                                        <li><a href="/dashboard/admin/get-studio-posts">View Studios</a></li>
+                                        <li><a href="/dashboard/admin/studio-upload">Upload New Studio</a></li>
                                     </ul>
                                 </li>
                                 <li><a class="has-arrow" href="javascript:void(0)" aria-expanded="false"><img src="assets4/img/event.png" draggable="false"><span class="nav-title">Hotel Bookings</span></a>
                                     <ul aria-expanded="false">
                                         <li><a href="/dashboard/admin/hotel-new-bookings">New Hotel Bookings</a></li>
+                                        <li><a href="/dashboard/admin/get-hotel-posts">View Hotels</a></li>
                                         <li><a href="/dashboard/admin/hotel-upload">Upload Hotel</a></li>
                                     </ul>
                                 </li>
                                 <li><a class="has-arrow" href="javascript:void(0)" aria-expanded="false"><img src="assets4/img/cinema.png" draggable="false"><span class="nav-title">Cinema Tickets</span></a>
                                     <ul aria-expanded="false">
                                         <li><a href="/dashboard/admin/cinema-recently-bought-tickets">Recently Bought Tickets</a></li>
+                                        <li><a href="/dashboard/admin/get-cinema-posts">View Cinema Services</a></li>
+                                        <li><a href="/dashboard/admin/cinema-upload">Upload Cinema Service</a></li>
                                     </ul>
                                 </li>
                                 <li><a class="has-arrow" href="javascript:void(0)" aria-expanded="false"><img src="assets4/img/Vr.png" draggable="false"><span class="nav-title">VR Games Tickets</span></a>
                                     <ul aria-expanded="false">
-                                        <li><a href="#"> View Recently Tickets</a></li>
-                                        <li><a href="#">VR Games (Upload)</a></li>
+                                        <li><a href="/dashboard/admin/getAllGameBookings"> View VR-Game Bookings</a></li>
+                                        <li><a href="/dashboard/admin/get-gaming-posts"> View All VR-Game</a></li>
+                                        <li><a href="/dashboard/admin/create-gaming-post">Upload New VR-Game</a></li>
                                     </ul>
                                 </li>
                                 <li><a class="has-arrow" href="javascript:void(0)" aria-expanded="false"><img src="assets4/img/for-rent.png" draggable="false"><span class="nav-title">Equipment Renting</span></a>
@@ -265,15 +273,17 @@
                                         <li><a href="#">View Advert</a></li>
                                     </ul>
                                 </li>
-                                <li><a class="has-arrow" href="javascript:void(0)" aria-expanded="false"><i class="bi bi-person-workspace"></i><span class="nav-title">Disphatch Rider</span></a>
+                                <li><a class="has-arrow" href="javascript:void(0)" aria-expanded="false"><i class="bi bi-person-workspace"></i><span class="nav-title">Dispatch Rider</span></a>
                                     <ul aria-expanded="false">
-                                        <li> <a href='#'>Disphatch Rider 1</a> </li>
-                                        <li> <a href='#'>Disphatch Rider 1</a> </li>
+                                        <li> <a href='/dashboard/admin/get-riders'>View Dispatch Riders</a> </li>
+                                        <li> <a href='/dashboard/admin/create-rider-post'>Add Dispatch Rider</a> </li>
                                     </ul>
                                 </li>
                                 <li><a class="has-arrow" href="javascript:void(0)" aria-expanded="false"><i class="bi bi-gear"></i><span class="nav-title">Settings</span></a>
                                     <ul aria-expanded="false">
                                         <li> <a href="/dashboard/admin/change-password">Change Password</a> </li>
+                                        <li> <a href="/dashboard/admin/admin-profile">Admin Profile</a> </li>
+                                        <li> <a href="/dashboard/admin/update-admin-profile">Update Admin Profile</a> </li>
                                     </ul>
                                 </li>
                                 <li class="py-2"><a href="/logout" aria-expanded="false"><i class="bi bi-box-arrow-left"></i><span class="nav-title">Log out</span></a> </li>

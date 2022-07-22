@@ -13,7 +13,7 @@
                         <!-- begin page title -->
                         <div class="d-block d-lg-flex flex-nowrap align-items-center">
                             <div class="page-title mr-4 pr-4 border-right">
-                                <h4 class="hey">New Hotel Upload</h4>
+                                <h4 class="hey">New VR-Game Upload</h4>
                             </div>
                         </div>
                         <!-- end page title -->
@@ -27,63 +27,59 @@
                         <div class="col-md-12">
                             <div class="form-row">
                                 <div class="form-group col-md-6">
-                                    <label for="inputName" class="text-dark">Hotel Name</label>
+                                    <label for="inputName" class="text-dark">Game Name</label>
                                     <input type="text" name="title" class="form-control" id="inputName" required
                                         placeholder="Title">
                                 </div>
                                 <div class="form-group col-md-6">
-                                    <label for="inputName" class="text-dark">Hotel Location</label>
-                                    <input type="text" class="form-control" name="location" id="inputName" required
+                                    <label for="inputName" class="text-dark">Game Genre</label>
+                                    <input type="text" class="form-control" name="genre" id="inputName" required
                                         placeholder="No 05, Apt 5, Deepend Avenue">
                                 </div>
                             </div>
-                            <div class="form-row">
-                                <div class="form-group col-md-4">
-                                    <label for="inputName" class="text-dark">Available Rooms</label>
-                                    <input type="number" name="available_room" class="form-control"
-                                        id="inputPassword4" placeholder="15">
-                                </div>
-                                <div class="form-group col-md-4">
-                                    <label for="inputName" class="text-dark">Rooms</label>
-                                    <input type="number" name="room" class="form-control"
-                                        id="inputPassword4" placeholder="30">
-                                </div>
-                                <div class="form-group col-md-4">
-                                    <label for="inputName" class="text-dark">Price</label>
-                                    <input type="number" name="price" class="form-control"
-                                        id="inputPassword4" placeholder="5000">
-                                </div>
-                                
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group col-md-6">
-                                    <label for="inputName" class="text-dark">Upload Hotel Images</label>
-                                    <input type="file" name="hotel_pictures" multiple class="form-control"
-                                        id="inputPassword4" placeholder="Password">
-                                </div>
-                                <div class="form-group col-md-6">
-                                    <label for="inputName" class="text-dark">Rating</label>
-                                    <select name="rating" class="form-control" id="inputPassword4">
-                                        <option selected>Rate Hotel</option>
-                                        <option value="5">5</option>
-                                        <option value="4">4</option>
-                                        <option value="3">3</option>
-                                        <option value="2">2</option>
-                                        <option value="1">1</option>
-                                    </select>
-                                </div>
-                            </div>
-                            
                             <div class="form-group">
                                 <label for="exampleFormControlTextarea1" class="text-dark">Description</label>
                                 <textarea class="form-control" id="exampleFormControlTextarea1" name="description"
                                     rows="3"></textarea>
                             </div>
-
-                            <div class="form-group">
-                                <label for="exampleFormControlTextarea1" class="text-dark">Hotel Amenities</label>
-                                <textarea class="form-control" id="exampleFormControlTextarea1" name="amenities"
-                                    rows="3"></textarea>
+                            <div class="form-row">
+                                <div class="form-group col-md-4">
+                                    <label for="inputName" class="text-dark">Price</label>
+                                    <input type="number" name="price" class="form-control" id="inputEmail4"
+                                        placeholder="5000">
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="inputName" class="text-dark">Available Game</label>
+                                    <input type="number" name="available_game" class="form-control" id="inputEmail4"
+                                        placeholder="5000">
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="inputName" class="text-dark">Per Time</label>
+                                    <select name="per_time" class="form-control" id="inputPassword4">
+                                        <option selected>Select Rate</option>
+                                        <option value="hourly">Hourly</option>
+                                        <option value="daily">Daily</option>
+                                        <option value="weekly">Weekly</option>
+                                        <option value="monthly">Monthly</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="inputName" class="text-dark">Upload Studio Images</label>
+                                    <input type="file" name="vr-gaming-pictures" multiple class="form-control"
+                                        id="inputPassword4" placeholder="Password">
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="inputName" class="text-dark">Rating</label>
+                                    <select name="age_rate" class="form-control" id="inputPassword4">
+                                        <option selected>Select Age Rate</option>
+                                        <option value="pg8">PG-8 Rated</option>
+                                        <option value="pg13">PG-13 Rated</option>
+                                        <option value="pg18">PG-18 Rated</option>
+                                        <option value="Adult">Adult Rated</option>
+                                    </select>
+                                </div>
                             </div>
 
 

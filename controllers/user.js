@@ -4,6 +4,8 @@ const jwt = require('jsonwebtoken');
 const passport = require('passport');
 require('dotenv').config();
 const nodemailer = require('nodemailer')
+const store = require('store')
+
 /*const { google } = require("googleapis");
 const OAuth2 = google.auth.OAuth2;
 

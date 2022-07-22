@@ -4,31 +4,36 @@ const Image = require('../../model/foodimage')
 const cloudinary = require('../../util/cloudinary');
 const User = require('../../model/user');
 const fs = require('fs');
+const store = require('store');
 
 
 
 exports.createFoodService = async(req, res, next) => {
-    const { title, description, ingredients, price } = req.body;
+    console.log(req.body)
+    const { category, title, description, price, packaging } = req.body;
     try {
-
-        var food = new Product({
+        const food = new Product({
             title,
+            category,
             description,
-            ingredients,
             price: price,
+            packaging,
         })
-        var  foodout = await food.save();
+        const  foodout = await food.save();
 
         if(req.files || req.file){
               const uploader = async (path) => await cloudinary.uploads(path, 'foodImages');
                 var urls = [];
-                var ids = []
+                var ids = [];
                 const files = req.files;
                 for (const file of files){
                     const { path } = file;
+                    console.log(path)
                     const newPath = await uploader(path)
+                    console.log(newPath)
                     urls.push(newPath.url);
                     ids.push(newPath.id)
+                    console.log(newPath.url, newPath.id)
                     fs.unlinkSync(path)
                 }
 
@@ -62,7 +67,7 @@ exports.createFoodService = async(req, res, next) => {
                     return output;
                 }
                 //console.log(top_price(req.body.top, req.body.topPrice));
-                var toppings = await Extras.bulkCreate(top_price(req.body.top, req.body.topPrice), {returning: true})
+             await Extras.bulkCreate(top_price(req.body.top, req.body.topPrice), {returning: true})
            
             
         }
@@ -86,10 +91,7 @@ exports.createFoodService = async(req, res, next) => {
             ]
         })
 
-        res.status(201).json({
-            status: true,
-            data: out
-        });
+        res.redirect("/dashboard/admin/")
        
         
     } catch (error) {
@@ -121,7 +123,8 @@ exports.getFoodServices = async(req, res, next) => {
             ],
         order: [
             ['createdAt', 'ASC']
-        ]
+        ],
+        raw: true
     
     });
 
@@ -130,25 +133,68 @@ exports.getFoodServices = async(req, res, next) => {
 
             if(food.length <= length || length === "" || !length){
                
-                res.status(200).json({
-                    status: true,
-                    data: food
-                });
+                // res.status(200).json({
+                //     status: true,
+                //     data: food
+                // });
+               
+                console.log(food)
+                var foodstring = JSON.stringify(food)
+            store.set("food", foodstring);
+            let name = req.user.fullname.split(" ");
+            let email = req.user.email;
+            data = JSON.parse(store.get("food"));
+            res.render("dashboard/admin/food-products", {
+              user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+              email: email,
+              data: data
+            }
+            );
+            next()
+               
             }else{
                 
                 let begin = length - 10;
                 let end = length + 1
                 var sliced = food.slice(begin, end)
-                res.status(200).json({
-                    status: true,
-                    data: sliced
-                });
+                // res.status(200).json({
+                //     status: true,
+                //     data: sliced
+                // });
+                console.log(food)
+                var foodstring = JSON.stringify(food)
+            store.set("food", foodstring);
+            let name = req.user.fullname.split(" ");
+            let email = req.user.email;
+            data = JSON.parse(store.get("food"));
+            res.render("dashboard/admin/food-products", {
+              user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+              email: email,
+              data: data
+            }
+            );
+            next()
             }
         } else{
-            res.status(404).json({
-                status: true,
-                message: "Posts not Found"
-            })
+            // res.status(404).json({
+            //     status: true,
+            //     message: "Posts not Found"
+            // })
+            console.log(food)
+            console.log('no food uploaded')
+            console.log(food)
+                var foodstring = JSON.stringify(food)
+            store.set("food", foodstring);
+            let name = req.user.fullname.split(" ");
+            let email = req.user.email;
+            data = JSON.parse(store.get("food"));
+            res.render("dashboard/admin/food-products", {
+              user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+              email: email,
+              data: data
+            }
+            );
+            next()
         }
     } catch (error) {
         console.error(error)
@@ -232,12 +278,12 @@ exports.getFoodById = async(req, res, next) => {
 }
 
 exports.updateFood = async(req, res, next) => {
-    const {title, description, ingredents, price} = req.body;
+    const {title, category, description, price} = req.body;
     try{
             await Product.update({
                 title: title,
+                category: category,
                 description: description,
-                ingredents: ingredents,
                 price: price,
             }, { where: {
                 id: req.params.id,

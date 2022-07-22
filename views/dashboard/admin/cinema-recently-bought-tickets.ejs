@@ -1,11 +1,10 @@
-
 <%- include("../../partials/admin_header") %> 
 
 <!-- begin app-main -->
 
 <%- include("../../partials/alerts") %>
-<!-- begin app-main -->
-<div class="app-main" id="main">
+ <!-- begin app-main -->
+ <div class="app-main" id="main">
     <!-- begin container-fluid -->
     <div class="container-fluid">
         <!-- begin row -->
@@ -14,7 +13,7 @@
                 <!-- begin page title -->
                 <div class="d-block d-lg-flex flex-nowrap align-items-center">
                     <div class="page-title mr-4 pr-4 border-right">
-                        <h4 class="hey">Cinema Tickets</h4>
+                        <h4 class="hey">Cinema Bought Tickets</h4>
                     </div>
                 </div>
                 <!-- end page title -->
@@ -39,151 +38,72 @@
                         Print
                     </button>
                 </h4>
-                <div class="col-lg-12">
-                    <div class="col-lg-12">
-                        <!-- <div class="card card-statistics">
-                            <div class="card-body">
-                                <div class="datatable-wrapper table-responsive">
-                                    <table id="datatable" class="display compact table table-striped table-bordered">
-                                        <thead>
-                                            <tr>
-                                                <th>Name</th>
-                                                <th>Position</th>
-                                                <th>Office</th>
-                                                <th>Age</th>
-                                                <th>Start date</th>
-                                                <th>Salary</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>Tiger Nixon</td>
-                                                <td>System Architect</td>
-                                                <td>Edinburgh</td>
-                                                <td>61</td>
-                                                <td>2011/04/25</td>
-                                                <td>$320,800</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Garrett Winters</td>
-                                                <td>Accountant</td>
-                                                <td>Tokyo</td>
-                                                <td>63</td>
-                                                <td>2011/07/25</td>
-                                                <td>$170,750</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Ashton Cox</td>
-                                                <td>Junior Technical Author</td>
-                                                <td>San Francisco</td>
-                                                <td>66</td>
-                                                <td>2009/01/12</td>
-                                                <td>$86,000</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Cedric Kelly</td>
-                                                <td>Senior Javascript Developer</td>
-                                                <td>Edinburgh</td>
-                                                <td>22</td>
-                                                <td>2012/03/29</td>
-                                                <td>$433,060</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Airi Satou</td>
-                                                <td>Accountant</td>
-                                                <td>Tokyo</td>
-                                                <td>33</td>
-                                                <td>2008/11/28</td>
-                                                <td>$162,700</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Brielle Williamson</td>
-                                                <td>Integration Specialist</td>
-                                                <td>New York</td>
-                                                <td>61</td>
-                                                <td>2012/12/02</td>
-                                                <td>$372,000</td>
-                                            </tr>
-                                           
-                                        </tfoot>
-                                    </table>
-                                </div>
-                            </div>
-                        </div> -->
-                    </div>
-                    <table border="1" class="open-section-2">
+                <div class="col-lg-12 table-responsive">
+                    <table border="1" class="open-section-2 table">
                         <tr class="mode-1">
                             <th width="50">S/N</th>
-                            <th>Name</th>
-                            <th>Movie Name </th>
-                            <th>Date</th>
-                            <th>Time</th>
-                            <th>Phone Number</th>
-                            <th>Amount</th>
-                            <th>Action</th>
+                            <th>Cinema ID</th>
+                            <th>Cinema Snack ID</th>
+                            <th>Cinema Snack Quantity</th>
+                            <th>Buyer ID</th>
+                            <th>Transaction ID</th>
+                            <th>Quantity</th>
+                            <th>Scheduled Date</th>
+                            <th>Scheduled Time</th>
+                            <th>Transaction Url</th>
+                            <th>Ref No</th>
+                            <th>Access code</th>
+                            <th>Created At</th>
                         </tr>
-                        <tr class="mode-2">
-                            <td>1</td>
-                            <td>Hamzat</td>
-                            <td>Money Heist</td>
-                            <td>18/07/2022</td>
-                            <td>14:51</td>
-                            <td>08155302760</td>
-                            <td>10,000</td>
-                            <td>
-                                <img src="assets4/img/delete.png" draggable="false" alt="">
-                            </td>
-                        </tr>
-                        <tr class="mode-2">
-                            <td>2</td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td>
-                                <img src="assets4/img/delete.png" draggable="false" alt="">
-                            </td>
-                        </tr>
-                        <tr class="mode-2">
-                            <td>3</td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td>
-                                <img src="assets4/img/delete.png" draggable="false" alt="">
-                            </td>
-                        </tr>
-                        <tr class="mode-2">
-                            <td>4</td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td>
-                                <img src="assets4/img/delete.png" draggable="false" alt="">
-                            </td>
-                        </tr>
-                        <tr class="mode-2">
-                            <td>5</td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td>
-                                <img src="assets4/img/delete.png" draggable="false" alt="">
-                            </td>
-                        </tr>
+                        <% if(data.length){ for(var i=0; i< data.length; i++) {%>
+                            <tr class="mode-2">
+                                <td>
+                                    <%= (i+1) %>
+                                </td>
+                                <td>
+                                    <%= data[i].cinemaId%>
+                                </td>
+                                <td>
+                                    <%= data[i].cinemaSnackId%>
+                                </td>
+                                <td>
+                                    <%= data[i].snackQuantity%>
+                                </td>
+                                <td>
+                                    <%= data[i].buyerId%>
+                                </td>
+                                <td>
+                                    <%= data[i].transactionId%>
+                                </td>
+                                <td>
+                                    <%= data[i].quantity%>
+                                </td>
+                                <td>
+                                    <%= data[i].scheduled_date%>
+                                </td>
+                                <td>
+                                    <%= data[i].scheduled_time%>
+                                </td>
+                                <td>
+                                    <%= data[i].transaction_url%>
+                                </td>
+                                <td>
+                                    <%= data[i].ref_no%>
+                                </td>
+                                <td>
+                                    <%= data[i].access_code%>
+                                </td>
+                                <td>
+                                    <%= data[i].createdAt%>
+                                </td>
+                            </tr>
+                            <% } }else{ %>
+                                <tr>
+                                    <td>no data available</td>
+                                </tr>
+                                <% } %>
                     </table>
-                    <div class="view">View all users <i class="bi bi-arrow-right"></i></div>
+                    <div class="view">View all tickets <i class="bi bi-arrow-right"></i></div>
                 </div>
             </div>
         </div>
@@ -196,7 +116,8 @@
 </div>
 <!-- end app-container -->
 <!-- begin footer -->
-<%- include("../../partials/admin_footer") %>
+<%- include("../../partials/admin_footer") %> 
+
 <!-- end app -->
 
 <!-- plugins -->

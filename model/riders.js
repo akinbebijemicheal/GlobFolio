@@ -2,7 +2,7 @@ const Sequelize = require('sequelize');
 const db = require('../config/config');
 const {nanoid} = require('nanoid');
 
-const Food = db.define('food', {
+const Rider = db.define('rider', {
     id: {
         type: Sequelize.STRING(10),
         autoincrement: false,
@@ -10,20 +10,25 @@ const Food = db.define('food', {
         primaryKey: true,
         defaultValue: () => nanoid(10)
     },
-    title: {
+    fullname: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: true
     },
-    description: {
-        type: Sequelize.TEXT
-    },
-    price: {
+    email: {
         type: Sequelize.STRING,
+        allowNull: false,
+        unique: true,
     },
-    packaging: {
-        type: Sequelize.STRING,
-    }
-}, {timestamps: true});
+    phone_no: {
+        type: Sequelize.STRING
+    },
+    country: {
+      type: Sequelize.STRING  
+    },
+    address: {
+        type: Sequelize.STRING
+    },
+},
+{timestamps: true});
 
-
-module.exports = Food;
+module.exports = Rider;

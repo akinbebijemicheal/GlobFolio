@@ -6,6 +6,8 @@ const Snack = require("../../model/cinemasnacks")
 const User = require('../../model/user');
 const { Op } = require('sequelize')
 const fs = require('fs')
+const store = require('store')
+
 
 exports.createCinemaService = async(req, res, next) => {
     const { title, genre, storyline, rating, view_date, cast, seat, duration, age_rate, price, morningTime, afternoonTime, eveningTime, snackName, snackPrice} = req.body;
@@ -108,10 +110,8 @@ exports.createCinemaService = async(req, res, next) => {
             ]
         })
        
-        res.status(201).json({
-            status: true,
-            data: out
-        })        
+        res.redirect("/dashboard/admin/")
+       
     } catch (error) {
          console.error(error)
         next(error);
@@ -227,26 +227,50 @@ exports.getCinemaServices = async(req, res, next) => {
         if(cinema){
 
             if(cinema.length <= length || length === "" || !length){
-                res.status(200).json({
-                    status: true,
-                    data: cinema
-                });
+                console.log("cinemas found")
+                store.set("cinema", JSON.stringify(cinema));
+                      let name = req.user.fullname.split(" ");
+                      let email = req.user.email;
+                      data = JSON.parse(store.get("cinema"));
+                      console.log(data)
+                      res.render("dashboard/admin/cinemas", {
+                        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+                        email: email,
+                        data
+                      });
+                      next();
             }else{
                 let begin = length - 10;
                 let end = length + 1;
                 var sliced = cinema.slice(begin, end);
                 
-                res.status(200).json({
-                    status: true,
-                    data: sliced
-                });
+                console.log("cinemas found")
+                store.set("cinema", JSON.stringify(cinema));
+                      let name = req.user.fullname.split(" ");
+                      let email = req.user.email;
+                      data = JSON.parse(store.get("cinema"));
+                      console.log(data)
+                      res.render("dashboard/admin/cinemas", {
+                        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+                        email: email,
+                        data
+                      });
+                      next();
             }
             
         } else{
-            res.status(404).json({
-                status: true,
-                message: "Posts not Found"
-            })
+            console.log("No cinemas found")
+            store.set("cinema", JSON.stringify(cinema));
+                  let name = req.user.fullname.split(" ");
+                  let email = req.user.email;
+                  data = JSON.parse(store.get("cinema"));
+                  console.log(data)
+                  res.render("dashboard/admin/cinemas", {
+                    user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+                    email: email,
+                    data
+                  });
+                  next();
         }
     } catch (error) {
         console.error(error)

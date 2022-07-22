@@ -3,6 +3,8 @@ const Image = require('../../model/vr_gaming_image');
 const cloudinary = require('../../util/cloudinary');
 const User = require('../../model/user');
 const fs = require('fs')
+const store = require('store')
+
 
 exports.createGamingService = async(req, res, next) => {
     const { title, description, genre, per_time, available_game, price, age_rate,} = req.body;
@@ -27,6 +29,7 @@ exports.createGamingService = async(req, res, next) => {
                         for (const file of files){
                             const { path } = file;
                             const newPath = await uploader(path)
+                            console.log(newPath)
                             urls.push(newPath.url);
                             ids.push(newPath.id)
                             fs.unlinkSync(path)
@@ -57,10 +60,8 @@ exports.createGamingService = async(req, res, next) => {
                     }
                 ]});
 
-            res.status(201).json({
-                status: true,
-                data: output
-            });
+                res.redirect("/dashboard/admin/")
+
         
     } catch (error) {
         console.error(error)
@@ -90,25 +91,49 @@ exports.getGamingServices = async(req, res, next) => {
            
             if(game.length <= length || length === "" || !length){
 
-                res.status(200).json({
-                    status: true,
-                    data: game
-                });
+                console.log("vr-games found")
+                store.set("vr-game", JSON.stringify(game));
+                      let name = req.user.fullname.split(" ");
+                      let email = req.user.email;
+                      data = JSON.parse(store.get("vr-game"));
+                      console.log(data)
+                      res.render("dashboard/admin/vr-games", {
+                        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+                        email: email,
+                        data
+                      });
+                      next();
             }else{
                 let begin = length - 10;
                 let end = length + 1
                 var sliced = game.slice(begin, end)
 
-                res.status(200).json({
-                    status: true,
-                    data: sliced
-                });
+                console.log("vr-games found")
+                store.set("vr-game", JSON.stringify(game));
+                      let name = req.user.fullname.split(" ");
+                      let email = req.user.email;
+                      data = JSON.parse(store.get("vr-game"));
+                      console.log(data)
+                      res.render("dashboard/admin/vr-games", {
+                        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+                        email: email,
+                        data
+                      });
+                      next();
             }
         } else{
-            res.status(404).json({
-                status: true,
-                message: "Posts not Found"
-            })
+            console.log("vr-games found")
+            store.set("vr-game", JSON.stringify(game));
+                  let name = req.user.fullname.split(" ");
+                  let email = req.user.email;
+                  data = JSON.parse(store.get("vr-game"));
+                  console.log(data)
+                  res.render("dashboard/admin/vr-games", {
+                    user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+                    email: email,
+                    data
+                  });
+                  next();
         }
     } catch (error) {
         console.error(error)

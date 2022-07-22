@@ -5,6 +5,7 @@ const User = require('../../model/user');
 const Amenity = require('../../model/amenities');
 const Extras = require('../../model/hotelextras')
 const fs = require('fs')
+const store = require('store')
 
 exports.createHotelService = async(req, res, next) => {
     const { title, description, location, rating} = req.body;
@@ -28,6 +29,7 @@ exports.createHotelService = async(req, res, next) => {
                 for (const file of files){
                     const { path } = file;
                     const newPath = await uploader(path)
+                    console.log(newPath)
                     urls.push(newPath.url);
                     ids.push(newPath.id)
                     fs.unlinkSync(path)
@@ -60,7 +62,7 @@ exports.createHotelService = async(req, res, next) => {
                await Amenity.bulkCreate(amenities, {returning: true})
             }
 
-            if(req.body.room && req.body.price && req.body.available_no){
+            if(req.body.room && req.body.price && req.body.available_room){
                 if(Array.isArray(req.body.room)){
                     var room_price = (room, price, available)=>{
                     var output = []
@@ -114,11 +116,8 @@ exports.createHotelService = async(req, res, next) => {
                     }
                 ]});
 
-            res.status(201).json({
-                status: true,
-                data: output
+                res.redirect("/dashboard/admin/")
 
-            })
         
     } catch (error) {
          console.error(error)
@@ -157,24 +156,48 @@ exports.getHotelServices = async(req, res, next) => {
         if(hotel){
             if(hotel.length <= length || length === "" || !length){
                 
-                res.status(200).json({
-                    status: true,
-                    data: hotel
-                });
+                console.log("hotels found")
+                store.set("hotel", JSON.stringify(hotel));
+                      let name = req.user.fullname.split(" ");
+                      let email = req.user.email;
+                      data = JSON.parse(store.get("hotel"));
+                      console.log(data)
+                      res.render("dashboard/admin/hotels", {
+                        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+                        email: email,
+                        data
+                      });
+                      next();
             }else{
                 let begin = length - 10;
                 let end = length + 1
                 var sliced = hotel.slice(begin, end)
-                res.status(200).json({
-                    status: true,
-                    data: sliced
-                });
+                console.log("hotels found")
+                store.set("hotel", JSON.stringify(hotel));
+                      let name = req.user.fullname.split(" ");
+                      let email = req.user.email;
+                      data = JSON.parse(store.get("hotel"));
+                      console.log(data)
+                      res.render("dashboard/admin/hotels", {
+                        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+                        email: email,
+                        data
+                      });
+                      next();
             }
         } else{
-            res.status(404).json({
-                status: true,
-                message: "Posts not Found"
-            })
+            console.log("No hotels found")
+            store.set("hotel", JSON.stringify(hotel));
+                  let name = req.user.fullname.split(" ");
+                  let email = req.user.email;
+                  data = JSON.parse(store.get("hotel"));
+                  console.log(data)
+                  res.render("dashboard/admin/hotels", {
+                    user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+                    email: email,
+                    data
+                  });
+                  next();
         }
     } catch (error) {
         console.error(error)
@@ -182,58 +205,58 @@ exports.getHotelServices = async(req, res, next) => {
     }
 }
 
-// exports.getHotelForUser = async(req, res, next) => {
-//     try {
-//         var hotel = await Product.findAll({ where: {
-//             userid: req.user.id,
-//             productType: 'hotel'
-//         }, include:[
-//             {
-//                 model: User,
-//                 attributes: {
-//                     exclude: ["createdAt", "updatedAt"]
-//                 }
-//             },
-//             {
-//                 model: Amenity,
-//                 attributes: {
-//                     exclude: ["createdAt", "updatedAt"]
-//                 }
-//             },
-//             {
-//                 model: Extras,
-//                 attributes: {
-//                     exclude: ["createdAt", "updatedAt"]
-//                 }
-//             }
-//         ]})
+exports.getHotelForUser = async(req, res, next) => {
+    try {
+        var hotel = await Product.findAll({ where: {
+            userid: req.user.id,
+            productType: 'hotel'
+        }, include:[
+            {
+                model: User,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                }
+            },
+            {
+                model: Amenity,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                }
+            },
+            {
+                model: Extras,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                }
+            }
+        ]})
         
-//         if(hotel){
-//             for(let i=0; i<hotel.length; i++){
-//                 hotel[i].img_id = JSON.parse(hotel[i].img_id);
-//                 hotel[i].img_url = JSON.parse(hotel[i].img_url);
-//                 // hotel[i].amenities = JSON.parse(hotel[i].amenities);
-//                 // hotel[i].room_pricing = JSON.parse(hotel[i].room_pricing);
-//             }
-//             res.status(200).json({
-//                 status: true,
-//                 data: hotel
-//             });
-//         } else{
-//             res.status(404).json({
-//                 status: false,
-//                 message: "Post not Found"
-//             })
-//         }
-//     } catch (error) {
-//         console.error(error)
-//         return res.status(500).json({
-//              status: false,
-//              message: "An error occured",
-//              error: error
-//          })
-//     }
-// }
+        if(hotel){
+            for(let i=0; i<hotel.length; i++){
+                hotel[i].img_id = JSON.parse(hotel[i].img_id);
+                hotel[i].img_url = JSON.parse(hotel[i].img_url);
+                // hotel[i].amenities = JSON.parse(hotel[i].amenities);
+                // hotel[i].room_pricing = JSON.parse(hotel[i].room_pricing);
+            }
+            res.status(200).json({
+                status: true,
+                data: hotel
+            });
+        } else{
+            res.status(404).json({
+                status: false,
+                message: "Post not Found"
+            })
+        }
+    } catch (error) {
+        console.error(error)
+        return res.status(500).json({
+             status: false,
+             message: "An error occured",
+             error: error
+         })
+    }
+}
 
 exports.getHotelByTitle = async(req, res, next) => {
     const {title}= req.body;
