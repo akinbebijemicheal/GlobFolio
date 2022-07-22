@@ -19,9 +19,6 @@ const Food = db.define('food', {
     },
     price: {
         type: Sequelize.STRING,
-    },
-    packaging: {
-        type: Sequelize.STRING,
     }
 }, {timestamps: true});
 

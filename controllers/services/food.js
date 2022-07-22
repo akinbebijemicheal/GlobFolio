@@ -10,14 +10,13 @@ const store = require('store');
 
 exports.createFoodService = async(req, res, next) => {
     console.log(req.body)
-    const { category, title, description, price, packaging } = req.body;
+    const { category, title, description, price } = req.body;
     try {
         const food = new Product({
             title,
             category,
             description,
-            price: price,
-            packaging,
+            price: price
         })
         const  foodout = await food.save();
 
