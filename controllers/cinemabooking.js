@@ -6,9 +6,7 @@ const CinemaBooking = require('../model/cinemabooking');
 const Transaction = require('../model/usertransactions');
 const User = require('../model/user')
 const store = require('store')
-
 const nodemailer = require("nodemailer");
-const store = require('store')
 const baseurl = process.env.BASE_URL
 
 var transporter = nodemailer.createTransport({

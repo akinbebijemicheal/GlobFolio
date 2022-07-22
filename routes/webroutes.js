@@ -124,6 +124,7 @@ const { studioVerify, getStudiobookings, getStudiobooking } = require("../contro
 const { gameVerify, getGamebookings, getGamebooking } = require("../controllers/gamebooking");
 const { cinemaVerify, getCinemabookings, getCinemabooking } = require("../controllers/cinemabooking");
 const { createFee, updateFee, getFees, getFeeById, deleteFee } = require("../controllers/adminFee");
+const { createRider, getRiders, updateRider, getRiderById, deleteRider } = require("../controllers/rider");
 //user
 
 router

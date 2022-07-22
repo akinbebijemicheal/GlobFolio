@@ -6,8 +6,7 @@ const Snack = require("../../model/cinemasnacks")
 const User = require('../../model/user');
 const { Op } = require('sequelize')
 const fs = require('fs')
-const store = require('store')
-
+const store = require('store');
 
 exports.createCinemaService = async(req, res, next) => {
     const { title, genre, storyline, rating, view_date, cast, seat, duration, age_rate, price, morningTime, afternoonTime, eveningTime, snackName, snackPrice} = req.body;
