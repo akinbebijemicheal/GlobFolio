@@ -66,7 +66,7 @@
                                     <%= data[i].title%>
                                 </td>
                                 <td>
-                                    <%= data[i].view_date%>
+                                    <%= new Date(data[i].view_date)%>
                                 </td>
                                 <td>
                                     <%= data[i].genre%>
@@ -102,7 +102,7 @@
                                     <%= data[i].evening%>
                                 </td>
                                 <td>
-                                    <%= data[i].createdAt%>
+                                    <%= new Date(data[i].createdAt)%>
                                 </td>
                             </tr>
                             <% } }else{ %>
