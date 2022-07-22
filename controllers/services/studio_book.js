@@ -3,6 +3,8 @@ const Image = require('../../model/studio_book_image');
 const cloudinary = require('../../util/cloudinary');
 const User = require('../../model/user');
 const fs = require('fs')
+const store = require('store')
+
 
 exports.createStudioService = async(req, res, next) => {
     const { title, description, location, per_time, price, rating, equipment } = req.body;
@@ -13,7 +15,7 @@ exports.createStudioService = async(req, res, next) => {
                     location,
                     per_time,
                     rating: parseFloat(rating),
-                    price: price,
+                    price,
                     equipment,
                 })
                 var studiout = await studio.save();
@@ -27,6 +29,7 @@ exports.createStudioService = async(req, res, next) => {
                 for (const file of files){
                     const { path } = file;
                     const newPath = await uploader(path)
+                    console.log(newPath)
                     urls.push(newPath.url);
                     ids.push(newPath.id)
                     fs.unlinkSync(path)
@@ -57,10 +60,8 @@ exports.createStudioService = async(req, res, next) => {
                     }
                 ]});
 
-            res.status(201).json({
-                status: true,
-                data: output
-            })
+                res.redirect("/dashboard/admin/")
+
         
         
     } catch (error) {
@@ -91,25 +92,49 @@ exports.getStudioServices = async(req, res, next) => {
         if(studio){
             if(studio.length <= length || length === ""|| !length){
                
-                res.status(200).json({
-                    status: true,
-                    data: studio
-                });
+                console.log("studios found")
+                store.set("studio", JSON.stringify(studio));
+                      let name = req.user.fullname.split(" ");
+                      let email = req.user.email;
+                      data = JSON.parse(store.get("studio"));
+                      console.log(data)
+                      res.render("dashboard/admin/studios", {
+                        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+                        email: email,
+                        data
+                      });
+                      next();
             }else{
                 let begin = length - 10;
                 let end = length + 1
                 var sliced = studio.slice(begin, end)
                 
-                res.status(200).json({
-                    status: true,
-                    data: sliced
-                });
+                console.log("studios found")
+                store.set("studio", JSON.stringify(studio));
+                      let name = req.user.fullname.split(" ");
+                      let email = req.user.email;
+                      data = JSON.parse(store.get("studio"));
+                      console.log(data)
+                      res.render("dashboard/admin/studios", {
+                        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+                        email: email,
+                        data
+                      });
+                      next();
             }
         } else{
-            res.status(404).json({
-                status: true,
-                message: "Posts not Found"
-            })
+            console.log("No studio found")
+            store.set("studio", JSON.stringify(studio));
+                  let name = req.user.fullname.split(" ");
+                  let email = req.user.email;
+                  data = JSON.parse(store.get("studio"));
+                  console.log(data)
+                  res.render("dashboard/admin/studios", {
+                    user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+                    email: email,
+                    data
+                  });
+                  next();
         }
     } catch (error) {
         console.error(error)

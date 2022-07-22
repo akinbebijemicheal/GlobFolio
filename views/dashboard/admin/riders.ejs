@@ -11,7 +11,7 @@
                     <!-- begin page title -->
                     <div class="d-block d-lg-flex flex-nowrap align-items-center">
                         <div class="page-title mr-4 pr-4 border-right">
-                            <h4 class="hey">View Users</h4>
+                            <h4 class="hey">View All Dispatch Riders</h4>
                         </div>
                     </div>
                     <!-- end page title -->
@@ -42,7 +42,6 @@
                                 <th>Phone Number</th>
                                 <th>Country</th>
                                 <th>Address</th>
-                                <th>Role</th>
                                 <th>Created At</th>
                                 <th>Action</th>
                             </tr>
@@ -68,13 +67,10 @@
                                         <%= data[i].address%>
                                     </td>
                                     <td>
-                                        <%= data[i].role%>
-                                    </td>
-                                    <td>
                                         <%= data[i].createdAt%>
                                     </td>
                                     <td>
-                                        <a href="/dashboard/admin/delete-user/<%= data[i].id%>">
+                                        <a href="/dashboard/admin/delete-rider/<%= data[i].id%>">
                                             <img src="assets4/img/delete.png" style="height:15px;width:15px;" draggable="false" alt="">
                                         </a>
                                     </td>
@@ -86,7 +82,7 @@
                                     <% } %>
 
                         </table>
-                        <div class="view">View all users <i class="bi bi-arrow-right"></i></div>
+                        <div class="view">View all riders <i class="bi bi-arrow-right"></i></div>
                     </div>
                 </div>
             </div>

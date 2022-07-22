@@ -3,6 +3,7 @@ const paystack = require('paystack')(process.env.PAYSTACK_SECRET);
 const Studio = require('../model/studio_book');
 const StudioBooking = require('../model/studiobooking');
 const Transaction = require('../model/usertransactions');
+const store = require('store')
 const User = require('../model/user');
 const nodemailer = require("nodemailer");
 const baseurl = process.env.BASE_URL
@@ -19,6 +20,7 @@ var transporter = nodemailer.createTransport({
     pass: process.env.EMAIL_PASSWORD, // generated ethereal password
     },
   });
+
 
 exports.bookStudio = async(req, res, next)=>{
     var {quantity, dateTo, dateFrom}= req.body;
@@ -442,15 +444,31 @@ exports.getStudiobookings = async(req, res, next)=>{
             ]
         }).then(async(book)=>{
             if(book){
-                res.json({
-                    status: true,
-                    data: book
-                })
+                console.log("Bookings found")
+                store.set("book", JSON.stringify(book));
+                      let name = req.user.fullname.split(" ");
+                      let email = req.user.email;
+                      data = JSON.parse(store.get("book"));
+                      console.log(data)
+                      res.render("dashboard/admin/studio-recent-bookings", {
+                        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+                        email: email,
+                        data: data
+                      });
+                      next();
             }else{
-                res.json({
-                    status: false,
-                    message: "No Studio Booking Available"
-                })
+                console.log("No bookings found")
+                store.set("book", JSON.stringify(book));
+                      let name = req.user.fullname.split(" ");
+                      let email = req.user.email;
+                      data = JSON.parse(store.get("book"));
+                      console.log(data)
+                      res.render("dashboard/admin/studio-recent-bookings", {
+                        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+                        email: email,
+                        data: data
+                      });
+                      next();
             }
         })
     } catch (error) {

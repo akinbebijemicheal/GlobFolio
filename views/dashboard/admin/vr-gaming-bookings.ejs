@@ -3,8 +3,8 @@
 <!-- begin app-main -->
 
 <%- include("../../partials/alerts") %>
-  <!-- begin app-main -->
-  <div class="app-main" id="main">
+ <!-- begin app-main -->
+ <div class="app-main" id="main">
     <!-- begin container-fluid -->
     <div class="container-fluid">
         <!-- begin row -->
@@ -13,7 +13,7 @@
                 <!-- begin page title -->
                 <div class="d-block d-lg-flex flex-nowrap align-items-center">
                     <div class="page-title mr-4 pr-4 border-right">
-                        <h4 class="hey">Food (Uploaded Products)</h4>
+                        <h4 class="hey">VR-Game Bookings </h4>
                     </div>
                 </div>
                 <!-- end page title -->
@@ -25,7 +25,7 @@
         <div class="row">
             <div class="col-lg-12 open-section">
                 <h4 class="user-1">
-                    Uploaded Products
+                    Game Bookings
                 </h4>
                 <h4 class="user-1">Export as :  
                     <button class="table-button">
@@ -42,11 +42,16 @@
                     <table border="1" class="open-section-2 table">
                         <tr class="mode-1">
                             <th width="50">S/N</th>
-                            <th>Food Name</th>
-                            <th>Packaging</th>
-                            <th>Price</th>
-                            <th>Description</th>
-                            <th>CreatedAt</th>
+                            <th>Game ID</th>
+                            <th>Buyer ID</th>
+                            <th>Transaction ID</th>
+                            <th>Quantity</th>
+                            <th>Scheduled Date</th>
+                            <th>Scheduled Time</th>
+                            <th>Transaction Url</th>
+                            <th>Ref No</th>
+                            <th>Access code</th>
+                            <th>Created At</th>
                         </tr>
                         <% if(data.length){ for(var i=0; i< data.length; i++) {%>
                             <tr class="mode-2">
@@ -54,16 +59,31 @@
                                     <%= (i+1) %>
                                 </td>
                                 <td>
-                                    <%= data[i].title%>
+                                    <%= data[i].gameId%>
                                 </td>
                                 <td>
-                                    <%= data[i].packaging%>
+                                    <%= data[i].buyerId%>
                                 </td>
                                 <td>
-                                    <%= data[i].price%>
+                                    <%= data[i].transactionId%>
                                 </td>
                                 <td>
-                                    <%= data[i].description%>
+                                    <%= data[i].quantity%>
+                                </td>
+                                <td>
+                                    <%= data[i].scheduled_date%>
+                                </td>
+                                <td>
+                                    <%= data[i].scheduled_time%>
+                                </td>
+                                <td>
+                                    <%= data[i].transaction_url%>
+                                </td>
+                                <td>
+                                    <%= data[i].ref_no%>
+                                </td>
+                                <td>
+                                    <%= data[i].access_code%>
                                 </td>
                                 <td>
                                     <%= data[i].createdAt%>

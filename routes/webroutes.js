@@ -2,6 +2,23 @@ const express = require("express");
 const router = express.Router();
 const upload = require("../util/multer");
 const multer = require("../util/multer2");
+const path = require('path');
+const multer2 = require('multer');
+// const uploaded = multer2({dest: 'public/uploads/' })
+const storage = multer2.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'public/uploads')
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
+    cb(null, file.food_pictures + '-' + Date.now() + path.extname(file.originalname))
+  }
+})
+
+const uploaded = multer2({ storage: storage })
+const {
+  uploadImg
+ } = require("../controllers/upload");
 const store = require('store')
 const {
   profile,
@@ -74,6 +91,13 @@ const {
   uploadRentImage,
   RemoveRentImage,
 } = require("../controllers/services/renting");
+const {
+  createRider,
+  updateRider,
+  getRiders,
+  getRiderById,
+  deleteRider,
+} = require("../controllers/rider");
 const {
   createStudioService,
   getStudioByTitle,
@@ -289,29 +313,33 @@ router.get(
   "/dashboard/admin/cinema-recently-bought-tickets",
   userAuth,
   checkRole(["admin"]),
-  (req, res) => {
-    let name = req.user.fullname.split(" ");
-    let email = req.user.email;
-    res.render("dashboard/admin/cinema-recently-bought-tickets", {
-      user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
-      email: email,
-    });
-  }
+  getCinemabookings
+);
+
+router.get("/dashboard/admin/cinema-upload", userAuth, checkRole(["admin"]), (req, res) => {
+  let name = req.user.fullname.split(" ");
+  let email = req.user.email;
+  res.render("dashboard/admin/cinema-upload", {
+    user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+    email: email,
+  });
+});
+
+router.post(
+  "/dashboard/admin/cinema-upload",
+  userAuth,
+  checkRole(["admin"]),
+  upload.array('cinema_pictures'),
+  createCinemaService
 );
 
 router.get(
   "/dashboard/admin/food-recent-orders",
   userAuth,
   checkRole(["admin"]),
-  (req, res) => {
-    let name = req.user.fullname.split(" ");
-    let email = req.user.email;
-    res.render("dashboard/admin/food-recent-orders", {
-      user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
-      email: email,
-    });
-  }
+  viewAdminOrder
 );
+
 router.get(
   "/dashboard/admin/food-upload",
   userAuth,
@@ -325,18 +353,21 @@ router.get(
     });
   }
 );
+
+router.post("/dashboard/admin/food-upload",
+// uploaded.fields([{ name: 'food_pictures', maxCount: 10 }]),
+userAuth,
+checkRole(["admin"]),
+upload.array('food_pictures'),
+    async (req, res) => {
+      await createFoodService(req, res)
+    });
+
 router.get(
   "/dashboard/admin/food-products",
   userAuth,
   checkRole(["admin"]),
-  (req, res) => {
-    let name = req.user.fullname.split(" ");
-    let email = req.user.email;
-    res.render("dashboard/admin/food-products", {
-      user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
-      email: email,
-    });
-  }
+  getFoodServices
 );
 
 router.get(
@@ -397,14 +428,7 @@ router.get(
   "/dashboard/admin/hotel-new-bookings",
   userAuth,
   checkRole(["admin"]),
-  (req, res) => {
-    let name = req.user.fullname.split(" ");
-    let email = req.user.email;
-    res.render("dashboard/admin/hotel-new-bookings", {
-      user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
-      email: email,
-    });
-  }
+  getbookings
 );
 
 router.get(
@@ -425,14 +449,26 @@ router.get(
   "/dashboard/admin/studio-recent-bookings",
   userAuth,
   checkRole(["admin"]),
+  getStudiobookings
+);
+router.get(
+  "/dashboard/admin/studio-upload",
+  userAuth,
+  checkRole(["admin"]),
   (req, res) => {
     let name = req.user.fullname.split(" ");
     let email = req.user.email;
-    res.render("dashboard/admin/studio-recent-bookings", {
+    res.render("dashboard/admin/studio-upload", {
       user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
       email: email,
-    });
-  }
+    });}
+);
+router.post(
+  "/dashboard/admin/studio-upload",
+  userAuth,
+  checkRole(["admin"]),
+  upload.array("studio_pictures"),
+  createStudioService
 );
 
 router.get(
@@ -478,21 +514,71 @@ router.get(
 );
 
 router.get(
-  "/dashboard/admin/view-user", getUsers, 
+  "/dashboard/admin/view-user",
+  userAuth,
+  checkRole(["admin"]),
+  getUsers
+);
+
+router.get(
+  "/dashboard/admin/admin-profile",
   userAuth,
   checkRole(["admin"]),
   (req, res) => {
-    let name = req.user.fullname.split(" ");
+    console.log(req.user)
+    let name = req.user.fullname;
     let email = req.user.email;
-    data = JSON.parse(store.get("users"));
-    console.log(data)
-    res.render("dashboard/admin/view-user", {
-      user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+    let phone = req.user.phone_no;
+    let country = req.user.country;
+    let address = req.user.address;
+    res.render("dashboard/admin/admin-profile", {
+      user: name,
       email: email,
-      data
+      phone: phone,
+      country: country,
+      address: address,
     });
   }
 );
+
+router.get(
+  "/dashboard/admin/update-admin-profile",
+  userAuth,
+  checkRole(["admin"]),
+  (req, res) => {
+    console.log(req.user)
+    let name = req.user.fullname;
+    let email = req.user.email;
+    let phone = req.user.phone_no;
+    let country = req.user.country;
+    let address = req.user.address;
+    res.render("dashboard/admin/update-admin-profile", {
+      user: name,
+      email: email,
+      phone: phone,
+      country: country,
+      address: address,
+    });
+  }
+);
+
+router.post(
+  "/dashboard/admin/update-admin-profile",
+  userAuth,
+  checkRole(["admin"]),
+  updateUser
+);
+
+router.get('/dashboard/admin/delete-user/:id', async (req, res) => {
+  await deleteUser(req, res)
+  res.redirect('/dashboard/admin/')
+});
+
+router.get('/dashboard/admin/delete-rider/:id', async (req, res) => {
+  await deleteRider(req, res)
+  res.redirect('/dashboard/admin/')
+});
+
 
 //-----------------------------------------------------------------------------------------------
 // post requests for information
@@ -614,14 +700,14 @@ router
     createCinemaService
   );
 
-router
-  .route("/create-hotel-post")
-  .post(
-    userAuth,
-    checkRole(["admin"]),
-    upload.array("image"),
-    createHotelService
-  );
+// router
+//   .route("/dashboard/admin/hotel-upload")
+//   .post(
+//     userAuth,
+//     checkRole(["admin"]),
+//     upload.array("hotel_pictures"),
+//     createHotelService
+//   );
 
 router
   .route("/create-food-post")
@@ -642,12 +728,52 @@ router
   );
 
 router
-  .route("/create-gaming-post")
+  .route("/dashboard/admin/create-gaming-post")
   .post(
     userAuth,
     checkRole(["admin"]),
-    upload.array("image"),
+    upload.array("vr-gaming-pictures"),
     createGamingService
+  );
+  router
+  .get("/dashboard/admin/create-gaming-post",
+    userAuth,
+    checkRole(["admin"]),
+    (req, res) => {
+      let name = req.user.fullname.split(" ");
+      let email = req.user.email;
+      res.render("dashboard/admin/vr-gaming-upload", {
+        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+        email: email,
+      });
+    }
+  );
+
+  router
+  .route("/dashboard/admin/create-rider-post")
+  .post(
+    userAuth,
+    checkRole(["admin"]),
+    createRider
+  );
+  router
+  .get("/dashboard/admin/create-rider-post",
+    userAuth,
+    checkRole(["admin"]),
+    (req, res) => {
+      let name = req.user.fullname.split(" ");
+      let email = req.user.email;
+      res.render("dashboard/admin/rider-upload", {
+        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+        email: email,
+      });
+    }
+  );
+  router
+  .get("/dashboard/admin/get-riders",
+    userAuth,
+    checkRole(["admin"]),
+    getRiders
   );
 
 router
@@ -659,15 +785,15 @@ router
     createRentService
   );
 
-router.route("/get-cinema-posts").get(userAuth, getCinemaServices);
+router.route("/dashboard/admin/get-cinema-posts").get(userAuth, checkRole(["admin"]), getCinemaServices);
 
-router.route("/get-hotel-posts").get(userAuth, getHotelServices);
+router.route("/dashboard/admin/get-hotel-posts").get(userAuth, checkRole(["admin"]), getHotelServices);
 
-router.route("/get-studio-posts").get(userAuth, getStudioServices);
+router.route("/dashboard/admin/get-studio-posts").get(userAuth, checkRole(["admin"]), getStudioServices);
 
 router.route("/get-food-posts").get(userAuth, getFoodServices);
 
-router.route("/get-gaming-posts").get(userAuth, getGamingServices);
+router.route("/dashboard/admin/get-gaming-posts").get(userAuth, checkRole(["admin"]), getGamingServices);
 
 router.route("/get-rent-posts").get(userAuth, getRentServices);
 
@@ -747,7 +873,20 @@ router.get("/getAdsById/:id", userAuth, getAdById);
 router.delete("/deleteAds/:id", userAuth, deleteAds);
 //---------------------------------------------------------------------------------
 //-----------------------Food Order---------------------------------------
-router.get("/getOrders", userAuth, viewAdminOrder );
+router.get("/dashboard/admin/food-get-orders", userAuth,  checkRole(["admin"]), viewAdminOrder );
+router.get(
+  "/dashboard/admin/change-password",
+  userAuth,
+  checkRole(["admin"]),
+  (req, res) => {
+    let name = req.user.fullname.split(" ");
+    let email = req.user.email;
+    res.render("dashboard/admin/changepassword", {
+      user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+      email: email,
+    });
+  }
+);
 router.get("/getOrder/:orderId", userAuth, viewOrder );
 //----------------------------------------------------------------
 
@@ -768,7 +907,7 @@ router.get("/getAllCinemaBookings", userAuth, getCinemabookings);
 router.get("/getCinemaBooking/:bookingId", userAuth, getCinemabooking)
 
 //--------------------------------------Game Bookings--------------------
-router.get("/getAllGameBookings", userAuth, getGamebookings);
+router.get("/dashboard/admin/getAllGameBookings", userAuth, checkRole(["admin"]), getGamebookings);
 router.get("/getGameBooking/:bookingId", userAuth, getGamebooking)
 
 //-------------------------Dispatch Rider---------------------------

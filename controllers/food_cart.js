@@ -9,6 +9,7 @@ const Order = require("../model/foodorder");
 const Transaction = require("../model/usertransactions");
 require('dotenv').config()
 const paystack = require('paystack')(process.env.PAYSTACK_SECRET);
+const store = require('store')
 const nodemailer = require("nodemailer");
 const baseurl = process.env.BASE_URL
 
@@ -253,6 +254,8 @@ exports.buyFood = async(req, res, next)=>{
         next(error);
     }
 }
+
+
 
 exports.AddCart = async(req, res, next)=>{
     var {quantity, foodextrasId, foodpackageId} = req.body;
@@ -822,15 +825,32 @@ exports.viewAdminOrder = async(req, res, next)=>{
             ]
         }).then((order) =>{
             if(order){
-                 res.status(200).json({
-                status: true,
-                data: order,
-            })
+                console.log("Orders found")
+                store.set("order", JSON.stringify(order));
+                      let name = req.user.fullname.split(" ");
+                      let email = req.user.email;
+                      data = JSON.parse(store.get("order"));
+                      console.log(data)
+                      res.render("dashboard/admin/food-orders", {
+                        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+                        email: email,
+                        data
+                      });
+                      next();
+            
             }else{
-                res.json({
-                    status: false,
-                    message: "No order found"
-                })
+                console.log("No Orders found")
+                store.set("order", JSON.stringify(order));
+                      let name = req.user.fullname.split(" ");
+                      let email = req.user.email;
+                      data = JSON.parse(store.get("order"));
+                      console.log(data)
+                      res.render("dashboard/admin/food-orders", {
+                        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+                        email: email,
+                        data
+                      });
+                      next(); 
             }
            
         })

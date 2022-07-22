@@ -1,9 +1,10 @@
-<%- include("../../partials/admin_header") %> 
+ 
+ <%- include("../../partials/admin_header") %> 
 
-<!-- begin app-main -->
-
+ <!-- begin app-main -->
+ 
 <%- include("../../partials/alerts") %>
-  <!-- begin app-main -->
+<!-- begin app-main -->
   <div class="app-main" id="main">
     <!-- begin container-fluid -->
     <div class="container-fluid">
@@ -13,7 +14,7 @@
                 <!-- begin page title -->
                 <div class="d-block d-lg-flex flex-nowrap align-items-center">
                     <div class="page-title mr-4 pr-4 border-right">
-                        <h4 class="hey">Food (Uploaded Products)</h4>
+                        <h4 class="hey">Food (Orders)</h4>
                     </div>
                 </div>
                 <!-- end page title -->
@@ -25,7 +26,7 @@
         <div class="row">
             <div class="col-lg-12 open-section">
                 <h4 class="user-1">
-                    Uploaded Products
+                    New Orders
                 </h4>
                 <h4 class="user-1">Export as :  
                     <button class="table-button">
@@ -42,31 +43,49 @@
                     <table border="1" class="open-section-2 table">
                         <tr class="mode-1">
                             <th width="50">S/N</th>
-                            <th>Food Name</th>
-                            <th>Packaging</th>
-                            <th>Price</th>
-                            <th>Description</th>
-                            <th>CreatedAt</th>
+                            <th>User ID</th>
+                            <th>Address</th>
+                            <th>Phone Number</th>
+                            <th>Sub Total</th>
+                            <th>Note</th>
+                            <th>Status</th>
+                            <th>Checkout Url</th>
+                            <th>Ref No</th>
+                            <th>Access code</th>
+
                         </tr>
+                        
                         <% if(data.length){ for(var i=0; i< data.length; i++) {%>
                             <tr class="mode-2">
                                 <td>
                                     <%= (i+1) %>
                                 </td>
                                 <td>
-                                    <%= data[i].title%>
+                                    <%= data[i].userId%>
                                 </td>
                                 <td>
-                                    <%= data[i].packaging%>
+                                    <%= data[i].address%>
                                 </td>
                                 <td>
-                                    <%= data[i].price%>
+                                    <%= data[i].phone_no%>
                                 </td>
                                 <td>
-                                    <%= data[i].description%>
+                                    <%= data[i].sub_total%>
                                 </td>
                                 <td>
-                                    <%= data[i].createdAt%>
+                                    <%= data[i].note%>
+                                </td>
+                                <td>
+                                    <%= data[i].status%>
+                                </td>
+                                <td>
+                                    <%= data[i].checkout_url%>
+                                </td>
+                                <td>
+                                    <%= data[i].ref_no%>
+                                </td>
+                                <td>
+                                    <%= data[i].access_code%>
                                 </td>
                             </tr>
                             <% } }else{ %>
@@ -74,8 +93,10 @@
                                     <td>no data available</td>
                                 </tr>
                                 <% } %>
+                        
+                   
                     </table>
-                    <div class="view">View all users <i class="bi bi-arrow-right"></i></div>
+                    <div class="view">View all orders <i class="bi bi-arrow-right"></i></div>
                 </div>
             </div>
         </div>
@@ -89,7 +110,6 @@
 <!-- end app-container -->
 <!-- begin footer -->
 <%- include("../../partials/admin_footer") %> 
-
 <!-- end app -->
 
 <!-- plugins -->

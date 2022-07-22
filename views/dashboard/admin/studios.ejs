@@ -3,8 +3,8 @@
 <!-- begin app-main -->
 
 <%- include("../../partials/alerts") %>
-  <!-- begin app-main -->
-  <div class="app-main" id="main">
+ <!-- begin app-main -->
+ <div class="app-main" id="main">
     <!-- begin container-fluid -->
     <div class="container-fluid">
         <!-- begin row -->
@@ -13,7 +13,7 @@
                 <!-- begin page title -->
                 <div class="d-block d-lg-flex flex-nowrap align-items-center">
                     <div class="page-title mr-4 pr-4 border-right">
-                        <h4 class="hey">Food (Uploaded Products)</h4>
+                        <h4 class="hey">All Studios </h4>
                     </div>
                 </div>
                 <!-- end page title -->
@@ -25,7 +25,7 @@
         <div class="row">
             <div class="col-lg-12 open-section">
                 <h4 class="user-1">
-                    Uploaded Products
+                    All Studios
                 </h4>
                 <h4 class="user-1">Export as :  
                     <button class="table-button">
@@ -42,10 +42,13 @@
                     <table border="1" class="open-section-2 table">
                         <tr class="mode-1">
                             <th width="50">S/N</th>
-                            <th>Food Name</th>
-                            <th>Packaging</th>
-                            <th>Price</th>
+                            <th>Studio Title</th>
                             <th>Description</th>
+                            <th>Location</th>
+                            <th>Fee Per Time</th>
+                            <th>Equipments</th>
+                            <th>Price</th>
+                            <th>Rating</th>
                             <th>CreatedAt</th>
                         </tr>
                         <% if(data.length){ for(var i=0; i< data.length; i++) {%>
@@ -57,13 +60,22 @@
                                     <%= data[i].title%>
                                 </td>
                                 <td>
-                                    <%= data[i].packaging%>
+                                    <%= data[i].description%>
+                                </td>
+                                <td>
+                                    <%= data[i].location%>
+                                </td>
+                                <td>
+                                    <%= data[i].per_time%>
+                                </td>
+                                <td>
+                                    <%= data[i].equipment%>
                                 </td>
                                 <td>
                                     <%= data[i].price%>
                                 </td>
                                 <td>
-                                    <%= data[i].description%>
+                                    <%= data[i].rating%>
                                 </td>
                                 <td>
                                     <%= data[i].createdAt%>
@@ -75,7 +87,7 @@
                                 </tr>
                                 <% } %>
                     </table>
-                    <div class="view">View all users <i class="bi bi-arrow-right"></i></div>
+                    <div class="view">Studio <i class="bi bi-arrow-right"></i></div>
                 </div>
             </div>
         </div>

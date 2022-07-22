@@ -10,8 +10,9 @@ const passport = require('passport');
 const cookieParser = require('cookie-parser');
 const webrouter = require('./routes/webroutes');
 const apirouter = require('./routes/apiroutes');
-const flash = require('express-flash-messages')
-const store = require('store')
+const flash = require('express-flash-messages');
+const store = require('store');
+const multerpic = require('multer');
 
 
 
@@ -38,7 +39,7 @@ app.use('/img', express.static(__dirname + 'public/img'));
 app.use('/img', express.static(__dirname + 'public/assets2/img'));
 app.use('/img', express.static(__dirname + 'public/assets3/img'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 app.use(cookieParser(process.env.CSECRET));
 app.use(session({
@@ -46,8 +47,8 @@ app.use(session({
   saveUninitialized: true,
   secret: process.env.TOKEN,
   cookie: {
-      httpOnly: false,
-      maxAge: 6000
+    httpOnly: false,
+    maxAge: 6000
   }
 }))
 app.use(flash({

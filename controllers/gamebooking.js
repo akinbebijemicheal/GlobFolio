@@ -3,6 +3,7 @@ const paystack = require('paystack')(process.env.PAYSTACK_SECRET);
 const Game = require('../model/vr_gaming');
 const GameBooking = require('../model/vr_gamebooking');
 const Transaction = require('../model/usertransactions');
+const store = require('store')
 const User = require('../model/user');
 const nodemailer = require("nodemailer");
 const baseurl = process.env.BASE_URL
@@ -19,6 +20,8 @@ var transporter = nodemailer.createTransport({
     pass: process.env.EMAIL_PASSWORD, // generated ethereal password
     },
   });
+
+
 
 exports.bookGame = async(req, res, next)=>{
     var {quantity, date, time}= req.body;
@@ -451,15 +454,31 @@ exports.getGamebookings = async(req, res, next)=>{
             ]
         }).then(async(book)=>{
             if(book){
-                res.json({
-                    status: true,
-                    data: book
-                })
+                console.log("Games Bookings found")
+                store.set("book", JSON.stringify(book));
+                      let name = req.user.fullname.split(" ");
+                      let email = req.user.email;
+                      data = JSON.parse(store.get("book"));
+                      console.log(data)
+                      res.render("dashboard/admin/vr-gaming-bookings", {
+                        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+                        email: email,
+                        data: data
+                      });
+                      next();
             }else{
-                res.json({
-                    status: false,
-                    message: "No Game Booking Available"
-                })
+                console.log("No Games Bookings found")
+                store.set("book", JSON.stringify(book));
+                      let name = req.user.fullname.split(" ");
+                      let email = req.user.email;
+                      data = JSON.parse(store.get("book"));
+                      console.log(data)
+                      res.render("dashboard/admin/vr-gaming-bookings", {
+                        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+                        email: email,
+                        data: data
+                      });
+                      next();
             }
         })
     } catch (error) {

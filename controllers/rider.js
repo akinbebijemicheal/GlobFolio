@@ -1,4 +1,6 @@
 const Rider = require("../model/riders");
+const store = require('store')
+
 
 exports.createRider = async(req, res, next)=>{
     const {fullname, email, phone_no, address, country} = req.body;
@@ -18,17 +20,12 @@ exports.createRider = async(req, res, next)=>{
                 })
 
                 const out = await new_rider.save();
-
-                res.json({
-                    status: true,
-                    message: "New Rider added",
-                    data: out
-                })
+                res.redirect("/dashboard/admin/")
+                
             }else{
-                res.json({
-                    status: false,
-                    message: "Rider email already exist"
-                })
+            req.flash("error", "User already exist")
+            res.redirect("back")
+                
             }
         })
     } catch (error) {
@@ -80,15 +77,32 @@ exports.getRiders = async(req, res, next)=>{
         await Rider.findAll()
         .then(async(rider)=>{
             if(rider){
-                res.json({
-                    status: true,
-                    data: rider
-                })
+                console.log("riders found")
+                store.set("rider", JSON.stringify(rider));
+                      let name = req.user.fullname.split(" ");
+                      let email = req.user.email;
+                      data = JSON.parse(store.get("rider"));
+                      console.log(data)
+                      res.render("dashboard/admin/riders", {
+                        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+                        email: email,
+                        data
+                      });
+                      next();
             }else{
-                res.json({
-                    status: false,
-                    message: "Rider not found"
-                })
+                console.log("No Rider found")
+                store.set("rider", JSON.stringify(rider));
+                      let name = req.user.fullname.split(" ");
+                      let email = req.user.email;
+                      data = JSON.parse(store.get("rider"));
+                      console.log(data)
+                      res.render("dashboard/admin/riders", {
+                        rider: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+                        email: email,
+                        data
+                      });
+                      next();
+
             }
         })
     } catch (error) {
@@ -127,7 +141,7 @@ exports.deleteRider = async(req, res, next)=>{
     try {
         await Rider.findOne({
             where:{
-                id: req.params.riderId
+                id: req.params.id
             }
         })
         .then(async(rider)=>{
@@ -137,15 +151,10 @@ exports.deleteRider = async(req, res, next)=>{
                         id: rider.id
                     }
                 })
-                res.json({
-                    status: true,
-                    message: "Rider Removed"
-                })
+                console.log('Rider delete successful')
+
             }else{
-                res.json({
-                    status: false,
-                    message: "Rider not found"
-                })
+                console.log('Rider not found')
             }
         })
     } catch (error) {
