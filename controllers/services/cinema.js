@@ -118,6 +118,140 @@ exports.createCinemaService = async(req, res, next) => {
     }
 }
 
+exports.getCinemaAppServices = async(req, res, next) => {
+    const status = req.query.status;
+    const length = req.query.length
+    try {
+        if(status === "showing"){
+            var cinema = await Product.findAll({where: {
+                view_date: (new Date).toISOString().substr(0, 10)
+            },
+            order: [
+                ['view_date', 'ASC']
+            ],
+            include:[
+                {
+                    model: Image,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                },
+                {
+                    model: Snack,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                }
+            ]
+        });
+
+            
+        }
+
+        if(status === "soon"){
+            cinema = await Product.findAll({
+                where: {
+                view_date: {
+                    [Op.gt]: (new Date).toISOString().substr(0, 10)
+                } 
+            }, order: [
+                ['view_date', 'ASC']
+            ],
+            include:[
+                {
+                    model: Image,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                },
+                {
+                    model: Snack,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                }
+            ]
+        });
+            
+        }
+
+        if(status === "rated"){
+            var cinema = await Product.findAll({
+            order: [
+                ['rating', 'DESC'],
+                ['view_date', 'ASC']
+            ],
+            include:[
+                {
+                    model: Image,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                },
+                {
+                    model: Snack,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                }
+            ]
+        });
+            
+        }
+
+        if(!status){
+            var cinema = await Product.findAll({
+            order: [
+                ['view_date', 'ASC']
+            ],
+
+            include:[
+                {
+                    model: Image,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                },
+                {
+                    model: Snack,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                }
+            ]
+        });
+            
+        }
+      
+        if(cinema){
+
+            if(cinema.length <= length || length === "" || !length){
+                res.status(200).json({
+                    status: true,
+                    data: cinema
+                });
+            }else{
+                let begin = length - 10;
+                let end = length + 1;
+                var sliced = cinema.slice(begin, end);
+                
+                res.status(200).json({
+                    status: true,
+                    data: sliced
+                });
+            }
+            
+        } else{
+            res.status(404).json({
+                status: true,
+                message: "Posts not Found"
+            })
+        }
+    } catch (error) {
+        console.error(error)
+        next(error);
+    }
+}
 
 exports.getCinemaServices = async(req, res, next) => {
     const status = req.query.status;

@@ -69,6 +69,57 @@ exports.createGamingService = async(req, res, next) => {
     }
 }
 
+exports.getGamingAppServices = async(req, res, next) => {
+    try {
+        const length = req.query.length
+        var game = await Product.findAll({
+            order: [
+                ['createdAt', 'ASC']
+        ],
+        include:[
+            {
+                model: Image,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                }
+            }
+        ]
+        });
+
+        if(game){
+           
+            if(game.length <= length || length === "" || !length){
+
+                res.status(200).json({
+                    status: true,
+                    data: game
+                });
+            }else{
+                let begin = length - 10;
+                let end = length + 1
+                var sliced = game.slice(begin, end)
+
+                res.status(200).json({
+                    status: true,
+                    data: sliced
+                });
+            }
+        } else{
+            res.status(404).json({
+                status: true,
+                message: "Posts not Found"
+            })
+        }
+    } catch (error) {
+        console.error(error)
+       return res.status(500).json({
+            status: false,
+            message: "An error occured",
+            error: error
+        })
+    }
+}
+
 
 exports.getGamingServices = async(req, res, next) => {
     try {

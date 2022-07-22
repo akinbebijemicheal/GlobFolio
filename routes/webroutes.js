@@ -90,6 +90,7 @@ const {
   updateRent,
   uploadRentImage,
   RemoveRentImage,
+  getRentAdminServices,
 } = require("../controllers/services/renting");
 const {
   createStudioService,
@@ -122,7 +123,6 @@ const { getRentbookings, getRentbooking, rentVerify } = require("../controllers/
 const { studioVerify, getStudiobookings, getStudiobooking } = require("../controllers/studiobooking");
 const { gameVerify, getGamebookings, getGamebooking } = require("../controllers/gamebooking");
 const { cinemaVerify, getCinemabookings, getCinemabooking } = require("../controllers/cinemabooking");
-const { createRider, updateRider, getRiders, getRiderById, deleteRider } = require("../controllers/rider");
 const { createFee, updateFee, getFees, getFeeById, deleteFee } = require("../controllers/adminFee");
 //user
 
@@ -788,7 +788,7 @@ router.route("/get-food-posts").get(userAuth, getFoodServices);
 
 router.route("/dashboard/admin/get-gaming-posts").get(userAuth, checkRole(["admin"]), getGamingServices);
 
-router.route("/get-rent-posts").get(userAuth, getRentServices);
+router.route("/get-rent-posts").get(userAuth, getRentAdminServices);
 
 router.route("/get-cinema-bytitle").post(userAuth, getCinemaByTitle);
 

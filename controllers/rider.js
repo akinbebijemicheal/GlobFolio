@@ -141,7 +141,9 @@ exports.deleteRider = async(req, res, next)=>{
     try {
         await Rider.findOne({
             where:{
+
                 id: req.params.id
+
             }
         })
         .then(async(rider)=>{

@@ -610,6 +610,60 @@ exports.getbooking = async(req, res, next)=>{
     }
 }
 
+exports.getAppbooking = async(req, res, next)=>{
+    try {
+        await HotelBooking.findOne({
+            where:{
+                id: req.params.bookingId
+            },
+            order: [
+                ['createdAt', 'ASC']
+            ],
+            include:[
+                {
+                    model: User,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                },
+                {
+                    model: Hotel,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                },
+                {
+                    model: HotelExtras,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                },
+                {
+                    model: Transaction,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                }
+            ]
+        }).then(async(book)=>{
+            if(book){
+                res.json({
+                    status: true,
+                    data: book
+                })
+            }else{
+                res.json({
+                    status: false,
+                    message: "No HOtel Booking Available"
+                })
+            }
+        })
+    } catch (error) {
+        console.error(error);
+        next(error)
+    }
+}
+
 
 
 

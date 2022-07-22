@@ -3,8 +3,10 @@ const paystack = require('paystack')(process.env.PAYSTACK_SECRET);
 const Game = require('../model/vr_gaming');
 const GameBooking = require('../model/vr_gamebooking');
 const Transaction = require('../model/usertransactions');
+
 const store = require('store')
 const User = require('../model/user');
+
 const nodemailer = require("nodemailer");
 const baseurl = process.env.BASE_URL
 
@@ -20,8 +22,6 @@ var transporter = nodemailer.createTransport({
     pass: process.env.EMAIL_PASSWORD, // generated ethereal password
     },
   });
-
-
 
 exports.bookGame = async(req, res, next)=>{
     var {quantity, date, time}= req.body;
@@ -535,6 +535,53 @@ exports.getUserGamebookings = async(req, res, next)=>{
     }
 }
 
+exports.getAppGamebooking = async(req, res, next)=>{
+    try {
+        await GameBooking.findOne({
+            where:{
+                id: req.params.bookingId
+            },
+            order: [
+                ['createdAt', 'ASC']
+            ],
+            include:[
+                {
+                    model: User,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                },
+                {
+                    model: Game,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                },
+                {
+                    model: Transaction,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                }
+            ]
+        }).then(async(book)=>{
+            if(book){
+                res.json({
+                    status: true,
+                    data: book
+                })
+            }else{
+                res.json({
+                    status: false,
+                    message: "No Game Booking Available"
+                })
+            }
+        })
+    } catch (error) {
+        console.error(error);
+        next(error)
+    }
+}
 exports.getGamebooking = async(req, res, next)=>{
     try {
         await GameBooking.findOne({

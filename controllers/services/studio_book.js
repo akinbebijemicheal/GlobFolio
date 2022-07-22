@@ -70,6 +70,52 @@ exports.createStudioService = async(req, res, next) => {
     }
 }
 
+exports.getStudioAppServices = async(req, res, next) => {
+    try {
+        const length = req.query.length
+        var studio = await Product.findAll({
+            order: [
+            ['createdAt', 'ASC']
+        ],
+        include:[
+            {
+                model: Image,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                }
+            }
+        ]
+    });
+
+        
+        if(studio){
+            if(studio.length <= length || length === ""|| !length){
+               
+                res.status(200).json({
+                    status: true,
+                    data: studio
+                });
+            }else{
+                let begin = length - 10;
+                let end = length + 1
+                var sliced = studio.slice(begin, end)
+                
+                res.status(200).json({
+                    status: true,
+                    data: sliced
+                });
+            }
+        } else{
+            res.status(404).json({
+                status: true,
+                message: "Posts not Found"
+            })
+        }
+    } catch (error) {
+        console.error(error)
+        next(error);
+    }
+}
 
 exports.getStudioServices = async(req, res, next) => {
     try {

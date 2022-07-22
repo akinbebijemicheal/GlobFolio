@@ -69,7 +69,54 @@ exports.createRentService = async(req, res, next) => {
 }
 
 
-exports.getRentServices = async(req, res, next) => {
+exports.getRentAppServices = async(req, res, next) => {
+    try {
+        const length = req. query.length;
+        var rent = await Product.findAll({
+            order: [
+                ['createdAt', 'ASC']
+        ],
+        include:[
+            {
+                model: Image,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                }
+            }
+        ]
+    });
+
+        
+        if(rent){
+            
+            if(rent.length <= length || length === "" || !length){
+                
+                res.status(200).json({
+                    status: true,
+                    data: rent
+                });
+            }else{
+                let begin = length - 10;
+                let end = length + 1
+                var sliced = rent.slice(begin, end)
+                res.status(200).json({
+                    status: true,
+                    data: sliced
+                });
+            }
+        } else{
+            res.status(404).json({
+                status: true,
+                message: "Posts not Found"
+            })
+        }
+    } catch (error) {
+        console.error(error)
+        next(error);
+    }
+}
+
+exports.getRentAdminServices = async(req, res, next) => {
     try {
         const length = req. query.length;
         var rent = await Product.findAll({

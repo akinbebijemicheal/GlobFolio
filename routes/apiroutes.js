@@ -6,21 +6,21 @@ const {checkEmail, changePassword, forgotPassword, emailVerification_V1, emailVe
 const {  verification, getUnverifieds, getVendors, getVendorsByServices} = require('../controllers/vendor')
 const { updatePicture, uploadPicture, deletePicture, getPicture} = require('../controllers/picture')
 const jwtAuth = require('../middleware/jwtAuth');
-const { getCinemaServices, getCinemaByTitle, getCinemaForUser, getCinemaById} = require('../controllers/services/cinema');
-const {getFoodByTitle, getFoodForUser, getFoodServices, getFoodById} = require('../controllers/services/food');
-const { getHotelByTitle, getHotelForUser, getHotelServices, getHotelById } = require('../controllers/services/hotel');
-const { getRentByTitle, getRentForUser, getRentServices, getRentById} = require('../controllers/services/renting');
-const {getStudioByTitle, getStudioForUser, getStudioServices, getStudioById} = require('../controllers/services/studio_book');
-const { getGamingByTitle, getGamingForUser, getGamingServices, getGameById} = require('../controllers/services/vr_gaming');
+const { getCinemaServices, getCinemaByTitle, getCinemaForUser, getCinemaById, getCinemaAppServices} = require('../controllers/services/cinema');
+const {getFoodByTitle, getFoodForUser, getFoodServices, getFoodById, getFoodAppServices} = require('../controllers/services/food');
+const { getHotelByTitle, getHotelForUser, getHotelServices, getHotelById, getHotelAppServices } = require('../controllers/services/hotel');
+const { getRentByTitle, getRentForUser, getRentServices, getRentById, getRentAppServices} = require('../controllers/services/renting');
+const {getStudioByTitle, getStudioForUser, getStudioServices, getStudioById, getStudioAppServices} = require('../controllers/services/studio_book');
+const { getGamingByTitle, getGamingForUser, getGamingServices, getGameById, getGamingAppServices} = require('../controllers/services/vr_gaming');
 const userVerify = require("../middleware/verify")
-const {bookHotel, hotelverify, getUserbookings, getbooking} = require('../controllers/Hotelbookings');
+const {bookHotel, hotelverify, getUserbookings, getbooking, getAppbooking} = require('../controllers/Hotelbookings');
 const {getRestuarant, getRestuarants} = require('../controllers/restuarant');
-const { getAllAds, getAdById } = require('../controllers/ads');
-const { AddCart, viewCart, DeleteCartItem, addQty, createOrder, viewOrder, updateOrderStatus, viewOrders, buyFood } = require('../controllers/food_cart');
-const { bookRent, getUserRentbookings, getRentbooking } = require('../controllers/rentbooking');
-const { bookStudio, getUserStudiobookings, getStudiobooking } = require('../controllers/studiobooking');
-const { bookCinema, getUserCinemabookings, getCinemabooking } = require('../controllers/cinemabooking');
-const { bookGame, getUserGamebookings, getGamebooking } = require('../controllers/gamebooking');
+const { getAllAds, getAdById, getAppAllAds } = require('../controllers/ads');
+const { AddCart, viewCart, DeleteCartItem, addQty, createOrder, viewOrder, updateOrderStatus, viewOrders, buyFood, viewAppOrder } = require('../controllers/food_cart');
+const { bookRent, getUserRentbookings, getRentbooking, getAppRentbooking } = require('../controllers/rentbooking');
+const { bookStudio, getUserStudiobookings, getStudiobooking, getAppStudiobooking } = require('../controllers/studiobooking');
+const { bookCinema, getUserCinemabookings, getCinemabooking, getAppCinemabooking } = require('../controllers/cinemabooking');
+const { bookGame, getUserGamebookings, getGamebooking, getAppGamebooking } = require('../controllers/gamebooking');
 
 
 //user
@@ -123,27 +123,27 @@ router
 
 router
 .route('/get-cinema-posts')
-.get(jwtAuth, userVerify, getCinemaServices)
+.get(jwtAuth, userVerify, getCinemaAppServices)
 
 router
 .route('/get-hotel-posts')
-.get(jwtAuth, userVerify, getHotelServices)
+.get(jwtAuth, userVerify, getHotelAppServices)
 
 router
 .route('/get-studio-posts')
-.get(jwtAuth, userVerify, getStudioServices)
+.get(jwtAuth, userVerify, getStudioAppServices)
 
 router
 .route('/get-food-posts')
-.get(jwtAuth, userVerify, getFoodServices)
+.get(jwtAuth, userVerify, getFoodAppServices)
 
 router
 .route('/get-gaming-posts')
-.get(jwtAuth, userVerify, getGamingServices)
+.get(jwtAuth, userVerify, getGamingAppServices)
 
 router
 .route('/get-rent-posts')
-.get(jwtAuth, userVerify, getRentServices)
+.get(jwtAuth, userVerify, getRentAppServices)
 
 
 router
@@ -224,28 +224,28 @@ router
 router
 .post('/bookHotel', jwtAuth, bookHotel);
 router.get("/getUserBookings", jwtAuth, getUserbookings)
-router.get("/getBooking/:bookingId", jwtAuth, getbooking)
+router.get("/getBooking/:bookingId", jwtAuth, getAppbooking)
 
 //---------------------Rent-------------------------------
 router
 .post('/bookRent/:rentId', jwtAuth, bookRent);
 router.get("/getUserRentBookings", jwtAuth, getUserRentbookings)
-router.get("/getRentBooking/:bookingId", jwtAuth, getRentbooking)
+router.get("/getRentBooking/:bookingId", jwtAuth, getAppRentbooking)
 
 router
 .post('/bookStudio/:studioId', jwtAuth, bookStudio);
 router.get("/getUserStudioBookings", jwtAuth, getUserStudiobookings)
-router.get("/getStudioBooking/:bookingId", jwtAuth, getStudiobooking)
+router.get("/getStudioBooking/:bookingId", jwtAuth, getAppStudiobooking)
 
 router
 .post('/bookCinema/:cinemaId', jwtAuth, bookCinema);
 router.get("/getUserCinemaBookings", jwtAuth, getUserCinemabookings)
-router.get("/getCinemaBooking/:bookingId", jwtAuth, getCinemabooking)
+router.get("/getCinemaBooking/:bookingId", jwtAuth, getAppCinemabooking)
 
 router
 .post('/bookGame/:gameId', jwtAuth, bookGame);
 router.get("/getUserGameBookings", jwtAuth, getUserGamebookings)
-router.get("/getGameBooking/:bookingId", jwtAuth, getGamebooking)
+router.get("/getGameBooking/:bookingId", jwtAuth, getAppGamebooking)
 
 
 // router
@@ -255,7 +255,7 @@ router.get("/getGameBooking/:bookingId", jwtAuth, getGamebooking)
 // .get('/getRestuarants', jwtAuth, getRestuarants)
 
 //--------------------------Ads-------------------------
-router.get("/getAllAds", getAllAds);
+router.get("/getAllAds", getAppAllAds);
 router.get("/getAdsById/:id", jwtAuth, getAdById);
 //------------------------------------------------------
 
@@ -266,7 +266,7 @@ router.delete("/deletecartitem/:cartitemId", jwtAuth, DeleteCartItem);
 router.put("/addItemQuantity/:cartitemId", jwtAuth, addQty);
 router.put("/createOrder", jwtAuth, createOrder);
 router.get("/getOrders", jwtAuth, viewOrders );
-router.get("/getOrder/:orderId", jwtAuth, viewOrder );
+router.get("/getOrder/:orderId", jwtAuth, viewAppOrder );
 router.put("/updateOrderStatus/:orderId", jwtAuth, updateOrderStatus);
 router.post("/buyFoodNow/:foodId", jwtAuth, buyFood);
 

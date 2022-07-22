@@ -525,6 +525,54 @@ exports.getUserStudiobookings = async(req, res, next)=>{
     }
 }
 
+exports.getAppStudiobooking = async(req, res, next)=>{
+    try {
+        await StudioBooking.findOne({
+            where:{
+                id: req.params.bookingId
+            },
+            order: [
+                ['createdAt', 'ASC']
+            ],
+            include:[
+                {
+                    model: User,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                },
+                {
+                    model: Studio,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                },
+                {
+                    model: Transaction,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                }
+            ]
+        }).then(async(book)=>{
+            if(book){
+                res.json({
+                    status: true,
+                    data: book
+                })
+            }else{
+                res.json({
+                    status: false,
+                    message: "No Studio Booking Available"
+                })
+            }
+        })
+    } catch (error) {
+        console.error(error);
+        next(error)
+    }
+}
+
 exports.getStudiobooking = async(req, res, next)=>{
     try {
         await StudioBooking.findOne({

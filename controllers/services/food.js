@@ -18,7 +18,6 @@ exports.createFoodService = async(req, res, next) => {
             category,
             description,
             price: price,
-            packaging,
         })
         const  foodout = await food.save();
 
@@ -82,7 +81,6 @@ exports.createFoodService = async(req, res, next) => {
             }
                 
                 //console.log(top_price(req.body.top, req.body.topPrice));
-
                 var toppings = await Extras.bulkCreate(top_price(req.body.top, req.body.topPrice), {returning: true})
         }
 
@@ -151,7 +149,67 @@ exports.createFoodService = async(req, res, next) => {
     }
 };
 
+exports.getFoodAppServices = async(req, res, next) => {
+    try {
+        const length = req.query.length;
 
+        var food = await Product.findAll({
+            include:[
+                {
+                    model: Extras,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                },
+                {
+                    model: Package,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                },
+                {
+                    model: Image,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                }
+            ],
+        order: [
+            ['createdAt', 'ASC']
+        ]
+    
+    });
+
+        
+        if(food){
+
+            if(food.length <= length || length === "" || !length){
+               
+                res.status(200).json({
+                    status: true,
+                    data: food
+                });
+            }else{
+                
+                let begin = length - 10;
+                let end = length + 1
+                var sliced = food.slice(begin, end)
+                res.status(200).json({
+                    status: true,
+                    data: sliced
+                });
+            }
+        } else{
+            res.status(404).json({
+                status: true,
+                message: "Posts not Found"
+            })
+        }
+    } catch (error) {
+        console.error(error)
+        next(error);
+    }
+}
 
 exports.getFoodServices = async(req, res, next) => {
     try {
@@ -349,7 +407,6 @@ exports.getFoodById = async(req, res, next) => {
 exports.updateFood = async(req, res, next) => {
 
     const {title, description, price} = req.body;
-
     try{
             await Product.update({
                 title: title,

@@ -4,8 +4,9 @@ const Cinema = require('../model/cinema');
 const Snack = require('../model/cinemasnacks')
 const CinemaBooking = require('../model/cinemabooking');
 const Transaction = require('../model/usertransactions');
+const User = require('../model/user')
+const store = require('store')
 
-const User = require('../model/user');
 const nodemailer = require("nodemailer");
 const store = require('store')
 const baseurl = process.env.BASE_URL
@@ -22,10 +23,6 @@ var transporter = nodemailer.createTransport({
     pass: process.env.EMAIL_PASSWORD, // generated ethereal password
     },
   });
-
-
-
-
 
 exports.bookCinema = async(req, res, next)=>{
     var {quantity, snackQuantity, time, snacksId}= req.body;
@@ -626,6 +623,64 @@ exports.getCinemabooking = async(req, res, next)=>{
         next(error)
     }
 }
+
+
+exports.getAppCinemabooking = async(req, res, next)=>{
+    try {
+        await CinemaBooking.findOne({
+            where:{
+                id: req.params.bookingId
+            },
+            order: [
+                ['createdAt', 'ASC']
+            ],
+            include:[
+                {
+                    model: User,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                },
+                {
+                    model: Cinema,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                },
+                {
+                    model: Snack,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                },
+                {
+                    model: Transaction,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                }
+            ]
+        }).then(async(book)=>{
+            if(book){
+                res.json({
+                    status: true,
+                    data: book
+                })
+            }else{
+                res.json({
+                    status: false,
+                    message: "No Cinema Booking Available"
+                })
+            }
+        })
+    } catch (error) {
+        console.error(error);
+        next(error)
+    }
+}
+
+
+
 
 
 
