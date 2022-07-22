@@ -92,13 +92,6 @@ const {
   RemoveRentImage,
 } = require("../controllers/services/renting");
 const {
-  createRider,
-  updateRider,
-  getRiders,
-  getRiderById,
-  deleteRider,
-} = require("../controllers/rider");
-const {
   createStudioService,
   getStudioByTitle,
   getStudioForUser,
