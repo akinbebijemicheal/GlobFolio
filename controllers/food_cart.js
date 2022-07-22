@@ -3,15 +3,33 @@ const CartItem = require("../model/cartItem");
 const User = require("../model/user");
 const Food = require("../model/food");
 const FoodExtra = require("../model/foodextras");
+const Package = require("../model/foodpackaging")
 const Image = require("../model/foodimage")
 const Order = require("../model/foodorder");
 const Transaction = require("../model/usertransactions");
 require('dotenv').config()
 const paystack = require('paystack')(process.env.PAYSTACK_SECRET);
 const store = require('store')
+const nodemailer = require("nodemailer");
+const baseurl = process.env.BASE_URL
 
-exports.AddCart = async(req, res, next)=>{
-    var {quantity, foodextrasId} = req.body;
+var transporter = nodemailer.createTransport({
+    host: process.env.EMAIL_HOST,
+    port: process.env.EMAIL_PORT,
+    secure: true, // true for 465, false for other ports
+    tls: {
+    rejectUnauthorized: false,
+    },
+    auth: {
+    user: process.env.EMAIL_USERNAME, // generated ethereal user
+    pass: process.env.EMAIL_PASSWORD, // generated ethereal password
+    },
+  });
+
+
+
+exports.buyFood = async(req, res, next)=>{
+    var {quantity, foodextrasId, foodpackageId, address, phone_no, note} = req.body;
     try {
         if(!quantity){
             quantity = 1
@@ -48,6 +66,20 @@ exports.AddCart = async(req, res, next)=>{
                     
                 })
                 }
+
+                if(foodpackageId && foodpackageId !== null && foodpackageId !== undefined){
+                    var package = await Package.findOne({
+                    where:{
+                        id: foodpackageId
+                    }
+                    
+                })
+                }else{
+                    res.json({
+                        status: false,
+                        message: "Please select a Package"
+                    })
+                }
                 
                 if(extra){
                    var price = (parseInt(food.price) + parseInt(extra.price))
@@ -56,10 +88,249 @@ exports.AddCart = async(req, res, next)=>{
                     price = parseInt(food.price)
                     extraId = null
                 }
+
+                if(package){
+                    price = price + package.price
+                    var packageId = package.id
+                }else{
+                    res.json({
+                        status: false,
+                        message: "Please select a Package"
+                    })
+                }
+
                 const Items = new CartItem({
                     userId: req.user.id,
                     foodId: food.id,
                     foodextrasId: extraId,
+                    foodpackageId: packageId,
+                    orderId: orderId,
+                    qty: quantity,
+                    price: price * quantity,
+                    ordered: true
+                })
+
+                var Cart = await Items.save();
+
+                await Order.findOne({
+                    where:{
+                        id: Cart.orderId
+                    },
+                    include:[
+                        {
+                            model: CartItem,
+                            attributes: {
+                                exclude: ["createdAt", "updatedAt"],
+                            },
+                            include:[
+                                {
+                                    model: Food,
+                                    attributes: {
+                                        exclude: ["createdAt", "updatedAt"],
+                                    },
+                                },
+                                {
+                                    model: FoodExtra,
+                                    attributes: {
+                                        exclude: ["createdAt", "updatedAt"],
+                                    },
+                                },
+                                {
+                                    model: Package,
+                                    attributes: {
+                                        exclude: ["createdAt", "updatedAt"]
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            model: User,
+                            attributes: {
+                                exclude: ["createdAt", "updatedAt"],
+                            },
+                        }
+                    ]
+                }).then(async(ord) =>{
+                    if(ord){
+                        var total = Cart.price;
+                       
+                        paystack.transaction.initialize({
+                            name: `Food Order #${ord.id}`,
+                            email: ord.user.email,
+                            amount: total * 100,
+                            quantity: ord.fooditems.length,
+                            callback_url: `${process.env.REDIRECT_SITE}/VerifyPay/food`,
+                            metadata:{
+                                userId: req.user.id,
+                                orderId: ord.id
+                            }
+                        }).then(async(transaction)=>{
+                            console.log(transaction)
+                            if(transaction){
+                                await Order.update({
+                                    address: address,
+                                    phone_no: phone_no,
+                                    note: note,
+                                    sub_total: total,
+                                    status: "in_progress",
+                                    checkout_url: transaction.data.authorization_url,
+                                    ref_no: transaction.data.reference,
+                                    access_code: transaction.data.access_code
+                                }, {
+                                    where:{
+                                        id: ord.id
+                                    }
+                                }).catch(err=> console.log(err));
+                            }
+                        }).catch(err=> console.log(err));
+
+                        const out = await Order.findOne({
+                            where: {
+                                id: order.id
+                            },
+                            include:[
+                                {
+                                    model: CartItem,
+                                    attributes: {
+                                        exclude: ["createdAt", "updatedAt"],
+                                    },
+                                    include:[
+                                        {
+                                            model: Food,
+                                            attributes: {
+                                                exclude: ["createdAt", "updatedAt"],
+                                            },
+                                        },
+                                        {
+                                            model: FoodExtra,
+                                            attributes: {
+                                                exclude: ["createdAt", "updatedAt"],
+                                            },
+                                        },
+                                        {
+                                            model: Package,
+                                            attributes: {
+                                                exclude: ["createdAt", "updatedAt"]
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    model: User,
+                                    attributes: {
+                                        exclude: ["createdAt", "updatedAt"],
+                                    },
+                                }
+                            ]
+                        })
+                        res.status(201).json({
+                            status: true,
+                            message: "Order created",
+                            data: out
+                        })
+                    }else{
+                        res.json({
+                            status: false,
+                            message: "No item found"
+                        })
+                    }
+                })
+
+            }else{
+                res.status(404).json({
+                    status: false,
+                    message: "No Food found"
+                })
+            }
+            
+        })
+    } catch (error) {
+        console.error(error)
+        // res.status(500).json({
+        //      status: false,
+        //      message: "An error occured",
+        //      error: error
+        //  })
+        next(error);
+    }
+}
+
+exports.AddCart = async(req, res, next)=>{
+    var {quantity, foodextrasId, foodpackageId} = req.body;
+    try {
+        if(!quantity){
+            quantity = 1
+        };
+
+        await Food.findOne({
+            where:{
+                 id: req.params.foodId
+            }
+           
+        }).then(async(food)=>{
+            if(food){
+                const order = await Order.findOne({
+                    where:{
+                        userId: req.user.id,
+                        new: true,
+                        paid: false
+                    }
+                })
+                if(order){
+                    var orderId = order.id
+                }else{
+                    var new_order = new Order({
+                        userId: req.user.id,
+                    })
+                    var outer = await new_order.save();
+                    orderId = outer.id
+                }
+                if(foodextrasId && foodextrasId !== null && foodextrasId !== undefined){
+                    var extra = await FoodExtra.findOne({
+                    where:{
+                        id: foodextrasId
+                    }
+                    
+                })
+                }
+
+                if(foodpackageId && foodpackageId !== null && foodpackageId !== undefined){
+                    var package = await Package.findOne({
+                    where:{
+                        id: foodpackageId
+                    }
+                    
+                })
+                }else{
+                    res.json({
+                        status: false,
+                        message: "Please select a Package"
+                    })
+                }
+                
+                if(extra){
+                   var price = (parseInt(food.price) + parseInt(extra.price))
+                   var extraId = extra.id
+                }else{
+                    price = parseInt(food.price)
+                    extraId = null
+                }
+
+                if(package){
+                    price = price + package.price
+                    var packageId = package.id
+                }else{
+                    res.json({
+                        status: false,
+                        message: "Please select a Package"
+                    })
+                }
+
+                const Items = new CartItem({
+                    userId: req.user.id,
+                    foodId: food.id,
+                    foodextrasId: extraId,
+                    foodpackageId: packageId,
                     orderId: orderId,
                     qty: quantity,
                     price: price * quantity,
@@ -95,6 +366,12 @@ exports.AddCart = async(req, res, next)=>{
                             },
                             {
                                 model: FoodExtra,
+                                attributes: {
+                                    exclude: ["createdAt", "updatedAt"]
+                                }
+                            },
+                            {
+                                model: Package,
                                 attributes: {
                                     exclude: ["createdAt", "updatedAt"]
                                 }
@@ -153,6 +430,12 @@ exports.viewCart = async(req, res, next) => {
                         attributes: {
                             exclude: ["createdAt", "updatedAt"],
                         },
+                    },
+                    {
+                        model: Package,
+                        attributes: {
+                            exclude: ["createdAt", "updatedAt"]
+                        }
                     },
                     {
                         model: User,
@@ -231,16 +514,24 @@ exports.addQty = async(req, res, next)=> {
                     attributes: {
                         exclude: ["createdAt", "updatedAt"],
                     },
+                },
+                {
+                    model: Package,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
                 }
             ]
         }).then(async(item) =>{
             if(item){
 
                if(item.foodextrasId){
-                   var price = (parseInt(item.foodId.price) + parseInt(item.foodextrasId.price))
+                   var price = (parseInt(item.foodId.price) + parseInt(item.foodextrasId.price) + item.foodpackageId.price)
                }else{
-                   price = parseInt(item.foodId.price)
+                   price = parseInt(item.foodId.price) + item.foodpackageId.price
                }
+
+               
 
                 await CartItem.update({
                      qty: quantity,
@@ -294,6 +585,26 @@ exports.createOrder = async(req, res, next)=>{
                     attributes: {
                         exclude: ["createdAt", "updatedAt"],
                     },
+                    include:[
+                        {
+                            model: Food,
+                            attributes: {
+                                exclude: ["createdAt", "updatedAt"],
+                            },
+                        },
+                        {
+                            model: FoodExtra,
+                            attributes: {
+                                exclude: ["createdAt", "updatedAt"],
+                            },
+                        },
+                        {
+                            model: Package,
+                            attributes: {
+                                exclude: ["createdAt", "updatedAt"]
+                            }
+                        }
+                    ]
                 },
                 {
                     model: User,
@@ -307,7 +618,7 @@ exports.createOrder = async(req, res, next)=>{
                 var total = 0;
                 if(order.fooditems){
                     for(var i =0; i<order.fooditems.length; i++){
-                        total = total + (order.fooditems[i].price * order.fooditems[i].qty);
+                        total = total + (order.fooditems[i].price);
                     }
                 }
                 paystack.transaction.initialize({
@@ -351,6 +662,26 @@ exports.createOrder = async(req, res, next)=>{
                             attributes: {
                                 exclude: ["createdAt", "updatedAt"],
                             },
+                            include:[
+                                {
+                                    model: Food,
+                                    attributes: {
+                                        exclude: ["createdAt", "updatedAt"],
+                                    },
+                                },
+                                {
+                                    model: FoodExtra,
+                                    attributes: {
+                                        exclude: ["createdAt", "updatedAt"],
+                                    },
+                                },
+                                {
+                                    model: Package,
+                                    attributes: {
+                                        exclude: ["createdAt", "updatedAt"]
+                                    }
+                                }
+                            ]
                         },
                         {
                             model: User,
@@ -393,6 +724,26 @@ exports.viewOrder = async(req, res, next)=>{
                     attributes: {
                         exclude: ["createdAt", "updatedAt"],
                     },
+                    include:[
+                        {
+                            model: Food,
+                            attributes: {
+                                exclude: ["createdAt", "updatedAt"],
+                            },
+                        },
+                        {
+                            model: FoodExtra,
+                            attributes: {
+                                exclude: ["createdAt", "updatedAt"],
+                            },
+                        },
+                        {
+                            model: Package,
+                            attributes: {
+                                exclude: ["createdAt", "updatedAt"]
+                            }
+                        }
+                    ]
                 },
                 {
                     model: User,
@@ -442,6 +793,26 @@ exports.viewAdminOrder = async(req, res, next)=>{
                     attributes: {
                         exclude: ["createdAt", "updatedAt"],
                     },
+                    include:[
+                        {
+                            model: Food,
+                            attributes: {
+                                exclude: ["createdAt", "updatedAt"],
+                            },
+                        },
+                        {
+                            model: FoodExtra,
+                            attributes: {
+                                exclude: ["createdAt", "updatedAt"],
+                            },
+                        },
+                        {
+                            model: Package,
+                            attributes: {
+                                exclude: ["createdAt", "updatedAt"]
+                            }
+                        }
+                    ]
                 },
                 {
                     model: User,
@@ -506,6 +877,26 @@ exports.viewOrders = async(req, res, next)=>{
                     attributes: {
                         exclude: ["createdAt", "updatedAt"],
                     },
+                    include:[
+                        {
+                            model: Food,
+                            attributes: {
+                                exclude: ["createdAt", "updatedAt"],
+                            },
+                        },
+                        {
+                            model: FoodExtra,
+                            attributes: {
+                                exclude: ["createdAt", "updatedAt"],
+                            },
+                        },
+                        {
+                            model: Package,
+                            attributes: {
+                                exclude: ["createdAt", "updatedAt"]
+                            }
+                        }
+                    ]
                 },
                 {
                     model: User,
@@ -635,7 +1026,259 @@ try {
                         }
                     })
 
-                    
+                    var user = await User.findOne({
+                        where:{
+                            id: transaction.data.metadata.userId,
+                        }
+                    })
+
+                    let fname = user.fullname.split(' ')
+                    const mailOptions = {
+                        from:  `"Deepend" <${process.env.E_TEAM}>`,
+                        to: `${user.email}`,
+                        subject: "Deepend",
+                        html: `
+                <!DOCTYPE html>
+                    <html>
+                    <head>
+
+                    <meta charset="utf-8">
+                    <meta http-equiv="x-ua-compatible" content="ie=edge">
+                    <title>${savetrnx.ProductType} Payment Confirmation</title>
+                    <meta name="viewport" content="width=device-width, initial-scale=1">
+                    <style type="text/css">
+                    /**
+                     * Google webfonts. Recommended to include the .woff version for cross-client compatibility.
+                     */
+                    @media screen {
+                        @font-face {
+                        font-family: 'Source Sans Pro';
+                        font-style: normal;
+                        font-weight: 400;
+                        src: local('Source Sans Pro Regular'), local('SourceSansPro-Regular'), url(https://fonts.gstatic.com/s/sourcesanspro/v10/ODelI1aHBYDBqgeIAH2zlBM0YzuT7MdOe03otPbuUS0.woff) format('woff');
+                        }
+                        @font-face {
+                        font-family: 'Source Sans Pro';
+                        font-style: normal;
+                        font-weight: 700;
+                        src: local('Source Sans Pro Bold'), local('SourceSansPro-Bold'), url(https://fonts.gstatic.com/s/sourcesanspro/v10/toadOcfmlt9b38dHJxOBGFkQc6VGVFSmCnC_l7QZG60.woff) format('woff');
+                        }
+                    }
+                    /**
+                     * Avoid browser level font resizing.
+                     * 1. Windows Mobile
+                     * 2. iOS / OSX
+                     */
+                    body,
+                    table,
+                    td,
+                    a {
+                        -ms-text-size-adjust: 100%; /* 1 */
+                        -webkit-text-size-adjust: 100%; /* 2 */
+                    }
+                    /**
+                     * Remove extra space added to tables and cells in Outlook.
+                     */
+                    table,
+                    td {
+                        mso-table-rspace: 0pt;
+                        mso-table-lspace: 0pt;
+                    }
+                    /**
+                     * Better fluid images in Internet Explorer.
+                     */
+                    img {
+                        -ms-interpolation-mode: bicubic;
+                    }
+                    /**
+                     * Remove blue links for iOS devices.
+                     */
+                    a[x-apple-data-detectors] {
+                        font-family: inherit !important;
+                        font-size: inherit !important;
+                        font-weight: inherit !important;
+                        line-height: inherit !important;
+                        color: inherit !important;
+                        text-decoration: none !important;
+                    }
+                    /**
+                     * Fix centering issues in Android 4.4.
+                     */
+                    div[style*="margin: 16px 0;"] {
+                        margin: 0 !important;
+                    }
+                    body {
+                        width: 100% !important;
+                        height: 100% !important;
+                        padding: 0 !important;
+                        margin: 0 !important;
+                    }
+                    /**
+                     * Collapse table borders to avoid space between cells.
+                     */
+                    table {
+                        border-collapse: collapse !important;
+                    }
+                    a {
+                        color: #1a82e2;
+                    }
+                    img {
+                        height: auto;
+                        line-height: 100%;
+                        text-decoration: none;
+                        border: 0;
+                        outline: none;
+                    }
+                    </style>
+
+                    </head>
+                    <body style="background-color: #e9ecef;">
+
+                    <!-- start preheader -->
+                    <div class="preheader" style="display: none; max-width: 0; max-height: 0; overflow: hidden; font-size: 1px; line-height: 1px; color: #fff; opacity: 0;">
+                        ${savetrnx.ProductType} Payment confirmation
+                    </div>
+                    <!-- end preheader -->
+
+                    <!-- start body -->
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+
+                        <!-- start logo -->
+                        <tr>
+                        <td align="center" bgcolor="#e9ecef">
+                            <!--[if (gte mso 9)|(IE)]>
+                            <table align="center" border="0" cellpadding="0" cellspacing="0" width="600">
+                            <tr>
+                            <td align="center" valign="top" width="600">
+                            <![endif]-->
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+                            <tr>
+                                <td align="center" valign="top" style="padding: 36px 24px;">
+                                <a href=${baseurl} target="_blank" style="display: inline-block;">
+                                    <img src=${baseurl}/images/deep.png alt="Logo" border="0" width="60" style="display: flex; width: 60px; max-width: 60px; min-width: 60px;">
+                                </a>
+                                </td>
+                            </tr>
+                            </table>
+                            <!--[if (gte mso 9)|(IE)]>
+                            </td>
+                            </tr>
+                            </table>
+                            <![endif]-->
+                        </td>
+                        </tr>
+                        <!-- end logo -->
+
+                        <!-- start hero -->
+                        <tr>
+                        <td align="center" bgcolor="#e9ecef">
+                            <!--[if (gte mso 9)|(IE)]>
+                            <table align="center" border="0" cellpadding="0" cellspacing="0" width="600">
+                            <tr>
+                            <td align="center" valign="top" width="600">
+                            <![endif]-->
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+                            <tr>
+                                <td align="left" bgcolor="#ffffff" style="padding: 36px 24px 0; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; border-top: 3px solid #d4dadf;">
+                                <h1 style="margin: 0; font-size: 32px; font-weight: 700; letter-spacing: -1px; line-height: 48px;">${savetrnx.ProductType} Payment confirmation</h1>
+                                </td>
+                            </tr>
+                            </table>
+                            <!--[if (gte mso 9)|(IE)]>
+                            </td>
+                            </tr>
+                            </table>
+                            <![endif]-->
+                        </td>
+                        </tr>
+                        <!-- end hero -->
+
+                        <!-- start copy block -->
+                        <tr>
+                        <td align="center" bgcolor="#e9ecef">
+                            <!--[if (gte mso 9)|(IE)]>
+                            <table align="center" border="0" cellpadding="0" cellspacing="0" width="600">
+                            <tr>
+                            <td align="center" valign="top" width="600">
+                            <![endif]-->
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+
+                            <!-- start copy -->
+                            <tr>
+                                <td align="left" bgcolor="#ffffff" style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;">
+                        <h2> Hi ${fname[0]}, </h2>        
+                                <p style="margin: 0;"> Receiving this email means, you have just purchased ${savetrnx.ProductType} from Deepend and your was confrimed</p>
+                                <br>
+                                <p style="margin: 0;"><b>Payment Details: </b></p>
+                                <br>
+                                <p style="margin: 0;">Description: ${savetrnx.description} </p>
+                                <p style="margin: 0;">Reference number: ${savetrnx.ref_no} </p>
+                                <p style="margin: 0;">Payment Status: <b>${savetrnx.status.toUpperCase()}</b> </p>
+                                <p style="margin: 0;">Price: ${savetrnx.price} </p>
+                                </td>
+                            </tr>
+                            <!-- end copy -->
+
+                         <!-- start copy -->
+                            <tr>
+                                <td align="left" bgcolor="#ffffff" style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px; border-bottom: 3px solid #d4dadf">
+                                <p style="margin: 0;">Cheers,<br> Deepend Team</p>
+                                </td>
+                            </tr>
+                            <!-- end copy -->
+
+                            </table>
+                            <!--[if (gte mso 9)|(IE)]>
+                            </td>
+                            </tr>
+                            </table>
+                            <![endif]-->
+                        </td>
+                        </tr>
+                        <!-- end copy block -->
+
+                        <!-- start footer -->
+                        <tr>
+                        <td align="center" bgcolor="#e9ecef" style="padding: 24px;">
+                            <!--[if (gte mso 9)|(IE)]>
+                            <table align="center" border="0" cellpadding="0" cellspacing="0" width="600">
+                            <tr>
+                            <td align="center" valign="top" width="600">
+                            <![endif]-->
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+
+                            <!-- start permission -->
+                            <tr>
+                                <td align="center" bgcolor="#e9ecef" style="padding: 12px 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 20px; color: #666;">
+                                <p style="margin: 0;">You received this email because we received a payment confirmation from your DEEPEND account.</p>
+                                </td>
+                            </tr>
+                            <!-- end permission -->
+
+                            </table>
+                            <!--[if (gte mso 9)|(IE)]>
+                            </td>
+                            </tr>
+                            </table>
+                            <![endif]-->
+                        </td>
+                        </tr>
+                        <!-- end footer -->
+
+                    </table>
+                    <!-- end body -->
+
+                    </body>
+                    </html>`
+            };
+
+            transporter.sendMail(mailOptions, function(err, info) {
+                if(err){
+                    console.log(err)
+                } else {
+                    console.log(info);
+                }
+            });
 
                     verify = "Payment" +" " +transaction.message
 

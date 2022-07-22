@@ -104,7 +104,7 @@ exports.webLoginAdmin = async (req, res, next) => {
               httpOnly: true,
               signed: true,
               sameSite: true,
-              secure: (keys.NODE_ENV !== 'development'),
+              secure: (process.env.NODE_ENV !== 'development'),
               secret: process.env.CSECRET
           }
 
