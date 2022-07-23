@@ -62,7 +62,7 @@
                                     <%= data[i].description%>
                                 </td>
                                 <td>
-                                    <%= data[i].createdAt%>
+                                    <%= new Date(data[i].createdAt).toDateString()%>
                                 </td>
                             </tr>
                             <% } }else{ %>
