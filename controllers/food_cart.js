@@ -710,6 +710,73 @@ exports.createOrder = async(req, res, next)=>{
         console.error(error)
          next(error)
     }
+
+}
+
+
+exports.viewAppOrder = async(req, res, next)=>{
+    try {
+        await Order.findOne({
+            where: {
+                id: req.params.orderId,
+            },
+            include:[
+                {
+                    model: CartItem,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"],
+                    },
+                    include:[
+                        {
+                            model: Food,
+                            attributes: {
+                                exclude: ["createdAt", "updatedAt"],
+                            },
+                        },
+                        {
+                            model: FoodExtra,
+                            attributes: {
+                                exclude: ["createdAt", "updatedAt"],
+                            },
+                        },
+                        {
+                            model: Package,
+                            attributes: {
+                                exclude: ["createdAt", "updatedAt"]
+                            }
+                        }
+                    ]
+                },
+                {
+                    model: User,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"],
+                    },
+                }
+            ]
+        }).then((order) =>{
+            if(order){
+                 res.status(200).json({
+                status: true,
+                data: order,
+            })
+            }else{
+                res.json({
+                    status: false,
+                    message: "No order found"
+                })
+            }
+           
+        })
+    } catch (error) {
+        console.error(error)
+        // res.status(500).json({
+        //      status: false,
+        //      message: "An error occured",
+        //      error: error
+        //  });
+         next(error)
+    }
 }
 
 exports.viewOrder = async(req, res, next)=>{

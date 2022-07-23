@@ -4,8 +4,8 @@ const HotelExtras = require('../model/hotelextras');
 const Hotel = require('../model/hotel');
 const HotelBooking = require('../model/hotelbooking');
 const Transaction = require('../model/usertransactions');
-const User = require('../model/user')
 const store = require('store')
+const User = require('../model/user');
 const nodemailer = require("nodemailer");
 const baseurl = process.env.BASE_URL
 
@@ -557,6 +557,60 @@ exports.getUserbookings = async(req, res, next)=>{
 }
 
 exports.getbooking = async(req, res, next)=>{
+    try {
+        await HotelBooking.findOne({
+            where:{
+                id: req.params.bookingId
+            },
+            order: [
+                ['createdAt', 'ASC']
+            ],
+            include:[
+                {
+                    model: User,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                },
+                {
+                    model: Hotel,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                },
+                {
+                    model: HotelExtras,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                },
+                {
+                    model: Transaction,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                }
+            ]
+        }).then(async(book)=>{
+            if(book){
+                res.json({
+                    status: true,
+                    data: book
+                })
+            }else{
+                res.json({
+                    status: false,
+                    message: "No HOtel Booking Available"
+                })
+            }
+        })
+    } catch (error) {
+        console.error(error);
+        next(error)
+    }
+}
+
+exports.getAppbooking = async(req, res, next)=>{
     try {
         await HotelBooking.findOne({
             where:{

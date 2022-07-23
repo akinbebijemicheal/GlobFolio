@@ -3,10 +3,8 @@ const paystack = require('paystack')(process.env.PAYSTACK_SECRET);
 const Studio = require('../model/studio_book');
 const StudioBooking = require('../model/studiobooking');
 const Transaction = require('../model/usertransactions');
-
-const User = require('../model/user')
 const store = require('store')
-
+const User = require('../model/user');
 const nodemailer = require("nodemailer");
 const baseurl = process.env.BASE_URL
 
@@ -484,6 +482,54 @@ exports.getUserStudiobookings = async(req, res, next)=>{
         await StudioBooking.findAll({
             where: {
                 userId: req.user.id
+            },
+            order: [
+                ['createdAt', 'ASC']
+            ],
+            include:[
+                {
+                    model: User,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                },
+                {
+                    model: Studio,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                },
+                {
+                    model: Transaction,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                }
+            ]
+        }).then(async(book)=>{
+            if(book){
+                res.json({
+                    status: true,
+                    data: book
+                })
+            }else{
+                res.json({
+                    status: false,
+                    message: "No Studio Booking Available"
+                })
+            }
+        })
+    } catch (error) {
+        console.error(error);
+        next(error)
+    }
+}
+
+exports.getAppStudiobooking = async(req, res, next)=>{
+    try {
+        await StudioBooking.findOne({
+            where:{
+                id: req.params.bookingId
             },
             order: [
                 ['createdAt', 'ASC']

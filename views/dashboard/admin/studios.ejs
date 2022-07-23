@@ -78,7 +78,7 @@
                                     <%= data[i].rating%>
                                 </td>
                                 <td>
-                                    <%= data[i].createdAt%>
+                                    <%= new Date(data[i].createdAt).toDateString()%>
                                 </td>
                             </tr>
                             <% } }else{ %>

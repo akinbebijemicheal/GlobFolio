@@ -1,7 +1,5 @@
 const Rider = require("../model/riders");
-
 const store = require('store')
-
 
 
 exports.createRider = async(req, res, next)=>{
@@ -28,7 +26,6 @@ exports.createRider = async(req, res, next)=>{
             req.flash("error", "User already exist")
             res.redirect("back")
                 
-
             }
         })
     } catch (error) {
@@ -80,7 +77,6 @@ exports.getRiders = async(req, res, next)=>{
         await Rider.findAll()
         .then(async(rider)=>{
             if(rider){
-
                 console.log("riders found")
                 store.set("rider", JSON.stringify(rider));
                       let name = req.user.fullname.split(" ");
@@ -157,12 +153,10 @@ exports.deleteRider = async(req, res, next)=>{
                         id: rider.id
                     }
                 })
-
                 console.log('Rider delete successful')
 
             }else{
                 console.log('Rider not found')
-
             }
         })
     } catch (error) {

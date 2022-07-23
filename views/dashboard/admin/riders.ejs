@@ -67,7 +67,7 @@
                                         <%= data[i].address%>
                                     </td>
                                     <td>
-                                        <%= data[i].createdAt%>
+                                        <%= new Date(data[i].createdAt).toDateString()%>
                                     </td>
                                     <td>
                                         <a href="/dashboard/admin/delete-rider/<%= data[i].id%>">

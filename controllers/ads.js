@@ -65,6 +65,28 @@ exports.getAllAds = async (req, res, next) => {
     return next(error);
   }
 };
+
+exports.getAppAllAds = async (req, res, next) => {
+  try {
+    await Ads.findAll().then((ads) => {
+      if (ads) {
+        res.status(200).json({
+          status: true,
+          data: ads,
+        });
+      } else {
+        res.status(404).json({
+          status: false,
+          message: "No ads found",
+        });
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    return next(error);
+  }
+};
+
 exports.getAdById = async (req, res, next) => {
   try {
     await Ads.findOne({

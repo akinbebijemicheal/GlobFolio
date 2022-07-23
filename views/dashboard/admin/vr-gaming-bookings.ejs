@@ -86,7 +86,7 @@
                                     <%= data[i].access_code%>
                                 </td>
                                 <td>
-                                    <%= data[i].createdAt%>
+                                    <%= new Date(data[i].createdAt).toDateString()%>
                                 </td>
                             </tr>
                             <% } }else{ %>
