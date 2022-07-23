@@ -119,7 +119,7 @@ const {
 } = require("../controllers/ads");
 const { Checkout, viewOrders, viewOrder, viewAdminOrder } = require("../controllers/food_cart");
 const { getbookings, getbooking, hotelverify } = require("../controllers/Hotelbookings");
-const { getRentbookings, getRentbooking, rentVerify } = require("../controllers/rentbooking");
+const { getRentbookings, getRentAdminbookings, getRentbooking, rentVerify } = require("../controllers/rentbooking");
 const { studioVerify, getStudiobookings, getStudiobooking } = require("../controllers/studiobooking");
 const { gameVerify, getGamebookings, getGamebooking } = require("../controllers/gamebooking");
 const { cinemaVerify, getCinemabookings, getCinemabooking } = require("../controllers/cinemabooking");
@@ -771,13 +771,29 @@ router
   );
 
 router
-  .route("/create-rent-post")
+  .route("/create-rent-service")
   .post(
     userAuth,
     checkRole(["admin"]),
-    upload.array("image"),
+    upload.array("rent_pictures"),
     createRentService
   );
+
+  router
+  .get("/dashboard/admin/create-rent-service",
+    userAuth,
+    checkRole(["admin"]),
+    (req, res) => {
+      let name = req.user.fullname.split(" ");
+      let email = req.user.email;
+      res.render("dashboard/admin/rent-upload", {
+        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+        email: email,
+      });
+    }
+  );
+
+
 
 router.route("/dashboard/admin/get-cinema-posts").get(userAuth, checkRole(["admin"]), getCinemaServices);
 
@@ -789,7 +805,7 @@ router.route("/get-food-posts").get(userAuth, getFoodServices);
 
 router.route("/dashboard/admin/get-gaming-posts").get(userAuth, checkRole(["admin"]), getGamingServices);
 
-router.route("/get-rent-posts").get(userAuth, getRentAdminServices);
+router.route("/dashboard/admin/get-rent-services").get(userAuth, checkRole(["admin"]), getRentAdminServices);
 
 router.route("/get-cinema-bytitle").post(userAuth, getCinemaByTitle);
 
@@ -889,7 +905,7 @@ router.get("/getAllBookings", userAuth, getbookings);
 router.get("/getBooking/:bookingId", userAuth, getbooking)
 
 //----------------------------Rent Bookings----------------------------
-router.get("/getAllRentBookings", userAuth, getRentbookings);
+router.get("/dashboard/admin/get-rent-bookings", userAuth, checkRole(["admin"]), getRentAdminbookings);
 router.get("/getRentBooking/:bookingId", userAuth, getRentbooking)
 
 //--------------------------------------Studio Bookings--------------------

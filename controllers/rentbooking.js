@@ -5,7 +5,9 @@ const RentBooking = require('../model/rentbooking');
 const Transaction = require('../model/usertransactions');
 const User = require('../model/user');
 const nodemailer = require("nodemailer");
+const store = require('store')
 const baseurl = process.env.BASE_URL
+
 
 var transporter = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
@@ -478,6 +480,68 @@ exports.getRentbookings = async(req, res, next)=>{
     }
 }
 
+exports.getRentAdminbookings = async(req, res, next)=>{
+    try {
+        await RentBooking.findAll({
+            order: [
+                ['createdAt', 'ASC']
+            ],
+            include:[
+                {
+                    model: User,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                },
+                {
+                    model: Rent,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                },
+                
+                {
+                    model: Transaction,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                }
+            ]
+        }).then(async(book)=>{
+            if(book){
+                console.log("Bookings found")
+                store.set("book", JSON.stringify(book));
+                      let name = req.user.fullname.split(" ");
+                      let email = req.user.email;
+                      data = JSON.parse(store.get("book"));
+                      console.log(data)
+                      res.render("dashboard/admin/rent-bookings", {
+                        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+                        email: email,
+                        data: data
+                      });
+                      next();
+            }else{
+                console.log("No bookings found")
+                store.set("book", JSON.stringify(book));
+                      let name = req.user.fullname.split(" ");
+                      let email = req.user.email;
+                      data = JSON.parse(store.get("book"));
+                      console.log(data)
+                      res.render("dashboard/admin/rent-bookings", {
+                        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+                        email: email,
+                        data: data
+                      });
+                      next();
+            }
+        })
+    } catch (error) {
+        console.error(error);
+        next(error)
+    }
+}
+
 exports.getUserRentbookings = async(req, res, next)=>{
     try {
         await RentBooking.findAll({
@@ -525,6 +589,7 @@ exports.getUserRentbookings = async(req, res, next)=>{
         next(error)
     }
 }
+
 
 exports.getRentbooking = async(req, res, next)=>{
     try {

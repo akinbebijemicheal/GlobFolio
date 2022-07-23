@@ -3,6 +3,8 @@ const Image = require('../../model/rentingimage');
 const cloudinary = require('../../util/cloudinary');
 const User = require('../../model/user');
 const fs = require('fs')
+const store = require('store')
+
 
 exports.createRentService = async(req, res, next) => {
     const { title, description, location, equipment, per_time, price, available_rent } = req.body;
@@ -57,10 +59,7 @@ exports.createRentService = async(req, res, next) => {
                 }
             ]});
 
-            res.status(201).json({
-                status: true,
-                data: output
-            });
+            res.redirect("/dashboard/admin/")
        
     } catch (error) {
         console.error(error)
@@ -138,24 +137,48 @@ exports.getRentAdminServices = async(req, res, next) => {
             
             if(rent.length <= length || length === "" || !length){
                 
-                res.status(200).json({
-                    status: true,
-                    data: rent
-                });
+                console.log("rents found")
+                store.set("rent", JSON.stringify(rent));
+                      let name = req.user.fullname.split(" ");
+                      let email = req.user.email;
+                      data = JSON.parse(store.get("rent"));
+                      console.log(data)
+                      res.render("dashboard/admin/rents", {
+                        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+                        email: email,
+                        data
+                      });
+                      next();
             }else{
                 let begin = length - 10;
                 let end = length + 1
                 var sliced = rent.slice(begin, end)
-                res.status(200).json({
-                    status: true,
-                    data: sliced
-                });
+                console.log("rents found")
+                store.set("rent", JSON.stringify(rent));
+                      let name = req.user.fullname.split(" ");
+                      let email = req.user.email;
+                      data = JSON.parse(store.get("rent"));
+                      console.log(data)
+                      res.render("dashboard/admin/rents", {
+                        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+                        email: email,
+                        data
+                      });
+                      next();
             }
         } else{
-            res.status(404).json({
-                status: true,
-                message: "Posts not Found"
-            })
+            console.log("No rents found")
+                store.set("rent", JSON.stringify(rent));
+                      let name = req.user.fullname.split(" ");
+                      let email = req.user.email;
+                      data = JSON.parse(store.get("rent"));
+                      console.log(data)
+                      res.render("dashboard/admin/rents", {
+                        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+                        email: email,
+                        data
+                      });
+                      next();
         }
     } catch (error) {
         console.error(error)
