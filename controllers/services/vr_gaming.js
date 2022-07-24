@@ -120,6 +120,32 @@ exports.getGamingAppServices = async(req, res, next) => {
     }
 }
 
+exports.gameCount = async (rea, res, next)=>{
+    try {
+        const games = await Product.count()
+        if (games){
+            store.set("games", games);
+            console.log('games found:', games)
+           
+                next();
+           
+        } else{
+          console.log("no games", games)
+          store.set("games", games);
+                
+                next();
+        }
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({
+            status: false,
+            message: "An error occured refresh the page"
+        })
+        next(error)
+        // req.flash("error", "An error occured refresh the page")
+    }
+}
+
 
 exports.getGamingServices = async(req, res, next) => {
     try {

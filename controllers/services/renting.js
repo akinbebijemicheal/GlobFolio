@@ -115,6 +115,33 @@ exports.getRentAppServices = async(req, res, next) => {
     }
 }
 
+
+exports.rentCount = async (rea, res, next)=>{
+    try {
+        const rents = await Product.count()
+        if (rents){
+            store.set("rents", rents);
+            console.log('rents found:', rents)
+           
+                next();
+           
+        } else{
+          console.log("no rents", rents)
+          store.set("rents", rents);
+                
+                next();
+        }
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({
+            status: false,
+            message: "An error occured refresh the page"
+        })
+        next(error)
+        // req.flash("error", "An error occured refresh the page")
+    }
+}
+
 exports.getRentAdminServices = async(req, res, next) => {
     try {
         const length = req. query.length;

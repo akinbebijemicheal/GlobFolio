@@ -23,7 +23,7 @@ exports.createRider = async(req, res, next)=>{
                 res.redirect("/dashboard/admin/")
                 
             }else{
-            req.flash("error", "User already exist")
+            req.flash("error", "Rider already exist")
             res.redirect("back")
                 
             }
@@ -108,6 +108,32 @@ exports.getRiders = async(req, res, next)=>{
     } catch (error) {
         console.log(error);
         next(error)
+    }
+}
+
+exports.riderCount = async (rea, res, next)=>{
+    try {
+        const riders = await Rider.count()
+        if (riders){
+            store.set("riders", riders);
+            console.log('riders found:',riders)
+           
+                next();
+           
+        } else{
+          console.log("No rider found", riders)
+          store.set("riders", riders);
+                
+                next();
+        }
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({
+            status: false,
+            message: "An error occured refresh the page"
+        })
+        next(error)
+        // req.flash("error", "An error occured refresh the page")
     }
 }
 

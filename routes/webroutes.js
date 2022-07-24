@@ -32,6 +32,7 @@ const {
   updateUser,
   deleteUser,
   createAdmin,
+  userCount,
 } = require("../controllers/user2");
 const {
   RegisterUser
@@ -63,6 +64,7 @@ const {
   updateCinema,
   uploadCinemaImage,
   RemoveCinemaImage,
+  cinemaCount,
 } = require("../controllers/services/cinema");
 const {
   createFoodService,
@@ -72,6 +74,7 @@ const {
   updateFood,
   uploadFoodImage,
   RemoveFoodImage,
+  foodCount,
 } = require("../controllers/services/food");
 const {
   createHotelService,
@@ -81,6 +84,7 @@ const {
   updateHotel,
   uploadHotelImage,
   RemoveHotelImage,
+  hotelCount,
 } = require("../controllers/services/hotel");
 const {
   createRentService,
@@ -91,6 +95,7 @@ const {
   uploadRentImage,
   RemoveRentImage,
   getRentAdminServices,
+  rentCount,
 } = require("../controllers/services/renting");
 const {
   createStudioService,
@@ -100,6 +105,7 @@ const {
   updateStudio,
   uploadStudioImage,
   RemoveStudioImage,
+  studioCount,
 } = require("../controllers/services/studio_book");
 const {
   createGamingService,
@@ -109,6 +115,7 @@ const {
   updateGaming,
   uploadGameImage,
   RemoveGameImage,
+  gameCount,
 } = require("../controllers/services/vr_gaming");
 const {
   createAds,
@@ -124,7 +131,7 @@ const { studioVerify, getStudiobookings, getStudiobooking } = require("../contro
 const { gameVerify, getGamebookings, getGamebooking } = require("../controllers/gamebooking");
 const { cinemaVerify, getCinemabookings, getCinemabooking } = require("../controllers/cinemabooking");
 const { createFee, updateFee, getFees, getFeeById, deleteFee } = require("../controllers/adminFee");
-const { createRider, getRiders, updateRider, getRiderById, deleteRider } = require("../controllers/rider");
+const { createRider, getRiders, updateRider, getRiderById, deleteRider, riderCount } = require("../controllers/rider");
 //user
 
 router
@@ -294,9 +301,30 @@ router
 //     })
 // })
 
-router.get("/dashboard/admin", userAuth, checkRole(["admin"]), (req, res) => {
+router.get("/dashboard/admin",
+ userAuth,
+  checkRole(["admin"]),
+   userCount,
+    riderCount,
+    cinemaCount,
+     hotelCount,
+      foodCount,
+       rentCount, 
+       studioCount,
+        gameCount,
+         (req, res) => {
   let name = req.user.fullname.split(" ");
   let email = req.user.email;
+  users = store.get("users");
+  cinemas = store.get("cinemas");
+  riders = store.get("riders");
+  hotels = store.get("hotels");
+  foods = store.get("foods");
+  rents = store.get("rents");
+  studios = store.get("studios");
+  games = store.get("games");
+  totalsubscribers = users + cinemas + riders + hotels + foods + rents + studios + games;
+  console.log(totalsubscribers)
   res.render("dashboard/admin/index", {
     user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
     email: email,

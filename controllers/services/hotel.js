@@ -259,6 +259,32 @@ exports.getHotelServices = async(req, res, next) => {
     }
 }
 
+exports.hotelCount = async (rea, res, next)=>{
+    try {
+        const hotels = await Product.count()
+        if (hotels){
+            store.set("hotels", hotels);
+            console.log('hotels found:', hotels)
+           
+                next();
+           
+        } else{
+          console.log("no hotels", hotels)
+          store.set("hotels", hotels);
+                
+                next();
+        }
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({
+            status: false,
+            message: "An error occured refresh the page"
+        })
+        next(error)
+        // req.flash("error", "An error occured refresh the page")
+    }
+}
+
 exports.getHotelForUser = async(req, res, next) => {
     try {
         var hotel = await Product.findAll({ where: {
