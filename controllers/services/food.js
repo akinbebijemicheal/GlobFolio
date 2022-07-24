@@ -151,7 +151,7 @@ exports.createFoodService = async(req, res, next) => {
 
 exports.foodCount = async (rea, res, next)=>{
     try {
-        const foods = await Product.count()
+        const foods = await Product.findAndCountAll()
         if (foods){
             store.set("foods", foods);
             console.log('foods found:', foods)
