@@ -209,7 +209,7 @@ exports.createAdmin = async(req, res, next)=>{
 }
 exports.userCount = async (rea, res, next)=>{
     try {
-        const users = await User.count({where: {role: 'users'}})
+        const users = await User.count({where: {role: 'user'}})
         if (users){
             store.set("users", users);
             console.log('users:',users)
