@@ -15,7 +15,6 @@ exports.createFoodService = async(req, res, next) => {
     try {
         const food = new Product({
             title,
-            category,
             description,
             price: price,
         })
