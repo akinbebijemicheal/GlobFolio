@@ -37,7 +37,7 @@ exports.createFee = async(req, res, next)=>{
 }
 
 exports.updateFee = async(req, res, next)=>{
-    const {type, description, value}= req.body;
+    const {description, value}= req.body;
     try {
         await Fee.findOne({
             where:{
