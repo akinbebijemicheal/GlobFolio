@@ -252,6 +252,33 @@ exports.getCinemaAppServices = async(req, res, next) => {
     }
 }
 
+
+exports.cinemaCount = async (rea, res, next)=>{
+    try {
+        const cinemas = await Product.count()
+        if (cinemas){
+            store.set("cinemas", cinemas);
+            console.log('cinemas found:', cinemas)
+           
+                next();
+           
+        } else{
+          console.log("no cinemas", cinemas)
+          store.set("cinemas", cinemas);
+                
+                next();
+        }
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({
+            status: false,
+            message: "An error occured refresh the page"
+        })
+        next(error)
+        // req.flash("error", "An error occured refresh the page")
+    }
+}
+
 exports.getCinemaServices = async(req, res, next) => {
     const status = req.query.status;
     const length = req.query.length

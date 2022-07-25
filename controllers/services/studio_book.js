@@ -117,6 +117,32 @@ exports.getStudioAppServices = async(req, res, next) => {
     }
 }
 
+exports.studioCount = async (rea, res, next)=>{
+    try {
+        const studios = await Product.count()
+        if (studios){
+            store.set("studios", studios);
+            console.log('studios found:', studios)
+           
+                next();
+           
+        } else{
+          console.log("no studios", studios)
+          store.set("studios", studios);
+                
+                next();
+        }
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({
+            status: false,
+            message: "An error occured refresh the page"
+        })
+        next(error)
+        // req.flash("error", "An error occured refresh the page")
+    }
+}
+
 exports.getStudioServices = async(req, res, next) => {
     try {
         const length = req.query.length

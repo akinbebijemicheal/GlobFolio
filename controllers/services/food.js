@@ -15,7 +15,6 @@ exports.createFoodService = async(req, res, next) => {
     try {
         const food = new Product({
             title,
-            category,
             description,
             price: price,
         })
@@ -148,6 +147,32 @@ exports.createFoodService = async(req, res, next) => {
         next(error);
     }
 };
+
+exports.foodCount = async (rea, res, next)=>{
+    try {
+        const foods = await Product.count({raw: true})
+        if (foods){
+            store.set("foods", foods);
+            console.log('foods found:', foods)
+           
+                next();
+           
+        } else{
+          console.log("no foods", foods)
+          store.set("foods", foods);
+                
+                next();
+        }
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({
+            status: false,
+            message: "An error occured refresh the page"
+        })
+        next(error)
+        // req.flash("error", "An error occured refresh the page")
+    }
+}
 
 exports.getFoodAppServices = async(req, res, next) => {
     try {

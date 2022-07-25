@@ -207,7 +207,31 @@ exports.createAdmin = async(req, res, next)=>{
         next(error)
     }
 }
-
+exports.userCount = async (rea, res, next)=>{
+    try {
+        const users = await User.count({where: {role: 'user'}})
+        if (users){
+            store.set("users", users);
+            console.log('users:',users)
+           
+                next();
+           
+        } else{
+          console.log("No user found", users)
+          store.set("users", users);
+                
+                next();
+        }
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({
+            status: false,
+            message: "An error occured refresh the page"
+        })
+        next(error)
+        // req.flash("error", "An error occured refresh the page")
+    }
+}
 
 exports.getUsers = async (req, res, next)=>{
     try {
