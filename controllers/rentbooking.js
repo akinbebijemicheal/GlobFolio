@@ -5,7 +5,8 @@ const RentBooking = require('../model/rentbooking');
 const Transaction = require('../model/usertransactions');
 const User = require('../model/user');
 const nodemailer = require("nodemailer");
-const store = require('store')
+const store = require('store');
+const Fee = require("../model/adminFee")
 const baseurl = process.env.BASE_URL
 
 
@@ -30,6 +31,12 @@ exports.bookRent = async(req, res, next)=>{
             quantity = 1
         }
 
+        var commision = await Fee.findOne({
+            where:{
+                type: "commission"
+            }
+        })
+
         var dayFrom = new Date(dateFrom);
         var dayTo = new Date(dateTo)
         var difference = Math.abs(dayTo - dayFrom)
@@ -47,6 +54,7 @@ exports.bookRent = async(req, res, next)=>{
                     email: req.user.email,
                     amount: ((parseInt(rent.price) * quantity) * days) * 100,
                     quantity: quantity,
+                    transaction_charge: ((commision.value / 100) * ((parseInt(rent.price) * quantity) * days)) * 100,
                     callback_url: `${process.env.REDIRECT_SITE}/VerifyPay/rent`,
                     metadata: {
                         userId: req.user.id,

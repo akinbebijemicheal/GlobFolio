@@ -59,7 +59,11 @@ const HotelBooking = db.define('hotelbooking', {
     },
     access_code:{
         type: Sequelize.STRING,
+    },
+    commission:{
+        type: Sequelize.FLOAT
     }
+
 
     
 });

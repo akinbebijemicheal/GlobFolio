@@ -51,7 +51,11 @@ const GameBooking = db.define('gamebooking', {
     },
     access_code:{
         type: Sequelize.STRING,
+    },
+    commission:{
+        type: Sequelize.FLOAT
     }
+
 }, {timestamps: true});
 
 

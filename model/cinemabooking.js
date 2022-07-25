@@ -62,7 +62,11 @@ const CinemaBooking = db.define('cinemabooking', {
     },
     access_code:{
         type: Sequelize.STRING,
+    },
+    commission:{
+        type: Sequelize.FLOAT
     }
+
 }, {timestamps: true});
 
 
