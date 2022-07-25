@@ -47,7 +47,6 @@ exports.updateFee = async(req, res, next)=>{
         .then(async(fee)=>{
             if(fee){
                 await Fee.update({
-                    type: type,
                     description: description,
                     value: value
                 }, {
