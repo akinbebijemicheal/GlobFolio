@@ -333,19 +333,29 @@ exports.emailVerification_V2 = async(req, res) => {
 try {
         const token = req.query.token;
         const id = req.query.userId
-        const decode = jwt.verify(token, process.env.TOKEN);
-        if(decode){
-                await User.update({email_verify: true}, {where: {
-                    id: id
-                }})
-                res.status(200)
-                res.json("Email Verified successfully updated")
-                req.flash("success", "Email Verified successfully updated")
-        }else{
-            res.status(403)
-            req.flash("error", "Invalid Link"
-            )
-        }
+        var verify;
+        jwt.verify(token, process.env.TOKEN, async function(err, decode){
+          var user = await User.findOne({
+            where:{
+              id: id
+            }
+          })
+          if(decode && decode.email === user.email){
+                  await User.update({email_verify: true}, {where: {
+                      id: id
+                  }})
+                  verify = "Email Verified Successfully"
+                  
+          }else if (err){
+             verify = "Expired/Invalid Link"
+          }
+        });
+
+        res.render("base/EmailVerified", {
+          verify
+        })
+
+        
     } catch (error) {
         console.error(error)
         res.status(500)
