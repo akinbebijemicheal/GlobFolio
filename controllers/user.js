@@ -24,7 +24,7 @@ const baseurl = process.env.BASE_URL
 exports.RegisterUser = async (req, res, next) => {
     try{
       console.log(req.body);
-        const {fullname, email, phone_no, address, country, password } = req.body;
+        const {firstname, lastname, email, phone_no, address, country, password } = req.body;
 
         var user = await User.findOne({
             where: {
@@ -40,7 +40,7 @@ exports.RegisterUser = async (req, res, next) => {
         const hashedPass = await bcrypt.hash(password, salt);
 
         const new_user = new User({
-            fullname: fullname,
+            fullname: firstname + " " + lastname,
             email: email,
             phone_no: phone_no,
             address: address,
