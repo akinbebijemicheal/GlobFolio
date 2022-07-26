@@ -347,14 +347,14 @@ try {
                   verify = "Email Verified Successfully"
                   
           }else if (err){
+            console.log(err)
              verify = "Expired/Invalid Link"
           }
+
+          res.render("base/EmailVerified", {
+            verify
+          })
         });
-
-        res.render("base/EmailVerified", {
-          verify
-        })
-
         
     } catch (error) {
         console.error(error)
