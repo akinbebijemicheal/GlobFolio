@@ -23,7 +23,7 @@ const baseurl = process.env.BASE_URL
 
 exports.RegisterUser = async (role, req, res, next) => {
     try{
-
+      console.log(req.body);
         const {fullname, email, phone_no, address, country, password } = req.body;
 
         var user = await User.findOne({
@@ -46,11 +46,11 @@ exports.RegisterUser = async (role, req, res, next) => {
         // }
 
         const new_user = new User({
-            fullname,
-            email,
-            phone_no,
-            address,
-            country,
+            fullname: fullname,
+            email: email,
+            phone_no: phone_no,
+            address: address,
+            country: country,
             role: role,
             password: hashedPass,
         });
