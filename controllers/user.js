@@ -26,7 +26,7 @@ exports.RegisterUser = async (role, req, res, next) => {
 
         const {fullname, email, phone_no, address, country, password } = req.body;
 
-        let user = await User.findOne({
+        var user = await User.findOne({
             where: {
                 email: email 
                 }
@@ -45,7 +45,7 @@ exports.RegisterUser = async (role, req, res, next) => {
         //     verify = false
         // }
 
-        user = new User({
+        const new_user = new User({
             fullname,
             email,
             phone_no,
@@ -55,7 +55,7 @@ exports.RegisterUser = async (role, req, res, next) => {
             password: hashedPass,
         });
     
-        const Newuser = await user.save();
+        await new_user.save();
       //   if(role === 'vendor'){
       //     if(serviceType === "food" ){
       //           const newRest = new Restaurant({
@@ -365,11 +365,11 @@ exports.RegisterUser = async (role, req, res, next) => {
 
     }catch(error){
         console.error(error)
-        res.status(500).json({
-             status: false,
-             message: "Error occured",
-             error: error
-         });
+        // res.status(500).json({
+        //      status: false,
+        //      message: "Error occured",
+        //      error: error
+        //  });
         next(error);
     }
 };
