@@ -25,13 +25,13 @@ const { bookGame, getUserGamebookings, getGamebooking, getAppGamebooking } = req
 
 //user
 router
-.post('/register-user', async (req, res) => {
-    await RegisterUser("user", req, res)
+.post('/register-user', async (req, res, next) => {
+    await RegisterUser(req, res, next)
 });
 
 router
-.post('/signin-user', async (req, res) => {
-    await LoginUser("user", req, res);
+.post('/signin-user', async (req, res, next) => {
+    await LoginUser(req, res, next);
 });
 
  //vendor
