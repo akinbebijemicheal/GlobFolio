@@ -54,7 +54,7 @@ exports.RegisterUser = async (req, res, next) => {
             email: email
         }})
         
-            const token = jwt.sign({email: user.email}, process.env.TOKEN, { expiresIn: "15m"});
+            const token = jwt.sign({email: user.email}, process.env.TOKEN, { expiresIn: "24h"});
             const link = `${process.env.BASE_URL}/email-verification?userId=${user.id}&token=${token}`;
 
             
