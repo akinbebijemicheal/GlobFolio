@@ -120,19 +120,10 @@ exports.webLoginAdmin = async (req, res, next) => {
           res.cookie("jwt", token, option);
           res.redirect(`/dashboard/admin`)
 
-          next()
-
-           
-
       } else{
          res.status(403)
         req.flash("warning", 'Wrong password');
-        res.redirect("/login-admin")
-      // res.status(404).json({
-      //     status: false,
-      //     message: "User not found"
-      // })
-     
+        res.redirect("/login-admin")     
       }
       }
       
