@@ -23,7 +23,7 @@ const baseurl = process.env.BASE_URL
 
 exports.RegisterUser = async (req, res, next) => {
     try{
-      console.log(req.body);
+      // console.log(req.body);
         const {firstname, lastname, email, phone_no, address, country, password } = req.body;
 
         var user = await User.findOne({
