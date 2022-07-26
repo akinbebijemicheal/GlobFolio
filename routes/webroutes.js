@@ -136,7 +136,8 @@ const { createRider, getRiders, updateRider, getRiderById, deleteRider, riderCou
 
 router
 .get("/", (req, res) =>{
-    res.render('base/index')
+    // res.render('base/index')
+    res.redirect("/login-admin")
 })
 
 router
