@@ -34,28 +34,28 @@ router
     await LoginUser("user", req, res);
 });
 
-//vendor
-router
-.post('/register-vendor', async (req, res) => {
-    await RegisterUser("vendor", req, res)
-});
+ //vendor
+// router
+// .post('/register-vendor', async (req, res) => {
+//     await RegisterUser("vendor", req, res)
+// });
         
 
-router
-.post('/signin-vendor', async (req, res) => {
-    await LoginUser("vendor", req, res);
-});
+// router
+// .post('/signin-vendor', async (req, res) => {
+//     await LoginUser("vendor", req, res);
+// });
 
 //admin
-router
-.post('/register-admin', async (req, res) => {
-    await RegisterUser("admin", req, res)
-});
+// router
+// .post('/register-admin', async (req, res) => {
+//     await RegisterUser("admin", req, res)
+// });
 
-router
-.post('/signin-admin', async (req, res) => {
-    await LoginUser("admin", req, res);
-});
+// router
+// .post('/signin-admin', async (req, res) => {
+//     await LoginUser("admin", req, res);
+// });
 
 router
 .route('/dashboard/profile')

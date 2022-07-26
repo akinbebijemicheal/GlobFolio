@@ -51,7 +51,7 @@ exports.RegisterUser = async (role, req, res, next) => {
             phone_no,
             address,
             country,
-            role,
+            role: role,
             password: hashedPass,
         });
     
@@ -91,7 +91,7 @@ exports.RegisterUser = async (role, req, res, next) => {
             
             let fname = user.fullname.split(' ')
             const mailOptions = {
-                from:  `${process.env.E_TEAM}`,
+                from:  `"Deepend" <${process.env.E_TEAM}>`,
                 to: `${user.email}`,
                 subject: "Deepend",
                 html: `
