@@ -108,17 +108,10 @@ exports.webLoginAdmin = async (req, res, next) => {
               secret: process.env.CSECRET
           }
 
-          // res.json({
-          //     status: true,
-          //     data: result
-          // })
-          
-          
-
           res.status(200)
           req.flash("success", "Successfully logged in");
           res.cookie("jwt", token, option);
-          res.redirect(`/dashboard/admin`)
+          res.redirect("/dashboard/admin")
 
       } else{
          res.status(403)
