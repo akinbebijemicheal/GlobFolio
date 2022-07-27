@@ -2,7 +2,7 @@ const Product = require('../../model/hotel');
 const Image = require("../../model/hotelimage")
 const cloudinary = require('../../util/cloudinary');
 const User = require('../../model/user');
-const Amenity = require('../../model/amenities');
+// const Amenity = require('../../model/amenities');
 const Extras = require('../../model/hotelextras')
 const fs = require('fs')
 const store = require('store')
@@ -15,6 +15,7 @@ exports.createHotelService = async(req, res, next) => {
             userid: req.user.id,
             title,
             description,
+            amenities: req.body.amenities,
             location,
             rating: parseFloat(rating),
         })
@@ -51,16 +52,16 @@ exports.createHotelService = async(req, res, next) => {
             }
             
 
-            if(req.body.amenities){
-                const amenities = req.body.amenities.map((amenity) => {
-                    return {
-                        hotelId: hotelout.id,
-                        amenities: amenity
-                    }
-                })
-                console.log(amenities)
-               await Amenity.bulkCreate(amenities, {returning: true})
-            }
+            // if(req.body.amenities){
+            //     const amenities = req.body.amenities.map((amenity) => {
+            //         return {
+            //             hotelId: hotelout.id,
+            //             amenities: amenity
+            //         }
+            //     })
+            //     console.log(amenities)
+            //    await Amenity.bulkCreate(amenities, {returning: true})
+            // }
 
             if(req.body.room && req.body.price && req.body.available_room){
                 if(Array.isArray(req.body.room)){
@@ -96,12 +97,12 @@ exports.createHotelService = async(req, res, next) => {
             
             var output = await Product.findOne({ where: {id: hotelout.id},
                include:[
-                    {
-                        model: Amenity,
-                        attributes: {
-                            exclude: ["createdAt", "updatedAt"]
-                        }
-                    },
+                    // {
+                    //     model: Amenity,
+                    //     attributes: {
+                    //         exclude: ["createdAt", "updatedAt"]
+                    //     }
+                    // },
                     {
                         model: Extras,
                         attributes: {
@@ -132,12 +133,12 @@ exports.getHotelAppServices = async(req, res, next) => {
         order: [
             ['rating', 'ASC']
         ], include:[
-            {
-                model: Amenity,
-                attributes: {
-                    exclude: ["createdAt", "updatedAt"]
-                }
-            },
+            // {
+            //     model: Amenity,
+            //     attributes: {
+            //         exclude: ["createdAt", "updatedAt"]
+            //     }
+            // },
             {
                 model: Extras,
                 attributes: {
@@ -187,12 +188,12 @@ exports.getHotelServices = async(req, res, next) => {
         order: [
             ['rating', 'ASC']
         ], include:[
-            {
-                model: Amenity,
-                attributes: {
-                    exclude: ["createdAt", "updatedAt"]
-                }
-            },
+            // {
+            //     model: Amenity,
+            //     attributes: {
+            //         exclude: ["createdAt", "updatedAt"]
+            //     }
+            // },
             {
                 model: Extras,
                 attributes: {
@@ -297,12 +298,12 @@ exports.getHotelForUser = async(req, res, next) => {
                     exclude: ["createdAt", "updatedAt"]
                 }
             },
-            {
-                model: Amenity,
-                attributes: {
-                    exclude: ["createdAt", "updatedAt"]
-                }
-            },
+            // {
+            //     model: Amenity,
+            //     attributes: {
+            //         exclude: ["createdAt", "updatedAt"]
+            //     }
+            // },
             {
                 model: Extras,
                 attributes: {
@@ -344,12 +345,12 @@ exports.getHotelByTitle = async(req, res, next) => {
         var hotel = await Product.findAll({where: {
             title: title,
         }, include:[
-            {
-                model: Amenity,
-                attributes: {
-                    exclude: ["createdAt", "updatedAt"]
-                }
-            },
+            // {
+            //     model: Amenity,
+            //     attributes: {
+            //         exclude: ["createdAt", "updatedAt"]
+            //     }
+            // },
             {
                 model: Extras,
                 attributes: {
@@ -387,12 +388,12 @@ exports.getHotelById = async(req, res, next) => {
         var hotel = await Product.findOne({where: {
             id: id,
         }, include:[
-            {
-                model: Amenity,
-                attributes: {
-                    exclude: ["createdAt", "updatedAt"]
-                }
-            },
+            // {
+            //     model: Amenity,
+            //     attributes: {
+            //         exclude: ["createdAt", "updatedAt"]
+            //     }
+            // },
             {
                 model: Extras,
                 attributes: {
@@ -425,13 +426,14 @@ exports.getHotelById = async(req, res, next) => {
 }
 
 exports.updateHotel = async(req, res, next) => {
-    const { title, description, location, rating } = req.body;
+    const { title, description, amenities, location, rating } = req.body;
     try{
         
             await Product.update({
                 title: title,
                 description: description,
                 location: location,
+                amenities: amenities,
                 rating: parseFloat(rating),
             }, { where: {
                 id: req.params.id
