@@ -6,6 +6,7 @@ const Transaction = require('../model/usertransactions');
 const store = require('store')
 const User = require('../model/user');
 const nodemailer = require("nodemailer");
+const Fee = require("../model/adminFee");
 const baseurl = process.env.BASE_URL
 
 var transporter = nodemailer.createTransport({
@@ -29,6 +30,12 @@ exports.bookStudio = async(req, res, next)=>{
         if(!quantity){
             quantity = 1
         }
+
+        var commision = await Fee.findOne({
+            where:{
+                type: "commission"
+            }
+        })
         await Studio.findOne({
             where: {
                 id: id
@@ -41,6 +48,7 @@ exports.bookStudio = async(req, res, next)=>{
                     email: req.user.email,
                     amount: (parseInt(studio.price) * quantity) * 100,
                     quantity: quantity,
+                    transaction_charge: ((commision.value / 100) * (parseInt(studio.price) * quantity)) * 100,
                     callback_url: `${process.env.REDIRECT_SITE}/VerifyPay/studio`,
                     metadata: {
                         userId: req.user.id,

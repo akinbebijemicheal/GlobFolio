@@ -51,7 +51,11 @@ const Order = db.define('foodorder', {
     },
     access_code:{
         type: Sequelize.STRING
+    },
+    commission:{
+        type: Sequelize.FLOAT
     }
+
 }, {timestamps: true});
 
 Order.belongsTo(User, {foreignKey: 'userId'})

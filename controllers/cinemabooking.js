@@ -7,6 +7,7 @@ const Transaction = require('../model/usertransactions');
 const User = require('../model/user')
 const store = require('store')
 const nodemailer = require("nodemailer");
+const Fee = require('../model/adminFee');
 const baseurl = process.env.BASE_URL
 
 var transporter = nodemailer.createTransport({
@@ -43,6 +44,13 @@ exports.bookCinema = async(req, res, next)=>{
 
             var snack_price = snack.price 
         }
+
+        var commision = await Fee.findOne({
+            where:{
+                type: "commission"
+            }
+        })
+
         await Cinema.findOne({
             where: {
                 id: id
@@ -56,6 +64,7 @@ exports.bookCinema = async(req, res, next)=>{
                     amount: ((parseInt(cinema.price) * quantity) + snack_price * snackQuantity) * 100,
                     quantity: quantity,
                     callback_url: `${process.env.REDIRECT_SITE}/VerifyPay/cinema`,
+                    transaction_charge: ((commision.value / 100) * (parseInt(cinema.price) * quantity)) * 100,
                     metadata: {
                         userId: req.user.id,
                         cinema: cinema.id,
@@ -82,7 +91,8 @@ exports.bookCinema = async(req, res, next)=>{
                             scheduled_time: set_time,
                             transaction_url: transaction.data.authorization_url,
                             ref_no: transaction.data.reference,
-                            access_code: transaction.data.access_code
+                            access_code: transaction.data.access_code,
+                            commission: (commision.value / 100) * (parseInt(cinema.price) * quantity)
                         })
                         var savedbook = await book.save();
 

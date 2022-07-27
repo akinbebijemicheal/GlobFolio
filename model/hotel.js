@@ -18,6 +18,9 @@ const Hotel = db.define('hotel', {
     description: {
         type: Sequelize.STRING
     },
+    amenities:{
+        type: Sequelize.TEXT
+    },
     location: {
         type: Sequelize.STRING
     },

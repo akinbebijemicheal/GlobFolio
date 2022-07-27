@@ -9,6 +9,7 @@ const Order = require("../model/foodorder");
 const Transaction = require("../model/usertransactions");
 require('dotenv').config()
 const paystack = require('paystack')(process.env.PAYSTACK_SECRET);
+const Fee = require("../model/adminFee");
 const store = require('store')
 const nodemailer = require("nodemailer");
 const baseurl = process.env.BASE_URL
@@ -573,6 +574,13 @@ exports.addQty = async(req, res, next)=> {
 exports.createOrder = async(req, res, next)=>{
     var { address, phone_no, note } = req.body;
     try {
+
+        var commision = await Fee.findOne({
+            where:{
+                type: "commission"
+            }
+        })
+
         await Order.findOne({
             where:{
                 userId: req.user.id,
@@ -627,6 +635,7 @@ exports.createOrder = async(req, res, next)=>{
                     amount: total * 100,
                     quantity: order.fooditems.length,
                     callback_url: `${process.env.REDIRECT_SITE}/VerifyPay/food`,
+                    transaction_charge: ((commision.value / 100) * total ) * 100 ,
                     metadata:{
                         userId: req.user.id,
                         orderId: order.id
@@ -642,7 +651,8 @@ exports.createOrder = async(req, res, next)=>{
                             status: "in_progress",
                             checkout_url: transaction.data.authorization_url,
                             ref_no: transaction.data.reference,
-                            access_code: transaction.data.access_code
+                            access_code: transaction.data.access_code,
+                            commission: ((commision.value / 100) * total )
                         }, {
                             where:{
                                 id: order.id

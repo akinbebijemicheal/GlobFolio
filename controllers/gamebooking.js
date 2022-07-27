@@ -3,6 +3,7 @@ const paystack = require('paystack')(process.env.PAYSTACK_SECRET);
 const Game = require('../model/vr_gaming');
 const GameBooking = require('../model/vr_gamebooking');
 const Transaction = require('../model/usertransactions');
+const Fee = require("../model/adminFee")
 
 const store = require('store')
 const User = require('../model/user');
@@ -30,6 +31,12 @@ exports.bookGame = async(req, res, next)=>{
         if(!quantity){
             quantity = 1
         }
+
+        var commision = await Fee.findOne({
+            where:{
+                type: "commission"
+            }
+        })
         await Game.findOne({
             where: {
                 id: id
@@ -43,6 +50,7 @@ exports.bookGame = async(req, res, next)=>{
                     amount: (parseInt(game.price) * quantity) * 100,
                     quantity: quantity,
                     callback_url: `${process.env.REDIRECT_SITE}/VerifyPay/game`,
+                    transaction_charge: ((commision.value / 100) * (parseInt(game.price) * quantity)) * 100,
                     metadata: {
                         userId: req.user.id,
                         game: game.id,
@@ -61,7 +69,8 @@ exports.bookGame = async(req, res, next)=>{
                             scheduled_time: time,
                             transaction_url: transaction.data.authorization_url,
                             ref_no: transaction.data.reference,
-                            access_code: transaction.data.access_code
+                            access_code: transaction.data.access_code,
+                            commission: ((commision.value / 100) * (parseInt(game.price) * quantity))
                         })
                         var savedbook = await book.save();
 

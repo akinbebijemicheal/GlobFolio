@@ -25,37 +25,37 @@ const { bookGame, getUserGamebookings, getGamebooking, getAppGamebooking } = req
 
 //user
 router
-.post('/register-user', async (req, res) => {
-    await RegisterUser("user", req, res)
+.post('/register-user', async (req, res, next) => {
+    await RegisterUser(req, res, next)
 });
 
 router
-.post('/signin-user', async (req, res) => {
-    await LoginUser("user", req, res);
+.post('/signin-user', async (req, res, next) => {
+    await LoginUser(req, res, next);
 });
 
-//vendor
-router
-.post('/register-vendor', async (req, res) => {
-    await RegisterUser("vendor", req, res)
-});
+ //vendor
+// router
+// .post('/register-vendor', async (req, res) => {
+//     await RegisterUser("vendor", req, res)
+// });
         
 
-router
-.post('/signin-vendor', async (req, res) => {
-    await LoginUser("vendor", req, res);
-});
+// router
+// .post('/signin-vendor', async (req, res) => {
+//     await LoginUser("vendor", req, res);
+// });
 
 //admin
-router
-.post('/register-admin', async (req, res) => {
-    await RegisterUser("admin", req, res)
-});
+// router
+// .post('/register-admin', async (req, res) => {
+//     await RegisterUser("admin", req, res)
+// });
 
-router
-.post('/signin-admin', async (req, res) => {
-    await LoginUser("admin", req, res);
-});
+// router
+// .post('/signin-admin', async (req, res) => {
+//     await LoginUser("admin", req, res);
+// });
 
 router
 .route('/dashboard/profile')

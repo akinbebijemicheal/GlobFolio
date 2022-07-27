@@ -57,7 +57,11 @@ const RentBooking = db.define('rentbooking', {
     },
     access_code:{
         type: Sequelize.STRING,
+    },
+    commission:{
+        type: Sequelize.FLOAT
     }
+
 }, {timestamps: true});
 
 
