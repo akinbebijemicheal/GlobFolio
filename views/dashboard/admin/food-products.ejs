@@ -46,6 +46,7 @@
                             <th>Price</th>
                             <th>Description</th>
                             <th>CreatedAt</th>
+                            <th>View</th>
                         </tr>
                         <% if(data.length){ for(var i=0; i< data.length; i++) {%>
                             <tr class="mode-2">
@@ -63,6 +64,11 @@
                                 </td>
                                 <td>
                                     <%= new Date(data[i].createdAt).toDateString()%>
+                                </td> 
+                                <td>
+                                    <a href="/dashboard/admin/food-view/<%= data[i].id%>">
+                                        <img src="assets4/img/edit.png" style="height:15px;width:15px;" draggable="false" alt="">
+                                    </a>
                                 </td>
                             </tr>
                             <% } }else{ %>

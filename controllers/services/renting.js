@@ -317,6 +317,55 @@ exports.getRentById = async(req, res, next) => {
     }
 }
 
+exports.getRentByIdAdmin = async(req, res, next) => {
+    const id= req.params.id;
+    try {
+        var rent = await Product.findOne({where: {
+            id: id,
+        },
+        include:[
+            {
+                model: Image,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                }
+            }
+        ]
+    })
+        
+        if(rent){
+
+            console.log("rents found")
+            store.set("rent", JSON.stringify(rent));
+                  let name = req.user.fullname.split(" ");
+                  let email = req.user.email;
+                  data = JSON.parse(store.get("rent"));
+                  console.log(data);
+                  var img = data['rentimages']
+                  
+            // if(img.length){ for(var i=0; i< img.length; i++) {
+            //     console.log('image found :',i ,img[i].img_url)
+            // }}else{
+
+            // }
+
+                  res.render("dashboard/admin/rent-view", {
+                    user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+                    email: email,
+                    data: data,
+                    img: img
+                  });
+                  
+    } else{
+        req.flash("error", "rent with id not found")
+        res.redirect("/dashboard/admin/")
+    }
+    } catch (error) {
+        console.error(error)
+        next(error);
+    }
+}
+
 exports.updateRent = async(req, res, next) => {
     const { title, description, equipment, location, per_time, price, available_rent } = req.body;
     try{

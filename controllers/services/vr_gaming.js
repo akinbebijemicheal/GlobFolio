@@ -322,6 +322,54 @@ exports.getGameById = async(req, res, next) => {
     }
 }
 
+exports.getGameByIdAdmin = async(req, res, next) => {
+    const id= req.params.id;
+    try {
+        var game = await Product.findOne({where: {
+            id: id,
+        }, 
+        include:[
+            {
+                model: Image,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                }
+            }
+        ]
+    })
+        
+        if(game){
+            console.log("games found")
+            store.set("game", JSON.stringify(game));
+                  let name = req.user.fullname.split(" ");
+                  let email = req.user.email;
+                  data = JSON.parse(store.get("game"));
+                  console.log(data);
+                  var img = data['gameimages']
+                  
+            // if(img.length){ for(var i=0; i< img.length; i++) {
+            //     console.log('image found :',i ,img[i].img_url)
+            // }}else{
+
+            // }
+
+                  res.render("dashboard/admin/vr-game-view", {
+                    user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+                    email: email,
+                    data: data,
+                    img: img
+                  });
+                  
+    } else{
+        req.flash("error", "game with id not found")
+        res.redirect("/dashboard/admin/")
+    }
+    } catch (error) {
+        console.error(error)
+        next(error);
+    }
+}
+
 exports.updateGaming = async(req, res, next) => {
     const { title, description, available_game, per_time, genre, price, age_rate,} = req.body;
     try{

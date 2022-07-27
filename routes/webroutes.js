@@ -5,20 +5,9 @@ const multer = require("../util/multer2");
 const path = require('path');
 const multer2 = require('multer');
 // const uploaded = multer2({dest: 'public/uploads/' })
-const storage = multer2.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'public/uploads')
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
-    cb(null, file.food_pictures + '-' + Date.now() + path.extname(file.originalname))
-  }
-})
 
-const uploaded = multer2({ storage: storage })
-const {
-  uploadImg
- } = require("../controllers/upload");
+
+
 const store = require('store')
 const {
   profile,
@@ -61,6 +50,7 @@ const {
   getCinemaServices,
   getCinemaByTitle,
   getCinemaForUser,
+  getCinemaByIdAdmin,
   updateCinema,
   uploadCinemaImage,
   RemoveCinemaImage,
@@ -70,6 +60,8 @@ const {
   createFoodService,
   getFoodByTitle,
   getFoodForUser,
+  getFoodByIdAdmin,
+  getFoodById,
   getFoodServices,
   updateFood,
   uploadFoodImage,
@@ -81,6 +73,7 @@ const {
   getHotelByTitle,
   getHotelForUser,
   getHotelServices,
+  getHotelByIdAdmin,
   updateHotel,
   uploadHotelImage,
   RemoveHotelImage,
@@ -91,6 +84,7 @@ const {
   getRentByTitle,
   getRentForUser,
   getRentServices,
+  getRentByIdAdmin,
   updateRent,
   uploadRentImage,
   RemoveRentImage,
@@ -102,6 +96,7 @@ const {
   getStudioByTitle,
   getStudioForUser,
   getStudioServices,
+  getStudioByIdAdmin,
   updateStudio,
   uploadStudioImage,
   RemoveStudioImage,
@@ -112,6 +107,7 @@ const {
   getGamingByTitle,
   getGamingForUser,
   getGamingServices,
+  getGameByIdAdmin,
   updateGaming,
   uploadGameImage,
   RemoveGameImage,
@@ -722,14 +718,14 @@ router
     createCinemaService
   );
 
-// router
-//   .route("/dashboard/admin/hotel-upload")
-//   .post(
-//     userAuth,
-//     checkRole(["admin"]),
-//     upload.array("hotel_pictures"),
-//     createHotelService
-//   );
+router
+  .route("/dashboard/admin/hotel-upload")
+  .post(
+    userAuth,
+    checkRole(["admin"]),
+    upload.array("hotel_pictures"),
+    createHotelService
+  );
 
 router
   .route("/create-food-post")
@@ -799,7 +795,7 @@ router
   );
 
 router
-  .route("/create-rent-service")
+  .route("/dashboard/admin/create-rent-service")
   .post(
     userAuth,
     checkRole(["admin"]),
@@ -821,6 +817,12 @@ router
     }
   );
 
+  router.get("/dashboard/admin/food-view/:id", userAuth, checkRole(["admin"]), getFoodByIdAdmin);
+  router.get("/dashboard/admin/hotel-view/:id", userAuth, checkRole(["admin"]), getHotelByIdAdmin);
+  router.get("/dashboard/admin/game-view/:id", userAuth, checkRole(["admin"]), getGameByIdAdmin);
+  router.get("/dashboard/admin/studio-view/:id", userAuth, checkRole(["admin"]), getStudioByIdAdmin);
+  router.get("/dashboard/admin/rent-view/:id", userAuth, checkRole(["admin"]), getRentByIdAdmin);
+  router.get("/dashboard/admin/cinema-view/:id", userAuth, checkRole(["admin"]), getCinemaByIdAdmin);
 
 
 router.route("/dashboard/admin/get-cinema-posts").get(userAuth, checkRole(["admin"]), getCinemaServices);
@@ -842,6 +844,7 @@ router.route("/get-hotel-bytitle").post(userAuth, getHotelByTitle);
 router.route("/get-studio-bytitle").post(userAuth, getStudioByTitle);
 
 router.route("/get-food-bytitle").post(userAuth, getFoodByTitle);
+
 
 router.route("/get-gaming-bytitle").post(userAuth, getGamingByTitle);
 
@@ -904,9 +907,20 @@ router.delete("/deletegameimage/:imageId", userAuth, checkRole(["admin"]), Remov
 //----------------------------------------------------------------------------------------
 
 //---------------------------------Ads--------------------------------------------
-router.post("/createAds", userAuth, upload.single("image"), createAds);
+router.post("/dashboard/admin/createAds", userAuth, checkRole(["admin"]), upload.single("ad_picture"), createAds);
+router.get("/dashboard/admin/createAds", 
+userAuth, 
+checkRole(["admin"]), 
+(req, res) => {
+  let name = req.user.fullname.split(" ");
+  let email = req.user.email;
+  res.render("dashboard/admin/createAds", {
+    user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+    email: email,
+  });
+} );
 router.put("/updateAds/:id", userAuth, upload.single("image"), updateAds);
-router.get("/getAllAds", userAuth, getAllAds);
+router.get("/dashboard/admin/getAllAds", userAuth, checkRole(["admin"]), getAllAds);
 router.get("/getAdsById/:id", userAuth, getAdById);
 router.delete("/deleteAds/:id", userAuth, deleteAds);
 //---------------------------------------------------------------------------------

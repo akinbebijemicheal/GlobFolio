@@ -312,6 +312,53 @@ exports.getStudioById = async(req, res, next) => {
     }
 }
 
+exports.getStudioByIdAdmin = async(req, res, next) => {
+    const id= req.params.id;
+    try {
+        const studio = await Product.findOne({where: {
+            id: id,
+        }, 
+        include:[
+            {
+                model: Image,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                }
+            }
+        ]
+    })
+        if(studio){
+            console.log("studios found")
+                store.set("studio", JSON.stringify(studio));
+                      let name = req.user.fullname.split(" ");
+                      let email = req.user.email;
+                      data = JSON.parse(store.get("studio"));
+                      console.log(data);
+                      var img = data['studioimages']
+                      
+                // if(img.length){ for(var i=0; i< img.length; i++) {
+                //     console.log('image found :',i ,img[i].img_url)
+                // }}else{
+
+                // }
+
+                      res.render("dashboard/admin/studio-view", {
+                        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+                        email: email,
+                        data: data,
+                        img: img
+                      });
+                      
+        } else{
+            req.flash("error", "studio with id not found")
+            res.redirect("/dashboard/admin/")
+        }
+    } catch (error) {
+         console.error(error)
+        next(error);
+    }
+}
+
 exports.updateStudio = async(req, res, next) => {
     const { title, description, location, per_time, price, rating, equipment } = req.body;
     try{

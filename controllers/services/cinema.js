@@ -512,6 +512,59 @@ exports.getCinemaById = async(req, res, next) => {
     }
 }
 
+exports.getCinemaByIdAdmin = async(req, res, next) => {
+    const id= req.params.id;
+    try {
+        var cinema = await Product.findOne({where: {
+            id: id,
+        }, 
+        include:[
+            {
+                model: Image,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                }
+            },
+            {
+                model: Snack,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                }
+            }
+        ]
+    })
+        if(cinema){
+            console.log("cinemas found")
+            store.set("cinema", JSON.stringify(cinema));
+                  let name = req.user.fullname.split(" ");
+                  let email = req.user.email;
+                  data = JSON.parse(store.get("cinema"));
+                  console.log(data);
+                  var img = data['cinemaimages']
+                  
+            // if(img.length){ for(var i=0; i< img.length; i++) {
+            //     console.log('image found :',i ,img[i].img_url)
+            // }}else{
+
+            // }
+
+                  res.render("dashboard/admin/cinema-view", {
+                    user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+                    email: email,
+                    data: data,
+                    img: img
+                  });
+                  
+    } else{
+        req.flash("error", "cinema with id not found")
+        res.redirect("/dashboard/admin/")
+    }
+    } catch (error) {
+         console.error(error)
+        next(error);
+    }
+}
+
 exports.updateCinema = async(req, res, next) => {
     const { title, genre, storyline, rating, view_date, cast, seat, duration, age_rate, price, morningTime, afternoonTime, eveningTime} = req.body;
     try{

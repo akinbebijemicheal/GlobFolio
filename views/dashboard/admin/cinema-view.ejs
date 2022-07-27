@@ -1,10 +1,10 @@
-<%- include("../../partials/admin_header") %> 
+<%- include("../../partials/admin_header") %>
 
 <!-- begin app-main -->
 
 <%- include("../../partials/alerts") %>
- <!-- begin app-main -->
- <div class="app-main" id="main">
+  <!-- begin app-main -->
+  <div class="app-main" id="main">
     <!-- begin container-fluid -->
     <div class="container-fluid">
         <!-- begin row -->
@@ -13,7 +13,7 @@
                 <!-- begin page title -->
                 <div class="d-block d-lg-flex flex-nowrap align-items-center">
                     <div class="page-title mr-4 pr-4 border-right">
-                        <h4 class="hey">View Cinemas</h4>
+                        <h4 class="hey">Cinema (Uploaded Products)</h4>
                     </div>
                 </div>
                 <!-- end page title -->
@@ -25,7 +25,7 @@
         <div class="row">
             <div class="col-lg-12 open-section">
                 <h4 class="user-1">
-                    All Cinema Available Tickets
+                    Uploaded Products
                 </h4>
                 <h4 class="user-1">Export as :  
                     <button class="table-button">
@@ -38,99 +38,111 @@
                         Print
                     </button>
                 </h4>
+                
                 <div class="col-lg-12 table-responsive">
                     <table border="1" class="open-section-2 table">
                         <tr class="mode-1">
-                            <th width="50">S/N</th>
-                            <th>Studio Title</th>
-                            <th>Viewing Date</th>
+                            <th>Cinema Name</th>
+                            <th>Price</th>
+                            <th>View_date</th>
                             <th>Genre</th>
                             <th>Storyline</th>
                             <th>Cast</th>
                             <th>Duration</th>
-                            <th>Seats</th>
-                            <th>Age Rating</th>
-                            <th>Price</th>
+                            <th>Seat</th>
+                            <th>Age_rate</th>
                             <th>Rating</th>
-                            <th>Morning Time</th>
-                            <th>Afternoon Time</th>
-                            <th>Evening Time</th>
+                            <th>Morning</th>
+                            <th>Afternoon</th>
+                            <th>Evening</th>
                             <th>CreatedAt</th>
-                            <th>View</th>
                         </tr>
-                        <% if(data.length){ for(var i=0; i< data.length; i++) {%>
                             <tr class="mode-2">
                                 <td>
-                                    <%= (i+1) %>
+                                    <%= data.title%>
                                 </td>
                                 <td>
-                                    <%= data[i].title%>
+                                    <%= data.price%>
                                 </td>
                                 <td>
-                                    <%= new Date(data[i].view_date).toDateString()%>
+                                    <%= new Date(data.view_date).toDateString()%>
                                 </td>
                                 <td>
-                                    <%= data[i].genre%>
+                                    <%= data.genre%>
                                 </td>
                                 <td>
-                                    <%= data[i].storyline%>
+                                    <%= data.storyline%>
                                 </td>
                                 <td>
-                                    <%= data[i].cast%>
+                                    <%= data.cast%>
                                 </td>
                                 <td>
-                                    <%= data[i].duration%>
+                                    <%= data.duration%>
                                 </td>
                                 <td>
-                                    <%= data[i].seat%>
+                                    <%= data.seat%>
                                 </td>
                                 <td>
-                                    <%= data[i].age_rate%>
+                                    <%= data.age_rate%>
                                 </td>
                                 <td>
-                                    <%= data[i].price%>
+                                    <%= data.rating%>
                                 </td>
                                 <td>
-                                    <%= data[i].rating%>
+                                    <%= data.morning%>
                                 </td>
                                 <td>
-                                    <%= data[i].morning%>
+                                    <%= data.afternoon%>
                                 </td>
                                 <td>
-                                    <%= data[i].afternoon%>
+                                    <%= data.evening%>
                                 </td>
                                 <td>
-                                    <%= data[i].evening%>
-                                </td>
-                                <td>
-                                    <%= new Date(data[i].createdAt).toDateString()%>
-                                </td>
-                                <td>
-                                    <a href="/dashboard/admin/cinema-view/<%= data[i].id%>">
-                                        <img src="assets4/img/edit.png" style="height:15px;width:15px;" draggable="false" alt="">
-                                    </a>
-                                </td>
+                                    <%= new Date(data.createdAt).toDateString()%>
+                                </td> 
                             </tr>
-                            <% } }else{ %>
-                                <tr>
-                                    <td>no data available</td>
-                                </tr>
-                                <% } %>
+                           
                     </table>
-                    <div class="view">Cinemas <i class="bi bi-arrow-right"></i></div>
+                    <div class="view">View all users <i class="bi bi-arrow-right"></i></div>
                 </div>
             </div>
         </div>
+
+        <div class="row bg-white rounded-lg">
+            <div class="col-lg-12">
+            <h3>Cinema Images</h3>
+        <div class="row bg-white rounded-lg">
+
+            <% if(img.length){ for(var i=0; i< img.length; i++) { %>
+                <div class="col-lg-6">
+                    <img src="<%= img[i].img_url%>" class="img-thumbnail" alt="cinemaimages" >
+                </div>
+           <% }}else{ %>
+            <div class="col-lg-12"><h4>no image available</h4></div>
+            <% } %>
+                
+        </div>      
+            </div>    
+        </div>
         <!-- Table section Ends -->
         <!-- end row -->
+        
     </div>
+    
+    
     <!-- end container-fluid -->
 </div>
 <!-- end app-main -->
 </div>
 <!-- end app-container -->
 <!-- begin footer -->
-<%- include("../../partials/admin_footer") %> 
+ <!-- begin footer -->
+ <%- include("../../partials/admin_footer") %>
+
+<!-- end app -->
+
+<!-- plugins -->
+
 
 <!-- end app -->
 

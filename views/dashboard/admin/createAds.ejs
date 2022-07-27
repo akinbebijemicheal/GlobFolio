@@ -15,11 +15,8 @@
                <!-- begin page title -->
                <div class="d-block d-lg-flex flex-nowrap align-items-center">
                    <div class="page-title mr-4 pr-4 border-right">
-                       <h4 class="hey">Admin Profile</h4>
+                       <h4 class="hey">Create User</h4>
                    </div>
-                   <div class="page-title mr-4 pr-4">
-                    <h5 class="hey">Check if all details are correct before submiting</h5>
-                </div>
                </div>
                <!-- end page title -->
            </div>
@@ -28,31 +25,21 @@
        <div class="row bg-white rounded-lg">
            <div class="col-md-12 m-b-10">
                <!-- form begins -->
-               <form method="POST">
-                   <div class="form-row">
-                       <div class="form-group col-md-12">
-                         <label for="inputEmail4">Fullname</label>
-                         <input required type="text" class="form-control" id="inputName" value="<%= user%>" name="fullname" placeholder="Fullname (Surname Firstname)">
-                       </div>
-                     </div>
+               <form method="POST" enctype="multipart/form-data">
                    <div class="form-row">
                      <div class="form-group col-md-6">
-                       <label for="inputEmail4">Email</label>
-                       <input required type="email" class="form-control" id="inputEmail4" value="<%= email%>" name="email" placeholder="Email">
+                       <label for="inputEmail4" class="text-dark">Title</label>
+                       <input required type="text" class="form-control" id="inputEmail4" name="title" placeholder=" Ad title">
                      </div>
                      <div class="form-group col-md-6">
-                       <label for="inputPassword4">Phone Number</label>
-                       <input required type="tel" class="form-control" id="inputPhone" value="<%= phone%>" name="phone_no" placeholder="080********">
+                       <label for="inputPassword4" class="text-dark">Ref Link</label>
+                       <input required type="text" class="form-control" id="inputPhone" name="ref_link" placeholder="https://example.com">
                      </div>
                    </div>
                    <div class="form-row">
-                   <div class="form-group col-md-6">
-                     <label for="inputAddress">Address</label>
-                     <input required type="text" class="form-control" id="inputAddress" value="<%= address%>" name="address" placeholder="1234 Main St">
-                   </div>
-                   <div class="form-group col-md-6">
-                     <label for="inputAddress2">Country</label>
-                     <input required type="text" class="form-control" id="inputAddress2" value="<%= country%>" name="country" placeholder="Country">
+                   <div class="form-group col-md-12">
+                     <label for="inputAddress2" class="text-dark">Ad Image (Single)</label>
+                     <input required type="file" class="form-control" id="inputAddress2" name="ad_picture">
                    </div>
                    </div>
                    <!-- <div class="form-group">

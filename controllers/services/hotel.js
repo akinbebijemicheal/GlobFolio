@@ -424,6 +424,65 @@ exports.getHotelById = async(req, res, next) => {
     }
 }
 
+exports.getHotelByIdAdmin = async(req, res, next) => {
+    const id= req.params.id;
+    try {
+        var hotel = await Product.findOne({where: {
+            id: id,
+        }, include:[
+            {
+                model: Amenity,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                }
+            },
+            {
+                model: Extras,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                }
+            }, 
+            {
+                model: Image,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                }
+            }
+        ]})
+        
+        if(hotel){
+           
+            console.log("hotels found")
+            store.set("hotel", JSON.stringify(hotel));
+                  let name = req.user.fullname.split(" ");
+                  let email = req.user.email;
+                  data = JSON.parse(store.get("hotel"));
+                  console.log(data);
+                  var img = data['hotelimages']
+                  
+            // if(img.length){ for(var i=0; i< img.length; i++) {
+            //     console.log('image found :',i ,img[i].img_url)
+            // }}else{
+
+            // }
+
+                  res.render("dashboard/admin/hotel-view", {
+                    user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+                    email: email,
+                    data: data,
+                    img: img
+                  });
+                  
+    } else{
+        req.flash("error", "hotel with id not found")
+        res.redirect("/dashboard/admin/")
+    }
+    } catch (error) {
+         console.error(error)
+        next(error);
+    }
+}
+
 exports.updateHotel = async(req, res, next) => {
     const { title, description, location, rating } = req.body;
     try{

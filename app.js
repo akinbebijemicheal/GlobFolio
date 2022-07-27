@@ -27,6 +27,7 @@ app.use(express.static(path.join(__dirname + 'uploads')));
 // Static Files
 // dashboard 
 app.use('/css', express.static(__dirname + 'public/css'));
+app.use('/css', express.static(__dirname + 'public'));
 app.use('/css', express.static(__dirname + 'public/assets2/css'));
 app.use('/font', express.static(__dirname + 'public/assets2/fonts'));
 app.use('/css', express.static(__dirname + 'public/assets3/css'));

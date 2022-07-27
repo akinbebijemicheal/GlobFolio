@@ -320,9 +320,7 @@ exports.getFoodServices = async(req, res, next) => {
             //     status: true,
             //     message: "Posts not Found"
             // })
-            console.log(food)
             console.log('no food uploaded')
-            console.log(food)
                 var foodstring = JSON.stringify(food)
             store.set("food", foodstring);
             let name = req.user.fullname.split(" ");
@@ -422,6 +420,64 @@ exports.getFoodById = async(req, res, next) => {
                 status: false,
                 message: "Post not Found"
             })
+        }
+    } catch (error) {
+        console.error(error)
+        next(error);
+    }
+}
+
+exports.getFoodByIdAdmin = async(req, res, next) => {
+    const id= req.params.id;
+    try {
+        var food = await Product.findOne({where: {
+            id: id,
+        }, include:[
+            {
+                model: Extras,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                }
+            },
+            {
+                model: Package,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                }
+            },
+            {
+                model: Image,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                }
+            }
+        ]})
+       
+        if(food){
+            console.log("foods found")
+                store.set("food", JSON.stringify(food));
+                      let name = req.user.fullname.split(" ");
+                      let email = req.user.email;
+                      data = JSON.parse(store.get("food"));
+                      console.log(data);
+                      var img = data['foodimages']
+                      
+                // if(img.length){ for(var i=0; i< img.length; i++) {
+                //     console.log('image found :',i ,img[i].img_url)
+                // }}else{
+
+                // }
+
+                      res.render("dashboard/admin/food-view", {
+                        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+                        email: email,
+                        data: data,
+                        img: img
+                      });
+                      
+        } else{
+            req.flash("error", "food with id not found")
+            res.redirect("/dashboard/admin/")
         }
     } catch (error) {
         console.error(error)
