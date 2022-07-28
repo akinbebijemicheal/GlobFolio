@@ -58,8 +58,8 @@ exports.bookCinema = async(req, res, next)=>{
         }).then(async(cinema) => {
             if(cinema && cinema.seat >= 1){
                 let fname = req.user.fullname.split(' ')
-                var amount = ((parseInt(cinema.price) * quantity) + (snack_price * snackQuantity));
-                var charges = ((commision.value / 100) * ((parseInt(cinema.price) * quantity) + (snack_price * snackQuantity)));
+                var amount = parseInt((parseInt(cinema.price) * quantity) + (snack_price * snackQuantity));
+                var charges = parseInt((commision.value / 100) * ((parseInt(cinema.price) * quantity) + (snack_price * snackQuantity)));
                 console.log("amount", amount);
                 console.log("charges", charges);
                 paystack.transaction.initialize({
