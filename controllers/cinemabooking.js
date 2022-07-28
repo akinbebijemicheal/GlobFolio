@@ -99,7 +99,7 @@ exports.bookCinema = async(req, res, next)=>{
                             transaction_url: transaction.data.authorization_url,
                             ref_no: transaction.data.reference,
                             access_code: transaction.data.access_code,
-                            commission: (commision.value / 100) * (parseInt(cinema.price) * quantity)
+                            commission: ((commision.value / 100) * ((parseInt(cinema.price) * quantity) + (snack_price * snackQuantity)))
                         })
                         var savedbook = await book.save();
 
