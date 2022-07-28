@@ -27,6 +27,7 @@ exports.bookCinema = async(req, res, next)=>{
     var {quantity, snackQuantity, time, snacksId}= req.body;
     var id = req.params.cinemaId;
     try {
+        var snack_price = 0;
         if(!quantity){
             quantity = 1
         }
@@ -41,10 +42,8 @@ exports.bookCinema = async(req, res, next)=>{
                     id: snacksId
                 }
             })
-
-            var snack_price = snack.price 
-        }else{
-            snack_price = 0;
+            console.log(snack);
+            snack_price = snack.price 
         }
 
         var commision = await Fee.findOne({
@@ -60,12 +59,12 @@ exports.bookCinema = async(req, res, next)=>{
         }).then(async(cinema) => {
             if(cinema && cinema.seat >= 1){
                 let fname = req.user.fullname.split(' ')
-                var amount = parseInt((parseInt(cinema.price) * quantity) + (snack_price * snackQuantity));
-                var charges = parseInt((commision.value / 100) * ((parseInt(cinema.price) * quantity) + (snack_price * snackQuantity)));
-                console.log("cinema_price", (parseInt(cinema.price) * quantity));
-                console.log("snack_price", (snack_price))
-                console.log("amount", amount);
-                console.log("charges", charges);
+                // var amount = parseInt((parseInt(cinema.price) * quantity) + (snack_price * snackQuantity));
+                // var charges = parseInt((commision.value / 100) * ((parseInt(cinema.price) * quantity) + (snack_price * snackQuantity)));
+                // console.log("cinema_price", (parseInt(cinema.price) * quantity));
+                // console.log("snack_price", (snack_price))
+                // console.log("amount", amount);
+                // console.log("charges", charges);
                 paystack.transaction.initialize({
                     name: `${cinema.title}`,
                     email: req.user.email,
