@@ -37,8 +37,8 @@ exports.bookRent = async(req, res, next)=>{
             }
         })
 
-        var dayFrom = new Date(dateFrom);
-        var dayTo = new Date(dateTo);
+        var dayFrom = new Date(dateFrom).toDateString();
+        var dayTo = new Date(dateTo).toDateString();
         var difference = Math.abs(dayTo - dayFrom)
         var days = difference/(1000 * 3600 * 24);
         if(dateFrom === dateTo){
