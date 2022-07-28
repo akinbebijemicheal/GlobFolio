@@ -64,7 +64,7 @@ exports.bookCinema = async(req, res, next)=>{
                     amount: ((parseInt(cinema.price) * quantity) + (snack_price * snackQuantity)) * 100,
                     quantity: quantity,
                     callback_url: `${process.env.REDIRECT_SITE}/VerifyPay/cinema`,
-                    transaction_charge: ((commision.value / 100) * (parseInt(cinema.price) * quantity)) * 100,
+                    transaction_charge: ((commision.value / 100) * ((parseInt(cinema.price) * quantity) + (snack_price * snackQuantity))) * 100,
                     metadata: {
                         userId: req.user.id,
                         cinema: cinema.id,
