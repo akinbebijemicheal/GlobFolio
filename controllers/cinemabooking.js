@@ -73,7 +73,7 @@ exports.bookCinema = async(req, res, next)=>{
                     amount: ((parseInt(cinema.price) * quantity) + (snack_price * snackQuantity)) * 100,
                     quantity: quantity,
                     callback_url: `${process.env.REDIRECT_SITE}/VerifyPay/cinema`,
-                    transaction_charge: ((commision.value / 100) * ((parseInt(cinema.price) * quantity) + (snack_price * snackQuantity))) * 100,
+                    transaction_charge: parseInt((commision.value / 100) * ((parseInt(cinema.price) * quantity) + (snack_price * snackQuantity))) * 100,
                     metadata: {
                         userId: req.user.id,
                         cinema: cinema.id,
@@ -101,7 +101,7 @@ exports.bookCinema = async(req, res, next)=>{
                             transaction_url: transaction.data.authorization_url,
                             ref_no: transaction.data.reference,
                             access_code: transaction.data.access_code,
-                            commission: ((commision.value / 100) * ((parseInt(cinema.price) * quantity) + (snack_price * snackQuantity)))
+                            commission: parseInt((commision.value / 100) * ((parseInt(cinema.price) * quantity) + (snack_price * snackQuantity)))
                         })
                         var savedbook = await book.save();
 
