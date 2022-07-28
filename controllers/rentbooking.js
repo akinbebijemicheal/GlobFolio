@@ -6,8 +6,10 @@ const Transaction = require('../model/usertransactions');
 const User = require('../model/user');
 const nodemailer = require("nodemailer");
 const store = require('store');
-const Fee = require("../model/adminFee")
-const baseurl = process.env.BASE_URL
+const Fee = require("../model/adminFee");
+const moment = require("moment")
+const baseurl = process.env.BASE_URL;
+
 
 
 var transporter = nodemailer.createTransport({
@@ -37,8 +39,8 @@ exports.bookRent = async(req, res, next)=>{
             }
         })
 
-        var dayFrom = new Date(dateFrom).toDateString();
-        var dayTo = new Date(dateTo).toDateString();
+        var dayFrom = moment(new Date(dateFrom));
+        var dayTo = moment(new Date(dateTo));
         var difference = Math.abs(dayTo - dayFrom)
         var days = difference/(1000 * 3600 * 24);
         if(dateFrom === dateTo){
