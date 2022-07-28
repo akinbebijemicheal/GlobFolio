@@ -632,10 +632,9 @@ exports.createOrder = async(req, res, next)=>{
                 paystack.transaction.initialize({
                     name: `Food Order #${order.id}`,
                     email: order.user.email,
-                    amount: total * 100,
+                    amount: parseInt(total + ((commision.value / 100) * total )) * 100,
                     quantity: order.fooditems.length,
                     callback_url: `${process.env.REDIRECT_SITE}/VerifyPay/food`,
-                    transaction_charge: ((commision.value / 100) * total ) * 100 ,
                     metadata:{
                         userId: req.user.id,
                         orderId: order.id
@@ -652,7 +651,7 @@ exports.createOrder = async(req, res, next)=>{
                             checkout_url: transaction.data.authorization_url,
                             ref_no: transaction.data.reference,
                             access_code: transaction.data.access_code,
-                            commission: ((commision.value / 100) * total )
+                            commission: parseInt((commision.value / 100) * total )
                         }, {
                             where:{
                                 id: order.id

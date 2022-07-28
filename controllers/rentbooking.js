@@ -49,12 +49,13 @@ exports.bookRent = async(req, res, next)=>{
         }).then(async(rent) => {
             if(rent && rent.available_rent >= 1){
                 let fname = req.user.fullname.split(' ')
+                var amount = ((parseInt(rent.price) * quantity) * days);
+                var charge = parseInt((commision.value / 100) * ((parseInt(rent.price) * quantity) * days))
                 paystack.transaction.initialize({
                     name: `${rent.title} (${rent.equipment})`,
                     email: req.user.email,
-                    amount: ((parseInt(rent.price) * quantity) * days) * 100,
+                    amount: (amount + charge) * 100,
                     quantity: quantity,
-                    transaction_charge: ((commision.value / 100) * ((parseInt(rent.price) * quantity) * days)) * 100,
                     callback_url: `${process.env.REDIRECT_SITE}/VerifyPay/rent`,
                     metadata: {
                         userId: req.user.id,
@@ -76,7 +77,8 @@ exports.bookRent = async(req, res, next)=>{
                             location: location,
                             transaction_url: transaction.data.authorization_url,
                             ref_no: transaction.data.reference,
-                            access_code: transaction.data.access_code
+                            access_code: transaction.data.access_code,
+                            commission: charge
                         })
                         var savedbook = await book.save();
 

@@ -44,13 +44,14 @@ exports.bookGame = async(req, res, next)=>{
         }).then(async(game) => {
             if(game && game.available_game >= 1){
                 let fname = req.user.fullname.split(' ')
+                var amount = (parseInt(game.price) * quantity);
+                var charge = parseInt((commision.value / 100) * (parseInt(game.price) * quantity))
                 paystack.transaction.initialize({
                     name: `${game.title}`,
                     email: req.user.email,
-                    amount: (parseInt(game.price) * quantity) * 100,
+                    amount: (amount + charge)  * 100,
                     quantity: quantity,
                     callback_url: `${process.env.REDIRECT_SITE}/VerifyPay/game`,
-                    transaction_charge: ((commision.value / 100) * (parseInt(game.price) * quantity)) * 100,
                     metadata: {
                         userId: req.user.id,
                         game: game.id,
@@ -70,7 +71,7 @@ exports.bookGame = async(req, res, next)=>{
                             transaction_url: transaction.data.authorization_url,
                             ref_no: transaction.data.reference,
                             access_code: transaction.data.access_code,
-                            commission: ((commision.value / 100) * (parseInt(game.price) * quantity))
+                            commission: parseInt((commision.value / 100) * (parseInt(game.price) * quantity))
                         })
                         var savedbook = await book.save();
 

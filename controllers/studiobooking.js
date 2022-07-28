@@ -42,13 +42,14 @@ exports.bookStudio = async(req, res, next)=>{
             }
         }).then(async(studio) => {
             if(studio){
-                let fname = req.user.fullname.split(' ')
+                let fname = req.user.fullname.split(' ');
+                var amount = (parseInt(studio.price) * quantity);
+                var charge = parseInt((commision.value / 100) * (parseInt(studio.price) * quantity))
                 paystack.transaction.initialize({
                     name: `${studio.title} (${studio.equipment})`,
                     email: req.user.email,
-                    amount: (parseInt(studio.price) * quantity) * 100,
+                    amount: (amount + charge) * 100,
                     quantity: quantity,
-                    transaction_charge: ((commision.value / 100) * (parseInt(studio.price) * quantity)) * 100,
                     callback_url: `${process.env.REDIRECT_SITE}/VerifyPay/studio`,
                     metadata: {
                         userId: req.user.id,
@@ -68,7 +69,8 @@ exports.bookStudio = async(req, res, next)=>{
                             end_date: dateTo,
                             transaction_url: transaction.data.authorization_url,
                             ref_no: transaction.data.reference,
-                            access_code: transaction.data.access_code
+                            access_code: transaction.data.access_code,
+                            commission: charge
                         })
                         var savedbook = await book.save();
 

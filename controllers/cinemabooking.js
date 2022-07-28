@@ -61,19 +61,14 @@ exports.bookCinema = async(req, res, next)=>{
         }).then(async(cinema) => {
             if(cinema && cinema.seat >= 1){
                 let fname = req.user.fullname.split(' ')
-                // var amount = parseInt((parseInt(cinema.price) * quantity) + (snack_price * snackQuantity));
-                // var charges = parseInt((commision.value / 100) * ((parseInt(cinema.price) * quantity) + (snack_price * snackQuantity)));
-                // console.log("cinema_price", (parseInt(cinema.price) * quantity));
-                // console.log("snack_price", (snack_price))
-                // console.log("amount", amount);
-                // console.log("charges", charges);
+                var amount = parseInt((parseInt(cinema.price) * quantity) + (snack_price * snackQuantity));
+                var charges = parseInt((commision.value / 100) * ((parseInt(cinema.price) * quantity) + (snack_price * snackQuantity)));
                 paystack.transaction.initialize({
                     name: `${cinema.title}`,
                     email: req.user.email,
-                    amount: ((parseInt(cinema.price) * quantity) + (snack_price * snackQuantity)) * 100,
+                    amount: (amount + charges) * 100,
                     quantity: quantity,
                     callback_url: `${process.env.REDIRECT_SITE}/VerifyPay/cinema`,
-                    transaction_charge: parseInt((commision.value / 100) * ((parseInt(cinema.price) * quantity) + (snack_price * snackQuantity))) * 100,
                     metadata: {
                         userId: req.user.id,
                         cinema: cinema.id,
