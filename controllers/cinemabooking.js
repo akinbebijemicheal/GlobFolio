@@ -27,7 +27,7 @@ exports.bookCinema = async(req, res, next)=>{
     var {quantity, snackQuantity, time, snacksId}= req.body;
     var id = req.params.cinemaId;
     try {
-        var snack_price = 0;
+        // var snack_price = 0;
         if(!quantity){
             quantity = 1
         }
@@ -36,14 +36,14 @@ exports.bookCinema = async(req, res, next)=>{
             snackQuantity = 1
         }
 
-        if(snacksId){
+        if(snacksId || snacksId !== "" || snacksId !== undefined || snacksId !== null){
             var snack = await Snack.findOne({
                 where:{
                     id: snacksId
                 }
             })
-            console.log(snack);
-            snack_price = snack.price 
+            console.log(snack.price);
+            var snack_price = snack.price 
         }
 
         var commision = await Fee.findOne({
