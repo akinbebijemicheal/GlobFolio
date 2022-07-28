@@ -25,7 +25,7 @@ var transporter = nodemailer.createTransport({
 
 exports.bookCinema = async(req, res, next)=>{
     var {quantity, snackQuantity, time, snacksId}= req.body;
-    const id = req.params.cinemaId;
+    var id = req.params.cinemaId;
     try {
         if(!quantity){
             quantity = 1
@@ -36,13 +36,15 @@ exports.bookCinema = async(req, res, next)=>{
         }
 
         if(snacksId){
-            const snack = await Snack.findOne({
+            var snack = await Snack.findOne({
                 where:{
                     id: snacksId
                 }
             })
 
             var snack_price = snack.price 
+        }else{
+            snack_price = 0;
         }
 
         var commision = await Fee.findOne({
@@ -61,7 +63,7 @@ exports.bookCinema = async(req, res, next)=>{
                 var amount = parseInt((parseInt(cinema.price) * quantity) + (snack_price * snackQuantity));
                 var charges = parseInt((commision.value / 100) * ((parseInt(cinema.price) * quantity) + (snack_price * snackQuantity)));
                 console.log("cinema_price", (parseInt(cinema.price) * quantity));
-                console.log("snack_price", (snack_price * snackQuantity))
+                console.log("snack_price", (snack_price))
                 console.log("amount", amount);
                 console.log("charges", charges);
                 paystack.transaction.initialize({
