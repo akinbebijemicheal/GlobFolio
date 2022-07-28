@@ -37,10 +37,13 @@ exports.bookRent = async(req, res, next)=>{
             }
         })
 
-        var dayFrom = new Date(dateFrom);
-        var dayTo = new Date(dateTo)
+        var dayFrom = new Date(dateFrom).toISOString();
+        var dayTo = new Date(dateTo).toISOString();
         var difference = Math.abs(dayTo - dayFrom)
         var days = difference/(1000 * 3600 * 24);
+        if(dateFrom === dateTo){
+            days = 1
+        }
         console.log("days", days)
 
         await Rent.findOne({
