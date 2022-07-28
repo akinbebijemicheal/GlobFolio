@@ -108,6 +108,7 @@ exports.bookRent = async(req, res, next)=>{
         }).catch(err=> console.log(err))
     } catch (error) {
         console.error(error);
+        res.json(error)
         next(error)
     }
 };
@@ -448,6 +449,7 @@ exports.rentVerify = async(req, res, next)=>{
                 }).catch(error => console.error(error))
     } catch (error) {
         console.error(error);
+        res.json(error)
         next(error)
     }
 }
@@ -494,6 +496,7 @@ exports.getRentbookings = async(req, res, next)=>{
         })
     } catch (error) {
         console.error(error);
+        res.json(error)
         next(error)
     }
 }
@@ -556,6 +559,7 @@ exports.getRentAdminbookings = async(req, res, next)=>{
         })
     } catch (error) {
         console.error(error);
+        res.json(error)
         next(error)
     }
 }
@@ -604,6 +608,7 @@ exports.getUserRentbookings = async(req, res, next)=>{
         })
     } catch (error) {
         console.error(error);
+        res.json(error)
         next(error)
     }
 }
@@ -653,12 +658,10 @@ exports.getRentbooking = async(req, res, next)=>{
         })
     } catch (error) {
         console.error(error);
+        res.json(error)
         next(error)
     }
 }
-
-
-
 
 exports.getAppRentbooking = async(req, res, next)=>{
     try {
@@ -704,6 +707,7 @@ exports.getAppRentbooking = async(req, res, next)=>{
         })
     } catch (error) {
         console.error(error);
+        res.json(error)
         next(error)
     }
 }
