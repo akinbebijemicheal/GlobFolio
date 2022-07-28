@@ -61,7 +61,7 @@ exports.bookCinema = async(req, res, next)=>{
                 paystack.transaction.initialize({
                     name: `${cinema.title}`,
                     email: req.user.email,
-                    amount: ((parseInt(cinema.price) * quantity) + snack_price * snackQuantity) * 100,
+                    amount: ((parseInt(cinema.price) * quantity) + (snack_price * snackQuantity)) * 100,
                     quantity: quantity,
                     callback_url: `${process.env.REDIRECT_SITE}/VerifyPay/cinema`,
                     transaction_charge: ((commision.value / 100) * (parseInt(cinema.price) * quantity)) * 100,
