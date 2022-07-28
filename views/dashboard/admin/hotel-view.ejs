@@ -65,15 +65,42 @@
                                 <td>
                                     <%= data.amenities%>
                                 </td>
-                                <td>
-                                    <%= data.hotelextras[0].room%>
+                                <% if (data.hotelextras?.length) { %>
+                                    <td>
+                                        <% for(var i=0; i< data.hotelextras.length; i++){%>
+                                         <%= data.hotelextras[i].room%>
+                                         <br>
+                                            <% } %>
+                                   
                                 </td>
                                 <td>
-                                    <%= data.hotelextras[0].available_room%>
+                                    <% for(var i=0; i< data.hotelextras.length; i++){%>
+                                        <%= data.hotelextras[i].available_room%>
+                                        <br>
+                                        <% } %>
+                                    
                                 </td>
                                 <td>
-                                    <%= data.hotelextras[0].price%>
+                                    <% for(var i=0; i< data.hotelextras.length; i++){%>
+                                        <%= data.hotelextras[i].price%>
+                                        <br>
+                                        <% } %>
+                                    
                                 </td>
+                                <% } else { %>
+                                    <td>
+                                        Not available
+                                    </td>
+                                    <td>
+                                        Not available
+                                    </td>
+                                    <td>
+                                        Not available
+                                    </td>
+                                    <% } %>
+                                
+                                
+                                
                                 <td>
                                     <%= data.rating%>
                                 </td>

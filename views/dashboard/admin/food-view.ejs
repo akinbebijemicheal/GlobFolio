@@ -61,18 +61,61 @@
                                 <td>
                                     <%= data.description%>
                                 </td>
+                                
+                                <% if (data.foodextras?.length) { %>
+                                    <td>
+                                        <% for( let i = 0; i < data.foodextras.length; i++ ) { %>
+                                        
+                                            <%= data.foodextras[i].topping%>
+                                            <br>
+                                        
+                                    <% } %>
+                                        
+                                    </td>
+                                    <td>
+                                        <% for( let i = 0; i < data.foodextras.length; i++ ) { %>
+                                        
+                                            <%= data.foodextras[i].price%>
+                                            <br>
+                                        
+                                    <% } %>
+                                        
+                                    </td>
+                                <% } else{ %>
+                                    <td>
+                                        Not available
+                                    </td>
+                                    <td>
+                                        Not available
+                                    </td>
+                                    <% } %> 
+
+                                <% if (data.foodpackagings?.length) { %>
                                 <td>
-                                    <%= data.foodextras[0].topping%>
+                                    <% for( let i = 0; i < data.foodpackagings.length; i++ ) { %>
+                                        
+                                            <%= data.foodpackagings[i].name%>
+                                            <br>
+                                        
+                                    <% } %>
+                                    
                                 </td>
                                 <td>
-                                    <%= data.foodextras[0].price%>
+                                    <% for( let i = 0; i < data.foodpackagings.length; i++ ) { %>
+                                        <%= data.foodpackagings[i].price%>
+                                        <br>
+                                    <% } %>
+                                    
                                 </td>
-                                <td>
-                                    <%= data.foodpackagings[0].name%>
-                                </td>
-                                <td>
-                                    <%= data.foodpackagings[0].price%>
-                                </td>
+                                <% } else{%>
+                                    <td>
+                                        Not available
+                                    </td>
+                                    <td>
+                                        Not available
+                                    </td>
+                                    <% } %> 
+                                
                                 <td>
                                     <%= new Date(data.createdAt).toDateString()%>
                                 </td> 

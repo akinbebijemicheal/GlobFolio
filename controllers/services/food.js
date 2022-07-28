@@ -264,7 +264,7 @@ exports.getFoodServices = async(req, res, next) => {
         order: [
             ['createdAt', 'ASC']
         ],
-        raw: true
+        // raw: true
     
     });
 
@@ -278,12 +278,13 @@ exports.getFoodServices = async(req, res, next) => {
                 //     data: food
                 // });
                
-                console.log(food)
+                // console.log(food)
                 var foodstring = JSON.stringify(food)
             store.set("food", foodstring);
             let name = req.user.fullname.split(" ");
             let email = req.user.email;
             data = JSON.parse(store.get("food"));
+            console.log(data);
             res.render("dashboard/admin/food-products", {
               user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
               email: email,
