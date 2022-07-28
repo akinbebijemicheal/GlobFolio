@@ -45,10 +45,11 @@
                             <th>Hotel Name</th>
                             <th>Price</th>
                             <th>Description</th>
-                            <th>Toppings</th>
+                            <th>Amenities</th>
+                            <th>Rooms</th>
+                            <th>Available Room</th>
                             <th>Price</th>
-                            <th>Packagings</th>
-                            <th>packaging Price</th>
+                            <th>Rating</th>
                             <th>CreatedAt</th>
                         </tr>
                             <tr class="mode-2">
@@ -62,19 +63,19 @@
                                     <%= data.location%>
                                 </td>
                                 <td>
-                                    <%= data['hotelamenities.amenities']%>
+                                    <%= data.amenities%>
                                 </td>
                                 <td>
-                                    <%= data['hotelextras.price']%>
+                                    <%= data.hotelextras[0].room%>
                                 </td>
                                 <td>
-                                    <%= data['hotelpackagings.available_room']%>
+                                    <%= data.hotelextras[0].available_room%>
                                 </td>
                                 <td>
-                                    <%= data['hotelpackagings.price']%>
+                                    <%= data.hotelextras[0].price%>
                                 </td>
                                 <td>
-                                    <%= data['rating']%>
+                                    <%= data.rating%>
                                 </td>
                                 <td>
                                     <%= new Date(data.createdAt).toDateString()%>

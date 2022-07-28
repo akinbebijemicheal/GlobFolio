@@ -62,7 +62,7 @@ exports.createHotelService = async(req, res, next) => {
             //     console.log(amenities)
             //    await Amenity.bulkCreate(amenities, {returning: true})
             // }
-
+console.log(req.body.available_room)
             if(req.body.room && req.body.price && req.body.available_room){
                 if(Array.isArray(req.body.room)){
                     var room_price = (room, price, available)=>{
@@ -92,7 +92,7 @@ exports.createHotelService = async(req, res, next) => {
                 
                 
                 // console.log(room_price(req.body.room, req.body.price));
-                await Extras.bulkCreate(room_price(req.body.room, req.body.price, req.body.available_no), {returning: true})
+                await Extras.bulkCreate(room_price(req.body.room, req.body.price, req.body.available_room), {returning: true})
             }
             
             var output = await Product.findOne({ where: {id: hotelout.id},
@@ -220,7 +220,7 @@ exports.getHotelServices = async(req, res, next) => {
                       res.render("dashboard/admin/hotels", {
                         user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
                         email: email,
-                        data
+                        data: data
                       });
                       next();
             }else{
@@ -236,7 +236,7 @@ exports.getHotelServices = async(req, res, next) => {
                       res.render("dashboard/admin/hotels", {
                         user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
                         email: email,
-                        data
+                        data: data
                       });
                       next();
             }
@@ -250,7 +250,7 @@ exports.getHotelServices = async(req, res, next) => {
                   res.render("dashboard/admin/hotels", {
                     user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
                     email: email,
-                    data
+                    data: data
                   });
                   next();
         }
@@ -431,12 +431,12 @@ exports.getHotelByIdAdmin = async(req, res, next) => {
         var hotel = await Product.findOne({where: {
             id: id,
         }, include:[
-            {
-                model: Amenity,
-                attributes: {
-                    exclude: ["createdAt", "updatedAt"]
-                }
-            },
+            // {
+            //     model: Amenity,
+            //     attributes: {
+            //         exclude: ["createdAt", "updatedAt"]
+            //     }
+            // },
             {
                 model: Extras,
                 attributes: {

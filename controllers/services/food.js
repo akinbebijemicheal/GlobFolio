@@ -80,7 +80,7 @@ exports.createFoodService = async(req, res, next) => {
             }
                 
                 //console.log(top_price(req.body.top, req.body.topPrice));
-                var toppings = await Extras.bulkCreate(top_price(req.body.top, req.body.topPrice), {returning: true})
+              await Extras.bulkCreate(top_price(req.body.top, req.body.topPrice), {returning: true})
         }
 
         if(req.body.packageName && req.body.packagePrice){
@@ -460,6 +460,7 @@ exports.getFoodByIdAdmin = async(req, res, next) => {
                       let email = req.user.email;
                       data = JSON.parse(store.get("food"));
                       console.log(data);
+                      console.log(data.foodextras)
                       var img = data['foodimages']
                       
                 // if(img.length){ for(var i=0; i< img.length; i++) {

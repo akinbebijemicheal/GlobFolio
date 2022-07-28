@@ -62,16 +62,16 @@
                                     <%= data.description%>
                                 </td>
                                 <td>
-                                    <%= data['foodextras.topping']%>
+                                    <%= data.foodextras[0].topping%>
                                 </td>
                                 <td>
-                                    <%= data['foodextras.price']%>
+                                    <%= data.foodextras[0].price%>
                                 </td>
                                 <td>
-                                    <%= data['foodpackagings.name']%>
+                                    <%= data.foodpackagings[0].name%>
                                 </td>
                                 <td>
-                                    <%= data['foodpackagings.price']%>
+                                    <%= data.foodpackagings[0].price%>
                                 </td>
                                 <td>
                                     <%= new Date(data.createdAt).toDateString()%>
