@@ -50,7 +50,9 @@ exports.bookRent = async(req, res, next)=>{
             if(rent && rent.available_rent >= 1){
                 let fname = req.user.fullname.split(' ')
                 var amount = ((parseInt(rent.price) * quantity) * days);
+                console.log("amount", amount);
                 var charge = parseInt((commision.value / 100) * ((parseInt(rent.price) * quantity) * days))
+                console("charge", charge);
                 paystack.transaction.initialize({
                     name: `${rent.title} (${rent.equipment})`,
                     email: req.user.email,

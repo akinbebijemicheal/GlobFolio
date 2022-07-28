@@ -56,8 +56,7 @@ exports.bookGame = async(req, res, next)=>{
                         userId: req.user.id,
                         game: game.id,
                         title: game.title,
-                        
-                                                 
+                                                
                     }
                 }).then(async (transaction)=>{
                     console.log(transaction)
