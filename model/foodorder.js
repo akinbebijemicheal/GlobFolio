@@ -53,7 +53,8 @@ const Order = db.define('foodorder', {
         type: Sequelize.STRING
     },
     commission:{
-        type: Sequelize.FLOAT
+        type: Sequelize.FLOAT,
+        default: 0
     }
 
 }, {timestamps: true});
