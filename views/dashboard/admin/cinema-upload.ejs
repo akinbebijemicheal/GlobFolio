@@ -63,24 +63,24 @@
                             <div class="form-row">
                                 <div class="form-group col-md-6">
                                     <label for="inputName" class="text-dark">Seats</label>
-                                    <input required type="number" name="seat" class="form-control" id="inputEmail4"
+                                    <input required type="number" min="0" min="0" name="seat" class="form-control" id="inputEmail4"
                                         placeholder="200">
                                 </div>
                                 <div class="form-group col-md-6">
                                     <label for="inputName" class="text-dark">Age Rate</label>
                                     <select name="age_rate" class="form-control" id="inputPassword4">
                                         <option selected>Select Age Rate</option>
-                                        <option value="pg8">PG-8 Rated</option>
-                                        <option value="pg13">PG-13 Rated</option>
-                                        <option value="pg18">PG-18 Rated</option>
-                                        <option value="Adult">Adult Rated</option>
+                                        <option value="8+">8+</option>
+                                        <option value="13+">13+</option>
+                                        <option value="16+">16+</option>
+                                        <option value="18+">18+</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="form-row">
                                 <div class="form-group col-md-6">
                                     <label for="inputName" class="text-dark">Price</label>
-                                    <input required type="number" name="price" class="form-control" id="inputEmail4"
+                                    <input required type="number" min="0" min="0" name="price" class="form-control" id="inputEmail4"
                                         placeholder="5000">
                                 </div>
                                 <div class="form-group col-md-6">
@@ -114,7 +114,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="inputName" class="text-dark">Upload Movie Images</label>
-                                <input required type="file" name="cinema_pictures" multiple class="form-control"
+                                <input required type="file" accept=".jpg,.JPG,.jpeg,.JPEG,.png,.PNG" name="cinema_pictures" multiple class="form-control"
                                     id="inputPassword4" placeholder="Password">
                             </div>
 

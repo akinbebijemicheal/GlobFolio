@@ -59,7 +59,7 @@ exports.createRentService = async(req, res, next) => {
                 }
             ]});
 
-            res.redirect("/dashboard/admin/")
+            res.redirect("/dashboard/admin/get-rent-services")
        
     } catch (error) {
         console.error(error)

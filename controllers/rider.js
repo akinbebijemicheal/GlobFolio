@@ -20,7 +20,7 @@ exports.createRider = async(req, res, next)=>{
                 })
 
                 const out = await new_rider.save();
-                res.redirect("/dashboard/admin/")
+                res.redirect("/dashboard/admin/get-riders")
                 
             }else{
             req.flash("error", "Rider already exist")

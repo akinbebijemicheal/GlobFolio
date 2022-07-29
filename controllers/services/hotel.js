@@ -117,7 +117,7 @@ console.log(req.body.available_room)
                     }
                 ]});
 
-                res.redirect("/dashboard/admin/")
+                res.redirect("/dashboard/admin/get-hotel-posts")
 
         
     } catch (error) {

@@ -60,7 +60,7 @@ exports.createGamingService = async(req, res, next) => {
                     }
                 ]});
 
-                res.redirect("/dashboard/admin/")
+                res.redirect("/dashboard/admin/get-gaming-posts")
 
         
     } catch (error) {

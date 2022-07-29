@@ -139,7 +139,7 @@ exports.createFoodService = async(req, res, next) => {
             ]
         })
 
-        res.redirect("/dashboard/admin/")
+        res.redirect("/dashboard/admin/food-products")
        
         
     } catch (error) {

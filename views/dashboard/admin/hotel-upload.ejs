@@ -40,17 +40,17 @@
                             <div class="form-row">
                                 <div class="form-group col-md-4">
                                     <label for="inputName" class="text-dark">Available Rooms</label>
-                                    <input required type="number" name="available_room" class="form-control"
+                                    <input required type="number" min="0" min="0" name="available_room" class="form-control"
                                         id="inputPassword4" placeholder="15">
                                 </div>
                                 <div class="form-group col-md-4">
                                     <label for="inputName" class="text-dark">Rooms</label>
-                                    <input required type="number" name="room" class="form-control"
+                                    <input required type="number" min="0" min="0" name="room" class="form-control"
                                         id="inputPassword4" placeholder="30">
                                 </div>
                                 <div class="form-group col-md-4">
                                     <label for="inputName" class="text-dark">Price</label>
-                                    <input required type="number" name="price" class="form-control"
+                                    <input required type="number" min="0" min="0" name="price" class="form-control"
                                         id="inputPassword4" placeholder="5000">
                                 </div>
                                 
@@ -58,7 +58,7 @@
                             <div class="form-row">
                                 <div class="form-group col-md-6">
                                     <label for="inputName" class="text-dark">Upload Hotel Images</label>
-                                    <input required type="file" name="hotel_pictures" multiple class="form-control"
+                                    <input required type="file" accept=".jpg,.JPG,.jpeg,.JPEG,.png,.PNG" name="hotel_pictures" multiple class="form-control"
                                         id="inputPassword4" placeholder="Password">
                                 </div>
                                 <div class="form-group col-md-6">

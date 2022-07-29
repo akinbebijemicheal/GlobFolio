@@ -34,7 +34,7 @@ exports.createAds = async (req, res, next) => {
           }
         });
 
-        res.redirect("/dashboard/admin/")
+        res.redirect("/dashboard/admin/getAllAds")
         
       }
     });

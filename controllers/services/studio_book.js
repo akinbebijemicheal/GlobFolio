@@ -60,7 +60,7 @@ exports.createStudioService = async(req, res, next) => {
                     }
                 ]});
 
-                res.redirect("/dashboard/admin/")
+                res.redirect("/dashboard/admin/get-studio-posts")
 
         
         

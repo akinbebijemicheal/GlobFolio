@@ -109,7 +109,7 @@ exports.createCinemaService = async(req, res, next) => {
             ]
         })
        
-        res.redirect("/dashboard/admin/")
+        res.redirect("/dashboard/admin/get-cinema-posts")
        
     } catch (error) {
          console.error(error)

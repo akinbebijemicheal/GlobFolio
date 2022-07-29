@@ -50,7 +50,7 @@
                             <div class="form-row">
                                 <div class="form-group col-md-6">
                                     <label for="inputName" class="text-dark">Price</label>
-                                    <input required type="number" name="price" class="form-control" id="inputEmail4"
+                                    <input required type="number" min="0" name="price" class="form-control" id="inputEmail4"
                                         placeholder="5000">
                                 </div>
                                 <div class="form-group col-md-6">
@@ -66,13 +66,13 @@
                             </div>
                             <div class="form-row">
                                 <div class="form-group col-md-6">
-                                    <label for="inputName" class="text-dark">Upload Studio Images</label>
-                                    <input required type="file" name="rent_pictures" multiple class="form-control"
+                                    <label for="inputName" class="text-dark">Upload Rent Images</label>
+                                    <input required type="file" accept=".jpg,.JPG,.jpeg,.JPEG,.png,.PNG" name="rent_pictures" multiple class="form-control"
                                         id="inputPassword4" placeholder="Password">
                                 </div>
                                 <div class="form-group col-md-6">
                                     <label for="inputName" class="text-dark">Available For Rent </label>
-                                    <input required name="available_rent" type="number" class="form-control" placeholder="5" id="inputPassword4">
+                                    <input required name="available_rent" type="number" min="0" min="0" class="form-control" placeholder="5" id="inputPassword4">
                                 </div>
                             </div>
 
