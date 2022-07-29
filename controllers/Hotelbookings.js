@@ -50,13 +50,14 @@ exports.bookHotel = async(req, res, next)=>{
             ]
         }).then(async(room) => {
             if(room && room.available_room >= 1){
-                let fname = req.user.fullname.split(' ')
+                let fname = req.user.fullname.split(' ');
+                var amount = (parseInt(room.price) * quantity);
+                var charge = parseInt((commision.value / 100) * (parseInt(room.price) * quantity))
                 paystack.transaction.initialize({
                     name: `${room.hotel.title} (${room.room})`,
                     email: req.user.email,
-                    amount: (parseInt(room.price) * quantity) * 100,
+                    amount: (amount + charge)  * 100,
                     quantity: quantity,
-                    transaction_charge: ((commision.value / 100) * (parseInt(room.price) * quantity) * 100),
                     callback_url: `${process.env.REDIRECT_SITE}/VerifyPay/hotel`,
                     metadata: {
                         userId: req.user.id,
@@ -77,7 +78,7 @@ exports.bookHotel = async(req, res, next)=>{
                             transaction_url: transaction.data.authorization_url,
                             ref_no: transaction.data.reference,
                             access_code: transaction.data.access_code,
-                            commission: ((commision / 100) * (parseInt(room.price) * quantity))
+                            commission: parseInt((commision.value / 100) * (parseInt(room.price) * quantity))
                         })
                         var savedbook = await book.save();
 

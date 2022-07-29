@@ -6,8 +6,10 @@ const Transaction = require('../model/usertransactions');
 const User = require('../model/user');
 const nodemailer = require("nodemailer");
 const store = require('store');
-const Fee = require("../model/adminFee")
-const baseurl = process.env.BASE_URL
+const Fee = require("../model/adminFee");
+const moment = require("moment")
+const baseurl = process.env.BASE_URL;
+
 
 
 var transporter = nodemailer.createTransport({
@@ -37,10 +39,14 @@ exports.bookRent = async(req, res, next)=>{
             }
         })
 
-        var dayFrom = new Date(dateFrom);
-        var dayTo = new Date(dateTo)
+        var dayFrom = moment(new Date(dateFrom));
+        var dayTo = moment(new Date(dateTo));
         var difference = Math.abs(dayTo - dayFrom)
-        var days = difference/(1000 * 3600 * 24)
+        var days = difference/(1000 * 3600 * 24);
+        if(dateFrom === dateTo){
+            days = 1
+        }
+        console.log("days", days)
 
         await Rent.findOne({
             where: {
@@ -49,12 +55,15 @@ exports.bookRent = async(req, res, next)=>{
         }).then(async(rent) => {
             if(rent && rent.available_rent >= 1){
                 let fname = req.user.fullname.split(' ')
+                var amount = ((parseInt(rent.price) * quantity) * days);
+                console.log("amount", amount);
+                var charge = parseInt((commision.value / 100) * ((parseInt(rent.price) * quantity) * days))
+                console.log("charge", charge);
                 paystack.transaction.initialize({
                     name: `${rent.title} (${rent.equipment})`,
                     email: req.user.email,
-                    amount: ((parseInt(rent.price) * quantity) * days) * 100,
+                    amount: (amount + charge) * 100,
                     quantity: quantity,
-                    transaction_charge: ((commision.value / 100) * ((parseInt(rent.price) * quantity) * days)) * 100,
                     callback_url: `${process.env.REDIRECT_SITE}/VerifyPay/rent`,
                     metadata: {
                         userId: req.user.id,
@@ -76,7 +85,8 @@ exports.bookRent = async(req, res, next)=>{
                             location: location,
                             transaction_url: transaction.data.authorization_url,
                             ref_no: transaction.data.reference,
-                            access_code: transaction.data.access_code
+                            access_code: transaction.data.access_code,
+                            commission: charge
                         })
                         var savedbook = await book.save();
 
@@ -98,6 +108,7 @@ exports.bookRent = async(req, res, next)=>{
         }).catch(err=> console.log(err))
     } catch (error) {
         console.error(error);
+        res.json(error)
         next(error)
     }
 };
@@ -438,6 +449,7 @@ exports.rentVerify = async(req, res, next)=>{
                 }).catch(error => console.error(error))
     } catch (error) {
         console.error(error);
+        res.json(error)
         next(error)
     }
 }
@@ -484,6 +496,7 @@ exports.getRentbookings = async(req, res, next)=>{
         })
     } catch (error) {
         console.error(error);
+        res.json(error)
         next(error)
     }
 }
@@ -546,6 +559,7 @@ exports.getRentAdminbookings = async(req, res, next)=>{
         })
     } catch (error) {
         console.error(error);
+        res.json(error)
         next(error)
     }
 }
@@ -594,6 +608,7 @@ exports.getUserRentbookings = async(req, res, next)=>{
         })
     } catch (error) {
         console.error(error);
+        res.json(error)
         next(error)
     }
 }
@@ -643,12 +658,10 @@ exports.getRentbooking = async(req, res, next)=>{
         })
     } catch (error) {
         console.error(error);
+        res.json(error)
         next(error)
     }
 }
-
-
-
 
 exports.getAppRentbooking = async(req, res, next)=>{
     try {
@@ -694,6 +707,7 @@ exports.getAppRentbooking = async(req, res, next)=>{
         })
     } catch (error) {
         console.error(error);
+        res.json(error)
         next(error)
     }
 }

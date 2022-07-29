@@ -22,7 +22,7 @@ const CinemaSnack = db.define("cinemasnack", {
     type: Sequelize.STRING,
   },
   price:{
-    type: Sequelize.INTEGER,
+    type: Sequelize.BIGINT,
   }
 });
 

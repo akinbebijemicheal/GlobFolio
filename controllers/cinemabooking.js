@@ -25,8 +25,9 @@ var transporter = nodemailer.createTransport({
 
 exports.bookCinema = async(req, res, next)=>{
     var {quantity, snackQuantity, time, snacksId}= req.body;
-    const id = req.params.cinemaId;
+    var id = req.params.cinemaId;
     try {
+        // var snack_price = 0;
         if(!quantity){
             quantity = 1
         }
@@ -35,14 +36,16 @@ exports.bookCinema = async(req, res, next)=>{
             snackQuantity = 1
         }
 
-        if(snacksId){
-            const snack = await Snack.findOne({
+        if(snacksId || snacksId !== "" || snacksId !== undefined || snacksId !== null){
+            var snack = await Snack.findOne({
                 where:{
                     id: snacksId
                 }
             })
-
+            console.log(snack.price);
             var snack_price = snack.price 
+        }else{
+            snack_price = 0;
         }
 
         var commision = await Fee.findOne({
@@ -58,17 +61,14 @@ exports.bookCinema = async(req, res, next)=>{
         }).then(async(cinema) => {
             if(cinema && cinema.seat >= 1){
                 let fname = req.user.fullname.split(' ')
-                var amount = ((parseInt(cinema.price) * quantity) + (snack_price * snackQuantity));
-                var charges = ((commision.value / 100) * ((parseInt(cinema.price) * quantity) + (snack_price * snackQuantity)));
-                console.log("amount", amount);
-                console.log("charges", charges);
+                var amount = parseInt((parseInt(cinema.price) * quantity) + (snack_price * snackQuantity));
+                var charges = parseInt((commision.value / 100) * ((parseInt(cinema.price) * quantity) + (snack_price * snackQuantity)));
                 paystack.transaction.initialize({
                     name: `${cinema.title}`,
                     email: req.user.email,
-                    amount: ((parseInt(cinema.price) * quantity) + (snack_price * snackQuantity)) * 100,
+                    amount: (amount + charges) * 100,
                     quantity: quantity,
                     callback_url: `${process.env.REDIRECT_SITE}/VerifyPay/cinema`,
-                    transaction_charge: ((commision.value / 100) * ((parseInt(cinema.price) * quantity) + (snack_price * snackQuantity))) * 100,
                     metadata: {
                         userId: req.user.id,
                         cinema: cinema.id,
@@ -96,7 +96,7 @@ exports.bookCinema = async(req, res, next)=>{
                             transaction_url: transaction.data.authorization_url,
                             ref_no: transaction.data.reference,
                             access_code: transaction.data.access_code,
-                            commission: (commision.value / 100) * (parseInt(cinema.price) * quantity)
+                            commission: parseInt((commision.value / 100) * ((parseInt(cinema.price) * quantity) + (snack_price * snackQuantity)))
                         })
                         var savedbook = await book.save();
 

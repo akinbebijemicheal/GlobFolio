@@ -19,6 +19,7 @@ myOAuth2Client.setCredentials({
 });
 
 const myAccessToken = myOAuth2Client.getAccessToken()*/
+
 const baseurl = process.env.BASE_URL
 
 exports.RegisterUser = async (req, res, next) => {
@@ -390,7 +391,7 @@ exports.LoginUser = async (req, res, next) => {
                 user: user
             }
 
-            let token = jwt.sign(payload, process.env.TOKEN, { expiresIn: 24 * 60 * 60});
+            let token = jwt.sign(payload, process.env.TOKEN);
 
             let result = {
                 id: user.id,

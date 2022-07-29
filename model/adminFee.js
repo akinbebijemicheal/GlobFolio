@@ -2,7 +2,7 @@ const Sequelize = require('sequelize');
 const db = require('../config/config');
 const {nanoid} = require('nanoid');
 
-const Fee = db.define('adminFee', {
+const Fee = db.define('adminfee', {
     id: {
         type: Sequelize.STRING(10),
         autoincrement: false,

@@ -3,7 +3,7 @@ const db = require('../config/config');
 const {nanoid} = require('nanoid');
 const User = require('./user');
 
-const Ads = db.define('Ads', {
+const Ads = db.define('ads', {
     id :{
         type: Sequelize.STRING(10),
         autoincrement: false,

@@ -36,6 +36,12 @@ exports.buyFood = async(req, res, next)=>{
             quantity = 1
         };
 
+        var commision = await Fee.findOne({
+            where:{
+                type: "commission"
+            }
+        })
+
         await Food.findOne({
             where:{
                  id: req.params.foodId
@@ -154,11 +160,13 @@ exports.buyFood = async(req, res, next)=>{
                 }).then(async(ord) =>{
                     if(ord){
                         var total = Cart.price;
+
+                        var charge = (commision.value / 100) * total
                        
                         paystack.transaction.initialize({
                             name: `Food Order #${ord.id}`,
                             email: ord.user.email,
-                            amount: total * 100,
+                            amount: parseInt(total + charge) * 100,
                             quantity: ord.fooditems.length,
                             callback_url: `${process.env.REDIRECT_SITE}/VerifyPay/food`,
                             metadata:{
@@ -176,7 +184,8 @@ exports.buyFood = async(req, res, next)=>{
                                     status: "in_progress",
                                     checkout_url: transaction.data.authorization_url,
                                     ref_no: transaction.data.reference,
-                                    access_code: transaction.data.access_code
+                                    access_code: transaction.data.access_code,
+                                    commission: parseInt(charge)
                                 }, {
                                     where:{
                                         id: ord.id
@@ -632,10 +641,9 @@ exports.createOrder = async(req, res, next)=>{
                 paystack.transaction.initialize({
                     name: `Food Order #${order.id}`,
                     email: order.user.email,
-                    amount: total * 100,
+                    amount: parseInt(total + ((commision.value / 100) * total )) * 100,
                     quantity: order.fooditems.length,
                     callback_url: `${process.env.REDIRECT_SITE}/VerifyPay/food`,
-                    transaction_charge: ((commision.value / 100) * total ) * 100 ,
                     metadata:{
                         userId: req.user.id,
                         orderId: order.id
@@ -652,7 +660,7 @@ exports.createOrder = async(req, res, next)=>{
                             checkout_url: transaction.data.authorization_url,
                             ref_no: transaction.data.reference,
                             access_code: transaction.data.access_code,
-                            commission: ((commision.value / 100) * total )
+                            commission: parseInt((commision.value / 100) * total )
                         }, {
                             where:{
                                 id: order.id
