@@ -52,14 +52,59 @@
                             <div class="form-row">
                                 <div class="form-group col-md-6">
                                     <label for="inputEmail4" class="text-dark">Toppings Name</label>
-                                    <input  type="text" name="top" class="form-control" id="inputEmail4" required
+                                    <input  type="text"  class="form-control" id="topping" required
                                         placeholder="Topping name">
                                 </div>
                                 <div class="form-group col-md-6">
                                     <label for="inputPassword4" class="text-dark">Topping Price</label>
-                                    <input type="number" min="0" min="0" class="form-control" name="topPrice" id="inputPassword4" required
+                                    <input type="number" min="0" min="0" class="form-control"  id="price" required
                                         placeholder="5000">
                                 </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="inputEmail4" class="text-dark">Toppings Name</label>
+                                    <input  type="text" name="top" class="form-control" id="newtopping" required
+                                        placeholder="Topping name">
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="inputPassword4" class="text-dark">Topping Price</label>
+                                    <input type="number" min="0" min="0" class="form-control" name="topPrice" id="newprice" required
+                                        placeholder="5000">
+                                </div>
+                            </div>
+                            <div class="form-group col-lg-12" >
+                               
+    
+   
+  <input type="button" value="Save" onclick="savedata()">
+   <input type="button" value="Show data" onclick="displayData()">
+   
+ 
+<script type="text/javascript">
+// var arrtopping=new Array();
+var arrprice=new Array();
+ 
+function savedata(){
+    // var topping = document.getElementById('topping').value;
+    var price = document.getElementById('price').value;
+    // arrtopping[arrtopping.length]=topping;    
+    arrprice[arrprice.length]=price;
+  }
+   
+ 
+function displayData() 
+{
+//   var newtopping=[...arrtopping];
+  var newprice=[...arrprice];
+ 
+//   document.getElementById('newtopping').setAttribute('value', newtopping);
+  document.getElementById('newprice').setAttribute('value', newprice);
+
+}
+ 
+ 
+</script>
                             </div>
                             <div class="form-row">
                                 <div class="form-group col-md-12">

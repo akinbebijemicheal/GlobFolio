@@ -221,15 +221,10 @@ exports.deleteAds = async (req, res, next) => {
             id: ad.id,
           },
         });
-        res.status(200).json({
-          status: true,
-          message: "Ads Deleted successfully",
-        });
+        res.redirect("/dashboard/admin/getAllAds")
       } else {
-        res.status(404).json({
-          status: false,
-          message: "Ad not found",
-        });
+        req.flash("error","ads not found")
+        res.redirect("/dashboard/admin/getAllAds")
       }
     });
   } catch (error) {

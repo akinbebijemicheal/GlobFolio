@@ -56,6 +56,11 @@
                                     <td>
                                         <%= new Date(data[i].createdAt).toDateString()%>
                                     </td>
+                                    <td>
+                                        <a href="/dashboard/admin/delete-Ads/<%= data[i].id%>">
+                                            <img src="assets4/img/delete.png" style="height:15px;width:15px;" draggable="false" alt="">
+                                        </a>
+                                    </td>
                                 </tr>
                                 <% } }else{ %>
                                     <tr>

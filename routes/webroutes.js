@@ -923,7 +923,7 @@ checkRole(["admin"]),
 router.put("/updateAds/:id", userAuth, upload.single("image"), updateAds);
 router.get("/dashboard/admin/getAllAds", userAuth, checkRole(["admin"]), getAllAds);
 router.get("/getAdsById/:id", userAuth, getAdById);
-router.delete("/deleteAds/:id", userAuth, deleteAds);
+router.get("/dashboard/admin/delete-Ads/:id", userAuth, deleteAds);
 //---------------------------------------------------------------------------------
 //-----------------------Food Order---------------------------------------
 router.get("/dashboard/admin/food-get-orders", userAuth,  checkRole(["admin"]), viewAdminOrder );
