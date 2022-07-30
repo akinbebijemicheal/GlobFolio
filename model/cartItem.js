@@ -17,7 +17,7 @@ const CartItem = db.define('fooditem', {
     },
     ordered:{
         type: Sequelize.BOOLEAN,
-        default: false
+        defaultValue: false
     },
     userId: {
         type: Sequelize.STRING(10),

@@ -1,5 +1,6 @@
 const Product = require('../../model/food');
 const Extras = require('../../model/foodextras');
+const Review = require("../../model/reviewfood")
 const Package = require("../../model/foodpackaging")
 const Image = require('../../model/foodimage')
 const cloudinary = require('../../util/cloudinary');
@@ -197,6 +198,20 @@ exports.getFoodAppServices = async(req, res, next) => {
                     attributes: {
                         exclude: ["createdAt", "updatedAt"]
                     }
+                },
+                {
+                    model: Review,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    },
+                    include:[
+                        {
+                            model: User,
+                            attributes: {
+                                exclude: ["createdAt", "updatedAt"]
+                            },
+                        }
+                    ]
                 }
             ],
         order: [
@@ -259,6 +274,20 @@ exports.getFoodServices = async(req, res, next) => {
                     attributes: {
                         exclude: ["createdAt", "updatedAt"]
                     }
+                },
+                {
+                    model: Review,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    },
+                    include:[
+                        {
+                            model: User,
+                            attributes: {
+                                exclude: ["createdAt", "updatedAt"]
+                            },
+                        }
+                    ]
                 }
             ],
         order: [
@@ -365,6 +394,20 @@ exports.getFoodByTitle = async(req, res, next) => {
                     attributes: {
                         exclude: ["createdAt", "updatedAt"]
                     }
+                },
+                {
+                    model: Review,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    },
+                    include:[
+                        {
+                            model: User,
+                            attributes: {
+                                exclude: ["createdAt", "updatedAt"]
+                            },
+                        }
+                    ]
                 }
             ]}
         )
@@ -408,6 +451,20 @@ exports.getFoodById = async(req, res, next) => {
                 attributes: {
                     exclude: ["createdAt", "updatedAt"]
                 }
+            },
+            {
+                model: Review,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                },
+                include:[
+                    {
+                        model: User,
+                        attributes: {
+                            exclude: ["createdAt", "updatedAt"]
+                        },
+                    }
+                ]
             }
         ]})
        
@@ -451,6 +508,20 @@ exports.getFoodByIdAdmin = async(req, res, next) => {
                 attributes: {
                     exclude: ["createdAt", "updatedAt"]
                 }
+            },
+            {
+                model: Review,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                },
+                include:[
+                    {
+                        model: User,
+                        attributes: {
+                            exclude: ["createdAt", "updatedAt"]
+                        },
+                    }
+                ]
             }
         ]})
        
