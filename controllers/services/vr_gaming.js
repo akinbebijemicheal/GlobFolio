@@ -1,6 +1,7 @@
 const Product = require('../../model/vr_gaming');
 const Image = require('../../model/vr_gaming_image');
 const cloudinary = require('../../util/cloudinary');
+const Review = require("../../model/reviewgame")
 const User = require('../../model/user');
 const fs = require('fs')
 const store = require('store')
@@ -82,6 +83,20 @@ exports.getGamingAppServices = async(req, res, next) => {
                 attributes: {
                     exclude: ["createdAt", "updatedAt"]
                 }
+            },
+            {
+                model: Review,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                },
+                include:[
+                    {
+                        model: User,
+                        attributes: {
+                            exclude: ["createdAt", "updatedAt"]
+                        },
+                    }
+                ]
             }
         ]
         });
@@ -160,6 +175,20 @@ exports.getGamingServices = async(req, res, next) => {
                 attributes: {
                     exclude: ["createdAt", "updatedAt"]
                 }
+            },
+            {
+                model: Review,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                },
+                include:[
+                    {
+                        model: User,
+                        attributes: {
+                            exclude: ["createdAt", "updatedAt"]
+                        },
+                    }
+                ]
             }
         ]
         });
@@ -270,6 +299,20 @@ exports.getGamingByTitle = async(req, res, next) => {
                 attributes: {
                     exclude: ["createdAt", "updatedAt"]
                 }
+            },
+            {
+                model: Review,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                },
+                include:[
+                    {
+                        model: User,
+                        attributes: {
+                            exclude: ["createdAt", "updatedAt"]
+                        },
+                    }
+                ]
             }
         ]
     })
@@ -302,6 +345,20 @@ exports.getGameById = async(req, res, next) => {
                 attributes: {
                     exclude: ["createdAt", "updatedAt"]
                 }
+            },
+            {
+                model: Review,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                },
+                include:[
+                    {
+                        model: User,
+                        attributes: {
+                            exclude: ["createdAt", "updatedAt"]
+                        },
+                    }
+                ]
             }
         ]
     })
@@ -334,6 +391,20 @@ exports.getGameByIdAdmin = async(req, res, next) => {
                 attributes: {
                     exclude: ["createdAt", "updatedAt"]
                 }
+            },
+            {
+                model: Review,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                },
+                include:[
+                    {
+                        model: User,
+                        attributes: {
+                            exclude: ["createdAt", "updatedAt"]
+                        },
+                    }
+                ]
             }
         ]
     })

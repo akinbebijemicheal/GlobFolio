@@ -1,6 +1,7 @@
 const Product = require('../../model/cinema');
 const Image = require("../../model/cinemaimage");
 const cloudinary = require('../../util/cloudinary');
+const Review = require("../../model/reviewcinema")
 // const Time = require("../../model/cinematime");
 const Snack = require("../../model/cinemasnacks")
 const User = require('../../model/user');
@@ -140,7 +141,22 @@ exports.getCinemaAppServices = async(req, res, next) => {
                     attributes: {
                         exclude: ["createdAt", "updatedAt"]
                     }
+                },
+                {
+                    model: Review,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    },
+                    include:[
+                        {
+                            model: User,
+                            attributes: {
+                                exclude: ["createdAt", "updatedAt"]
+                            },
+                        }
+                    ]
                 }
+
             ]
         });
 
@@ -168,6 +184,20 @@ exports.getCinemaAppServices = async(req, res, next) => {
                     attributes: {
                         exclude: ["createdAt", "updatedAt"]
                     }
+                },
+                {
+                    model: Review,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    },
+                    include:[
+                        {
+                            model: User,
+                            attributes: {
+                                exclude: ["createdAt", "updatedAt"]
+                            },
+                        }
+                    ]
                 }
             ]
         });
@@ -192,6 +222,20 @@ exports.getCinemaAppServices = async(req, res, next) => {
                     attributes: {
                         exclude: ["createdAt", "updatedAt"]
                     }
+                },
+                {
+                    model: Review,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    },
+                    include:[
+                        {
+                            model: User,
+                            attributes: {
+                                exclude: ["createdAt", "updatedAt"]
+                            },
+                        }
+                    ]
                 }
             ]
         });
@@ -216,6 +260,20 @@ exports.getCinemaAppServices = async(req, res, next) => {
                     attributes: {
                         exclude: ["createdAt", "updatedAt"]
                     }
+                },
+                {
+                    model: Review,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    },
+                    include:[
+                        {
+                            model: User,
+                            attributes: {
+                                exclude: ["createdAt", "updatedAt"]
+                            },
+                        }
+                    ]
                 }
             ]
         });
@@ -302,6 +360,20 @@ exports.getCinemaServices = async(req, res, next) => {
                     attributes: {
                         exclude: ["createdAt", "updatedAt"]
                     }
+                },
+                {
+                    model: Review,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    },
+                    include:[
+                        {
+                            model: User,
+                            attributes: {
+                                exclude: ["createdAt", "updatedAt"]
+                            },
+                        }
+                    ]
                 }
             ]
         });
@@ -330,6 +402,20 @@ exports.getCinemaServices = async(req, res, next) => {
                     attributes: {
                         exclude: ["createdAt", "updatedAt"]
                     }
+                },
+                {
+                    model: Review,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    },
+                    include:[
+                        {
+                            model: User,
+                            attributes: {
+                                exclude: ["createdAt", "updatedAt"]
+                            },
+                        }
+                    ]
                 }
             ]
         });
@@ -354,6 +440,20 @@ exports.getCinemaServices = async(req, res, next) => {
                     attributes: {
                         exclude: ["createdAt", "updatedAt"]
                     }
+                },
+                {
+                    model: Review,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    },
+                    include:[
+                        {
+                            model: User,
+                            attributes: {
+                                exclude: ["createdAt", "updatedAt"]
+                            },
+                        }
+                    ]
                 }
             ]
         });
@@ -378,6 +478,20 @@ exports.getCinemaServices = async(req, res, next) => {
                     attributes: {
                         exclude: ["createdAt", "updatedAt"]
                     }
+                },
+                {
+                    model: Review,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"]
+                    },
+                    include:[
+                        {
+                            model: User,
+                            attributes: {
+                                exclude: ["createdAt", "updatedAt"]
+                            },
+                        }
+                    ]
                 }
             ]
         });
@@ -456,6 +570,20 @@ exports.getCinemaByTitle = async(req, res, next) => {
                 attributes: {
                     exclude: ["createdAt", "updatedAt"]
                 }
+            },
+            {
+                model: Review,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                },
+                include:[
+                    {
+                        model: User,
+                        attributes: {
+                            exclude: ["createdAt", "updatedAt"]
+                        },
+                    }
+                ]
             }
         ]
     })
@@ -493,6 +621,20 @@ exports.getCinemaById = async(req, res, next) => {
                 attributes: {
                     exclude: ["createdAt", "updatedAt"]
                 }
+            },
+            {
+                model: Review,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                },
+                include:[
+                    {
+                        model: User,
+                        attributes: {
+                            exclude: ["createdAt", "updatedAt"]
+                        },
+                    }
+                ]
             }
         ]
     })
@@ -530,6 +672,20 @@ exports.getCinemaByIdAdmin = async(req, res, next) => {
                 attributes: {
                     exclude: ["createdAt", "updatedAt"]
                 }
+            },
+            {
+                model: Review,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                },
+                include:[
+                    {
+                        model: User,
+                        attributes: {
+                            exclude: ["createdAt", "updatedAt"]
+                        },
+                    }
+                ]
             }
         ]
     })

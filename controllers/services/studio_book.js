@@ -1,5 +1,6 @@
 const Product = require('../../model/studio_book');
 const Image = require('../../model/studio_book_image');
+const Review = require("../../model/reviewstudio")
 const cloudinary = require('../../util/cloudinary');
 const User = require('../../model/user');
 const fs = require('fs')
@@ -83,6 +84,20 @@ exports.getStudioAppServices = async(req, res, next) => {
                 attributes: {
                     exclude: ["createdAt", "updatedAt"]
                 }
+            },
+            {
+                model: Review,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                },
+                include:[
+                    {
+                        model: User,
+                        attributes: {
+                            exclude: ["createdAt", "updatedAt"]
+                        },
+                    }
+                ]
             }
         ]
     });
@@ -156,6 +171,20 @@ exports.getStudioServices = async(req, res, next) => {
                 attributes: {
                     exclude: ["createdAt", "updatedAt"]
                 }
+            },
+            {
+                model: Review,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                },
+                include:[
+                    {
+                        model: User,
+                        attributes: {
+                            exclude: ["createdAt", "updatedAt"]
+                        },
+                    }
+                ]
             }
         ]
     });
@@ -261,6 +290,20 @@ exports.getStudioByTitle = async(req, res, next) => {
                 attributes: {
                     exclude: ["createdAt", "updatedAt"]
                 }
+            },
+            {
+                model: Review,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                },
+                include:[
+                    {
+                        model: User,
+                        attributes: {
+                            exclude: ["createdAt", "updatedAt"]
+                        },
+                    }
+                ]
             }
         ]
     })
@@ -293,6 +336,20 @@ exports.getStudioById = async(req, res, next) => {
                 attributes: {
                     exclude: ["createdAt", "updatedAt"]
                 }
+            },
+            {
+                model: Review,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                },
+                include:[
+                    {
+                        model: User,
+                        attributes: {
+                            exclude: ["createdAt", "updatedAt"]
+                        },
+                    }
+                ]
             }
         ]
     })
@@ -324,6 +381,20 @@ exports.getStudioByIdAdmin = async(req, res, next) => {
                 attributes: {
                     exclude: ["createdAt", "updatedAt"]
                 }
+            },
+            {
+                model: Review,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                },
+                include:[
+                    {
+                        model: User,
+                        attributes: {
+                            exclude: ["createdAt", "updatedAt"]
+                        },
+                    }
+                ]
             }
         ]
     })

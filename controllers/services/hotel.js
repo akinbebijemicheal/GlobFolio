@@ -1,6 +1,7 @@
 const Product = require('../../model/hotel');
 const Image = require("../../model/hotelimage")
 const cloudinary = require('../../util/cloudinary');
+const Review = require("../../model/reviewhotel")
 const User = require('../../model/user');
 // const Amenity = require('../../model/amenities');
 const Extras = require('../../model/hotelextras')
@@ -150,6 +151,20 @@ exports.getHotelAppServices = async(req, res, next) => {
                 attributes: {
                     exclude: ["createdAt", "updatedAt"]
                 }
+            },
+            {
+                model: Review,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                },
+                include:[
+                    {
+                        model: User,
+                        attributes: {
+                            exclude: ["createdAt", "updatedAt"]
+                        },
+                    }
+                ]
             }
         ]});
 
@@ -205,6 +220,20 @@ exports.getHotelServices = async(req, res, next) => {
                 attributes: {
                     exclude: ["createdAt", "updatedAt"]
                 }
+            },
+            {
+                model: Review,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                },
+                include:[
+                    {
+                        model: User,
+                        attributes: {
+                            exclude: ["createdAt", "updatedAt"]
+                        },
+                    }
+                ]
             }
         ]});
 
@@ -286,58 +315,64 @@ exports.hotelCount = async (rea, res, next)=>{
     }
 }
 
-exports.getHotelForUser = async(req, res, next) => {
-    try {
-        var hotel = await Product.findAll({ where: {
-            userid: req.user.id,
-            productType: 'hotel'
-        }, include:[
-            {
-                model: User,
-                attributes: {
-                    exclude: ["createdAt", "updatedAt"]
-                }
-            },
-            // {
-            //     model: Amenity,
-            //     attributes: {
-            //         exclude: ["createdAt", "updatedAt"]
-            //     }
-            // },
-            {
-                model: Extras,
-                attributes: {
-                    exclude: ["createdAt", "updatedAt"]
-                }
-            }
-        ]})
+// exports.getHotelForUser = async(req, res, next) => {
+//     try {
+//         var hotel = await Product.findAll({ where: {
+//             userid: req.user.id,
+//             productType: 'hotel'
+//         }, include:[
+//             {
+//                 model: User,
+//                 attributes: {
+//                     exclude: ["createdAt", "updatedAt"]
+//                 }
+//             },
+//             // {
+//             //     model: Amenity,
+//             //     attributes: {
+//             //         exclude: ["createdAt", "updatedAt"]
+//             //     }
+//             // },
+//             {
+//                 model: Extras,
+//                 attributes: {
+//                     exclude: ["createdAt", "updatedAt"]
+//                 }
+//             },
+//             {
+//                 model: Review,
+//                 attributes: {
+//                     exclude: ["createdAt", "updatedAt"]
+//                 }
+//             }
+//         ]})
         
-        if(hotel){
-            for(let i=0; i<hotel.length; i++){
-                hotel[i].img_id = JSON.parse(hotel[i].img_id);
-                hotel[i].img_url = JSON.parse(hotel[i].img_url);
-                // hotel[i].amenities = JSON.parse(hotel[i].amenities);
-                // hotel[i].room_pricing = JSON.parse(hotel[i].room_pricing);
-            }
-            res.status(200).json({
-                status: true,
-                data: hotel
-            });
-        } else{
-            res.status(404).json({
-                status: false,
-                message: "Post not Found"
-            })
-        }
-    } catch (error) {
-        console.error(error)
-        return res.status(500).json({
-             status: false,
-             message: "An error occured",
-             error: error
-         })
-    }
-}
+//         if(hotel){
+//             for(let i=0; i<hotel.length; i++){
+//                 hotel[i].img_id = JSON.parse(hotel[i].img_id);
+//                 hotel[i].img_url = JSON.parse(hotel[i].img_url);
+//                 // hotel[i].amenities = JSON.parse(hotel[i].amenities);
+//                 // hotel[i].room_pricing = JSON.parse(hotel[i].room_pricing);
+//             }
+//             res.status(200).json({
+//                 status: true,
+//                 data: hotel
+//             });
+//         } else{
+//             res.status(404).json({
+//                 status: false,
+//                 message: "Post not Found"
+//             })
+//         }
+//     } catch (error) {
+//         console.error(error)
+//         return res.status(500).json({
+//              status: false,
+//              message: "An error occured",
+//              error: error
+//          })
+//     }
+// }
 
 exports.getHotelByTitle = async(req, res, next) => {
     const {title}= req.body;
@@ -362,6 +397,20 @@ exports.getHotelByTitle = async(req, res, next) => {
                 attributes: {
                     exclude: ["createdAt", "updatedAt"]
                 }
+            },
+            {
+                model: Review,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                },
+                include:[
+                    {
+                        model: User,
+                        attributes: {
+                            exclude: ["createdAt", "updatedAt"]
+                        },
+                    }
+                ]
             }
         ]})
         
@@ -405,6 +454,20 @@ exports.getHotelById = async(req, res, next) => {
                 attributes: {
                     exclude: ["createdAt", "updatedAt"]
                 }
+            },
+            {
+                model: Review,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                },
+                include:[
+                    {
+                        model: User,
+                        attributes: {
+                            exclude: ["createdAt", "updatedAt"]
+                        },
+                    }
+                ]
             }
         ]})
         
@@ -448,6 +511,20 @@ exports.getHotelByIdAdmin = async(req, res, next) => {
                 attributes: {
                     exclude: ["createdAt", "updatedAt"]
                 }
+            },
+            {
+                model: Review,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                },
+                include:[
+                    {
+                        model: User,
+                        attributes: {
+                            exclude: ["createdAt", "updatedAt"]
+                        },
+                    }
+                ]
             }
         ]})
         

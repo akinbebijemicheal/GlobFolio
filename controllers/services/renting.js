@@ -1,5 +1,6 @@
 const Product = require('../../model/renting');
 const Image = require('../../model/rentingimage');
+const Review = require("../../model/reviewrent")
 const cloudinary = require('../../util/cloudinary');
 const User = require('../../model/user');
 const fs = require('fs')
@@ -81,6 +82,20 @@ exports.getRentAppServices = async(req, res, next) => {
                 attributes: {
                     exclude: ["createdAt", "updatedAt"]
                 }
+            },
+            {
+                model: Review,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                },
+                include:[
+                    {
+                        model: User,
+                        attributes: {
+                            exclude: ["createdAt", "updatedAt"]
+                        },
+                    }
+                ]
             }
         ]
     });
@@ -155,6 +170,20 @@ exports.getRentAdminServices = async(req, res, next) => {
                 attributes: {
                     exclude: ["createdAt", "updatedAt"]
                 }
+            },
+            {
+                model: Review,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                },
+                include:[
+                    {
+                        model: User,
+                        attributes: {
+                            exclude: ["createdAt", "updatedAt"]
+                        },
+                    }
+                ]
             }
         ]
     });
@@ -262,6 +291,20 @@ exports.getRentByTitle = async(req, res, next) => {
                 attributes: {
                     exclude: ["createdAt", "updatedAt"]
                 }
+            },
+            {
+                model: Review,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                },
+                include:[
+                    {
+                        model: User,
+                        attributes: {
+                            exclude: ["createdAt", "updatedAt"]
+                        },
+                    }
+                ]
             }
         ]
     })
@@ -295,6 +338,20 @@ exports.getRentById = async(req, res, next) => {
                 attributes: {
                     exclude: ["createdAt", "updatedAt"]
                 }
+            },
+            {
+                model: Review,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                },
+                include:[
+                    {
+                        model: User,
+                        attributes: {
+                            exclude: ["createdAt", "updatedAt"]
+                        },
+                    }
+                ]
             }
         ]
     })
@@ -329,6 +386,20 @@ exports.getRentByIdAdmin = async(req, res, next) => {
                 attributes: {
                     exclude: ["createdAt", "updatedAt"]
                 }
+            },
+            {
+                model: Review,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt"]
+                },
+                include:[
+                    {
+                        model: User,
+                        attributes: {
+                            exclude: ["createdAt", "updatedAt"]
+                        },
+                    }
+                ]
             }
         ]
     })
