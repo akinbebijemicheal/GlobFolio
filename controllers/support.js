@@ -25,10 +25,10 @@ exports.support = async(req, res, next)=>{
     try {
         const mailOptions = {
             from:  ` ${name} <${email}>`,
-            to: `"Deepend Support" <${process.env.SUPPORT_EMAIL}>`,
+            to: `"Deepend Support" <${process.env.E_TEAM}>`,
             envelope:{
-                from: `"Deepend Support" <${process.env.SUPPORT_EMAIL}>`,
-                to: ` ${name} <${email}>`
+                from: `"Deepend Support" <${process.env.E_TEAM}>`,
+                to: `"Deepend Support" <${process.env.SUPPORT_EMAIL}>`,
             },
             subject: `${subject}`,
             html: `
