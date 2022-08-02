@@ -592,20 +592,20 @@ exports.deleteFood = async(req, res, next)=>{
             include: [
                 {
                     model: Extras,
-                    as: "extra"
+                    
                 },
                 {
                     model: Package,
-                    as: "package"
+                    
                 },
                 {
                     model: Image,
-                    as: "image"
+                    
                 }
             ]
         }).then(async(food)=>{
             if(food){
-                if(food.extra?.length){
+                if(food.foodextras?.length){
                     await Extras.findAll({
                     where:{
                         foodId: id
@@ -622,7 +622,7 @@ exports.deleteFood = async(req, res, next)=>{
                     }
                 })
                 }
-                if(food.package?.length){
+                if(food.foodpackagings?.length){
                     await Package.findAll({
                     where:{
                         foodId: id
@@ -640,7 +640,7 @@ exports.deleteFood = async(req, res, next)=>{
                 })
                 }
                 
-                if(food.image?.length){
+                if(food.foodimages?.length){
                     await Image.findAll({
                     where:{
                         foodId: id
