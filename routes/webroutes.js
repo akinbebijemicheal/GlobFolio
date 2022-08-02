@@ -63,6 +63,7 @@ const {
   uploadFoodImage,
   RemoveFoodImage,
   foodCount,
+  deleteFood,
 } = require("../controllers/services/food");
 const {
   createHotelService,
@@ -990,6 +991,8 @@ router.post(
 );
 
 //----------------------------------------------------------------------------------------
+
+router.delete("/deleteFood/:foodId", userAuth, deleteFood);
 
 //---------------------------------------Remove Service Image-----------------------------
 router.delete(
