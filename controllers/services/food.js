@@ -593,23 +593,23 @@ exports.deleteFood = async(req, res, next)=>{
             include: [
                 {
                     model: Extras,
-                    as: "extra"
+                    
                 },
                 {
                     model: Package,
-                    as: "package"
+                    
                 },
                 {
                     model: Image,
-                    as: "image"
+                    
                 }
             ]
         }).then(async(food)=>{
             if(food){
-                if(food.extra?.length){
+                if(food.foodextras?.length){
                     await Extras.findAll({
                     where:{
-                        foodId: id
+                        foodId: food.id
                     }
                 }).then(async(extras)=>{
                     if(extras?.length){
@@ -623,10 +623,10 @@ exports.deleteFood = async(req, res, next)=>{
                     }
                 })
                 }
-                if(food.package?.length){
+                if(food.foodpackagings?.length){
                     await Package.findAll({
                     where:{
-                        foodId: id
+                        foodId: food.id
                     }
                 }).then(async(package)=>{
                     if(package?.length){
@@ -641,10 +641,10 @@ exports.deleteFood = async(req, res, next)=>{
                 })
                 }
                 
-                if(food.image?.length){
+                if(food.foodimages?.length){
                     await Image.findAll({
                     where:{
-                        foodId: id
+                        foodId: food.id
                     }
                 }).then(async(image)=>{
                     if(image?.length){
@@ -661,7 +661,7 @@ exports.deleteFood = async(req, res, next)=>{
 
                 await Product.destroy({
                     where:{
-                        id: id
+                        id: food.id
                     }
                 })
                 res.json({
