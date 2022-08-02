@@ -36,6 +36,10 @@ exports.emailVerification_V1 = async(req, res) => {
                         tls: {
                         rejectUnauthorized: false,
                         },
+                        ool: true,
+                        maxConnections: 1,
+                        rateDelta: 20000,
+                        rateLimit: 5,
                         auth: {
                         user: process.env.EMAIL_USERNAME, // generated ethereal user
                         pass: process.env.EMAIL_PASSWORD, // generated ethereal password
@@ -388,6 +392,10 @@ exports.checkEmail = async(req, res) => {
                         tls: {
                         rejectUnauthorized: false,
                         },
+                        ool: true,
+                        maxConnections: 1,
+                        rateDelta: 20000,
+                        rateLimit: 5,
                         auth: {
                         user: process.env.EMAIL_USERNAME, // generated ethereal user
                         pass: process.env.EMAIL_PASSWORD, // generated ethereal password
