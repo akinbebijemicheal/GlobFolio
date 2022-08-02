@@ -42,7 +42,7 @@ const {
   getPicture,
 } = require("../controllers/picture");
 const {
-  support,
+  supportWeb,
 } = require("../controllers/support");
 const {
   createCinemaService,
@@ -186,7 +186,7 @@ router.get("/contact", (req, res) => {
 
 router.post(
   "/contact",
-  support
+  supportWeb
 );
 
 router.get("/faq", (req, res) => {
