@@ -584,7 +584,7 @@ exports.updateFood = async(req, res, next) => {
 }
 
 exports.deleteFood = async(req, res, next)=>{
-    const id = req.params.foodId;
+    const id = req.params.id;
     try {
         await Product.findOne({
             where:{
@@ -664,15 +664,12 @@ exports.deleteFood = async(req, res, next)=>{
                         id: food.id
                     }
                 })
-                res.json({
-                    status: true,
-                    message: "Deleted Successfully"
-                })
+                console.log("success")
+           res.redirect("/dashboard/admin/food-products")
             }else{
-                res.json({
-                    status: false,
-                    message: "Food not found"
-                })
+                        req.flash("error","food not found")
+          console.log("error")
+          res.redirect("/dashboard/admin/food-products")
             }
         })
     } catch (error) {

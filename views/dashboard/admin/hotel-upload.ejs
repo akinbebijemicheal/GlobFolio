@@ -37,12 +37,7 @@
                                         placeholder="No 05, Apt 5, Deepend Avenue">
                                 </div>
                             </div>
-                            <div class="form-row">
-                                <div class="form-group col-md-4">
-                                    <label for="inputName" class="text-dark">Available Rooms</label>
-                                    <input required type="number" min="0" min="0" name="available_room" class="form-control"
-                                        id="inputPassword4" placeholder="15">
-                                </div>
+                            <div class="form-row" id="topping">
                                 <div class="form-group col-md-4">
                                     <label for="inputName" class="text-dark">Rooms</label>
                                     <input required type="number" min="0" min="0" name="room" class="form-control"
@@ -53,7 +48,52 @@
                                     <input required type="number" min="0" min="0" name="price" class="form-control"
                                         id="inputPassword4" placeholder="5000">
                                 </div>
-                                
+                                <div class="form-group col-md-4">
+                                    <label for="inputName" class="text-dark">Available Rooms</label>
+                                    <input required type="number" min="0" min="0" name="available_room" class="form-control"
+                                        id="inputPassword4" placeholder="15">
+                                </div>
+                            </div>
+                            <div class="form-group col-lg-12" >
+                               
+    
+                                <button id="toppingAlternate" class="btn btn-primary">Add Alternate Snack</button>
+   
+  <!-- <input type="button" value="Save" onclick="savedata()">
+   <input type="button" value="Show data" onclick="displayData()"> -->
+   
+ 
+<script type="text/javascript">
+
+$('#toppingAlternate').on('click',function() {
+
+$('#topping').append('<div class="form-group col-md-4"> <label for="inputName" class="text-dark">Rooms</label>  <input required type="number" min="0" min="0" name="room" class="form-control"   id="inputPassword4" placeholder="30">   </div><div class="form-group col-md-4">          <label for="inputName" class="text-dark">Price</label>  <input required type="number" min="0" min="0" name="price" class="form-control"         id="inputPassword4" placeholder="5000">   </div>   <div class="form-group col-md-4">    <label for="inputName" class="text-dark">Available Rooms</label>  <input required type="number" min="0" min="0" name="available_room" class="form-control"    id="inputPassword4" placeholder="15">    </div>');
+
+});
+
+//  var arrtopping=new Array();
+// var arrprice=new Array();
+ 
+// function savedata(){
+//      var topping = document.getElementById('topping').value;
+//     var price = document.getElementById('price').value;
+//      arrtopping[arrtopping.length]=topping;    
+//     arrprice[arrprice.length]=price;
+//   }
+   
+ 
+// function displayData() 
+// {
+//   var newtopping=[...arrtopping];
+//   var newprice=[...arrprice];
+ 
+//    document.getElementById('newtopping').setAttribute('value', newtopping);
+//   document.getElementById('newprice').setAttribute('value', newprice);
+
+// }
+ 
+ 
+</script>
                             </div>
                             <div class="form-row">
                                 <div class="form-group col-md-6">
