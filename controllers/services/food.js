@@ -7,6 +7,7 @@ const cloudinary = require('../../util/cloudinary');
 const User = require('../../model/user');
 const fs = require('fs');
 const store = require('store');
+const Food = require('../../model/food');
 
 
 
@@ -658,3 +659,43 @@ exports.RemoveFoodImage = async(req, res, next) => {
         next(error);
     }
 }
+
+// exports.deleteFood = async (req, res, next) => {
+//     //const {title, ref_link} = req.body
+//     try {
+//       var food = await Product.findOne({
+//         where: {
+//           id: req.params.id,
+//         }
+//       }).then(async (food) => {
+//         if (food) {
+//         //   await cloudinary.uploader.destroy(Image.img_id);
+//           console.log(food)
+//           await Product.destroy({
+//             where: {
+//               id: req.params.id,
+//             }, include:[
+//                 {
+//                     model: Extras
+//                 },
+//                 {
+//                     model: Package
+//                 },
+//                 {
+//                     model: Image
+//                 }
+//             ]
+//           });
+//           console.log("success")
+//           res.redirect("/dashboard/admin/food-products")
+//         } else {
+//           req.flash("error","food not found")
+//           console.log("error")
+//           res.redirect("/dashboard/admin/food-products")
+//         }
+//       });
+//     } catch (error) {
+//       console.error(error);
+//       return next(error);
+//     }
+//   };

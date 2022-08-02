@@ -11,7 +11,7 @@
                     <!-- begin page title -->
                     <div class="d-block d-lg-flex flex-nowrap align-items-center">
                         <div class="page-title mr-4 pr-4 border-right">
-                            <h4 class="hey">View All Ads</h4>
+                            <h4 class="hey">View All Transactions</h4>
                         </div>
                     </div>
                     <!-- end page title -->
@@ -37,10 +37,14 @@
                         <table border="1" class="open-section-2 table">
                             <tr class="mode-1">
                                 <th width="50">S/N</th>
-                                <th>Title</th>
-                                <th>Ref link</th>
+                                <th>Transaction ID</th>
+                                <th>User ID</th>
+                                <th>Description</th>
+                                <th>Ref No</th>
+                                <th>Product Type</th>
+                                <th>Price</th>
+                                <th>Status</th>
                                 <th>Created At</th>
-                                <th>Actions</th>
                             </tr>
 
                             <% if(data.length){ for(var i=0; i< data.length; i++) {%>
@@ -49,10 +53,25 @@
                                         <%= (i+1) %>
                                     </td>
                                     <td>
-                                        <%= data[i].title%>
+                                        <%= data[i].id%>
                                     </td>
                                     <td>
-                                        <%= data[i].ref_link%>
+                                        <%= data[i].userId%>
+                                    </td>
+                                    <td>
+                                        <%= data[i].description%>
+                                    </td>
+                                    <td>
+                                        <%= data[i].ref_no%>
+                                    </td>
+                                    <td>
+                                        <%= data[i].ProductType%>
+                                    </td>
+                                    <td>
+                                        <%= data[i].price%>
+                                    </td>
+                                    <td>
+                                        <%= data[i].status%>
                                     </td>
                                     <td>
                                         <%= new Date(data[i].createdAt).toDateString()%>
@@ -65,12 +84,12 @@
                                 </tr>
                                 <% } }else{ %>
                                     <tr>
-                                        <td>no data available</td>
+                                        <td>no transaction available</td>
                                     </tr>
                                     <% } %>
 
                         </table>
-                        <div class="view">View all Ads<i class="bi bi-arrow-right"></i></div>
+                        <div class="view">View all Transactions<i class="bi bi-arrow-right"></i></div>
                     </div>
                 </div>
             </div>

@@ -46,7 +46,7 @@
                             <th>Price</th>
                             <th>Description</th>
                             <th>CreatedAt</th>
-                            <th>View</th>
+                            <th>Actions</th>
                         </tr>
                         <% if(data){ for(var i=0; i<data.length; i++) {%>
                             <tr class="mode-2">
@@ -68,6 +68,9 @@
                                 <td>
                                     <a href="/dashboard/admin/food-view/<%= data[i].id%>">
                                         <img src="assets4/img/edit.png" style="height:15px;width:15px;" draggable="false" alt="">
+                                    </a>
+                                    <a href="/dashboard/admin/deleteFood/<%= data[i].id%>">
+                                        <img src="assets4/img/delete.png" style="height:15px;width:15px;" draggable="false" alt="">
                                     </a>
                                 </td>
                             </tr>

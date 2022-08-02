@@ -259,10 +259,9 @@ transporter.sendMail(mailOptions, function(err, info) {
         console.log(err)
     } else {
         console.log(info);
-        res.json({
-            status: true,
-            message: "Message sent!"
-        })
+        req.flash("success", "Message sent successfully")
+        res.redirect("/contact")
+        
     }
 });
 

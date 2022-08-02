@@ -42,6 +42,9 @@ const {
   getPicture,
 } = require("../controllers/picture");
 const {
+  support,
+} = require("../controllers/support");
+const {
   createCinemaService,
   getCinemaServices,
   getCinemaByTitle,
@@ -63,6 +66,7 @@ const {
   uploadFoodImage,
   RemoveFoodImage,
   foodCount,
+  deleteFood,
 } = require("../controllers/services/food");
 const {
   createHotelService,
@@ -179,6 +183,11 @@ router.get("/about", (req, res) => {
 router.get("/contact", (req, res) => {
   res.render("base/contact");
 });
+
+router.post(
+  "/contact",
+  support
+);
 
 router.get("/faq", (req, res) => {
   res.render("base/faq");
@@ -628,7 +637,7 @@ router.get("/dashboard/admin/delete-user/:id", async (req, res) => {
 
 router.get("/dashboard/admin/delete-rider/:id", async (req, res) => {
   await deleteRider(req, res);
-  res.redirect("/dashboard/admin/");
+  res.redirect("/dashboard/admin/get-riders");
 });
 
 //-----------------------------------------------------------------------------------------------
@@ -1006,6 +1015,13 @@ router.delete(
   RemoveFoodImage
 );
 
+router.get(
+  "/dashboard/admin/deleteFood/:id",
+  userAuth,
+  checkRole(["admin"]),
+  deleteFood
+);
+
 router.delete(
   "/deletehotelimage/:imageId",
   userAuth,
@@ -1134,7 +1150,7 @@ router.get("/getFee/:feeId", userAuth, getFeeById);
 router.delete("/deleteFee/:feeId", userAuth, deleteFee);
 
 //----------------------------Transactions----------------------------------
-router.get("/getAllTransactions", userAuth, getAllTransactions)
+router.get("/dashboard/admin/getAllTransactions", userAuth, getAllTransactions);
 
 router.get("/VerifyPay/hotel", hotelverify);
 router.get("/VerifyPay/food", Checkout);
