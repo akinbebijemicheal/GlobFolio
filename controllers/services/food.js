@@ -583,6 +583,104 @@ exports.updateFood = async(req, res, next) => {
     }
 }
 
+exports.deleteFood = async(req, res, next)=>{
+    const id = req.params.foodId;
+    try {
+        await Product.findOne({
+            where:{
+                id: id
+            }, 
+            include: [
+                {
+                    model: Extras,
+                    as: "extra"
+                },
+                {
+                    model: Package,
+                    as: "package"
+                },
+                {
+                    model: Image,
+                    as: "image"
+                }
+            ]
+        }).then(async(food)=>{
+            if(food){
+                if(food.extra?.length){
+                    await Extras.findAll({
+                    where:{
+                        foodId: id
+                    }
+                }).then(async(extras)=>{
+                    if(extras?.length){
+                        for(var i =0; i<extras.length; i++){
+                            await Extras.destroy({
+                                where:{
+                                    id: extras[i].id
+                                }
+                            })
+                        }
+                    }
+                })
+                }
+                if(food.package?.length){
+                    await Package.findAll({
+                    where:{
+                        foodId: id
+                    }
+                }).then(async(package)=>{
+                    if(package?.length){
+                        for(var i = 0; i<package.length; i++){
+                            await Package.destroy({
+                                where:{
+                                    id: package[i].id
+                                }
+                            })
+                        }
+                    }
+                })
+                }
+                
+                if(food.image?.length){
+                    await Image.findAll({
+                    where:{
+                        foodId: id
+                    }
+                }).then(async(image)=>{
+                    if(image?.length){
+                        for(var i = 0; i<image.length; i++){
+                            await Image.destroy({
+                                where:{
+                                    id: image[i].id
+                                }
+                            })
+                        }
+                    }
+                })
+                }
+
+                await Product.destroy({
+                    where:{
+                        id: id
+                    }
+                })
+                res.json({
+                    status: true,
+                    message: "Deleted Successfully"
+                })
+            }else{
+                res.json({
+                    status: false,
+                    message: "Food not found"
+                })
+            }
+        })
+    } catch (error) {
+        console.error(error);
+        next(error)
+    }
+}
+
 exports.uploadFoodImage = async(req, res, next) => {
     try{
         if(req.files || req.file){

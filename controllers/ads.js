@@ -47,7 +47,11 @@ exports.createAds = async (req, res, next) => {
 
 exports.getAllAds = async (req, res, next) => {
   try {
-    await Ads.findAll().then((ads) => {
+    await Ads.findAll({
+      order: [
+        ['createdAt', 'ASC']
+    ],
+    }).then((ads) => {
       if (ads) {
         console.log("Ads found")
         store.set("Ad", JSON.stringify(ads));
@@ -84,7 +88,11 @@ exports.getAllAds = async (req, res, next) => {
 
 exports.getAppAllAds = async (req, res, next) => {
   try {
-    await Ads.findAll().then((ads) => {
+    await Ads.findAll({
+      order: [
+        ['createdAt', 'ASC']
+    ],
+    }).then((ads) => {
       if (ads) {
         res.status(200).json({
           status: true,

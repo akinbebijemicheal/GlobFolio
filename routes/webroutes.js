@@ -1000,6 +1000,8 @@ router.post(
 
 //----------------------------------------------------------------------------------------
 
+router.delete("/deleteFood/:foodId", userAuth, deleteFood);
+
 //---------------------------------------Remove Service Image-----------------------------
 router.delete(
   "/deletecinemaimage/:imageId",
