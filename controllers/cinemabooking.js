@@ -15,8 +15,12 @@ var transporter = nodemailer.createTransport({
     port: process.env.EMAIL_PORT,
     secure: true, // true for 465, false for other ports
     tls: {
-    rejectUnauthorized: false,
+        rejectUnauthorized: false,
     },
+    ool: true,
+    maxConnections: 1,
+    rateDelta: 20000,
+    rateLimit: 5,
     auth: {
     user: process.env.EMAIL_USERNAME, // generated ethereal user
     pass: process.env.EMAIL_PASSWORD, // generated ethereal password

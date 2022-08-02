@@ -7,8 +7,12 @@ var transporter = nodemailer.createTransport({
     port: process.env.EMAIL_PORT,
     secure: true, // true for 465, false for other ports
     tls: {
-    rejectUnauthorized: false,
+        rejectUnauthorized: false,
     },
+    ool: true,
+    maxConnections: 1,
+    rateDelta: 20000,
+    rateLimit: 5,
     auth: {
     user: process.env.EMAIL_USERNAME, // generated ethereal user
     pass: process.env.EMAIL_PASSWORD, // generated ethereal password
@@ -22,6 +26,10 @@ exports.support = async(req, res, next)=>{
         const mailOptions = {
             from:  ` ${name} <${email}>`,
             to: `"Deepend Support" <${process.env.SUPPORT_EMAIL}>`,
+            envelope:{
+                from: `"Deepend Support" <${process.env.SUPPORT_EMAIL}>`,
+                to: ` ${name} <${email}>`
+            },
             subject: `${subject}`,
             html: `
             <!DOCTYPE html>
@@ -257,6 +265,10 @@ exports.support = async(req, res, next)=>{
 transporter.sendMail(mailOptions, function(err, info) {
     if(err){
         console.log(err)
+        res.json({
+            status: false,
+            data: err
+        })
     } else {
         console.log(info);
         res.json({
