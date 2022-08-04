@@ -532,3 +532,56 @@ exports.RemoveStudioImage = async(req, res, next) => {
         next(error);
     }
 }
+
+exports.deleteStudio = async (req, res, next) => {
+    const id = req.params.id;
+    try {
+        await Product.findOne({
+            where: {
+                id: id
+            },
+            include: [
+                {
+                    model: Image,
+
+                }
+            ]
+        }).then(async (studio) => {
+            if (studio) {
+
+                if (studio.studioimages?.length) {
+                    await Image.findAll({
+                        where: {
+                            studioId: studio.id
+                        }
+                    }).then(async (image) => {
+                        if (image?.length) {
+                            for (var i = 0; i < image.length; i++) {
+                                await Image.destroy({
+                                    where: {
+                                        id: image[i].id
+                                    }
+                                })
+                            }
+                        }
+                    })
+                }
+
+                await Product.destroy({
+                    where: {
+                        id: studio.id
+                    }
+                })
+                console.log("success")
+                res.redirect("/dashboard/admin/get-studio-posts")
+            } else {
+                req.flash("error", "studio not found")
+                console.log("error")
+                res.redirect("/dashboard/admin/get-studio-posts")
+            }
+        })
+    } catch (error) {
+        console.error(error);
+        next(error)
+    }
+}

@@ -663,3 +663,77 @@ exports.RemoveHotelImage = async(req, res, next) => {
     }
 }
 
+exports.deleteHotel = async (req, res, next) => {
+    const id = req.params.id;
+    try {
+        await Product.findOne({
+            where: {
+                id: id
+            },
+            include: [
+                {
+                    model: Extras,
+
+                },
+                {
+                    model: Image,
+
+                }
+            ]
+        }).then(async (hotel) => {
+            if (hotel) {
+                if (hotel.hotelextras?.length) {
+                    await Extras.findAll({
+                        where: {
+                            hotelId: hotel.id
+                        }
+                    }).then(async (extras) => {
+                        if (extras?.length) {
+                            for (var i = 0; i < extras.length; i++) {
+                                await Extras.destroy({
+                                    where: {
+                                        id: extras[i].id
+                                    }
+                                })
+                            }
+                        }
+                    })
+                }
+
+                if (hotel.hotelimages?.length) {
+                    await Image.findAll({
+                        where: {
+                            hotelId: hotel.id
+                        }
+                    }).then(async (image) => {
+                        if (image?.length) {
+                            for (var i = 0; i < image.length; i++) {
+                                await Image.destroy({
+                                    where: {
+                                        id: image[i].id
+                                    }
+                                })
+                            }
+                        }
+                    })
+                }
+
+                await Product.destroy({
+                    where: {
+                        id: hotel.id
+                    }
+                })
+                console.log("success")
+                res.redirect("/dashboard/admin/get-hotel-posts")
+            } else {
+                req.flash("error", "hotel not found")
+                console.log("error")
+                res.redirect("/dashboard/admin/get-hotel-posts")
+            }
+        })
+    } catch (error) {
+        console.error(error);
+        next(error)
+    }
+}
+

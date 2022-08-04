@@ -54,6 +54,7 @@ const {
   uploadCinemaImage,
   RemoveCinemaImage,
   cinemaCount,
+  deleteCinema,
 } = require("../controllers/services/cinema");
 const {
   createFoodService,
@@ -78,6 +79,7 @@ const {
   uploadHotelImage,
   RemoveHotelImage,
   hotelCount,
+  deleteHotel,
 } = require("../controllers/services/hotel");
 const {
   createRentService,
@@ -90,6 +92,7 @@ const {
   RemoveRentImage,
   getRentAdminServices,
   rentCount,
+  deleteRent
 } = require("../controllers/services/renting");
 const {
   createStudioService,
@@ -101,6 +104,7 @@ const {
   uploadStudioImage,
   RemoveStudioImage,
   studioCount,
+  deleteStudio,
 } = require("../controllers/services/studio_book");
 const {
   createGamingService,
@@ -112,6 +116,7 @@ const {
   uploadGameImage,
   RemoveGameImage,
   gameCount,
+  deleteGame,
 } = require("../controllers/services/vr_gaming");
 const {
   createAds,
@@ -1010,6 +1015,13 @@ router.delete(
   RemoveCinemaImage
 );
 
+router.get(
+  "/dashboard/admin/deleteCinema/:id",
+  userAuth,
+  checkRole(["admin"]),
+  deleteCinema
+);
+
 router.delete(
   "/deletefoodimage/:imageId",
   userAuth,
@@ -1031,11 +1043,25 @@ router.delete(
   RemoveHotelImage
 );
 
+router.get(
+  "/dashboard/admin/deleteHotel/:id",
+  userAuth,
+  checkRole(["admin"]),
+  deleteHotel
+);
+
 router.delete(
   "/deleterentimage/:imageId",
   userAuth,
   checkRole(["admin"]),
   RemoveRentImage
+);
+
+router.get(
+  "/dashboard/admin/deleteRent/:id",
+  userAuth,
+  checkRole(["admin"]),
+  deleteRent
 );
 
 router.delete(
@@ -1045,11 +1071,25 @@ router.delete(
   RemoveStudioImage
 );
 
+router.get(
+  "/dashboard/admin/deleteStudio/:id",
+  userAuth,
+  checkRole(["admin"]),
+  deleteStudio
+);
+
 router.delete(
   "/deletegameimage/:imageId",
   userAuth,
   checkRole(["admin"]),
   RemoveGameImage
+);
+
+router.get(
+  "/dashboard/admin/deleteGame/:id",
+  userAuth,
+  checkRole(["admin"]),
+  deleteGame
 );
 //----------------------------------------------------------------------------------------
 

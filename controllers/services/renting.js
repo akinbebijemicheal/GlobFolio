@@ -540,3 +540,56 @@ exports.RemoveRentImage = async(req, res, next) => {
         next(error);
     }
 }
+
+exports.deleteRent = async (req, res, next) => {
+    const id = req.params.id;
+    try {
+        await Product.findOne({
+            where: {
+                id: id
+            },
+            include: [
+                {
+                    model: Image,
+
+                }
+            ]
+        }).then(async (rent) => {
+            if (rent) {
+
+                if (rent.rentimages?.length) {
+                    await Image.findAll({
+                        where: {
+                            rentId: rent.id
+                        }
+                    }).then(async (image) => {
+                        if (image?.length) {
+                            for (var i = 0; i < image.length; i++) {
+                                await Image.destroy({
+                                    where: {
+                                        id: image[i].id
+                                    }
+                                })
+                            }
+                        }
+                    })
+                }
+
+                await Product.destroy({
+                    where: {
+                        id: rent.id
+                    }
+                })
+                console.log("success")
+                res.redirect("/dashboard/admin/get-rent-services")
+            } else {
+                req.flash("error", "rent not found")
+                console.log("error")
+                res.redirect("/dashboard/admin/get-rent-services")
+            }
+        })
+    } catch (error) {
+        console.error(error);
+        next(error)
+    }
+}

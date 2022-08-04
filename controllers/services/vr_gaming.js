@@ -543,3 +543,56 @@ exports.RemoveGameImage = async(req, res, next) => {
         next(error);
     }
 }
+
+exports.deleteGame = async (req, res, next) => {
+    const id = req.params.id;
+    try {
+        await Product.findOne({
+            where: {
+                id: id
+            },
+            include: [
+                {
+                    model: Image,
+
+                }
+            ]
+        }).then(async (game) => {
+            if (game) {
+
+                if (game.gameimages?.length) {
+                    await Image.findAll({
+                        where: {
+                            gameId: game.id
+                        }
+                    }).then(async (image) => {
+                        if (image?.length) {
+                            for (var i = 0; i < image.length; i++) {
+                                await Image.destroy({
+                                    where: {
+                                        id: image[i].id
+                                    }
+                                })
+                            }
+                        }
+                    })
+                }
+
+                await Product.destroy({
+                    where: {
+                        id: game.id
+                    }
+                })
+                console.log("success")
+                res.redirect("/dashboard/admin/get-gaming-posts")
+            } else {
+                req.flash("error", "game not found")
+                console.log("error")
+                res.redirect("/dashboard/admin/get-gaming-posts")
+            }
+        })
+    } catch (error) {
+        console.error(error);
+        next(error)
+    }
+}
