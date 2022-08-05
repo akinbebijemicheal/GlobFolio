@@ -30,6 +30,7 @@ var transporter = nodemailer.createTransport({
 exports.bookCinema = async(req, res, next)=>{
     console.log(req.body);
     var {quantity, snackQuantity, time, snacksId}= req.body;
+    console.log(snacksId)
     var id = req.params.cinemaId;
     try {
         // var snack_price = 0;
