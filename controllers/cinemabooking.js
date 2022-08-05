@@ -42,7 +42,7 @@ exports.bookCinema = async(req, res, next)=>{
             snackQuantity = 1
         }
 
-        if(snacksId != "" || snacksId != null){
+        if(snacksId == null){
             var snack = await Snack.findOne({
                 where:{
                     id: snacksId
