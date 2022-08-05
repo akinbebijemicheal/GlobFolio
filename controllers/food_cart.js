@@ -297,8 +297,7 @@ exports.AddCart = async (req, res, next) => {
                     })
 
                     res.status(201).json({
-                        status: true,
-                        data: out
+                        status: true
                     })
                 
             } else {
@@ -441,8 +440,7 @@ exports.AddCart = async (req, res, next) => {
         
                 })
                 res.status(201).json({
-                    status: true,
-                    data: out
+                    status: true
                 })
             }
        
