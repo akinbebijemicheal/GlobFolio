@@ -46,7 +46,7 @@ exports.bookCinema = async(req, res, next)=>{
                     id: snacksId
                 }
             })
-            console.log(snack.price);
+            // console.log(snack.price);
             var snack_price = snack.price 
         }else{
             snack_price = 0;
