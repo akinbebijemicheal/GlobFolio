@@ -278,6 +278,7 @@ exports.AddCart = async(req, res, next)=>{
                 foodId: req.params.foodId
             }
         }).then(async(result)=>{
+            console.log(result)
             if(result != []){
                 console.log('not empty')
             }else{
