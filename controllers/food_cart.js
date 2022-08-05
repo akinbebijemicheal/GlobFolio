@@ -295,6 +295,12 @@ exports.AddCart = async (req, res, next) => {
                             foodId: req.params.foodId
                         }
                     })
+
+                    res.status(201).json({
+                        status: true,
+                        data: out
+                    })
+                
             } else {
                 console.log('empty')
                 if (!quantity) {
@@ -433,6 +439,10 @@ exports.AddCart = async (req, res, next) => {
                         })
                     }
         
+                })
+                res.status(201).json({
+                    status: true,
+                    data: out
                 })
             }
        
