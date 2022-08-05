@@ -273,17 +273,17 @@ exports.AddCart = async (req, res, next) => {
     var { quantity, foodextrasId, foodpackageId } = req.body;
     try {
 
-        await CartItem.findOne({
+       const existeditem = await CartItem.findOne({
             where: {
                 foodId: req.params.foodId
             }
-        }).then(async (result) => {
-            console.log(result)
-            if (result != null) {
+        })
+            console.log(existeditem)
+            if (existeditem != null) {
                 console.log('not empty')
-                var cartqty = result.fooditem.dataValues.qty;
+                var cartqty = existeditem.qty;
                 var newqty = cartqty + 1;
-                var cartprice = result.fooditem.dataValues.price
+                var cartprice = existeditem.price
 
                 await CartItem.update({
                     qty: newqty,
@@ -435,7 +435,7 @@ exports.AddCart = async (req, res, next) => {
         
                 })
             }
-        })
+       
        
     } catch (error) {
         console.error(error)
