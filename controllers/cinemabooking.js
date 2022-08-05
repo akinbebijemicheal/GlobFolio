@@ -49,8 +49,9 @@ exports.bookCinema = async(req, res, next)=>{
                 }
             })
          console.log(snack);
+            var snack_price = snack.price
         }else{
-            snack_price = 0;
+            var snack_price = 0;
         }
 
         var commision = await Fee.findOne({                                                                                                                                                      where:{
