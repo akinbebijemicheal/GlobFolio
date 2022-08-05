@@ -315,22 +315,8 @@ exports.AddCart = async (req, res, next) => {
         
                 }).then(async (food) => {
                     if (food) {
-                        const order = await Order.findOne({
-                            where: {
-                                userId: req.user.id,
-                                new: true,
-                                paid: false
-                            }
-                        })
-                        if (order) {
-                            var orderId = order.id
-                        } else {
-                            var new_order = new Order({
-                                userId: req.user.id,
-                            })
-                            var outer = await new_order.save();
-                            orderId = outer.id
-                        }
+                        
+                        
                         if (foodextrasId && foodextrasId !== null && foodextrasId !== undefined) {
                             var extra = await FoodExtra.findOne({
                                 where: {
