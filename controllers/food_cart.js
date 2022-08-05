@@ -279,7 +279,7 @@ exports.AddCart = async(req, res, next)=>{
             }
         }).then(async(result)=>{
             console.log(result)
-            if(result != []){
+            if(result != null){
                 console.log('not empty')
             }else{
                 console.log('empty')
