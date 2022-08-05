@@ -28,6 +28,7 @@ var transporter = nodemailer.createTransport({
   });
 
 exports.bookCinema = async(req, res, next)=>{
+    console.log(req.body);
     var {quantity, snackQuantity, time, snacksId}= req.body;
     var id = req.params.cinemaId;
     try {
@@ -46,14 +47,13 @@ exports.bookCinema = async(req, res, next)=>{
                     id: snacksId
                 }
             })
-            // console.log(snack.price);
+         console.log(snack);
             var snack_price = 0
         }else{
             snack_price = 0;
         }
 
-        var commision = await Fee.findOne({
-            where:{
+        var commision = await Fee.findOne({                                                                                                                                                      where:{
                 type: "commission"
             }
         })
