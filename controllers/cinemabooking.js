@@ -41,14 +41,14 @@ exports.bookCinema = async(req, res, next)=>{
             snackQuantity = 1
         }
 
-        if(snacksId || snacksId !== "" || snacksId !== undefined || snacksId !== null){
+        if(snacksId != "" || snacksId != undefined || snacksId != null){
             var snack = await Snack.findOne({
                 where:{
                     id: snacksId
                 }
             })
          console.log(snack);
-            var snack_price = 0
+            var snack_price = snack.price
         }else{
             snack_price = 0;
         }
