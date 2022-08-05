@@ -47,7 +47,7 @@ exports.bookCinema = async(req, res, next)=>{
                 }
             })
             // console.log(snack.price);
-            var snack_price = snack.price 
+            var snack_price = 0
         }else{
             snack_price = 0;
         }
