@@ -50,6 +50,7 @@ exports.bookCinema = async(req, res, next)=>{
             var snack_price = snack.price
         }else{
             var snack_price = 0;
+            var snacksId = "0";
         }
 
         var commision = await Fee.findOne({                                                                                                                                                      where:{
@@ -63,7 +64,7 @@ exports.bookCinema = async(req, res, next)=>{
             }
         }).then(async(cinema) => {
             if(cinema && cinema.seat >= 1){
-                console.log('check cinema')
+                console.log('check')
                 let fname = req.user.fullname.split(' ')
                 var amount = parseInt((parseInt(cinema.price) * quantity) + (snack_price * snackQuantity));
                 var charges = parseInt((commision.value / 100) * ((parseInt(cinema.price) * quantity) + (snack_price * snackQuantity)));
@@ -92,7 +93,6 @@ exports.bookCinema = async(req, res, next)=>{
                         const book = new CinemaBooking({
                             buyerId: req.user.id,
                             cinemaId: cinema.id,
-                            cinemaSnackId: snacksId,
                             quantity: quantity,
                             snackQuantity: snackQuantity,
                             scheduled_date: cinema.view_date,
