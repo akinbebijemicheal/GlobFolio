@@ -50,7 +50,7 @@ exports.bookCinema = async(req, res, next)=>{
             var snack_price = snack.price
         }else{
             var snack_price = 0;
-            var snacksId = "0";
+
         }
 
         var commision = await Fee.findOne({                                                                                                                                                      where:{
@@ -90,19 +90,37 @@ exports.bookCinema = async(req, res, next)=>{
                             set_time = cinema.evening
                         }
 
-                        const book = new CinemaBooking({
-                            buyerId: req.user.id,
-                            cinemaId: cinema.id,
-                            quantity: quantity,
-                            snackQuantity: snackQuantity,
-                            scheduled_date: cinema.view_date,
-                            scheduled_time: set_time,
-                            transaction_url: transaction.data.authorization_url,
-                            ref_no: transaction.data.reference,
-                            access_code: transaction.data.access_code,
-                            commission: parseInt((commision.value / 100) * ((parseInt(cinema.price) * quantity) + (snack_price * snackQuantity)))
-                        })
-                        var savedbook = await book.save();
+                        if(snacksId != ''){
+                            const book = new CinemaBooking({
+                                buyerId: req.user.id,
+                                cinemaId: cinema.id,
+                                cinemaSnackId: snacksId,
+                                quantity: quantity,
+                                snackQuantity: snackQuantity,
+                                scheduled_date: cinema.view_date,
+                                scheduled_time: set_time,
+                                transaction_url: transaction.data.authorization_url,
+                                ref_no: transaction.data.reference,
+                                access_code: transaction.data.access_code,
+                                commission: parseInt((commision.value / 100) * ((parseInt(cinema.price) * quantity) + (snack_price * snackQuantity)))
+                            })
+                            var savedbook = await book.save();
+                        }else{
+                            const book = new CinemaBooking({
+                                buyerId: req.user.id,
+                                cinemaId: cinema.id,
+                                quantity: quantity,
+                                snackQuantity: snackQuantity,
+                                scheduled_date: cinema.view_date,
+                                scheduled_time: set_time,
+                                transaction_url: transaction.data.authorization_url,
+                                ref_no: transaction.data.reference,
+                                access_code: transaction.data.access_code,
+                                commission: parseInt((commision.value / 100) * ((parseInt(cinema.price) * quantity) + (snack_price * snackQuantity)))
+                            })
+                            var savedbook = await book.save();
+                        }
+                       
 
                         res.json({
                             status: true,
