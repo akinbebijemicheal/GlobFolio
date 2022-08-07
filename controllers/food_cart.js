@@ -287,7 +287,7 @@ exports.AddCart = async (req, res, next) => {
 
                 await CartItem.update({
                     qty: newqty,
-                    price: old * newqty,
+                    price: oldprice * newqty,
 
                 },
                     {
