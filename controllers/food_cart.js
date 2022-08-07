@@ -359,7 +359,7 @@ exports.AddCart = async (req, res, next) => {
         
                         if (package) {
                             var packageprice = parseInt(package.price)
-                            console.log(packageprice)
+              
                             var packageId = package.id
                         } else {
                             res.json({
