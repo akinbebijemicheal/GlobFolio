@@ -565,12 +565,14 @@ exports.addQty = async (req, res, next) => {
         }).then(async (item) => {
             if (item) {
 
-                
-                var newqty = item.qty + 1;
+                var oldqty = item.qty
+                var newqty = oldqty + 1;
                 var price = item.price;
+                var originalprice = price / oldqty
+                
                 await CartItem.update({
                     qty: newqty,
-                    price: price * newqty,
+                    price: originalprice * newqty,
 
                 },
                     {
