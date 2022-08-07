@@ -322,6 +322,8 @@ exports.AddCart = async (req, res, next) => {
                                 paid: false
                             }
                         })
+
+                        var orderId = order.id
                         
                         if (foodextrasId && foodextrasId !== null && foodextrasId !== undefined) {
                             var extra = await FoodExtra.findOne({
