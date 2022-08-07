@@ -89,6 +89,7 @@ const {
   viewCart,
   DeleteCartItem,
   addQty,
+  substractQty,
   createOrder,
   viewOrder,
   updateOrderStatus,
@@ -313,6 +314,7 @@ router.post("/addFoodtocart/:foodId", jwtAuth, AddCart);
 router.get("/viewcart", jwtAuth, viewCart);
 router.delete("/deletecartitem/:cartitemId", jwtAuth, DeleteCartItem);
 router.put("/addItemQuantity/:cartitemId", jwtAuth, addQty);
+router.put("/substractItemQuantity/:cartitemId", jwtAuth, substractQty);
 router.put("/createOrder", jwtAuth, createOrder);
 router.get("/getOrders", jwtAuth, viewOrders);
 router.get("/getOrder/:orderId", jwtAuth, viewAppOrder);

@@ -609,6 +609,69 @@ exports.addQty = async (req, res, next) => {
     }
 }
 
+exports.substractQty = async (req, res, next) => {
+    var { quantity } = req.body;
+    // qty = parseInt(qty)
+    try {
+        await CartItem.findOne({
+            where: {
+                id: req.params.cartitemId
+            },
+            include: [
+                {
+                    model: Food,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"],
+                    },
+                }
+            ]
+        }).then(async (item) => {
+            if (item) {
+
+                var oldqty = item.qty
+                var newqty = oldqty - 1;
+                var price = item.price;
+                var originalprice = price / oldqty
+                
+                await CartItem.update({
+                    qty: newqty,
+                    price: originalprice * newqty,
+
+                },
+                    {
+                        where: {
+                            id: item.id
+                        }
+                    })
+
+                const result = await CartItem.findOne({
+                    where: {
+                        id: item.id
+                    }
+                })
+                res.status(200).json({
+                    status: true,
+                    message: "Item quantity Increased",
+                    data: result
+                })
+            } else {
+                res.status(404).json({
+                    status: false,
+                    message: "Product not found"
+                })
+            }
+        })
+    } catch (error) {
+        console.error(error)
+        // res.status(500).json({
+        //      status: false,
+        //      message: "An error occured",
+        //      error: error
+        //  });
+        next(error)
+    }
+}
+
 exports.createOrder = async (req, res, next) => {
     var { address, phone_no, note } = req.body;
     try {
