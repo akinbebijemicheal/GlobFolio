@@ -271,6 +271,7 @@ exports.buyFood = async (req, res, next) => {
 
 exports.AddCart = async (req, res, next) => {
     var { quantity, foodextrasId, foodpackageId } = req.body;
+    console.log(foodextrasId)
 
     try {
 
