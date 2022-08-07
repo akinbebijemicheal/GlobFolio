@@ -325,7 +325,7 @@ exports.AddCart = async (req, res, next) => {
 
                         var orderId = order.id
                         
-                        if (foodextrasId && foodextrasId !== null && foodextrasId !== undefined) {
+                        if (foodextrasId != null) {
                             var extra = await FoodExtra.findOne({
                                 where: {
                                     id: foodextrasId
@@ -334,7 +334,7 @@ exports.AddCart = async (req, res, next) => {
                             })
                         }
         
-                        if (foodpackageId && foodpackageId !== null && foodpackageId !== undefined) {
+                        if (foodpackageId != null) {
                             var package = await Package.findOne({
                                 where: {
                                     id: foodpackageId
