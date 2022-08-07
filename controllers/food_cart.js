@@ -271,6 +271,7 @@ exports.buyFood = async (req, res, next) => {
 
 exports.AddCart = async (req, res, next) => {
     var { quantity, foodextrasId, foodpackageId } = req.body;
+    console.log(req.body)
     try {
 
        const existeditem = await CartItem.findOne({
@@ -278,9 +279,7 @@ exports.AddCart = async (req, res, next) => {
                 foodId: req.params.foodId
             }
         })
-            console.log(existeditem)
             if (existeditem != null) {
-                console.log('not empty')
                 var cartqty = existeditem.qty;
                 var newqty = cartqty + 1;
                 var cartprice = existeditem.price
@@ -301,7 +300,6 @@ exports.AddCart = async (req, res, next) => {
                     })
                 
             } else {
-                console.log('empty')
                 if (!quantity) {
                     quantity = 1
                 };
