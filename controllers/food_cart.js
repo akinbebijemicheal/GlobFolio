@@ -567,6 +567,7 @@ exports.addQty = async (req, res, next) => {
 
                 
                 var newqty = item.qty + 1;
+                var price = item.price;
                 await CartItem.update({
                     qty: newqty,
                     price: price * newqty,
