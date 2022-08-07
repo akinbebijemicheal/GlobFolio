@@ -314,7 +314,7 @@ router.post("/addFoodtocart/:foodId", jwtAuth, AddCart);
 router.get("/viewcart", jwtAuth, viewCart);
 router.delete("/deletecartitem/:cartitemId", jwtAuth, DeleteCartItem);
 router.put("/addItemQuantity/:cartitemId", jwtAuth, addQty);
-router.put("/substractItemQuantity/:cartitemId", jwtAuth, substractQty);
+router.put("/subtractItemQuantity/:cartitemId", jwtAuth, subtractQty);
 router.put("/createOrder", jwtAuth, createOrder);
 router.get("/getOrders", jwtAuth, viewOrders);
 router.get("/getOrder/:orderId", jwtAuth, viewAppOrder);

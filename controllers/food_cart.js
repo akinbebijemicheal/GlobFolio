@@ -609,7 +609,7 @@ exports.addQty = async (req, res, next) => {
     }
 }
 
-exports.substractQty = async (req, res, next) => {
+exports.subtractQty = async (req, res, next) => {
     var { quantity } = req.body;
     // qty = parseInt(qty)
     try {
