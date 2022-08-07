@@ -350,6 +350,7 @@ exports.AddCart = async (req, res, next) => {
         
                         if (extra) {
                             var extraprice = parseInt(extra.price)
+                            console.log(extraprice)
                             var extraId = extra.id
                         } else {
                             var extraprice = 0
@@ -358,6 +359,7 @@ exports.AddCart = async (req, res, next) => {
         
                         if (package) {
                             var packageprice = parseInt(package.price)
+                            console.log(packageprice)
                             var packageId = package.id
                         } else {
                             res.json({
@@ -367,6 +369,7 @@ exports.AddCart = async (req, res, next) => {
                         }
 
                         let price = parseInt(food.price) + extraprice + packageprice     
+                        console.log(price)
 
                         const Items = new CartItem({
                             userId: req.user.id,
