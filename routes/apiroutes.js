@@ -89,7 +89,7 @@ const {
   viewCart,
   DeleteCartItem,
   addQty,
-  substractQty,
+  subtractQty,
   createOrder,
   viewOrder,
   updateOrderStatus,
