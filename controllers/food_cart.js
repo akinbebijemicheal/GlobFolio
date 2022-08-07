@@ -270,9 +270,7 @@ exports.buyFood = async (req, res, next) => {
 }
 
 exports.AddCart = async (req, res, next) => {
-    var { quantity, foodextrasId, foodpackageId } = req.body;
-    console.log(req.body.foodextrasId)
-    console.log(req.body)
+    var { quantity, foodextraId, foodpackageId } = req.body;
 
     try {
 
@@ -325,12 +323,12 @@ exports.AddCart = async (req, res, next) => {
 
                         var orderId = order.id
 
-                        console.log(foodextrasId)
+                        console.log(foodextraId)
 
-                        if (foodextrasId != null) {
+                        if (foodextraId != null) {
                             var extra = await FoodExtra.findOne({
                                 where: {
-                                    id: foodextrasId
+                                    id: foodextraId
                                 }
         
                             })
