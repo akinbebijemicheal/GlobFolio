@@ -351,12 +351,9 @@ exports.AddCart = async (req, res, next) => {
         
                         if (extra) {
                             var extraprice = parseInt(extra.price)
-                            console.log(extraprice)
                             var extraId = extra.id
                         } else {
                             var extraprice = 0
-                            console.log(extraprice)
-                        
                             extraId = null
                         }
         
@@ -563,31 +560,12 @@ exports.addQty = async (req, res, next) => {
                     attributes: {
                         exclude: ["createdAt", "updatedAt"],
                     },
-                },
-                {
-                    model: FoodExtra,
-                    attributes: {
-                        exclude: ["createdAt", "updatedAt"],
-                    },
-                },
-                {
-                    model: Package,
-                    attributes: {
-                        exclude: ["createdAt", "updatedAt"]
-                    }
                 }
             ]
         }).then(async (item) => {
             if (item) {
 
-                if (item.foodextrasId) {
-                    var price = (parseInt(item.foodId.price) + parseInt(item.foodextrasId.price) + item.foodpackageId.price)
-                } else {
-                    price = parseInt(item.foodId.price) + item.foodpackageId.price
-                }
-
-
-
+                
                 var newqty = item.qty + 1;
                 await CartItem.update({
                     qty: newqty,
