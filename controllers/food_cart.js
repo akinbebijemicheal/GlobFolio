@@ -354,6 +354,8 @@ exports.AddCart = async (req, res, next) => {
                             var extraId = extra.id
                         } else {
                             var extraprice = 0
+                            console.log(extraprice)
+                        
                             extraId = null
                         }
         
