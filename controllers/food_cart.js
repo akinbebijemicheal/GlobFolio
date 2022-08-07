@@ -323,7 +323,7 @@ exports.AddCart = async (req, res, next) => {
 
                         var orderId = order.id
                         
-                        if (foodextrasId != null) {
+                        if (foodextrasId) {
                             var extra = await FoodExtra.findOne({
                                 where: {
                                     id: foodextrasId
