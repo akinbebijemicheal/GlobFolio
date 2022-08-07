@@ -331,6 +331,7 @@ exports.AddCart = async (req, res, next) => {
         
                             })
                         }
+                        console.log(extra)
         
                         if (foodpackageId != null) {
                             var package = await Package.findOne({
