@@ -270,74 +270,82 @@ exports.buyFood = async (req, res, next) => {
 }
 
 exports.AddCart = async (req, res, next) => {
-    var { quantity, foodextrasId, foodpackageId } = req.body;
+    var { quantity, foodextraId, foodpackageId } = req.body;
+
     try {
 
-       const existeditem = await CartItem.findOne({
+        const existeditem = await CartItem.findOne({
             where: {
                 foodId: req.params.foodId
             }
         })
-            console.log(existeditem)
-            if (existeditem != null) {
-                console.log('not empty')
-                var cartqty = existeditem.qty;
-                var newqty = cartqty + 1;
-                var cartprice = existeditem.price
+        if (existeditem != null) {
+            var cartqty = existeditem.qty;
+            var newqty = cartqty + 1;
+            var cartprice = existeditem.price
+            var oldprice = cartprice / cartqty
 
-                await CartItem.update({
-                    qty: newqty,
-                    price: cartprice * newqty,
+            await CartItem.update({
+                qty: newqty,
+                price: oldprice * newqty,
 
-                },
-                    {
+            },
+                {
+                    where: {
+                        foodId: req.params.foodId
+                    }
+                })
+
+            res.status(201).json({
+                status: true
+            })
+
+        } else {
+            if (!quantity) {
+                quantity = 1
+            };
+
+            await Food.findOne({
+                where: {
+                    id: req.params.foodId
+                }
+
+
+
+            }).then(async (food) => {
+                if (food) {
+                    const order = await Order.findOne({
                         where: {
-                            foodId: req.params.foodId
+                            userId: req.user.id,
+                            new: true,
+                            paid: false
                         }
                     })
 
-                    res.status(201).json({
-                        status: true
-                    })
-                
-            } else {
-                console.log('empty')
-                if (!quantity) {
-                    quantity = 1
-                };
-        
-                await Food.findOne({
-                    where: {
-                        id: req.params.foodId
-                    }
-        
-        
-        
-                }).then(async (food) => {
-                    if (food) {
-                        const order = await Order.findOne({
-                            where: {
-                                userId: req.user.id,
-                                new: true,
-                                paid: false
-                            }
-                        })
-                        
-                        if (foodextrasId && foodextrasId !== null && foodextrasId !== undefined) {
+
+                    if (foodextrasId && foodextrasId !== null && foodextrasId !== undefined) {
+
+
+                        var orderId = order.id
+
+                        console.log(foodextraId)
+
+                        if (foodextraId != null) {
                             var extra = await FoodExtra.findOne({
                                 where: {
-                                    id: foodextrasId
+                                    id: foodextraId
                                 }
-        
+
                             })
+                            console.log(extra)
                         }
-        
-                        if (foodpackageId && foodpackageId !== null && foodpackageId !== undefined) {
+
+                        if (foodpackageId != null) {
                             var package = await Package.findOne({
                                 where: {
                                     id: foodpackageId
                                 }
-        
+
                             })
                         } else {
                             res.json({
@@ -345,17 +353,18 @@ exports.AddCart = async (req, res, next) => {
                                 message: "Please select a Package"
                             })
                         }
-        
+
                         if (extra) {
-                            var price = (parseInt(food.price) + parseInt(extra.price))
+                            var extraprice = parseInt(extra.price)
                             var extraId = extra.id
                         } else {
-                            price = parseInt(food.price)
+                            var extraprice = 0
                             extraId = null
                         }
-        
+
                         if (package) {
-                            price = price + package.price
+                            var packageprice = parseInt(package.price)
+
                             var packageId = package.id
                         } else {
                             res.json({
@@ -363,7 +372,10 @@ exports.AddCart = async (req, res, next) => {
                                 message: "Please select a Package"
                             })
                         }
-        
+
+                        let price = parseInt(food.price) + extraprice + packageprice
+                        console.log(price)
+
                         const Items = new CartItem({
                             userId: req.user.id,
                             foodId: food.id,
@@ -373,9 +385,9 @@ exports.AddCart = async (req, res, next) => {
                             qty: quantity,
                             price: price * quantity,
                         })
-        
+
                         const Cart = await Items.save();
-        
+
                         const out = await CartItem.findOne(
                             {
                                 where: {
@@ -400,7 +412,7 @@ exports.AddCart = async (req, res, next) => {
                                                 }
                                             }
                                         ]
-        
+
                                     },
                                     {
                                         model: FoodExtra,
@@ -414,7 +426,7 @@ exports.AddCart = async (req, res, next) => {
                                             exclude: ["createdAt", "updatedAt"]
                                         }
                                     }
-        
+
                                 ]
                             }
                         )
@@ -422,19 +434,20 @@ exports.AddCart = async (req, res, next) => {
                             status: true,
                             data: out
                         })
-        
+
                     } else {
                         res.status(404).json({
                             status: false,
                             message: "No Food found"
                         })
                     }
-        
-                })
-           
-            }
-       
-       
+
+                }
+            })
+
+        }
+
+
     } catch (error) {
         console.error(error)
         // res.status(500).json({
@@ -553,35 +566,82 @@ exports.addQty = async (req, res, next) => {
                     attributes: {
                         exclude: ["createdAt", "updatedAt"],
                     },
-                },
-                {
-                    model: FoodExtra,
-                    attributes: {
-                        exclude: ["createdAt", "updatedAt"],
-                    },
-                },
-                {
-                    model: Package,
-                    attributes: {
-                        exclude: ["createdAt", "updatedAt"]
-                    }
                 }
             ]
         }).then(async (item) => {
             if (item) {
 
-                if (item.foodextrasId) {
-                    var price = (parseInt(item.foodId.price) + parseInt(item.foodextrasId.price) + item.foodpackageId.price)
-                } else {
-                    price = parseInt(item.foodId.price) + item.foodpackageId.price
-                }
+                var oldqty = item.qty
+                var newqty = oldqty + 1;
+                var price = item.price;
+                var originalprice = price / oldqty
 
-
-
-                var newqty = item.qty + 1;
                 await CartItem.update({
                     qty: newqty,
-                    price: price * newqty,
+                    price: originalprice * newqty,
+
+                },
+                    {
+                        where: {
+                            id: item.id
+                        }
+                    })
+
+                const result = await CartItem.findOne({
+                    where: {
+                        id: item.id
+                    }
+                })
+                res.status(200).json({
+                    status: true,
+                    message: "Item quantity Increased",
+                    data: result
+                })
+            } else {
+                res.status(404).json({
+                    status: false,
+                    message: "Product not found"
+                })
+            }
+        })
+    } catch (error) {
+        console.error(error)
+        // res.status(500).json({
+        //      status: false,
+        //      message: "An error occured",
+        //      error: error
+        //  });
+        next(error)
+    }
+}
+
+exports.subtractQty = async (req, res, next) => {
+    var { quantity } = req.body;
+    // qty = parseInt(qty)
+    try {
+        await CartItem.findOne({
+            where: {
+                id: req.params.cartitemId
+            },
+            include: [
+                {
+                    model: Food,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"],
+                    },
+                }
+            ]
+        }).then(async (item) => {
+            if (item) {
+
+                var oldqty = item.qty
+                var newqty = oldqty - 1;
+                var price = item.price;
+                var originalprice = price / oldqty
+
+                await CartItem.update({
+                    qty: newqty,
+                    price: originalprice * newqty,
 
                 },
                     {
