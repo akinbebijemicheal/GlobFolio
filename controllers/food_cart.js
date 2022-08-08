@@ -323,7 +323,7 @@ exports.AddCart = async (req, res, next) => {
                     })
 
 
-                    if (foodextrasId && foodextrasId !== null && foodextrasId !== undefined) {
+                    if (foodextraId && foodextraId !== null && foodextraId !== undefined) {
 
 
                         var orderId = order.id
