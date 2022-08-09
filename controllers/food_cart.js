@@ -830,6 +830,145 @@ exports.createOrder = async (req, res, next) => {
 }
 
 
+exports.getPaymentFood = async (req, res, next) => {
+    var { address, phone_no, note, orderId, ref_no,} = req.body;
+    try {
+        console.log(req.body)
+        var commision = await Fee.findOne({
+            where: {
+                type: "commission"
+            }
+        })
+
+       
+
+        await Order.findOne({
+            where: {
+                userId: userId,
+                new: true,
+                paid: false
+            },
+            include: [
+                {
+                    model: CartItem,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"],
+                    },
+                    include: [
+                        {
+                            model: Food,
+                            attributes: {
+                                exclude: ["createdAt", "updatedAt"],
+                            },
+                        },
+                        {
+                            model: FoodExtra,
+                            attributes: {
+                                exclude: ["createdAt", "updatedAt"],
+                            },
+                        },
+                        {
+                            model: Package,
+                            attributes: {
+                                exclude: ["createdAt", "updatedAt"]
+                            }
+                        }
+                    ]
+                },
+                {
+                    model: User,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt"],
+                    },
+                }
+            ]
+        }).then(async (order) => {
+            if (order) {
+                var total = 0;
+                if (order.fooditems) {
+                    for (var i = 0; i < order.fooditems.length; i++) {
+                        total = total + (order.fooditems[i].price);
+                    }
+                }
+                
+                    console.log(transaction)
+                    if (transaction) {
+                        await Order.update({
+                            address: address,
+                            phone_no: phone_no,
+                            note: note,
+                            sub_total: total,
+                            status: "in_progress",
+                            ref_no: ref_no,
+                            access_code: access_code,
+                            commission: parseInt((commision.value / 100) * total)
+                        }, {
+                            where: {
+                                id: order.id
+                            }
+                        }).catch(err => console.log(err));
+                    }
+  
+
+
+                const out = await Order.findOne({
+                    where: {
+                        id: order.id
+                    },
+                    include: [
+                        {
+                            model: CartItem,
+                            attributes: {
+                                exclude: ["createdAt", "updatedAt"],
+                            },
+                            include: [
+                                {
+                                    model: Food,
+                                    attributes: {
+                                        exclude: ["createdAt", "updatedAt"],
+                                    },
+                                },
+                                {
+                                    model: FoodExtra,
+                                    attributes: {
+                                        exclude: ["createdAt", "updatedAt"],
+                                    },
+                                },
+                                {
+                                    model: Package,
+                                    attributes: {
+                                        exclude: ["createdAt", "updatedAt"]
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            model: User,
+                            attributes: {
+                                exclude: ["createdAt", "updatedAt"],
+                            },
+                        }
+                    ]
+                })
+               
+
+
+            } else {
+                res.json({
+                    status: false,
+                    message: "No item found in your cart"
+                })
+            }
+        }).catch(err => console.log(err))
+
+    } catch (error) {
+        console.error(error)
+        next(error)
+    }
+
+}
+
+
 exports.viewAppOrder = async (req, res, next) => {
     try {
         await Order.findOne({
@@ -1154,7 +1293,8 @@ exports.updateOrderStatus = async (req, res, next) => {
 }
 
 exports.Checkout = async (req, res, next) => {
-    const ref = req.query.trxref;
+    const ref = req.body.ref_no;
+    const {email} = req.body
     // const userId = req.user.id
     try {
         await Transaction.findOne({
@@ -1470,14 +1610,14 @@ exports.Checkout = async (req, res, next) => {
 
                     verify = "Payment" + " " + transaction.message
 
-                    // res.json({
-                    //     status: true,
-                    //     message: `Payment ${transaction.message}`,
-                    //     transaction: savetrnx,
-                    // })
-                    res.render("base/verify-food", {
-                        verify
+                    res.json({
+                        status: true,
+                        message: `Payment ${transaction.message}`,
+                        transaction: savetrnx,
                     })
+                    // res.render("base/verify-food", {
+                    //     verify
+                    // })
 
                 }).catch(error => console.error(error))
             }

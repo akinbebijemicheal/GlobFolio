@@ -91,6 +91,8 @@ const {
   addQty,
   subtractQty,
   createOrder,
+  getPaymentFood,
+  Checkout,
   viewOrder,
   updateOrderStatus,
   viewOrders,
@@ -316,6 +318,7 @@ router.delete("/deletecartitem/:cartitemId", jwtAuth, DeleteCartItem);
 router.put("/addItemQuantity/:cartitemId", jwtAuth, addQty);
 router.put("/subtractItemQuantity/:cartitemId", jwtAuth, subtractQty);
 router.put("/createOrder", jwtAuth, createOrder);
+router.post("/getPaymentFood", jwtAuth, getPaymentFood, Checkout);
 router.get("/getOrders", jwtAuth, viewOrders);
 router.get("/getOrder/:orderId", jwtAuth, viewAppOrder);
 router.put("/updateOrderStatus/:orderId", jwtAuth, updateOrderStatus);
