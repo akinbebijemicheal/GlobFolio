@@ -71,8 +71,7 @@ var transporter = nodemailer.createTransport({
                                 title: title,
                                 quantity: quantity,
                                 dateFrom: dateFrom,
-                                dateTo: dateTo,
-                                location : location
+                                dateTo: dateTo
                             }
                         })
                   
