@@ -169,15 +169,13 @@ exports.gameVerify = async(req, res, next)=>{
                         var verify = "Payment Already Verified"
                         // res.json("Payment Already Verified")
                     }else{
+                        console.log("about to verify payment")
                         paystack.transaction.verify(ref).then(async(transaction) => {
                             console.log(transaction);
                             // res.json(transaction)
                             if(!transaction){
                                 verify = `Transaction on the reference no: ${ref} not found`
-                                // res.json({
-                                //     status: false,
-                                //     message: `Transaction on the reference no: ${ref} not found`
-                                // })
+                                
                             }
                             var book = await GameBooking.findOne({
                                 where:{
