@@ -29,7 +29,7 @@ var transporter = nodemailer.createTransport({
     },
   });
 
-exports.bookRent = async(req, res, next)=>{
+  exports.bookRent = async(req, res, next)=>{
     var {quantity, dateTo, dateFrom, location}= req.body;
     const id = req.params.rentId;
     try {
@@ -59,50 +59,91 @@ exports.bookRent = async(req, res, next)=>{
         }).then(async(rent) => {
             if(rent && rent.available_rent >= 1){
                 let fname = req.user.fullname.split(' ')
-                var amount = ((parseInt(rent.price) * quantity) * days);
+                var amounttopay = ((parseInt(rent.price) * quantity) * days);
                 console.log("amount", amount);
                 var charge = parseInt((commision.value / 100) * ((parseInt(rent.price) * quantity) * days))
                 console.log("charge", charge);
-                paystack.transaction.initialize({
-                    name: `${rent.title} (${rent.equipment})`,
-                    email: req.user.email,
-                    amount: (amount + charge) * 100,
-                    quantity: quantity,
-                    callback_url: `${process.env.REDIRECT_SITE}/VerifyPay/rent`,
-                    metadata: {
-                        userId: req.user.id,
-                        rent: rent.id,
-                        title: rent.title,
-                        equipment: rent.equipment
-                                                 
-                    }
-                }).then(async (transaction)=>{
-                    console.log(transaction)
-                    if(transaction){
+                var amount = amounttopay + charge;
+                var userId = req.user.id;
+                var title = room.hotel.title;
+                var email = req.user.email;
+                var buyerId = req.user.Id;
+                var rentId = rent.id
+                
+                    
+
+                        res.json({
+                            status: true,
+                            data:{
+                                charge: charge,
+                                userId: userId,
+                                email: email,
+                                amount: amount,
+                                buyerId: buyerId,
+                                rentId: rentId,
+                                title: title,
+                                quantity: quantity,
+                                dateFrom: dateFrom,
+                                dateTo: dateTo,
+                                location : location
+                            }
+                        })
+                    
+            }else{
+                res.json({
+                    status: false,
+                    message: "No rent found or rent not available"
+                })
+            }
+        }).catch(err=> console.log(err))
+    } catch (error) {
+        console.error(error);
+        res.json(error)
+        next(error)
+    }
+};
+
+exports.getPaymentRent = async(req, res, next)=>{
+    var {location, charge, userId, rentId, title, email, amount, dateFrom, dateTo, buyerId, quantity, ref_no, authorization_url}= req.body;
+  
+    const id = rentId;
+    try {
+        if(!quantity){
+            quantity = 1
+        }
+
+        var commision = await Fee.findOne({
+            where:{
+                type: "commission"
+            }
+        })
+
+       
+
+        await Rent.findOne({
+            where: {
+                id: id
+            }
+        }).then(async(rent) => {
+            if(rent && rent.available_rent >= 1){
+                let fname = req.user.fullname.split(' ')
+               
                         const book = new RentBooking({
-                            buyerId: req.user.id,
+                            buyerId: buyerId,
                             rentId: rent.id,
                             quantity: quantity,
                             pickup_date: dateFrom,
                             delivery_date: dateTo,
                             rent_day: days,
                             location: location,
-                            transaction_url: transaction.data.authorization_url,
-                            ref_no: transaction.data.reference,
-                            access_code: transaction.data.access_code,
+                            transaction_url: authorization_url,
+                            ref_no: ref_no,
                             commission: charge
                         })
                         var savedbook = await book.save();
 
-                        res.json({
-                            status: true,
-                            data:{
-                                rent: rent,
-                                savedbook
-                            }
-                        })
-                    }
-                }).catch(err=> console.log(err))
+                        next()
+                  
             }else{
                 res.json({
                     status: false,
@@ -118,7 +159,7 @@ exports.bookRent = async(req, res, next)=>{
 };
 
 exports.rentVerify = async(req, res, next)=>{
-    const ref = req.query.trxref;
+    const ref = req.body.ref_no;
     // const userId = req.user.id
     try {
                 await Transaction.findOne({

@@ -4,6 +4,8 @@ const Game = require('../model/vr_gaming');
 const GameBooking = require('../model/vr_gamebooking');
 const Transaction = require('../model/usertransactions');
 const Fee = require("../model/adminFee")
+// const axios = require('axios');
+
 
 const store = require('store')
 const User = require('../model/user');
@@ -48,45 +50,95 @@ exports.bookGame = async(req, res, next)=>{
         }).then(async(game) => {
             if(game && game.available_game >= 1){
                 let fname = req.user.fullname.split(' ')
-                var amount = (parseInt(game.price) * quantity);
+                var amounttopay = (parseInt(game.price) * quantity);
                 var charge = parseInt((commision.value / 100) * (parseInt(game.price) * quantity))
-                paystack.transaction.initialize({
-                    name: `${game.title}`,
-                    email: req.user.email,
-                    amount: (amount + charge)  * 100,
-                    quantity: quantity,
-                    callback_url: `${process.env.REDIRECT_SITE}/VerifyPay/game`,
-                    metadata: {
-                        userId: req.user.id,
-                        game: game.id,
-                        title: game.title,
-                                                
-                    }
-                }).then(async (transaction)=>{
-                    console.log(transaction)
-                    if(transaction){
+                var userId = req.user.id;
+                var title = game.title;
+                var email = req.user.email;
+                var amount = amounttopay + charge;
+                var buyerId = req.user.Id;
+                var gameId = game.Id
+             
+                   
+                // const createUserUrl = `${this.url}/transferrecipient`;
+                // const result = await axios({
+                //     method: 'post',
+                //     url: createUserUrl,
+                //     data: {
+                //         "charge": charge,
+                //         "userId": userId,
+                //         "game": game,
+                //         "email": email,
+                //         "amount": amount,
+                //         "buyerId": buyerId,
+                //         "gameId": gamed,
+                //         "quantity": quantity,
+                //         "date": date,
+                //         "time": time
+                //     }
+                // });
+
+                        return res.json({
+                            status: true,
+                            data:{
+                                charge: charge,
+                                userId: userId,
+                                game: game,
+                                email: email,
+                                amount: amount,
+                                buyerId: buyerId,
+                                gameId: gameId,
+                                title: title,
+                                quantity: quantity,
+                                date: date,
+                                time: time
+                            }
+                        })
+                        
+                        
+                    
+            }else{
+                res.json({
+                    status: false,
+                    message: "No game found or game not available"
+                })
+            }
+        }).catch(err=> console.log(err))
+    } catch (error) {
+        console.error(error);
+        next(error)
+    }
+};
+
+exports.getPaymentGame = async(req, res, next)=>{
+    var {charge, userId, gameId, title, email, amount, buyerId, quantity, date, time, ref_no, authorization_url}= req.body;
+    console.log(req.body)
+
+    try {
+        
+        await Game.findOne({
+            where: {
+                id: gameId
+            }
+        }).then(async(game) => {
+            if(game && game.available_game >= 1){
+               
+                    
+                    
                         const book = new GameBooking({
-                            buyerId: req.user.id,
-                            gameId: game.id,
+                            buyerId: buyerId,
+                            gameId: gameId,
                             quantity: quantity,
                             scheduled_date: date,
                             scheduled_time: time,
-                            transaction_url: transaction.data.authorization_url,
-                            ref_no: transaction.data.reference,
-                            access_code: transaction.data.access_code,
-                            commission: parseInt((commision.value / 100) * (parseInt(game.price) * quantity))
+                            transaction_url: authorization_url,
+                            ref_no: ref_no,
+                            commission: charge
                         })
                         var savedbook = await book.save();
 
-                        res.json({
-                            status: true,
-                            data:{
-                                game: game,
-                                savedbook
-                            }
-                        })
-                    }
-                }).catch(err=> console.log(err))
+                        next()
+                    
             }else{
                 res.json({
                     status: false,
@@ -100,8 +152,9 @@ exports.bookGame = async(req, res, next)=>{
     }
 };
 
+
 exports.gameVerify = async(req, res, next)=>{
-    const ref = req.query.trxref;
+    const ref = req.body.ref_no;
     // const userId = req.user.id
     try {
                 await Transaction.findOne({
@@ -426,9 +479,10 @@ exports.gameVerify = async(req, res, next)=>{
                 
 
                             
-                                    res.render("base/verify-game",{
-                                        verify
-                                    })
+                            res.json({
+                                status: true,
+                                message:"Game booked and paid for"
+                            })
                         }).catch(error => console.error(error))
                     }
                 }).catch(error => console.error(error))

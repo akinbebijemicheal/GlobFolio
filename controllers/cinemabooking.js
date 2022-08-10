@@ -53,7 +53,8 @@ exports.bookCinema = async(req, res, next)=>{
 
         }
 
-        var commision = await Fee.findOne({                                                                                                                                                      where:{
+        var commision = await Fee.findOne({        
+            where:{
                 type: "commission"
             }
         })
@@ -64,24 +65,18 @@ exports.bookCinema = async(req, res, next)=>{
             }
         }).then(async(cinema) => {
             if(cinema && cinema.seat >= 1){
-                console.log('check')
                 let fname = req.user.fullname.split(' ')
-                var amount = parseInt((parseInt(cinema.price) * quantity) + (snack_price * snackQuantity));
-                var charges = parseInt((commision.value / 100) * ((parseInt(cinema.price) * quantity) + (snack_price * snackQuantity)));
-                paystack.transaction.initialize({
-                    name: `${cinema.title}`,
-                    email: req.user.email,
-                    amount: (amount + charges) * 100,
-                    quantity: quantity,
-                    callback_url: `${process.env.REDIRECT_SITE}/VerifyPay/cinema`,
-                    metadata: {
-                        userId: req.user.id,
-                        cinema: cinema.id,
-                        title: cinema.title,                       
-                    }
-                }).then(async (transaction)=>{
-                    console.log('transaction')
-                    if(transaction){
+                var amounttopay = parseInt((parseInt(cinema.price) * quantity) + (snack_price * snackQuantity));
+                var charge = parseInt((commision.value / 100) * ((parseInt(cinema.price) * quantity) + (snack_price * snackQuantity)));
+                var amount = amounttopay + charge;
+                var userId = req.user.id;
+                var title = cinema.title;
+                var email = req.user.email;
+                var buyerId = req.user.Id;
+                var cinemaId = cinema.Id
+             
+                
+                    
                         if(time === "morning"){
                             var set_time = cinema.morning
                         }else if(time == "afternoon"){
@@ -90,47 +85,25 @@ exports.bookCinema = async(req, res, next)=>{
                             set_time = cinema.evening
                         }
 
-                        if(snacksId != ''){
-                            const book = new CinemaBooking({
-                                buyerId: req.user.id,
-                                cinemaId: cinema.id,
-                                cinemaSnackId: snacksId,
-                                quantity: quantity,
-                                snackQuantity: snackQuantity,
-                                scheduled_date: cinema.view_date,
-                                scheduled_time: set_time,
-                                transaction_url: transaction.data.authorization_url,
-                                ref_no: transaction.data.reference,
-                                access_code: transaction.data.access_code,
-                                commission: parseInt((commision.value / 100) * ((parseInt(cinema.price) * quantity) + (snack_price * snackQuantity)))
-                            })
-                            var savedbook = await book.save();
-                        }else{
-                            const book = new CinemaBooking({
-                                buyerId: req.user.id,
-                                cinemaId: cinema.id,
-                                quantity: quantity,
-                                snackQuantity: snackQuantity,
-                                scheduled_date: cinema.view_date,
-                                scheduled_time: set_time,
-                                transaction_url: transaction.data.authorization_url,
-                                ref_no: transaction.data.reference,
-                                access_code: transaction.data.access_code,
-                                commission: parseInt((commision.value / 100) * ((parseInt(cinema.price) * quantity) + (snack_price * snackQuantity)))
-                            })
-                            var savedbook = await book.save();
-                        }
                        
 
                         res.json({
                             status: true,
                             data:{
-                                cinema: cinema,
-                                savedbook
+                                charge: charge,
+                                userId: userId,
+                                email: email,
+                                amount: amount,
+                                buyerId: buyerId,
+                                cinemaId: cinemaId,
+                                snacksId: snacksId,
+                                title: title,
+                                quantity: quantity,
+                                snackQuantity: snackQuantity,
+                                set_time: set_time
                             }
                         })
-                    }
-                }).catch(err=> console.log(err))
+           
             }else{
                 res.json({
                     status: false,
@@ -144,8 +117,96 @@ exports.bookCinema = async(req, res, next)=>{
     }
 };
 
+
+exports.getPaymentCinema = async(req, res, next)=>{
+    console.log(req.body);
+    var {charge, userId, cinemaId, snacksId, title, email, amount, buyerId, quantity, snackQuantity, set_time, ref_no, authorization_url}= req.body;
+    console.log(snacksId)
+    var id = req.params.cinemaId;
+    try {
+        // var snack_price = 0;
+        if(!quantity){
+            quantity = 1
+        }
+
+     
+
+        if(snacksId != ''){
+            var snack = await Snack.findOne({
+                where:{
+                    id: snacksId
+                }
+            })
+            var snack_price = snack.price
+        }else{
+            var snack_price = 0;
+
+        }
+
+        var commision = await Fee.findOne({        
+            where:{
+                type: "commission"
+            }
+        })
+
+        await Cinema.findOne({
+            where: {
+                id: id
+            }
+        }).then(async(cinema) => {
+            if(cinema && cinema.seat >= 1){
+         
+             
+               
+
+                        if(snacksId != ''){
+                            const book = new CinemaBooking({
+                                buyerId: buyerId,
+                                cinemaId: cinemaId,
+                                cinemaSnackId: snacksId,
+                                quantity: quantity,
+                                snackQuantity: snackQuantity,
+                                scheduled_date: cinema.view_date,
+                                scheduled_time: set_time,
+                                transaction_url: authorization_url,
+                                ref_no: ref_no,
+                                commission: charge
+                            })
+                            var savedbook = await book.save();
+                        }else{
+                            const book = new CinemaBooking({
+                                buyerId: buyerId,
+                                cinemaId: cinemaId,
+                                quantity: quantity,
+                                snackQuantity: snackQuantity,
+                                scheduled_date: cinema.view_date,
+                                scheduled_time: set_time,
+                                transaction_url: authorization_url,
+                                ref_no: ref_no,
+                                commission: charge
+                            })
+                            var savedbook = await book.save();
+                        }
+                       
+
+                        next()
+                   
+            }else{
+                res.json({
+                    status: false,
+                    message: "No cinema found or cinema not available"
+                })
+            }
+        }).catch(err=> console.log(err))
+    } catch (error) {
+        console.error(error);
+        next(error)
+    }
+};
+
+
 exports.cinemaVerify = async(req, res, next)=>{
-    const ref = req.query.trxref;
+    const ref = req.body.ref_no;
     // const userId = req.user.id
     try {
                 await Transaction.findOne({
@@ -471,8 +532,9 @@ exports.cinemaVerify = async(req, res, next)=>{
                                     //     transaction: savetrnx,
                                     // })
                             
-                                    res.render("base/verify-cinema",{
-                                        verify
+                                    res.json({
+                                        status: true,
+                                        message:"Cinema Ticket booked and paid for"
                                     })
                         }).catch(error => console.error(error))
                     }

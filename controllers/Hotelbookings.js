@@ -55,46 +55,87 @@ exports.bookHotel = async(req, res, next)=>{
         }).then(async(room) => {
             if(room && room.available_room >= 1){
                 let fname = req.user.fullname.split(' ');
-                var amount = (parseInt(room.price) * quantity);
-                var charge = parseInt((commision.value / 100) * (parseInt(room.price) * quantity))
-                paystack.transaction.initialize({
-                    name: `${room.hotel.title} (${room.room})`,
-                    email: req.user.email,
-                    amount: (amount + charge)  * 100,
-                    quantity: quantity,
-                    callback_url: `${process.env.REDIRECT_SITE}/VerifyPay/hotel`,
-                    metadata: {
-                        userId: req.user.id,
-                        room: room.id,
-                        hotel: room.hotel.title,
-                        display_name: room.room                          
-                    }
-                }).then(async (transaction)=>{
-                    console.log(transaction)
-                    if(transaction){
-                        const book = new HotelBooking({
-                            buyerId: req.user.id,
-                            hotelId: room.hotelId,
-                            hotelextrasId: room.id,
-                            quantity: quantity,
-                            start_date: dateFrom,
-                            end_date: dateTo,
-                            transaction_url: transaction.data.authorization_url,
-                            ref_no: transaction.data.reference,
-                            access_code: transaction.data.access_code,
-                            commission: parseInt((commision.value / 100) * (parseInt(room.price) * quantity))
-                        })
-                        var savedbook = await book.save();
+                var amounttopay = (parseInt(room.price) * quantity);
+                var charge = parseInt((commision.value / 100) * (parseInt(room.price) * quantity));
+                var amount = amounttopay + charge;
+                var userId = req.user.id;
+                var title = room.hotel.title;
+                var email = req.user.email;
+                var buyerId = req.user.Id;
+               
+                        
 
                         res.json({
                             status: true,
                             data:{
-                                room: room,
-                                savedbook
+                                charge: charge,
+                                userId: userId,
+                                email: email,
+                                amount: amount,
+                                buyerId: buyerId,
+                                roomId: roomId,
+                                title: title,
+                                quantity: quantity,
+                                dateFrom: dateFrom,
+                                dateTo: dateTo
                             }
                         })
+                
+            }else{
+                res.json({
+                    status: false,
+                    message: "No room found or Room not available"
+                })
+            }
+        }).catch(err=> console.log(err))
+    } catch (error) {
+        console.log(error),
+        next(error)
+    }
+}
+
+exports.getPaymentHotel = async(req, res, next)=>{
+    var {charge, userId, roomId, title, email, amount, dateFrom, dateTo, buyerId, quantity, ref_no, authorization_url}= req.body;
+    try {
+        if(!quantity){
+            quantity = 1
+        }
+
+        var commision = await Fee.findOne({
+            where:{
+                type: "commission"
+            }
+        })
+        await HotelExtras.findOne({
+            where: {
+                id: roomId
+            }, include:[
+                {
+                    model: Hotel,
+                    attributes: {
+                        exclude:["createdAt", "updatedAt"]
                     }
-                }).catch(err=> console.log(err))
+                }
+            ]
+        }).then(async(room) => {
+            if(room && room.available_room >= 1){
+          
+               
+                        const book = new HotelBooking({
+                            buyerId: buyerId,
+                            hotelId: room.hotelId,
+                            hotelextrasId: roomId,
+                            quantity: quantity,
+                            start_date: dateFrom,
+                            end_date: dateTo,
+                            transaction_url: authorization_url,
+                            ref_no: ref_no,
+                            commission: charge
+                        })
+                        var savedbook = await book.save();
+
+                        next()
+                  
             }else{
                 res.json({
                     status: false,
@@ -109,7 +150,7 @@ exports.bookHotel = async(req, res, next)=>{
 }
 
 exports.hotelverify = async(req, res, next)=>{
-    const ref = req.query.trxref;
+    const ref = req.body.ref_no;
     // const userId = req.user.id
     try {
                 await Transaction.findOne({
@@ -436,9 +477,10 @@ exports.hotelverify = async(req, res, next)=>{
                             });
                 
 
-                                    res.render("base/verify-hotel",{
-                                        verify
-                                    })
+                            res.json({
+                                status: true,
+                                message: "hotel booking paid and reserved"
+                            })
                             
                         }).catch(error => console.error(error))
                     }

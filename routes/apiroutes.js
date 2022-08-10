@@ -77,6 +77,7 @@ const {
 const userVerify = require("../middleware/verify");
 const {
   bookHotel,
+  getPaymentHotel,
   hotelverify,
   getUserbookings,
   getbooking,
@@ -107,21 +108,27 @@ const {
 } = require("../controllers/rentbooking");
 const {
   bookStudio,
+  getPaymentStudio,
+  studioVerify,
   getUserStudiobookings,
   getStudiobooking,
   getAppStudiobooking,
 } = require("../controllers/studiobooking");
 const {
   bookCinema,
+  getPaymentCinema,
+  cinemaVerify,
   getUserCinemabookings,
   getCinemabooking,
   getAppCinemabooking,
 } = require("../controllers/cinemabooking");
 const {
   bookGame,
+  getPaymentGame,
   getUserGamebookings,
   getGamebooking,
   getAppGamebooking,
+  gameVerify,
 } = require("../controllers/gamebooking");
 
 const { support } = require("../controllers/support");
@@ -280,6 +287,7 @@ router.route("/get-rent-byid/:id").get(jwtAuth, userVerify, getRentById);
 // .get(jwtAuth, getRentForUser)
 
 router.post("/bookHotel", jwtAuth, bookHotel);
+router.post("/getPaymentHotel", jwtAuth, getPaymentHotel, hotelverify);
 router.get("/getUserBookings", jwtAuth, getUserbookings);
 router.get("/getBooking/:bookingId", jwtAuth, getAppbooking);
 
@@ -289,14 +297,17 @@ router.get("/getUserRentBookings", jwtAuth, getUserRentbookings);
 router.get("/getRentBooking/:bookingId", jwtAuth, getAppRentbooking);
 
 router.post("/bookStudio/:studioId", jwtAuth, bookStudio);
+router.post("/getPaymentStudio", jwtAuth, getPaymentStudio, studioVerify)
 router.get("/getUserStudioBookings", jwtAuth, getUserStudiobookings);
 router.get("/getStudioBooking/:bookingId", jwtAuth, getAppStudiobooking);
 
 router.post("/bookCinema/:cinemaId", jwtAuth, bookCinema);
+router.post("/getPaymentCinema", jwtAuth, getPaymentCinema, cinemaVerify);
 router.get("/getUserCinemaBookings", jwtAuth, getUserCinemabookings);
 router.get("/getCinemaBooking/:bookingId", jwtAuth, getAppCinemabooking);
 
 router.post("/bookGame/:gameId", jwtAuth, bookGame);
+router.post("/getPaymentGame", jwtAuth, getPaymentGame, gameVerify);
 router.get("/getUserGameBookings", jwtAuth, getUserGamebookings);
 router.get("/getGameBooking/:bookingId", jwtAuth, getAppGamebooking);
 

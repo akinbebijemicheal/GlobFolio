@@ -27,7 +27,7 @@ var transporter = nodemailer.createTransport({
   });
 
 
-exports.bookStudio = async(req, res, next)=>{
+  exports.bookStudio = async(req, res, next)=>{
     var {quantity, dateTo, dateFrom}= req.body;
     const id = req.params.studioId;
     try {
@@ -47,46 +47,83 @@ exports.bookStudio = async(req, res, next)=>{
         }).then(async(studio) => {
             if(studio){
                 let fname = req.user.fullname.split(' ');
-                var amount = (parseInt(studio.price) * quantity);
+                var amounttopay = (parseInt(studio.price) * quantity);
                 var charge = parseInt((commision.value / 100) * (parseInt(studio.price) * quantity))
-                paystack.transaction.initialize({
-                    name: `${studio.title} (${studio.equipment})`,
-                    email: req.user.email,
-                    amount: (amount + charge) * 100,
-                    quantity: quantity,
-                    callback_url: `${process.env.REDIRECT_SITE}/VerifyPay/studio`,
-                    metadata: {
-                        userId: req.user.id,
-                        studio: studio.id,
-                        title: studio.title,
-                        equipment: studio.equipment
-                                                 
-                    }
-                }).then(async (transaction)=>{
-                    console.log(transaction)
-                    if(transaction){
-                        const book = new StudioBooking({
-                            buyerId: req.user.id,
-                            studioId: studio.id,
-                            quantity: quantity,
-                            start_date: dateFrom,
-                            end_date: dateTo,
-                            transaction_url: transaction.data.authorization_url,
-                            ref_no: transaction.data.reference,
-                            access_code: transaction.data.access_code,
-                            commission: charge
-                        })
-                        var savedbook = await book.save();
+                var amount = amounttopay + charge;
+                var userId = req.user.id;
+                var title = studio.title;
+                var email = req.user.email;
+                var buyerId = req.user.Id;
+                var equipment = studio.equipment;
+                var studioId = studio.id;
+                
+                       
 
                         res.json({
                             status: true,
                             data:{
-                                studio: studio,
-                                savedbook
+                                charge: charge,
+                                userId: userId,
+                                email: email,
+                                amount: amount,
+                                buyerId: buyerId,
+                                rentId: rentId,
+                                title: title,
+                                quantity: quantity,
+                                dateFrom: dateFrom,
+                                dateTo: dateTo,
+                                location : location
                             }
                         })
-                    }
-                }).catch(err=> console.log(err))
+                  
+            }else{
+                res.json({
+                    status: false,
+                    message: "No studio found or studio not available"
+                })
+            }
+        }).catch(err=> console.log(err))
+    } catch (error) {
+        console.error(error);
+        next(error)
+    }
+};
+
+exports.getPaymentStudio = async(req, res, next)=>{
+    var {quantity, dateTo, dateFrom}= req.body;
+    const id = req.params.studioId;
+    try {
+        if(!quantity){
+            quantity = 1
+        }
+
+        var commision = await Fee.findOne({
+            where:{
+                type: "commission"
+            }
+        })
+        await Studio.findOne({
+            where: {
+                id: id
+            }
+        }).then(async(studio) => {
+            if(studio){
+                let fname = req.user.fullname.split(' ');
+               
+                        const book = new StudioBooking({
+                            buyerId: buyerId,
+                            studioId: studio.id,
+                            quantity: quantity,
+                            start_date: dateFrom,
+                            end_date: dateTo,
+                            transaction_url: authorization_url,
+                            ref_no: ref_no,
+                            commission: charge
+                        })
+                        var savedbook = await book.save();
+
+                        next()
+                 
             }else{
                 res.json({
                     status: false,
