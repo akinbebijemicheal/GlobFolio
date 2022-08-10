@@ -171,7 +171,6 @@ exports.gameVerify = async(req, res, next)=>{
                     }else{
                         console.log("about to verify payment")
                         paystack.transaction.verify(ref).then(async(transaction) => {
-                            console.log("verify payment")
                             console.log(transaction);
 
                             // res.json(transaction)
@@ -179,8 +178,7 @@ exports.gameVerify = async(req, res, next)=>{
                                 verify = `Transaction on the reference no: ${ref} not found`
                                 
                             }
-                        console.log("efor game")
-                        console.log(transaction)
+                      
 
                             var book = await GameBooking.findOne({
                                 where:{
@@ -198,14 +196,21 @@ exports.gameVerify = async(req, res, next)=>{
                                 price: `${transaction.data.currency} ${transaction.data.amount / 100}`,
                                 description: `Game Ticket #${book.id}, Titled: ${transaction.data.metadata.meta.title}`
                             })
+                            console.log("0")
+
                             var savetrnx = await trnx.save()
+                            console.log("1")
                             verify = "Payment" +" " +transaction.message
+                            console.log("2")
+
 
                                 var game = await Game.findOne({
                                     where: {
                                         id: transaction.data.metadata.gameId
                                     }
                                 })
+                            console.log("3")
+
                                 await GameBooking.findOne({
                                     where:{
                                         ref_no: ref
@@ -213,7 +218,7 @@ exports.gameVerify = async(req, res, next)=>{
                                 }).then(async (book) => {
                                     if(book){
                                         await GameBooking.update({
-                                            transactionId: savetrnx.id
+                                            transactionId: book.id
                                         }, { where: {
                                             id: book.id
                                         }})

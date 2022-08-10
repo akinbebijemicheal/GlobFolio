@@ -205,7 +205,7 @@ exports.hotelverify = async(req, res, next)=>{
                                 }).then(async (book) => {
                                     if(book){
                                         await HotelBooking.update({
-                                            transactionId: savetrnx.id
+                                            transactionId: book.id
                                         }, { where: {
                                             id: book.id
                                         }})
