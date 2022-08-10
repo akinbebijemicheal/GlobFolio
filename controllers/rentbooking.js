@@ -60,12 +60,12 @@ var transporter = nodemailer.createTransport({
             if(rent && rent.available_rent >= 1){
                 let fname = req.user.fullname.split(' ')
                 var amounttopay = ((parseInt(rent.price) * quantity) * days);
-                console.log("amount", amount);
+                console.log("amount", amounttopay);
                 var charge = parseInt((commision.value / 100) * ((parseInt(rent.price) * quantity) * days))
                 console.log("charge", charge);
                 var amount = amounttopay + charge;
                 var userId = req.user.id;
-                var title = room.hotel.title;
+                var title = rent.title;
                 var email = req.user.email;
                 var buyerId = req.user.Id;
                 var rentId = rent.id
