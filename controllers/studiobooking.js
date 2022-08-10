@@ -71,7 +71,8 @@ var transporter = nodemailer.createTransport({
                                 title: title,
                                 quantity: quantity,
                                 dateFrom: dateFrom,
-                                dateTo: dateTo
+                                dateTo: dateTo,
+                                equipment: studio.equipmet
                             }
                         })
                   
@@ -171,12 +172,12 @@ exports.studioVerify = async(req, res, next)=>{
                             })
 
                             var trnx = new Transaction({
-                                userId: transaction.data.metadata.userId,
+                                userId: transaction.data.metadata.meta.userId,
                                 ref_no: ref,
                                 status: transaction.data.status,
                                 ProductType: "Studio",
                                 price: `${transaction.data.currency} ${transaction.data.amount / 100}`,
-                                description: `Studio Booking #${book.id}, ${transaction.data.metadata.title} (${transaction.data.metadata.equipment})`
+                                description: `Studio Booking #${book.id}, ${transaction.data.metadata.meta.title} (${transaction.data.metadata.meta.equipment})`
                             })
                             var savetrnx = await trnx.save()
                             verify = "Payment" +" " +transaction.message
@@ -203,7 +204,7 @@ exports.studioVerify = async(req, res, next)=>{
                             
                                     var user = await User.findOne({
                                         where:{
-                                            id: transaction.data.metadata.userId,
+                                            id: transaction.data.metadata.meta.userId,
                                         }
                                     })
                 

@@ -85,7 +85,8 @@ var transporter = nodemailer.createTransport({
                                 quantity: quantity,
                                 dateFrom: dateFrom,
                                 dateTo: dateTo,
-                                location : location
+                                location : location,
+                                equipment: rent.equipment
                             }
                         })
                     
@@ -191,19 +192,19 @@ exports.rentVerify = async(req, res, next)=>{
                             })
 
                             var trnx = new Transaction({
-                                userId: transaction.data.metadata.userId,
+                                userId: transaction.data.metadata.meta.userId,
                                 ref_no: ref,
                                 status: transaction.data.status,
                                 ProductType: "Rent",
                                 price: `${transaction.data.currency} ${transaction.data.amount / 100}`,
-                                description: `Rental Service #${book.id} ${transaction.data.metadata.title} (${transaction.data.metadata.equipment})`
+                                description: `Rental Service #${book.id} ${transaction.data.metadata.meta.title} (${transaction.data.metadata.meta.equipment})`
                             })
                             var savetrnx = await trnx.save()
                             verify = "Payment" +" " +transaction.message
 
                             var rent = await Rent.findOne({
                                 where:{
-                                    id: transaction.data.metadata.rent
+                                    id: transaction.data.metadata.meta.rent
                                 }
                             })
                                 await RentBooking.findOne({
@@ -236,7 +237,7 @@ exports.rentVerify = async(req, res, next)=>{
 
                                     var user = await User.findOne({
                                         where:{
-                                            id: transaction.data.metadata.userId,
+                                            id: transaction.data.metadata.meta.userId,
                                         }
                                     })
                 

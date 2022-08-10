@@ -77,7 +77,9 @@ exports.bookHotel = async(req, res, next)=>{
                                 title: title,
                                 quantity: quantity,
                                 dateFrom: dateFrom,
-                                dateTo: dateTo
+                                dateTo: dateTo,
+                                diaplay_name: room.room
+
                             }
                         })
                 
@@ -181,19 +183,19 @@ exports.hotelverify = async(req, res, next)=>{
                                 }})
 
                             var trnx = new Transaction({
-                                userId: transaction.data.metadata.userId,
+                                userId: transaction.data.metadata.meta.userId,
                                 ref_no: ref,
                                 status: transaction.data.status,
                                 ProductType: "Hotel",
                                 price: `${transaction.data.currency} ${transaction.data.amount / 100}`,
-                                description: `Hotel Booking #${book.id}, Name: ${transaction.data.metadata.hotel} (${transaction.data.metadata.display_name})`
+                                description: `Hotel Booking #${book.id}, Name: ${transaction.data.metadata.meta.hotel} (${transaction.data.metadata.meta.display_name})`
                             })
                             var savetrnx = await trnx.save()
                             verify = "Payment" +" " +transaction.message
 
                             var hotel = await HotelExtras.findOne({
                                 where: {
-                                    id: transaction.data.metadata.room
+                                    id: transaction.data.metadata.meta.room
                                 }
                             })
                                 await HotelBooking.findOne({
@@ -226,7 +228,7 @@ exports.hotelverify = async(req, res, next)=>{
 
                                     var user = await User.findOne({
                                         where:{
-                                            id: transaction.data.metadata.userId,
+                                            id: transaction.data.metadata.meta.userId,
                                         }
                                     })
                 

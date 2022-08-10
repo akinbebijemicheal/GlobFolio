@@ -157,7 +157,7 @@ exports.getPaymentGame = async(req, res, next)=>{
 exports.gameVerify = async(req, res, next)=>{
 
     const ref = req.body.ref_no;
-    console.log(ref)
+    console.log("hey",ref)
     // const userId = req.user.id
     try {
                 await Transaction.findOne({
@@ -186,19 +186,19 @@ exports.gameVerify = async(req, res, next)=>{
                             })
 
                             var trnx = new Transaction({
-                                userId: transaction.data.metadata.userId,
+                                userId: transaction.data.metadata.meta.userId,
                                 ref_no: ref,
                                 status: transaction.data.status,
                                 ProductType: "Game",
                                 price: `${transaction.data.currency} ${transaction.data.amount / 100}`,
-                                description: `Game Ticket #${book.id}, Titled: ${transaction.data.metadata.title}`
+                                description: `Game Ticket #${book.id}, Titled: ${transaction.data.metadata.meta.title}`
                             })
                             var savetrnx = await trnx.save()
                             verify = "Payment" +" " +transaction.message
 
                                 var game = await Game.findOne({
                                     where: {
-                                        id: transaction.data.metadata.game
+                                        id: transaction.data.metadata.gameId
                                     }
                                 })
                                 await GameBooking.findOne({
@@ -228,7 +228,7 @@ exports.gameVerify = async(req, res, next)=>{
 
                                     var user = await User.findOne({
                                         where:{
-                                            id: transaction.data.metadata.userId,
+                                            id: transaction.data.metadata.meta.userId,
                                         }
                                     })
                 

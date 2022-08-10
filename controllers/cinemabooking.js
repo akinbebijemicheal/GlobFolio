@@ -234,19 +234,19 @@ exports.cinemaVerify = async(req, res, next)=>{
                                 }})
 
                             var trnx = new Transaction({
-                                userId: transaction.data.metadata.userId,
+                                userId: transaction.data.metadata.meta.userId,
                                 ref_no: ref,
                                 status: transaction.data.status,
                                 ProductType: "Cinema",
                                 price: `${transaction.data.currency} ${transaction.data.amount / 100}`,
-                                description: `Cinema Ticket #${book.id}, Titled: ${transaction.data.metadata.title}`
+                                description: `Cinema Ticket #${book.id}, Titled: ${transaction.data.metadata.meta.title}`
                             })
                             var savetrnx = await trnx.save()
                             verify = "Payment" +" " +transaction.message
 
                             var cinema = await Cinema.findOne({
                                 where:{
-                                    id: transaction.data.metadata.cinema
+                                    id: transaction.data.metadata.meta.cinema
                                 }
                             })
                                 await CinemaBooking.findOne({
@@ -273,7 +273,7 @@ exports.cinemaVerify = async(req, res, next)=>{
 
                                 var user = await User.findOne({
                                     where:{
-                                        id: transaction.data.metadata.userId,
+                                        id: transaction.data.metadata.meta.userId,
                                     }
                                 })
             

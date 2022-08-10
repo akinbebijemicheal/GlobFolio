@@ -1318,12 +1318,12 @@ exports.Checkout = async (req, res, next) => {
                     }
 
                     var trnx = new Transaction({
-                        userId: transaction.data.metadata.userId,
+                        userId: transaction.data.metadata.meta.userId,
                         ref_no: ref,
                         status: transaction.data.status,
                         ProductType: "Food",
                         price: `${transaction.data.currency} ${transaction.data.amount / 100}`,
-                        description: `Food purchase #${transaction.data.metadata.orderId}`
+                        description: `Food purchase #${transaction.data.metadata.meta.orderId}`
                     })
                     var savetrnx = await trnx.save()
 
@@ -1331,13 +1331,13 @@ exports.Checkout = async (req, res, next) => {
                         paid: true
                     }, {
                         where: {
-                            id: transaction.data.metadata.orderId
+                            id: transaction.data.metadata.meta.orderId
                         }
                     })
 
                     await CartItem.findAll({
                         where: {
-                            orderId: transaction.data.metadata.orderId
+                            orderId: transaction.data.metadata.meta.orderId
                         },
 
                     }).then(async (extra) => {
@@ -1356,7 +1356,7 @@ exports.Checkout = async (req, res, next) => {
 
                     var user = await User.findOne({
                         where: {
-                            id: transaction.data.metadata.userId,
+                            id: transaction.data.metadata.meta.userId,
                         }
                     })
 
