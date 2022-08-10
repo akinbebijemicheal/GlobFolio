@@ -89,7 +89,8 @@ var transporter = nodemailer.createTransport({
 };
 
 exports.getPaymentStudio = async(req, res, next)=>{
-    var {quantity, dateTo, dateFrom}= req.body;
+    var {dateTo, dateFrom, charge, userId, studioId, title, email, amount, buyerId, quantity, ref_no, authorization_url}= req.body;
+
     const id = req.params.studioId;
     try {
         if(!quantity){
