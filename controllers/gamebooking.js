@@ -206,7 +206,7 @@ exports.gameVerify = async(req, res, next)=>{
 
                                 var game = await Game.findOne({
                                     where: {
-                                        id: transaction.data.metadata.gameId
+                                        id: transaction.data.metadata.meta.game
                                     }
                                 })
                             console.log("3")
