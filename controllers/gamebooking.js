@@ -175,17 +175,20 @@ exports.gameVerify = async(req, res, next)=>{
                             console.log(transaction);
 
                             // res.json(transaction)
-                            if(!transaction){
+                            if(transaction === undefined && transaction === null){
                                 verify = `Transaction on the reference no: ${ref} not found`
                                 
                             }
                         console.log("efor game")
+                        console.log(transaction)
 
                             var book = await GameBooking.findOne({
                                 where:{
                                     ref_no: ref
                                 }
                             })
+
+                           
 
                             var trnx = new Transaction({
                                 userId: transaction.data.metadata.meta.userId,
