@@ -120,6 +120,8 @@ exports.getPaymentStudio = async(req, res, next)=>{
                             commission: charge
                         })
                         var savedbook = await book.save();
+                        console.log(book)
+
 
                         next()
                  

@@ -136,6 +136,7 @@ exports.getPaymentGame = async(req, res, next)=>{
                             commission: charge
                         })
                         var savedbook = await book.save();
+                        console.log(book)
 
                         next()
                     
@@ -154,7 +155,9 @@ exports.getPaymentGame = async(req, res, next)=>{
 
 
 exports.gameVerify = async(req, res, next)=>{
+
     const ref = req.body.ref_no;
+    console.log(ref)
     // const userId = req.user.id
     try {
                 await Transaction.findOne({
