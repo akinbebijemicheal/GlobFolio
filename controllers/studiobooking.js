@@ -67,7 +67,7 @@ var transporter = nodemailer.createTransport({
                                 email: email,
                                 amount: amount,
                                 buyerId: buyerId,
-                                rentId: rentId,
+                                studioId: studioId,
                                 title: title,
                                 quantity: quantity,
                                 dateFrom: dateFrom,
