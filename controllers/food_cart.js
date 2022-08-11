@@ -271,13 +271,14 @@ exports.buyFood = async (req, res, next) => {
 
 exports.AddCart = async (req, res, next) => {
     var { quantity, foodextraId, foodpackageId } = req.body;
-
+var foodId = req.params.foodId
+var userId = req.user.id
     try {
 
         const existeditem = await CartItem.findOne({
             where: {
-                foodId: req.params.foodId,
-                userId: req.user.id
+                foodId: foodId,
+                userId: userId
             }
         })
         if (existeditem != null) {
@@ -293,8 +294,8 @@ exports.AddCart = async (req, res, next) => {
             },
                 {
                     where: {
-                        foodId: req.params.foodId,
-                        userId: req.user.id
+                        foodId: foodId,
+                        userId: userId
                     }
                 })
 
@@ -309,7 +310,7 @@ exports.AddCart = async (req, res, next) => {
 
             await Food.findOne({
                 where: {
-                    id: req.params.foodId
+                    id: foodId
                 }
 
 
@@ -318,7 +319,7 @@ exports.AddCart = async (req, res, next) => {
                 if (food) {
                     const order = await Order.findOne({
                         where: {
-                            userId: req.user.id,
+                            userId: userId,
                             new: true,
                             paid: false
                         }
@@ -379,7 +380,7 @@ exports.AddCart = async (req, res, next) => {
                         console.log(price)
 
                         const Items = new CartItem({
-                            userId: req.user.id,
+                            userId: userId,
                             foodId: food.id,
                             foodextrasId: extraId,
                             foodpackageId: packageId,
