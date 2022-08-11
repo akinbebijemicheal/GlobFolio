@@ -119,7 +119,14 @@ exports.getPaymentRent = async(req, res, next)=>{
             }
         })
 
-       
+        var dayFrom = moment(new Date(dateFrom));
+        var dayTo = moment(new Date(dateTo));
+        var difference = Math.abs(dayTo - dayFrom)
+        var days = difference/(1000 * 3600 * 24);
+        if(dateFrom === dateTo){
+            days = 1
+        }
+        console.log("days", days)
 
         await Rent.findOne({
             where: {
@@ -216,7 +223,7 @@ exports.rentVerify = async(req, res, next)=>{
                                         await RentBooking.update({
                                             transactionId: book.id
                                         }, { where: {
-                                            id: book.id
+                                            id: savetrnx.id
                                         }})
 
                                         await Rent.update({
