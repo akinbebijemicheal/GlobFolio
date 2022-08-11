@@ -29,6 +29,7 @@ var transporter = nodemailer.createTransport({
 
 exports.bookCinema = async(req, res, next)=>{
     var {quantity, snackQuantity, time, snacksId}= req.body;
+    console.log(req.body)
     var id = req.params.cinemaId;
     try {
         // var snack_price = 0;
@@ -118,8 +119,7 @@ exports.bookCinema = async(req, res, next)=>{
 exports.getPaymentCinema = async(req, res, next)=>{
     console.log(req.body);
     var {charge, userId, cinemaId, snacksId, title, email, amount, buyerId, quantity, snackQuantity, set_time, ref_no, authorization_url}= req.body;
-    console.log(snacksId)
-    var id = req.params.cinemaId;
+
     try {
         // var snack_price = 0;
         if(!quantity){
@@ -128,27 +128,18 @@ exports.getPaymentCinema = async(req, res, next)=>{
 
      
 
-        if(snacksId != ''){
-            var snack = await Snack.findOne({
-                where:{
-                    id: snacksId
-                }
-            })
-            var snack_price = snack.price
-        }else{
-            var snack_price = 0;
-
-        }
+      
 
         var commision = await Fee.findOne({        
             where:{
                 type: "commission"
             }
         })
+        console.log(h)
 
         await Cinema.findOne({
             where: {
-                id: id
+                id: cinemaId
             }
         }).then(async(cinema) => {
             if(cinema && cinema.seat >= 1){
@@ -156,7 +147,7 @@ exports.getPaymentCinema = async(req, res, next)=>{
              
                
 
-                        if(snacksId != ''){
+                        
                             const book = new CinemaBooking({
                                 buyerId: buyerId,
                                 cinemaId: cinemaId,
@@ -170,23 +161,8 @@ exports.getPaymentCinema = async(req, res, next)=>{
                                 commission: charge
                             })
                             var savedbook = await book.save();
-                            console.log("no snacks chosen",book)
-                        }else{
-                            const book = new CinemaBooking({
-                                buyerId: buyerId,
-                                cinemaId: cinemaId,
-                                quantity: quantity,
-                                snackQuantity: snackQuantity,
-                                scheduled_date: cinema.view_date,
-                                scheduled_time: set_time,
-                                transaction_url: authorization_url,
-                                ref_no: ref_no,
-                                commission: charge
-                            })
-                            var savedbook = await book.save();
-                        console.log("snacks chosen",book)
-
-                        }
+                            console.log(book)
+                       
                        
 
                     
