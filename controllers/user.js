@@ -4,7 +4,8 @@ const jwt = require('jsonwebtoken');
 const passport = require('passport');
 require('dotenv').config();
 const nodemailer = require('nodemailer')
-const store = require('store')
+const store = require('store');
+const Picture = require('../model/profilepic');
 
 /*const { google } = require("googleapis");
 const OAuth2 = google.auth.OAuth2;
@@ -372,6 +373,7 @@ exports.LoginUser = async (req, res, next) => {
             email: email 
           }
         });
+        console.log(user)
         if(!user){
             return res.status(404).json({
                 status: false,
@@ -396,6 +398,12 @@ exports.LoginUser = async (req, res, next) => {
             }
 
             let token = jwt.sign(payload, process.env.TOKEN);
+            const picture = await Picture.findOne({
+              where: {
+                userId: user.Id 
+              }
+            })
+            console.log(picture)
 
             let result = {
                 id: user.id,
@@ -409,7 +417,8 @@ exports.LoginUser = async (req, res, next) => {
                 email_verify: user.email_verify,
                 updatedAt: user.updatedAt,
                 createdAt: user.createdAt,
-                access_token: token
+                access_token: token,
+                img_url:picture.content_id
             };
 
             return res.status(200).json({

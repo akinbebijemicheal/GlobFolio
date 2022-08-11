@@ -276,7 +276,8 @@ exports.AddCart = async (req, res, next) => {
 
         const existeditem = await CartItem.findOne({
             where: {
-                foodId: req.params.foodId
+                foodId: req.params.foodId,
+                userId: req.user.id
             }
         })
         if (existeditem != null) {
@@ -292,7 +293,8 @@ exports.AddCart = async (req, res, next) => {
             },
                 {
                     where: {
-                        foodId: req.params.foodId
+                        foodId: req.params.foodId,
+                        userId: req.user.id
                     }
                 })
 
