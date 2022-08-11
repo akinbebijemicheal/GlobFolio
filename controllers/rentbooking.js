@@ -17,28 +17,28 @@ var transporter = nodemailer.createTransport({
     port: process.env.EMAIL_PORT,
     secure: true, // true for 465, false for other ports
     tls: {
-    rejectUnauthorized: false,
+        rejectUnauthorized: false,
     },
     ool: true,
     maxConnections: 1,
     rateDelta: 20000,
     rateLimit: 5,
     auth: {
-    user: process.env.EMAIL_USERNAME, // generated ethereal user
-    pass: process.env.EMAIL_PASSWORD, // generated ethereal password
+        user: process.env.EMAIL_USERNAME, // generated ethereal user
+        pass: process.env.EMAIL_PASSWORD, // generated ethereal password
     },
-  });
+});
 
-  exports.bookRent = async(req, res, next)=>{
-    var {quantity, dateTo, dateFrom, location}= req.body;
+exports.bookRent = async (req, res, next) => {
+    var { quantity, dateTo, dateFrom, location } = req.body;
     const id = req.params.rentId;
     try {
-        if(!quantity){
+        if (!quantity) {
             quantity = 1
         }
 
         var commision = await Fee.findOne({
-            where:{
+            where: {
                 type: "commission"
             }
         })
@@ -46,8 +46,8 @@ var transporter = nodemailer.createTransport({
         var dayFrom = moment(new Date(dateFrom));
         var dayTo = moment(new Date(dateTo));
         var difference = Math.abs(dayTo - dayFrom)
-        var days = difference/(1000 * 3600 * 24);
-        if(dateFrom === dateTo){
+        var days = difference / (1000 * 3600 * 24);
+        if (dateFrom === dateTo) {
             days = 1
         }
         console.log("days", days)
@@ -56,8 +56,8 @@ var transporter = nodemailer.createTransport({
             where: {
                 id: id
             }
-        }).then(async(rent) => {
-            if(rent && rent.available_rent >= 1){
+        }).then(async (rent) => {
+            if (rent && rent.available_rent >= 1) {
                 let fname = req.user.fullname.split(' ')
                 var amounttopay = ((parseInt(rent.price) * quantity) * days);
                 console.log("amount", amounttopay);
@@ -69,34 +69,34 @@ var transporter = nodemailer.createTransport({
                 var email = req.user.email;
                 var buyerId = req.user.Id;
                 var rentId = rent.id
-                
-                    
 
-                        res.json({
-                            status: true,
-                            data:{
-                                charge: charge,
-                                userId: userId,
-                                email: email,
-                                amount: amount,
-                                buyerId: buyerId,
-                                rentId: rentId,
-                                title: title,
-                                quantity: quantity,
-                                dateFrom: dateFrom,
-                                dateTo: dateTo,
-                                location : location,
-                                equipment: rent.equipment
-                            }
-                        })
-                    
-            }else{
+
+
+                res.json({
+                    status: true,
+                    data: {
+                        charge: charge,
+                        userId: userId,
+                        email: email,
+                        amount: amount,
+                        buyerId: buyerId,
+                        rentId: rentId,
+                        title: title,
+                        quantity: quantity,
+                        dateFrom: dateFrom,
+                        dateTo: dateTo,
+                        location: location,
+                        equipment: rent.equipment
+                    }
+                })
+
+            } else {
                 res.json({
                     status: false,
                     message: "No rent found or rent not available"
                 })
             }
-        }).catch(err=> console.log(err))
+        }).catch(err => console.log(err))
     } catch (error) {
         console.error(error);
         res.json(error)
@@ -104,17 +104,17 @@ var transporter = nodemailer.createTransport({
     }
 };
 
-exports.getPaymentRent = async(req, res, next)=>{
-    var {location, charge, userId, rentId, title, email, amount, dateFrom, dateTo, buyerId, quantity, ref_no, authorization_url}= req.body;
-  
+exports.getPaymentRent = async (req, res, next) => {
+    var { location, charge, userId, rentId, title, email, amount, dateFrom, dateTo, buyerId, quantity, ref_no, authorization_url } = req.body;
+
     const id = rentId;
     try {
-        if(!quantity){
+        if (!quantity) {
             quantity = 1
         }
 
         var commision = await Fee.findOne({
-            where:{
+            where: {
                 type: "commission"
             }
         })
@@ -122,8 +122,8 @@ exports.getPaymentRent = async(req, res, next)=>{
         var dayFrom = moment(new Date(dateFrom));
         var dayTo = moment(new Date(dateTo));
         var difference = Math.abs(dayTo - dayFrom)
-        var days = difference/(1000 * 3600 * 24);
-        if(dateFrom === dateTo){
+        var days = difference / (1000 * 3600 * 24);
+        if (dateFrom === dateTo) {
             days = 1
         }
         console.log("days", days)
@@ -132,35 +132,35 @@ exports.getPaymentRent = async(req, res, next)=>{
             where: {
                 id: id
             }
-        }).then(async(rent) => {
-            if(rent && rent.available_rent >= 1){
+        }).then(async (rent) => {
+            if (rent && rent.available_rent >= 1) {
                 let fname = req.user.fullname.split(' ')
-               
-                        const book = new RentBooking({
-                            buyerId: buyerId,
-                            rentId: rent.id,
-                            quantity: quantity,
-                            pickup_date: dateFrom,
-                            delivery_date: dateTo,
-                            rent_day: days,
-                            location: location,
-                            transaction_url: authorization_url,
-                            ref_no: ref_no,
-                            commission: charge
-                        })
-                        var savedbook = await book.save();
-                        console.log(book)
+
+                const book = new RentBooking({
+                    buyerId: buyerId,
+                    rentId: rent.id,
+                    quantity: quantity,
+                    pickup_date: dateFrom,
+                    delivery_date: dateTo,
+                    rent_day: days,
+                    location: location,
+                    transaction_url: authorization_url,
+                    ref_no: ref_no,
+                    commission: charge
+                })
+                var savedbook = await book.save();
+                console.log(book)
 
 
-                        next()
-                  
-            }else{
+                next()
+
+            } else {
                 res.json({
                     status: false,
                     message: "No rent found or rent not available"
                 })
             }
-        }).catch(err=> console.log(err))
+        }).catch(err => console.log(err))
     } catch (error) {
         console.error(error);
         res.json(error)
@@ -168,92 +168,94 @@ exports.getPaymentRent = async(req, res, next)=>{
     }
 };
 
-exports.rentVerify = async(req, res, next)=>{
+exports.rentVerify = async (req, res, next) => {
     const ref = req.body.ref_no;
     // const userId = req.user.id
     try {
-                await Transaction.findOne({
-                    where:{
-                        ref_no: ref
+        await Transaction.findOne({
+            where: {
+                ref_no: ref
+            }
+        }).then(async (trn) => {
+            if (trn) {
+                var verify = "Payment Already Verified"
+                // res.json("Payment Already Verified")
+            } else {
+                paystack.transaction.verify(ref).then(async (transaction) => {
+                    console.log(transaction);
+                    // res.json(transaction)
+                    if (!transaction) {
+                        verify = `Transaction on the reference no: ${ref} not found`
+                        // res.json({
+                        //     status: false,
+                        //     message: `Transaction on the reference no: ${ref} not found`
+                        // })
                     }
-                }).then(async (trn)=>{
-                    if(trn){
-                        var verify = "Payment Already Verified"
-                        // res.json("Payment Already Verified")
-                    }else{
-                        paystack.transaction.verify(ref).then(async(transaction) => {
-                            console.log(transaction);
-                            // res.json(transaction)
-                            if(!transaction){
-                                verify = `Transaction on the reference no: ${ref} not found`
-                                // res.json({
-                                //     status: false,
-                                //     message: `Transaction on the reference no: ${ref} not found`
-                                // })
-                            }
 
-                            var book = await RentBooking.findOne({
-                                where:{
-                                    ref_no: ref
+                    var book = await RentBooking.findOne({
+                        where: {
+                            ref_no: ref
+                        }
+                    })
+
+                    var trnx = new Transaction({
+                        userId: transaction.data.metadata.meta.userId,
+                        ref_no: ref,
+                        status: transaction.data.status,
+                        ProductType: "Rent",
+                        price: `${transaction.data.currency} ${transaction.data.amount / 100}`,
+                        description: `Rental Service #${book.id} ${transaction.data.metadata.meta.title} (${transaction.data.metadata.meta.equipment})`
+                    })
+                    var savetrnx = await trnx.save()
+                    verify = "Payment" + " " + transaction.message
+
+                    var rent = await Rent.findOne({
+                        where: {
+                            id: transaction.data.metadata.meta.rent
+                        }
+                    })
+                    await RentBooking.findOne({
+                        where: {
+                            ref_no: ref
+                        }
+                    }).then(async (book) => {
+                        if (book) {
+                            await RentBooking.update({
+                                transactionId: book.id
+                            }, {
+                                where: {
+                                    id: savetrnx.id
                                 }
                             })
 
-                            var trnx = new Transaction({
-                                userId: transaction.data.metadata.meta.userId,
-                                ref_no: ref,
-                                status: transaction.data.status,
-                                ProductType: "Rent",
-                                price: `${transaction.data.currency} ${transaction.data.amount / 100}`,
-                                description: `Rental Service #${book.id} ${transaction.data.metadata.meta.title} (${transaction.data.metadata.meta.equipment})`
-                            })
-                            var savetrnx = await trnx.save()
-                            verify = "Payment" +" " +transaction.message
-
-                            var rent = await Rent.findOne({
-                                where:{
-                                    id: transaction.data.metadata.meta.rent
+                            await Rent.update({
+                                available_rent: (rent.available_rent - book.quantity)
+                            }, {
+                                where: {
+                                    id: rent.id
                                 }
                             })
-                                await RentBooking.findOne({
-                                    where:{
-                                        ref_no: ref
-                                    }
-                                }).then(async (book) => {
-                                    if(book){
-                                        await RentBooking.update({
-                                            transactionId: book.id
-                                        }, { where: {
-                                            id: savetrnx.id
-                                        }})
+                        }
+                    }).catch(err => console.log(err))
+                    // res.json({
+                    //     status: true,
+                    //     message: `Payment ${transaction.message}`,
+                    //     transaction: savetrnx,
+                    // })
 
-                                        await Rent.update({
-                                            available_rent: (rent.available_rent - book.quantity)
-                                        }, {
-                                            where:{
-                                                id: rent.id
-                                            }
-                                        })
-                                    } 
-                                }).catch(err => console.log(err))
-                                    // res.json({
-                                    //     status: true,
-                                    //     message: `Payment ${transaction.message}`,
-                                    //     transaction: savetrnx,
-                                    // })
-                            
 
-                                    var user = await User.findOne({
-                                        where:{
-                                            id: transaction.data.metadata.meta.userId,
-                                        }
-                                    })
-                
-                                    let fname = user.fullname.split(' ')
-                                    const mailOptions = {
-                                        from:  `"Deepend" <${process.env.E_TEAM}>`,
-                                        to: `${user.email}`,
-                                        subject: "Deepend",
-                                        html: `
+                    var user = await User.findOne({
+                        where: {
+                            id: transaction.data.metadata.meta.userId,
+                        }
+                    })
+
+                    let fname = user.fullname.split(' ')
+                    const mailOptions = {
+                        from: `"Deepend" <${process.env.E_TEAM}>`,
+                        to: `${user.email}`,
+                        subject: "Deepend",
+                        html: `
                                 <!DOCTYPE html>
                                     <html>
                                     <head>
@@ -486,22 +488,23 @@ exports.rentVerify = async(req, res, next)=>{
                 
                                     </body>
                                     </html>`
-                            };
-                
-                            transporter.sendMail(mailOptions, function(err, info) {
-                                if(err){
-                                    console.log(err)
-                                } else {
-                                    console.log(info);
-                                }
-                            });
-                
-                                    res.render("base/verify-rent",{
-                                        verify
-                                    })
-                        }).catch(error => console.error(error))
-                    }
+                    };
+
+                    transporter.sendMail(mailOptions, function (err, info) {
+                        if (err) {
+                            console.log(err)
+                        } else {
+                            console.log(info);
+                        }
+                    });
+
+                    res.json({
+                        status: true,
+                        message: "Equipment booked and paid for"
+                    })
                 }).catch(error => console.error(error))
+            }
+        }).catch(error => console.error(error))
     } catch (error) {
         console.error(error);
         res.json(error)
@@ -509,13 +512,13 @@ exports.rentVerify = async(req, res, next)=>{
     }
 }
 
-exports.getRentbookings = async(req, res, next)=>{
+exports.getRentbookings = async (req, res, next) => {
     try {
         await RentBooking.findAll({
             order: [
                 ['createdAt', 'ASC']
             ],
-            include:[
+            include: [
                 {
                     model: User,
                     attributes: {
@@ -528,7 +531,7 @@ exports.getRentbookings = async(req, res, next)=>{
                         exclude: ["createdAt", "updatedAt"]
                     }
                 },
-                
+
                 {
                     model: Transaction,
                     attributes: {
@@ -536,13 +539,13 @@ exports.getRentbookings = async(req, res, next)=>{
                     }
                 }
             ]
-        }).then(async(book)=>{
-            if(book){
+        }).then(async (book) => {
+            if (book) {
                 res.json({
                     status: true,
                     data: book
                 })
-            }else{
+            } else {
                 res.json({
                     status: false,
                     message: "No Rent Booking Available"
@@ -556,13 +559,13 @@ exports.getRentbookings = async(req, res, next)=>{
     }
 }
 
-exports.getRentAdminbookings = async(req, res, next)=>{
+exports.getRentAdminbookings = async (req, res, next) => {
     try {
         await RentBooking.findAll({
             order: [
                 ['createdAt', 'ASC']
             ],
-            include:[
+            include: [
                 {
                     model: User,
                     attributes: {
@@ -575,7 +578,7 @@ exports.getRentAdminbookings = async(req, res, next)=>{
                         exclude: ["createdAt", "updatedAt"]
                     }
                 },
-                
+
                 {
                     model: Transaction,
                     attributes: {
@@ -583,33 +586,33 @@ exports.getRentAdminbookings = async(req, res, next)=>{
                     }
                 }
             ]
-        }).then(async(book)=>{
-            if(book){
+        }).then(async (book) => {
+            if (book) {
                 console.log("Bookings found")
                 store.set("book", JSON.stringify(book));
-                      let name = req.user.fullname.split(" ");
-                      let email = req.user.email;
-                      data = JSON.parse(store.get("book"));
-                      console.log(data)
-                      res.render("dashboard/admin/rent-bookings", {
-                        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
-                        email: email,
-                        data: data
-                      });
-                      next();
-            }else{
+                let name = req.user.fullname.split(" ");
+                let email = req.user.email;
+                data = JSON.parse(store.get("book"));
+                console.log(data)
+                res.render("dashboard/admin/rent-bookings", {
+                    user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+                    email: email,
+                    data: data
+                });
+                next();
+            } else {
                 console.log("No bookings found")
                 store.set("book", JSON.stringify(book));
-                      let name = req.user.fullname.split(" ");
-                      let email = req.user.email;
-                      data = JSON.parse(store.get("book"));
-                      console.log(data)
-                      res.render("dashboard/admin/rent-bookings", {
-                        user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
-                        email: email,
-                        data: data
-                      });
-                      next();
+                let name = req.user.fullname.split(" ");
+                let email = req.user.email;
+                data = JSON.parse(store.get("book"));
+                console.log(data)
+                res.render("dashboard/admin/rent-bookings", {
+                    user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+                    email: email,
+                    data: data
+                });
+                next();
             }
         })
     } catch (error) {
@@ -619,7 +622,7 @@ exports.getRentAdminbookings = async(req, res, next)=>{
     }
 }
 
-exports.getUserRentbookings = async(req, res, next)=>{
+exports.getUserRentbookings = async (req, res, next) => {
     try {
         await RentBooking.findAll({
             where: {
@@ -628,7 +631,7 @@ exports.getUserRentbookings = async(req, res, next)=>{
             order: [
                 ['createdAt', 'ASC']
             ],
-            include:[
+            include: [
                 {
                     model: User,
                     attributes: {
@@ -648,13 +651,13 @@ exports.getUserRentbookings = async(req, res, next)=>{
                     }
                 }
             ]
-        }).then(async(book)=>{
-            if(book){
+        }).then(async (book) => {
+            if (book) {
                 res.json({
                     status: true,
                     data: book
                 })
-            }else{
+            } else {
                 res.json({
                     status: false,
                     message: "No Rent Booking Available"
@@ -669,16 +672,16 @@ exports.getUserRentbookings = async(req, res, next)=>{
 }
 
 
-exports.getRentbooking = async(req, res, next)=>{
+exports.getRentbooking = async (req, res, next) => {
     try {
         await RentBooking.findOne({
-            where:{
+            where: {
                 id: req.params.bookingId
             },
             order: [
                 ['createdAt', 'ASC']
             ],
-            include:[
+            include: [
                 {
                     model: User,
                     attributes: {
@@ -698,13 +701,13 @@ exports.getRentbooking = async(req, res, next)=>{
                     }
                 }
             ]
-        }).then(async(book)=>{
-            if(book){
+        }).then(async (book) => {
+            if (book) {
                 res.json({
                     status: true,
                     data: book
                 })
-            }else{
+            } else {
                 res.json({
                     status: false,
                     message: "No Rent Booking Available"
@@ -718,16 +721,16 @@ exports.getRentbooking = async(req, res, next)=>{
     }
 }
 
-exports.getAppRentbooking = async(req, res, next)=>{
+exports.getAppRentbooking = async (req, res, next) => {
     try {
         await RentBooking.findOne({
-            where:{
+            where: {
                 id: req.params.bookingId
             },
             order: [
                 ['createdAt', 'ASC']
             ],
-            include:[
+            include: [
                 {
                     model: User,
                     attributes: {
@@ -747,13 +750,13 @@ exports.getAppRentbooking = async(req, res, next)=>{
                     }
                 }
             ]
-        }).then(async(book)=>{
-            if(book){
+        }).then(async (book) => {
+            if (book) {
                 res.json({
                     status: true,
                     data: book
                 })
-            }else{
+            } else {
                 res.json({
                     status: false,
                     message: "No Rent Booking Available"
