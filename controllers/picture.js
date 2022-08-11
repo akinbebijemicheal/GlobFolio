@@ -107,7 +107,7 @@ exports.updatePicture = async(req, res) => {
             });
             await savedresult.save();
         } else{
-                var result = await cloudinary.uploader.upload(req.file);
+                var result = await cloudinary.cloudinary.uploader.upload(req.file);
                 const savedresult = new Picture({
                 userid: req.user.id,
                 content_id: result.public_id,
