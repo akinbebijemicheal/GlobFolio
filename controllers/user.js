@@ -418,7 +418,7 @@ exports.LoginUser = async (req, res, next) => {
                 updatedAt: user.updatedAt,
                 createdAt: user.createdAt,
                 access_token: token,
-                img_url:picture.content_id
+                img_url:picture.secure_url
             };
 
             return res.status(200).json({

@@ -324,12 +324,21 @@ var userId = req.user.id
                             paid: false
                         }
                     })
+                    if (order) {
+                        var orderId = order.id
+                    } else {
+                        var new_order = new Order({
+                            userId: req.user.id,
+                        })
+                        var outer2 = await new_order.save();
+                        var orderId = outer2.id
+                    }
 
 
                     if (foodextraId && foodextraId !== null && foodextraId !== undefined) {
 
 
-                        var orderId = order.id
+                       
 
                         console.log(foodextraId)
 
