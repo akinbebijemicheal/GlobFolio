@@ -192,7 +192,7 @@ exports.studioVerify = async(req, res, next)=>{
                                         await StudioBooking.update({
                                             transactionId: book.id
                                         }, { where: {
-                                            id: book.id
+                                            id: savetrnx.id
                                         }})
                                     }
                                 }).catch(err => console.log(err))
@@ -457,9 +457,10 @@ exports.studioVerify = async(req, res, next)=>{
                             });
                 
 
-                                    res.render("base/verify-studio",{
-                                        verify
-                                    })
+                            res.json({
+                                status: true,
+                                message:"Studio booked and paid for"
+                            })
                         }).catch(error => console.error(error))
                     }
                 }).catch(error => console.error(error))
