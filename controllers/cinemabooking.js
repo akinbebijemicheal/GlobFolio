@@ -144,23 +144,38 @@ exports.getPaymentCinema = async(req, res, next)=>{
             if(cinema && cinema.seat >= 1){
          
              
-               
-
-                        
-                            const book = new CinemaBooking({
-                                buyerId: buyerId,
-                                cinemaId: cinemaId,
-                                cinemaSnackId: snacksId,
-                                quantity: quantity,
-                                snackQuantity: snackQuantity,
-                                scheduled_date: cinema.view_date,
-                                scheduled_time: set_time,
-                                transaction_url: authorization_url,
-                                ref_no: ref_no,
-                                commission: charge
-                            })
-                            var savedbook = await book.save();
+                            if(snacksId != ''){
+                                const book = new CinemaBooking({
+                                    buyerId: req.user.id,
+                                    cinemaId: cinema.id,
+                                    cinemaSnackId: snacksId,
+                                    quantity: quantity,
+                                    snackQuantity: snackQuantity,
+                                    scheduled_date: cinema.view_date,
+                                    scheduled_time: set_time,
+                                    transaction_url: authorization_url,
+                                    ref_no: ref_no,
+                                    commission: charge
+                                })
+                                var savedbook = await book.save();
                             console.log(book)
+
+                            }else{
+                                const book = new CinemaBooking({
+                                    buyerId: req.user.id,
+                                    cinemaId: cinema.id,
+                                    quantity: quantity,
+                                    snackQuantity: snackQuantity,
+                                    scheduled_date: cinema.view_date,
+                                    scheduled_time: set_time,
+                                    transaction_url: authorization_url,
+                                    ref_no: ref_no,
+                                    commission: charge
+                                })
+                                var savedbook = await book.save();
+                            console.log("no snack",book)
+
+                            }
                        
                        
 
