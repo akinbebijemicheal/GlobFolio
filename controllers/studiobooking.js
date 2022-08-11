@@ -141,7 +141,7 @@ exports.getPaymentStudio = async(req, res, next)=>{
 };
 
 exports.studioVerify = async(req, res, next)=>{
-    const ref = req.query.trxref;
+    const ref = req.body.ref_no;
     // const userId = req.user.id
     try {
                 await Transaction.findOne({
