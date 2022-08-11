@@ -396,11 +396,15 @@ exports.LoginUser = async (req, res, next) => {
             const payload = {
                 user: user
             }
-
+            const user2 = await User.findOne({
+              where: {
+                email: email 
+              }
+            });
             let token = jwt.sign(payload, process.env.TOKEN);
             const picture = await Picture.findOne({
               where: {
-                userId: user.Id 
+                userId: user2.Id 
               }
             })
             console.log(picture)
