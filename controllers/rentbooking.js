@@ -214,7 +214,7 @@ exports.rentVerify = async(req, res, next)=>{
                                 }).then(async (book) => {
                                     if(book){
                                         await RentBooking.update({
-                                            transactionId: savetrnx.id
+                                            transactionId: book.id
                                         }, { where: {
                                             id: book.id
                                         }})

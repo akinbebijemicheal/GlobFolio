@@ -190,7 +190,7 @@ exports.studioVerify = async(req, res, next)=>{
                                 }).then(async (book) => {
                                     if(book){
                                         await StudioBooking.update({
-                                            transactionId: savetrnx.id
+                                            transactionId: book.id
                                         }, { where: {
                                             id: book.id
                                         }})

@@ -256,7 +256,7 @@ exports.cinemaVerify = async(req, res, next)=>{
                                 }).then(async (book) => {
                                     if(book){
                                         await CinemaBooking.update({
-                                            transactionId: savetrnx.id
+                                            transactionId: book.id
                                         }, { where: {
                                             id: book.id
                                         }})
