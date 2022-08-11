@@ -327,7 +327,7 @@ router.get("/getAdsById/:id", jwtAuth, getAdById);
 
 //-------------------------------Food Ordering--------------------
 router.post("/addFoodtocart/:foodId", jwtAuth, AddCart);
-router.get("/viewcart", jwtAuth, viewCart);
+router.get("/viewcart", viewCart);
 router.delete("/deletecartitem/:cartitemId", jwtAuth, DeleteCartItem);
 router.put("/addItemQuantity/:cartitemId", jwtAuth, addQty);
 router.put("/subtractItemQuantity/:cartitemId", jwtAuth, subtractQty);
