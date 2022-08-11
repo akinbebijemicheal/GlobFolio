@@ -159,7 +159,6 @@ exports.getPaymentCinema = async (req, res, next) => {
                     })
                     var savedbook = await book.save();
                     console.log(book)
-                    next()
                 } else {
                     const book = new CinemaBooking({
                         buyerId: req.user.id,
@@ -174,7 +173,7 @@ exports.getPaymentCinema = async (req, res, next) => {
                     })
                     var savedbook = await book.save();
                     console.log("no snack", book)
-                    next()
+                
                 }
 
 
@@ -248,7 +247,7 @@ exports.cinemaVerify = async (req, res, next) => {
                     }).then(async (book) => {
                         if (book) {
                             await CinemaBooking.update({
-                                transactionId: book.id
+                                transactionId: savetrnx.id
                             }, {
                                 where: {
                                     id: book.id
