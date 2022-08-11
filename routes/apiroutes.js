@@ -105,6 +105,8 @@ const {
   getUserRentbookings,
   getRentbooking,
   getAppRentbooking,
+  getPaymentRent,
+  rentVerify,
 } = require("../controllers/rentbooking");
 const {
   bookStudio,
@@ -293,6 +295,7 @@ router.get("/getBooking/:bookingId", jwtAuth, getAppbooking);
 
 //---------------------Rent-------------------------------
 router.post("/bookRent/:rentId", jwtAuth, bookRent);
+router.post("/getPaymentRent", jwtAuth, getPaymentRent, rentVerify)
 router.get("/getUserRentBookings", jwtAuth, getUserRentbookings);
 router.get("/getRentBooking/:bookingId", jwtAuth, getAppRentbooking);
 
