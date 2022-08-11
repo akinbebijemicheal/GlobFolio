@@ -170,6 +170,7 @@ exports.getPaymentCinema = async(req, res, next)=>{
                                 commission: charge
                             })
                             var savedbook = await book.save();
+                            console.log("no snacks chosen",book)
                         }else{
                             const book = new CinemaBooking({
                                 buyerId: buyerId,
@@ -183,12 +184,12 @@ exports.getPaymentCinema = async(req, res, next)=>{
                                 commission: charge
                             })
                             var savedbook = await book.save();
-                        console.log(book)
+                        console.log("snacks chosen",book)
 
                         }
                        
 
-                        next()
+                    
                    
             }else{
                 res.json({
