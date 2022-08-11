@@ -135,7 +135,6 @@ exports.getPaymentCinema = async(req, res, next)=>{
                 type: "commission"
             }
         })
-        console.log(h)
 
         await Cinema.findOne({
             where: {

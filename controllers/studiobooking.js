@@ -92,7 +92,7 @@ var transporter = nodemailer.createTransport({
 exports.getPaymentStudio = async(req, res, next)=>{
     var {dateTo, dateFrom, charge, userId, studioId, title, email, amount, buyerId, quantity, ref_no, authorization_url}= req.body;
 
-    const id = req.params.studioId;
+
     try {
         if(!quantity){
             quantity = 1
@@ -105,7 +105,7 @@ exports.getPaymentStudio = async(req, res, next)=>{
         })
         await Studio.findOne({
             where: {
-                id: id
+                id: studioId
             }
         }).then(async(studio) => {
             if(studio){
