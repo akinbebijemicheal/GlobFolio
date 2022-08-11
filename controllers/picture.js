@@ -99,7 +99,7 @@ exports.updatePicture = async(req, res) => {
         if(picture){
             await cloudinary.cloudinary.uploader.destroy(picture.content_id);
             await Picture.destroy({where: {userid: req.user.id}})
-            var result = await cloudinary.uploader.upload(req.file.path);
+            var result = await cloudinary.uploader.upload(req.file);
             const savedresult  = new Picture({
                 userid: req.user.id,
                 content_id: result.public_id,
