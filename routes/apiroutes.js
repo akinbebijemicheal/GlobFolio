@@ -221,21 +221,21 @@ router.route("/change-password").post(jwtAuth, changePassword);
 
 router
   .route("/get-cinema-posts")
-  .get(jwtAuth, userVerify, getCinemaAppServices);
+  .get(getCinemaAppServices);
 
-router.route("/get-hotel-posts").get(jwtAuth, userVerify, getHotelAppServices);
+router.route("/get-hotel-posts").get(getHotelAppServices);
 
 router
   .route("/get-studio-posts")
-  .get(jwtAuth, userVerify, getStudioAppServices);
+  .get(getStudioAppServices);
 
-router.route("/get-food-posts").get(jwtAuth, userVerify, getFoodAppServices);
+router.route("/get-food-posts").get(getFoodAppServices);
 
 router
   .route("/get-gaming-posts")
-  .get(jwtAuth, userVerify, getGamingAppServices);
+  .get(getGamingAppServices);
 
-router.route("/get-rent-posts").get(jwtAuth, userVerify, getRentAppServices);
+router.route("/get-rent-posts").get(getRentAppServices);
 
 router.route("/get-cinema-bytitle").get(jwtAuth, userVerify, getCinemaByTitle);
 
