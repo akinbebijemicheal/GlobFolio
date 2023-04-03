@@ -271,9 +271,8 @@ exports.buyFood = async (req, res, next) => {
 
 exports.AddCart = async (req, res, next) => {
     var { quantity, foodextraId, foodpackageId } = req.body;
-    var foodId = req.params.foodId
-    var userId = req.user.id
-
+var foodId = req.params.foodId
+var userId = req.user.id
     try {
 
         const existeditem = await CartItem.findOne({
@@ -309,14 +308,11 @@ exports.AddCart = async (req, res, next) => {
                 quantity = 1
             };
 
-            console.log(foodId)
             await Food.findOne({
                 where: {
                     id: foodId
                 }
-
             }).then(async (food) => {
-                console.log(food)
                 if (food) {
                     const order = await Order.findOne({
                         where: {
@@ -335,10 +331,14 @@ exports.AddCart = async (req, res, next) => {
                         var orderId = outer2.id
                     }
 
-                
-                        var extra = null;
+
+                    // if (foodextraId && foodextraId !== null && foodextraId !== undefined) {
+
+
+                        console.log(foodextraId)
+
                         if (foodextraId != null) {
-                            extra = await FoodExtra.findOne({
+                            var extra = await FoodExtra.findOne({
                                 where: {
                                     id: foodextraId
                                 }
@@ -361,7 +361,7 @@ exports.AddCart = async (req, res, next) => {
                             })
                         }
 
-                        if (extra !== null) {
+                        if (extra) {
                             var extraprice = parseInt(extra.price)
                             var extraId = extra.id
                         } else {
@@ -374,7 +374,7 @@ exports.AddCart = async (req, res, next) => {
 
                             var packageId = package.id
                         } else {
-                            return res.json({
+                            res.json({
                                 status: false,
                                 message: "Please select a Package"
                             })
@@ -442,12 +442,19 @@ exports.AddCart = async (req, res, next) => {
                             data: out
                         })
 
+                    // } else {
+                    //     res.status(404).json({
+                    //         status: false,
+                    //         message: "No Food found"
+                    //     })
+                    // }
+
                 }
                 else{
-                    console.log(2333)
-                    return res.status(404).json({
-                        status: false,
-                        message: "Food not found!"
+                    
+                    res.status(404).json({
+                        status: true,
+                        message: "Food not found!!"
                     })
                 }
             })
