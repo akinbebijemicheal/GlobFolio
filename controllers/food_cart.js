@@ -337,9 +337,6 @@ var userId = req.user.id
 
                     if (foodextraId && foodextraId !== null && foodextraId !== undefined) {
 
-
-                       
-
                         console.log(foodextraId)
 
                         if (foodextraId != null) {
