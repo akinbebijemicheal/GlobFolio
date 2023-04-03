@@ -11,7 +11,6 @@ const url = process.env.DB_URL
 
 var db = new Sequelize(database, username, password, {
     host: host,
-    port: 8889,
     dialect: 'mysql',
     pool: {
       maxConnections: 10,
