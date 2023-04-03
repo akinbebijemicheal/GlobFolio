@@ -335,12 +335,9 @@ var userId = req.user.id
                     }
 
 
-                    if (foodextraId && foodextraId !== null && foodextraId !== undefined) {
-
-                        console.log(foodextraId)
-
+                        var extra = null
                         if (foodextraId != null) {
-                            var extra = await FoodExtra.findOne({
+                            extra = await FoodExtra.findOne({
                                 where: {
                                     id: foodextraId
                                 }
@@ -363,7 +360,7 @@ var userId = req.user.id
                             })
                         }
 
-                        if (extra) {
+                        if (extra !== null) {
                             var extraprice = parseInt(extra.price)
                             var extraId = extra.id
                         } else {
@@ -444,13 +441,12 @@ var userId = req.user.id
                             data: out
                         })
 
-                    } else {
-                        res.status(404).json({
-                            status: false,
-                            message: "No Food found"
-                        })
-                    }
-
+                }
+                else{
+                    return res.status(404).json({
+                        status: false,
+                        message: "No Food found"
+                    })
                 }
             })
 

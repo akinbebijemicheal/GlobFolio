@@ -1,10 +1,10 @@
 const Sequelize = require('sequelize');
 require('dotenv').config();
 
-const database = 'deependappcom_database' || process.env.DATABASE;
-const username = 'root' || process.env.USER;
-const password = 'root' || process.env.PASSWORD;
-const host = 'localhost' || process.env.HOST
+const database = process.env.DATABASE;
+const username = process.env.USER;
+const password = process.env.PASSWORD;
+const host = process.env.HOST
 
 const url = process.env.DB_URL
 
