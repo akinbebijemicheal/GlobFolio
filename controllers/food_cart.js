@@ -312,6 +312,9 @@ var userId = req.user.id
                 where: {
                     id: foodId
                 }
+
+
+
             }).then(async (food) => {
                 if (food) {
                     const order = await Order.findOne({
@@ -332,8 +335,10 @@ var userId = req.user.id
                     }
 
 
-                    // if (foodextraId && foodextraId !== null && foodextraId !== undefined) {
+                    if (foodextraId && foodextraId !== null && foodextraId !== undefined) {
 
+
+                       
 
                         console.log(foodextraId)
 
@@ -442,20 +447,13 @@ var userId = req.user.id
                             data: out
                         })
 
-                    // } else {
-                    //     res.status(404).json({
-                    //         status: false,
-                    //         message: "No Food found"
-                    //     })
-                    // }
+                    } else {
+                        res.status(404).json({
+                            status: false,
+                            message: "No Food found"
+                        })
+                    }
 
-                }
-                else{
-                    
-                    res.status(404).json({
-                        status: true,
-                        message: "Food not found!!"
-                    })
                 }
             })
 
