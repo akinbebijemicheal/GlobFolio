@@ -3,1374 +3,1380 @@ const CartItem = require("../model/cartItem");
 const User = require("../model/user");
 const Food = require("../model/food");
 const FoodExtra = require("../model/foodextras");
-const Package = require("../model/foodpackaging")
-const Image = require("../model/foodimage")
+const Package = require("../model/foodpackaging");
+const Image = require("../model/foodimage");
 const Order = require("../model/foodorder");
 const Transaction = require("../model/usertransactions");
-require('dotenv').config()
-const paystack = require('paystack')(process.env.PAYSTACK_SECRET);
+require("dotenv").config();
+const paystack = require("paystack")(process.env.PAYSTACK_SECRET);
 const Fee = require("../model/adminFee");
-const store = require('store')
+const store = require("store");
 const nodemailer = require("nodemailer");
-const baseurl = process.env.BASE_URL
+const baseurl = process.env.BASE_URL;
 
 var transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_HOST,
-    port: process.env.EMAIL_PORT,
-    secure: true, // true for 465, false for other ports
-    tls: {
-        rejectUnauthorized: false,
-    },
-    ool: true,
-    maxConnections: 1,
-    rateDelta: 20000,
-    rateLimit: 5,
-    auth: {
-        user: process.env.EMAIL_USERNAME, // generated ethereal user
-        pass: process.env.EMAIL_PASSWORD, // generated ethereal password
-    },
+  host: process.env.EMAIL_HOST,
+  port: process.env.EMAIL_PORT,
+  secure: true, // true for 465, false for other ports
+  tls: {
+    rejectUnauthorized: false,
+  },
+  ool: true,
+  maxConnections: 1,
+  rateDelta: 20000,
+  rateLimit: 5,
+  auth: {
+    user: process.env.EMAIL_USERNAME, // generated ethereal user
+    pass: process.env.EMAIL_PASSWORD, // generated ethereal password
+  },
 });
 
-
-
 exports.buyFood = async (req, res, next) => {
-    var { quantity, foodextrasId, foodpackageId, address, phone_no, note } = req.body;
-    try {
-        if (!quantity) {
-            quantity = 1
-        };
-
-        var commision = await Fee.findOne({
-            where: {
-                type: "commission"
-            }
-        })
-
-        await Food.findOne({
-            where: {
-                id: req.params.foodId
-            }
-
-        }).then(async (food) => {
-            if (food) {
-                const order = await Order.findOne({
-                    where: {
-                        userId: req.user.id,
-                        new: true,
-                        paid: false
-                    }
-                })
-                if (order) {
-                    var orderId = order.id
-                } else {
-                    var new_order = new Order({
-                        userId: req.user.id,
-                    })
-                    var outer = await new_order.save();
-                    orderId = outer.id
-                }
-                if (foodextrasId && foodextrasId !== null && foodextrasId !== undefined) {
-                    var extra = await FoodExtra.findOne({
-                        where: {
-                            id: foodextrasId
-                        }
-
-                    })
-                }
-
-                if (foodpackageId && foodpackageId !== null && foodpackageId !== undefined) {
-                    var package = await Package.findOne({
-                        where: {
-                            id: foodpackageId
-                        }
-
-                    })
-                } else {
-                    res.json({
-                        status: false,
-                        message: "Please select a Package"
-                    })
-                }
-
-                if (extra) {
-                    var price = (parseInt(food.price) + parseInt(extra.price))
-                    var extraId = extra.id
-                } else {
-                    price = parseInt(food.price)
-                    extraId = null
-                }
-
-                if (package) {
-                    price = price + package.price
-                    var packageId = package.id
-                } else {
-                    res.json({
-                        status: false,
-                        message: "Please select a Package"
-                    })
-                }
-
-                const Items = new CartItem({
-                    userId: req.user.id,
-                    foodId: food.id,
-                    foodextrasId: extraId,
-                    foodpackageId: packageId,
-                    orderId: orderId,
-                    qty: quantity,
-                    price: price * quantity,
-                    ordered: true
-                })
-
-                var Cart = await Items.save();
-
-                await Order.findOne({
-                    where: {
-                        id: Cart.orderId
-                    },
-                    include: [
-                        {
-                            model: CartItem,
-                            attributes: {
-                                exclude: ["createdAt", "updatedAt"],
-                            },
-                            include: [
-                                {
-                                    model: Food,
-                                    attributes: {
-                                        exclude: ["createdAt", "updatedAt"],
-                                    },
-                                },
-                                {
-                                    model: FoodExtra,
-                                    attributes: {
-                                        exclude: ["createdAt", "updatedAt"],
-                                    },
-                                },
-                                {
-                                    model: Package,
-                                    attributes: {
-                                        exclude: ["createdAt", "updatedAt"]
-                                    }
-                                }
-                            ]
-                        },
-                        {
-                            model: User,
-                            attributes: {
-                                exclude: ["createdAt", "updatedAt"],
-                            },
-                        }
-                    ]
-                }).then(async (ord) => {
-                    if (ord) {
-                        var total = Cart.price;
-
-                        var charge = (commision.value / 100) * total
-
-                        paystack.transaction.initialize({
-                            name: `Food Order #${ord.id}`,
-                            email: ord.user.email,
-                            amount: parseInt(total + charge) * 100,
-                            quantity: ord.fooditems.length,
-                            callback_url: `${process.env.REDIRECT_SITE}/VerifyPay/food`,
-                            metadata: {
-                                userId: req.user.id,
-                                orderId: ord.id
-                            }
-                        }).then(async (transaction) => {
-                            console.log(transaction)
-                            if (transaction) {
-                                await Order.update({
-                                    address: address,
-                                    phone_no: phone_no,
-                                    note: note,
-                                    sub_total: total,
-                                    status: "in_progress",
-                                    checkout_url: transaction.data.authorization_url,
-                                    ref_no: transaction.data.reference,
-                                    access_code: transaction.data.access_code,
-                                    commission: parseInt(charge)
-                                }, {
-                                    where: {
-                                        id: ord.id
-                                    }
-                                }).catch(err => console.log(err));
-                            }
-                        }).catch(err => console.log(err));
-
-                        const out = await Order.findOne({
-                            where: {
-                                id: order.id
-                            },
-                            include: [
-                                {
-                                    model: CartItem,
-                                    attributes: {
-                                        exclude: ["createdAt", "updatedAt"],
-                                    },
-                                    include: [
-                                        {
-                                            model: Food,
-                                            attributes: {
-                                                exclude: ["createdAt", "updatedAt"],
-                                            },
-                                        },
-                                        {
-                                            model: FoodExtra,
-                                            attributes: {
-                                                exclude: ["createdAt", "updatedAt"],
-                                            },
-                                        },
-                                        {
-                                            model: Package,
-                                            attributes: {
-                                                exclude: ["createdAt", "updatedAt"]
-                                            }
-                                        }
-                                    ]
-                                },
-                                {
-                                    model: User,
-                                    attributes: {
-                                        exclude: ["createdAt", "updatedAt"],
-                                    },
-                                }
-                            ]
-                        })
-                        res.status(201).json({
-                            status: true,
-                            message: "Order created",
-                            data: out
-                        })
-                    } else {
-                        res.json({
-                            status: false,
-                            message: "No item found"
-                        })
-                    }
-                })
-
-            } else {
-                res.status(404).json({
-                    status: false,
-                    message: "No Food found"
-                })
-            }
-
-        })
-    } catch (error) {
-        console.error(error)
-        // res.status(500).json({
-        //      status: false,
-        //      message: "An error occured",
-        //      error: error
-        //  })
-        next(error);
+  var { quantity, foodextrasId, foodpackageId, address, phone_no, note } =
+    req.body;
+  try {
+    if (!quantity) {
+      quantity = 1;
     }
-}
 
-exports.AddCart = async (req, res, next) => {
-    var { quantity, foodextraId, foodpackageId } = req.body;
-var foodId = req.params.foodId
-var userId = req.user.id
-    try {
+    var commision = await Fee.findOne({
+      where: {
+        type: "commission",
+      },
+    });
 
-        const existeditem = await CartItem.findOne({
-            where: {
-                foodId: foodId,
-                userId: userId
-            }
-        })
-        if (existeditem != null) {
-            var cartqty = existeditem.qty;
-            var newqty = cartqty + 1;
-            var cartprice = existeditem.price
-            var oldprice = cartprice / cartqty
-
-            await CartItem.update({
-                qty: newqty,
-                price: oldprice * newqty,
-
-            },
-                {
-                    where: {
-                        foodId: foodId,
-                        userId: userId
-                    }
-                })
-
-            res.status(201).json({
-                status: true
-            })
-
+    await Food.findOne({
+      where: {
+        id: req.params.foodId,
+      },
+    }).then(async (food) => {
+      if (food) {
+        const order = await Order.findOne({
+          where: {
+            userId: req.user.id,
+            new: true,
+            paid: false,
+          },
+        });
+        if (order) {
+          var orderId = order.id;
         } else {
-            if (!quantity) {
-                quantity = 1
-            };
-
-            await Food.findOne({
-                where: {
-                    id: foodId
-                }
-
-
-
-            }).then(async (food) => {
-                if (food) {
-                    const order = await Order.findOne({
-                        where: {
-                            userId: userId,
-                            new: true,
-                            paid: false
-                        }
-                    })
-                    if (order) {
-                        var orderId = order.id
-                    } else {
-                        var new_order = new Order({
-                            userId: req.user.id,
-                        })
-                        var outer2 = await new_order.save();
-                        var orderId = outer2.id
-                    }
-
-
-                        var extra = null
-                        if (foodextraId != null) {
-                            extra = await FoodExtra.findOne({
-                                where: {
-                                    id: foodextraId
-                                }
-
-                            })
-                            console.log(extra)
-                        }
-
-                        if (foodpackageId != null) {
-                            var package = await Package.findOne({
-                                where: {
-                                    id: foodpackageId
-                                }
-
-                            })
-                        } else {
-                            res.json({
-                                status: false,
-                                message: "Please select a Package"
-                            })
-                        }
-
-                        if (extra !== null) {
-                            var extraprice = parseInt(extra.price)
-                            var extraId = extra.id
-                        } else {
-                            var extraprice = 0
-                            extraId = null
-                        }
-
-                        if (package) {
-                            var packageprice = parseInt(package.price)
-
-                            var packageId = package.id
-                        } else {
-                            res.json({
-                                status: false,
-                                message: "Please select a Package"
-                            })
-                        }
-
-                        let price = parseInt(food.price) + extraprice + packageprice
-                        console.log(price)
-
-                        const Items = new CartItem({
-                            userId: userId,
-                            foodId: food.id,
-                            foodextrasId: extraId,
-                            foodpackageId: packageId,
-                            orderId: orderId,
-                            qty: quantity,
-                            price: price * quantity,
-                        })
-
-                        const Cart = await Items.save();
-
-                        const out = await CartItem.findOne(
-                            {
-                                where: {
-                                    id: Cart.id
-                                }, include: [
-                                    {
-                                        model: User,
-                                        attributes: {
-                                            exclude: ["createdAt", "updatedAt"]
-                                        },
-                                    },
-                                    {
-                                        model: Food,
-                                        attributes: {
-                                            exclude: ["createdAt", "updatedAt"]
-                                        },
-                                        include: [
-                                            {
-                                                model: Image,
-                                                attributes: {
-                                                    exclude: ["createdAt", "updatedAt"]
-                                                }
-                                            }
-                                        ]
-
-                                    },
-                                    {
-                                        model: FoodExtra,
-                                        attributes: {
-                                            exclude: ["createdAt", "updatedAt"]
-                                        }
-                                    },
-                                    {
-                                        model: Package,
-                                        attributes: {
-                                            exclude: ["createdAt", "updatedAt"]
-                                        }
-                                    }
-
-                                ]
-                            }
-                        )
-                        res.status(201).json({
-                            status: true,
-                            data: out
-                        })
-
-                }
-                else{
-                    return res.status(404).json({
-                        status: false,
-                        message: "No Food found"
-                    })
-                }
-            })
-
+          var new_order = new Order({
+            userId: req.user.id,
+          });
+          var outer = await new_order.save();
+          orderId = outer.id;
+        }
+        if (
+          foodextrasId &&
+          foodextrasId !== null &&
+          foodextrasId !== undefined
+        ) {
+          var extra = await FoodExtra.findOne({
+            where: {
+              id: foodextrasId,
+            },
+          });
         }
 
-
-    } catch (error) {
-        console.error(error)
-        // res.status(500).json({
-        //      status: false,
-        //      message: "An error occured",
-        //      error: error
-        //  })
-        next(error);
-    }
-}
-
-exports.viewCart = async (req, res, next) => {
-    try {
-        const viewcart = await CartItem.findAll({
+        if (
+          foodpackageId &&
+          foodpackageId !== null &&
+          foodpackageId !== undefined
+        ) {
+          var package = await Package.findOne({
             where: {
-                userId: req.user.id,
-                ordered: false
+              id: foodpackageId,
+            },
+          });
+        } else {
+          res.json({
+            status: false,
+            message: "Please select a Package",
+          });
+        }
+
+        if (extra) {
+          var price = parseInt(food.price) + parseInt(extra.price);
+          var extraId = extra.id;
+        } else {
+          price = parseInt(food.price);
+          extraId = null;
+        }
+
+        if (package) {
+          price = price + package.price;
+          var packageId = package.id;
+        } else {
+          res.json({
+            status: false,
+            message: "Please select a Package",
+          });
+        }
+
+        const Items = new CartItem({
+          userId: req.user.id,
+          foodId: food.id,
+          foodextrasId: extraId,
+          foodpackageId: packageId,
+          orderId: orderId,
+          qty: quantity,
+          price: price * quantity,
+          ordered: true,
+        });
+
+        var Cart = await Items.save();
+
+        await Order.findOne({
+          where: {
+            id: Cart.orderId,
+          },
+          include: [
+            {
+              model: CartItem,
+              attributes: {
+                exclude: ["createdAt", "updatedAt"],
+              },
+              include: [
+                {
+                  model: Food,
+                  attributes: {
+                    exclude: ["createdAt", "updatedAt"],
+                  },
+                },
+                {
+                  model: FoodExtra,
+                  attributes: {
+                    exclude: ["createdAt", "updatedAt"],
+                  },
+                },
+                {
+                  model: Package,
+                  attributes: {
+                    exclude: ["createdAt", "updatedAt"],
+                  },
+                },
+              ],
+            },
+            {
+              model: User,
+              attributes: {
+                exclude: ["createdAt", "updatedAt"],
+              },
+            },
+          ],
+        }).then(async (ord) => {
+          if (ord) {
+            var total = Cart.price;
+
+            var charge = (commision.value / 100) * total;
+
+            paystack.transaction
+              .initialize({
+                name: `Food Order #${ord.id}`,
+                email: ord.user.email,
+                amount: parseInt(total + charge) * 100,
+                quantity: ord.fooditems.length,
+                callback_url: `${process.env.REDIRECT_SITE}/VerifyPay/food`,
+                metadata: {
+                  userId: req.user.id,
+                  orderId: ord.id,
+                },
+              })
+              .then(async (transaction) => {
+                console.log(transaction);
+                if (transaction) {
+                  await Order.update(
+                    {
+                      address: address,
+                      phone_no: phone_no,
+                      note: note,
+                      sub_total: total,
+                      status: "in_progress",
+                      checkout_url: transaction.data.authorization_url,
+                      ref_no: transaction.data.reference,
+                      access_code: transaction.data.access_code,
+                      commission: parseInt(charge),
+                    },
+                    {
+                      where: {
+                        id: ord.id,
+                      },
+                    }
+                  ).catch((err) => console.log(err));
+                }
+              })
+              .catch((err) => console.log(err));
+
+            const out = await Order.findOne({
+              where: {
+                id: order.id,
+              },
+              include: [
+                {
+                  model: CartItem,
+                  attributes: {
+                    exclude: ["createdAt", "updatedAt"],
+                  },
+                  include: [
+                    {
+                      model: Food,
+                      attributes: {
+                        exclude: ["createdAt", "updatedAt"],
+                      },
+                    },
+                    {
+                      model: FoodExtra,
+                      attributes: {
+                        exclude: ["createdAt", "updatedAt"],
+                      },
+                    },
+                    {
+                      model: Package,
+                      attributes: {
+                        exclude: ["createdAt", "updatedAt"],
+                      },
+                    },
+                  ],
+                },
+                {
+                  model: User,
+                  attributes: {
+                    exclude: ["createdAt", "updatedAt"],
+                  },
+                },
+              ],
+            });
+            res.status(201).json({
+              status: true,
+              message: "Order created",
+              data: out,
+            });
+          } else {
+            res.json({
+              status: false,
+              message: "No item found",
+            });
+          }
+        });
+      } else {
+        res.status(404).json({
+          status: false,
+          message: "No Food found",
+        });
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    // res.status(500).json({
+    //      status: false,
+    //      message: "An error occured",
+    //      error: error
+    //  })
+    next(error);
+  }
+};
+
+exports.AddCart = async (req, res, next) => {
+  var { quantity, foodextraId, foodpackageId } = req.body;
+  var foodId = req.params.foodId;
+  var userId = req.user.id;
+  try {
+    const existeditem = await CartItem.findOne({
+      where: {
+        foodId: foodId,
+        userId: userId,
+      },
+    });
+    if (existeditem != null) {
+      var cartqty = existeditem.qty;
+      var newqty = cartqty + 1;
+      var cartprice = existeditem.price;
+      var oldprice = cartprice / cartqty;
+
+      await CartItem.update(
+        {
+          qty: newqty,
+          price: oldprice * newqty,
+        },
+        {
+          where: {
+            foodId: foodId,
+            userId: userId,
+          },
+        }
+      );
+
+      res.status(201).json({
+        status: true,
+      });
+    } else {
+      if (!quantity) {
+        quantity = 1;
+      }
+
+      await Food.findOne({
+        where: {
+          id: foodId,
+        },
+      }).then(async (food) => {
+        if (food) {
+          const order = await Order.findOne({
+            where: {
+              userId: userId,
+              new: true,
+              paid: false,
+            },
+          });
+          if (order) {
+            var orderId = order.id;
+          } else {
+            var new_order = new Order({
+              userId: req.user.id,
+            });
+            var outer2 = await new_order.save();
+            var orderId = outer2.id;
+          }
+
+          var extras = [];
+          // if (foodextraId != null) {
+          //     extra = await FoodExtra.findOne({
+          //         where: {
+          //             id: foodextraId
+          //         }
+
+          //     })
+          //     console.log(extra)
+          // }
+          if (foodextraId.length > 0) {
+            foodextraId.forEach(async (extraId) => {
+              let _extra = await FoodExtra.findOne({
+                where: {
+                  id: extraId,
+                },
+              });
+              if (_extra !== null) {
+                extras.push(_extra);
+              }
+            });
+          }
+
+          if (foodpackageId != null) {
+            var package = await Package.findOne({
+              where: {
+                id: foodpackageId,
+              },
+            });
+          } else {
+            res.json({
+              status: false,
+              message: "Please select a Package",
+            });
+          }
+
+          let extra_price_total = 0;
+          if (extras.length > 0) {
+            extras.forEach(__extra => {
+                extra_price_total += __extra.price
+            });
+          }
+
+          if (package) {
+            var packageprice = parseInt(package.price);
+
+            var packageId = package.id;
+          } else {
+            res.json({
+              status: false,
+              message: "Please select a Package",
+            });
+          }
+
+          let price = parseInt(food.price) + extra_price_total + packageprice;
+
+
+          const Items = new CartItem({
+            userId: userId,
+            foodId: food.id,
+            foodextrasId: 'not to be used',
+            extras,
+            foodpackageId: packageId,
+            orderId: orderId,
+            qty: quantity,
+            price: price * quantity,
+          });
+
+          const Cart = await Items.save();
+
+          const out = await CartItem.findOne({
+            where: {
+              id: Cart.id,
             },
             include: [
-                {
-                    model: Food,
-                    include: [
-                        {
-                            model: Image,
-                            attributes: {
-                                exclude: ["createdAt", "updatedAt"],
-                            },
-                        }
-                    ],
-                    attributes: {
-                        exclude: ["createdAt", "updatedAt"],
-                    },
+              {
+                model: User,
+                attributes: {
+                  exclude: ["createdAt", "updatedAt"],
                 },
-                {
-                    model: FoodExtra,
-                    attributes: {
-                        exclude: ["createdAt", "updatedAt"],
-                    },
+              },
+              {
+                model: Food,
+                attributes: {
+                  exclude: ["createdAt", "updatedAt"],
                 },
-                {
-                    model: Package,
+                include: [
+                  {
+                    model: Image,
                     attributes: {
-                        exclude: ["createdAt", "updatedAt"]
-                    }
-                },
-                {
-                    model: User,
-                    attributes: {
-                        exclude: ["createdAt", "updatedAt"],
+                      exclude: ["createdAt", "updatedAt"],
                     },
-                }
-            ]
-        })
-        res.status(200).json({
+                  },
+                ],
+              },
+              {
+                model: FoodExtra,
+                attributes: {
+                  exclude: ["createdAt", "updatedAt"],
+                },
+              },
+              {
+                model: Package,
+                attributes: {
+                  exclude: ["createdAt", "updatedAt"],
+                },
+              },
+            ],
+          });
+          res.status(201).json({
             status: true,
-            data: viewcart
-        })
-
-    } catch (error) {
-        console.error(error)
-        // res.status(500).json({
-        //      status: false,
-        //      message: "An error occured",
-        //      error: error
-        //  });
-        next(error)
+            data: out,
+          });
+        } else {
+          return res.status(404).json({
+            status: false,
+            message: "No Food found",
+          });
+        }
+      });
     }
+  } catch (error) {
+    console.error(error);
+    // res.status(500).json({
+    //      status: false,
+    //      message: "An error occured",
+    //      error: error
+    //  })
+    next(error);
+  }
+};
+
+exports.viewCart = async (req, res, next) => {
+  try {
+    const viewcart = await CartItem.findAll({
+      where: {
+        userId: req.user.id,
+        ordered: false,
+      },
+      include: [
+        {
+          model: Food,
+          include: [
+            {
+              model: Image,
+              attributes: {
+                exclude: ["createdAt", "updatedAt"],
+              },
+            },
+          ],
+          attributes: {
+            exclude: ["createdAt", "updatedAt"],
+          },
+        },
+        {
+          model: FoodExtra,
+          attributes: {
+            exclude: ["createdAt", "updatedAt"],
+          },
+        },
+        {
+          model: Package,
+          attributes: {
+            exclude: ["createdAt", "updatedAt"],
+          },
+        },
+        {
+          model: User,
+          attributes: {
+            exclude: ["createdAt", "updatedAt"],
+          },
+        },
+      ],
+    });
+    res.status(200).json({
+      status: true,
+      data: viewcart,
+    });
+  } catch (error) {
+    console.error(error);
+    // res.status(500).json({
+    //      status: false,
+    //      message: "An error occured",
+    //      error: error
+    //  });
+    next(error);
+  }
 };
 
 exports.DeleteCartItem = async (req, res, next) => {
-    try {
-        await CartItem.findOne({
-            where: {
-                id: req.params.cartitemId
-            }
-        }).then(async (item) => {
-            if (item) {
-                await CartItem.destroy({
-                    where: {
-                        id: item.id
-                    }
-                })
-                res.status(200).json({
-                    status: true,
-                    message: "Item Removed Successfully"
-                })
-            } else {
-                res.status(404).json({
-                    status: false,
-                    message: "Item not found"
-                })
-            }
-        })
-    } catch (error) {
-        console.error(error)
-        // res.status(500).json({
-        //      status: false,
-        //      message: "An error occured",
-        //      error: error
-        //  });
-        next(error)
-    }
-}
+  try {
+    await CartItem.findOne({
+      where: {
+        id: req.params.cartitemId,
+      },
+    }).then(async (item) => {
+      if (item) {
+        await CartItem.destroy({
+          where: {
+            id: item.id,
+          },
+        });
+        res.status(200).json({
+          status: true,
+          message: "Item Removed Successfully",
+        });
+      } else {
+        res.status(404).json({
+          status: false,
+          message: "Item not found",
+        });
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    // res.status(500).json({
+    //      status: false,
+    //      message: "An error occured",
+    //      error: error
+    //  });
+    next(error);
+  }
+};
 
 exports.addQty = async (req, res, next) => {
-    var { quantity } = req.body;
-    // qty = parseInt(qty)
-    try {
-        await CartItem.findOne({
+  var { quantity } = req.body;
+  // qty = parseInt(qty)
+  try {
+    await CartItem.findOne({
+      where: {
+        id: req.params.cartitemId,
+      },
+      include: [
+        {
+          model: Food,
+          attributes: {
+            exclude: ["createdAt", "updatedAt"],
+          },
+        },
+      ],
+    }).then(async (item) => {
+      if (item) {
+        var oldqty = item.qty;
+        var newqty = oldqty + 1;
+        var price = item.price;
+        var originalprice = price / oldqty;
+
+        await CartItem.update(
+          {
+            qty: newqty,
+            price: originalprice * newqty,
+          },
+          {
             where: {
-                id: req.params.cartitemId
+              id: item.id,
             },
-            include: [
-                {
-                    model: Food,
-                    attributes: {
-                        exclude: ["createdAt", "updatedAt"],
-                    },
-                }
-            ]
-        }).then(async (item) => {
-            if (item) {
+          }
+        );
 
-                var oldqty = item.qty
-                var newqty = oldqty + 1;
-                var price = item.price;
-                var originalprice = price / oldqty
-
-                await CartItem.update({
-                    qty: newqty,
-                    price: originalprice * newqty,
-
-                },
-                    {
-                        where: {
-                            id: item.id
-                        }
-                    })
-
-                const result = await CartItem.findOne({
-                    where: {
-                        id: item.id
-                    }
-                })
-                res.status(200).json({
-                    status: true,
-                    message: "Item quantity Increased",
-                    data: result
-                })
-            } else {
-                res.status(404).json({
-                    status: false,
-                    message: "Product not found"
-                })
-            }
-        })
-    } catch (error) {
-        console.error(error)
-        // res.status(500).json({
-        //      status: false,
-        //      message: "An error occured",
-        //      error: error
-        //  });
-        next(error)
-    }
-}
+        const result = await CartItem.findOne({
+          where: {
+            id: item.id,
+          },
+        });
+        res.status(200).json({
+          status: true,
+          message: "Item quantity Increased",
+          data: result,
+        });
+      } else {
+        res.status(404).json({
+          status: false,
+          message: "Product not found",
+        });
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    // res.status(500).json({
+    //      status: false,
+    //      message: "An error occured",
+    //      error: error
+    //  });
+    next(error);
+  }
+};
 
 exports.subtractQty = async (req, res, next) => {
-    var { quantity } = req.body;
-    // qty = parseInt(qty)
-    try {
-        await CartItem.findOne({
+  var { quantity } = req.body;
+  // qty = parseInt(qty)
+  try {
+    await CartItem.findOne({
+      where: {
+        id: req.params.cartitemId,
+      },
+      include: [
+        {
+          model: Food,
+          attributes: {
+            exclude: ["createdAt", "updatedAt"],
+          },
+        },
+      ],
+    }).then(async (item) => {
+      if (item) {
+        var oldqty = item.qty;
+        var newqty = oldqty - 1;
+        var price = item.price;
+        var originalprice = price / oldqty;
+
+        await CartItem.update(
+          {
+            qty: newqty,
+            price: originalprice * newqty,
+          },
+          {
             where: {
-                id: req.params.cartitemId
+              id: item.id,
             },
-            include: [
-                {
-                    model: Food,
-                    attributes: {
-                        exclude: ["createdAt", "updatedAt"],
-                    },
-                }
-            ]
-        }).then(async (item) => {
-            if (item) {
+          }
+        );
 
-                var oldqty = item.qty
-                var newqty = oldqty - 1;
-                var price = item.price;
-                var originalprice = price / oldqty
-
-                await CartItem.update({
-                    qty: newqty,
-                    price: originalprice * newqty,
-
-                },
-                    {
-                        where: {
-                            id: item.id
-                        }
-                    })
-
-                const result = await CartItem.findOne({
-                    where: {
-                        id: item.id
-                    }
-                })
-                res.status(200).json({
-                    status: true,
-                    message: "Item quantity Increased",
-                    data: result
-                })
-            } else {
-                res.status(404).json({
-                    status: false,
-                    message: "Product not found"
-                })
-            }
-        })
-    } catch (error) {
-        console.error(error)
-        // res.status(500).json({
-        //      status: false,
-        //      message: "An error occured",
-        //      error: error
-        //  });
-        next(error)
-    }
-}
+        const result = await CartItem.findOne({
+          where: {
+            id: item.id,
+          },
+        });
+        res.status(200).json({
+          status: true,
+          message: "Item quantity Increased",
+          data: result,
+        });
+      } else {
+        res.status(404).json({
+          status: false,
+          message: "Product not found",
+        });
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    // res.status(500).json({
+    //      status: false,
+    //      message: "An error occured",
+    //      error: error
+    //  });
+    next(error);
+  }
+};
 
 exports.createOrder = async (req, res, next) => {
-    var { address, phone_no, note } = req.body;
-    try {
+  var { address, phone_no, note } = req.body;
+  try {
+    var commision = await Fee.findOne({
+      where: {
+        type: "commission",
+      },
+    });
 
-        var commision = await Fee.findOne({
-            where: {
-                type: "commission"
+    await Order.findOne({
+      where: {
+        userId: req.user.id,
+        new: true,
+        paid: false,
+      },
+      include: [
+        {
+          model: CartItem,
+          attributes: {
+            exclude: ["createdAt", "updatedAt"],
+          },
+          include: [
+            {
+              model: Food,
+              attributes: {
+                exclude: ["createdAt", "updatedAt"],
+              },
+            },
+            {
+              model: FoodExtra,
+              attributes: {
+                exclude: ["createdAt", "updatedAt"],
+              },
+            },
+            {
+              model: Package,
+              attributes: {
+                exclude: ["createdAt", "updatedAt"],
+              },
+            },
+          ],
+        },
+        {
+          model: User,
+          attributes: {
+            exclude: ["createdAt", "updatedAt"],
+          },
+        },
+      ],
+    })
+      .then(async (order) => {
+        if (order) {
+          var total = 0;
+          if (order.fooditems) {
+            for (var i = 0; i < order.fooditems.length; i++) {
+              total = total + order.fooditems[i].price;
             }
-        })
-
-        await Order.findOne({
-            where: {
+          }
+          paystack.transaction
+            .initialize({
+              name: `Food Order #${order.id}`,
+              email: order.user.email,
+              amount: parseInt(total + (commision.value / 100) * total) * 100,
+              quantity: order.fooditems.length,
+              callback_url: `${process.env.REDIRECT_SITE}/VerifyPay/food`,
+              metadata: {
                 userId: req.user.id,
-                new: true,
-                paid: false
+                orderId: order.id,
+              },
+            })
+            .then(async (transaction) => {
+              console.log(transaction);
+              if (transaction) {
+                await Order.update(
+                  {
+                    address: address,
+                    phone_no: phone_no,
+                    note: note,
+                    sub_total: total,
+                    status: "in_progress",
+                    checkout_url: transaction.data.authorization_url,
+                    ref_no: transaction.data.reference,
+                    access_code: transaction.data.access_code,
+                    commission: parseInt((commision.value / 100) * total),
+                  },
+                  {
+                    where: {
+                      id: order.id,
+                    },
+                  }
+                ).catch((err) => console.log(err));
+              }
+            })
+            .catch((err) => console.log(err));
+
+          const out = await Order.findOne({
+            where: {
+              id: order.id,
             },
             include: [
-                {
-                    model: CartItem,
-                    attributes: {
-                        exclude: ["createdAt", "updatedAt"],
-                    },
-                    include: [
-                        {
-                            model: Food,
-                            attributes: {
-                                exclude: ["createdAt", "updatedAt"],
-                            },
-                        },
-                        {
-                            model: FoodExtra,
-                            attributes: {
-                                exclude: ["createdAt", "updatedAt"],
-                            },
-                        },
-                        {
-                            model: Package,
-                            attributes: {
-                                exclude: ["createdAt", "updatedAt"]
-                            }
-                        }
-                    ]
+              {
+                model: CartItem,
+                attributes: {
+                  exclude: ["createdAt", "updatedAt"],
                 },
-                {
-                    model: User,
+                include: [
+                  {
+                    model: Food,
                     attributes: {
-                        exclude: ["createdAt", "updatedAt"],
+                      exclude: ["createdAt", "updatedAt"],
                     },
-                }
-            ]
-        }).then(async (order) => {
-            if (order) {
-                var total = 0;
-                if (order.fooditems) {
-                    for (var i = 0; i < order.fooditems.length; i++) {
-                        total = total + (order.fooditems[i].price);
-                    }
-                }
-                paystack.transaction.initialize({
-                    name: `Food Order #${order.id}`,
-                    email: order.user.email,
-                    amount: parseInt(total + ((commision.value / 100) * total)) * 100,
-                    quantity: order.fooditems.length,
-                    callback_url: `${process.env.REDIRECT_SITE}/VerifyPay/food`,
-                    metadata: {
-                        userId: req.user.id,
-                        orderId: order.id
-                    }
-                }).then(async (transaction) => {
-                    console.log(transaction)
-                    if (transaction) {
-                        await Order.update({
-                            address: address,
-                            phone_no: phone_no,
-                            note: note,
-                            sub_total: total,
-                            status: "in_progress",
-                            checkout_url: transaction.data.authorization_url,
-                            ref_no: transaction.data.reference,
-                            access_code: transaction.data.access_code,
-                            commission: parseInt((commision.value / 100) * total)
-                        }, {
-                            where: {
-                                id: order.id
-                            }
-                        }).catch(err => console.log(err));
-                    }
-                }).catch(err => console.log(err));
-
-
-                const out = await Order.findOne({
-                    where: {
-                        id: order.id
+                  },
+                  {
+                    model: FoodExtra,
+                    attributes: {
+                      exclude: ["createdAt", "updatedAt"],
                     },
-                    include: [
-                        {
-                            model: CartItem,
-                            attributes: {
-                                exclude: ["createdAt", "updatedAt"],
-                            },
-                            include: [
-                                {
-                                    model: Food,
-                                    attributes: {
-                                        exclude: ["createdAt", "updatedAt"],
-                                    },
-                                },
-                                {
-                                    model: FoodExtra,
-                                    attributes: {
-                                        exclude: ["createdAt", "updatedAt"],
-                                    },
-                                },
-                                {
-                                    model: Package,
-                                    attributes: {
-                                        exclude: ["createdAt", "updatedAt"]
-                                    }
-                                }
-                            ]
-                        },
-                        {
-                            model: User,
-                            attributes: {
-                                exclude: ["createdAt", "updatedAt"],
-                            },
-                        }
-                    ]
-                })
-                res.status(201).json({
-                    status: true,
-                    message: "Order created",
-                    data: out
-                })
-
-
-            } else {
-                res.json({
-                    status: false,
-                    message: "No item found in your cart"
-                })
-            }
-        }).catch(err => console.log(err))
-
-    } catch (error) {
-        console.error(error)
-        next(error)
-    }
-
-}
-
+                  },
+                  {
+                    model: Package,
+                    attributes: {
+                      exclude: ["createdAt", "updatedAt"],
+                    },
+                  },
+                ],
+              },
+              {
+                model: User,
+                attributes: {
+                  exclude: ["createdAt", "updatedAt"],
+                },
+              },
+            ],
+          });
+          res.status(201).json({
+            status: true,
+            message: "Order created",
+            data: out,
+          });
+        } else {
+          res.json({
+            status: false,
+            message: "No item found in your cart",
+          });
+        }
+      })
+      .catch((err) => console.log(err));
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+};
 
 exports.getPaymentFood = async (req, res, next) => {
-    var { address, phone_no, note, orderId, ref_no,} = req.body;
-    try {
-        console.log(req.body)
-        var commision = await Fee.findOne({
-            where: {
-                type: "commission"
+  var { address, phone_no, note, orderId, ref_no } = req.body;
+  try {
+    console.log(req.body);
+    var commision = await Fee.findOne({
+      where: {
+        type: "commission",
+      },
+    });
+
+    await Order.findOne({
+      where: {
+        userId: userId,
+        new: true,
+        paid: false,
+      },
+      include: [
+        {
+          model: CartItem,
+          attributes: {
+            exclude: ["createdAt", "updatedAt"],
+          },
+          include: [
+            {
+              model: Food,
+              attributes: {
+                exclude: ["createdAt", "updatedAt"],
+              },
+            },
+            {
+              model: FoodExtra,
+              attributes: {
+                exclude: ["createdAt", "updatedAt"],
+              },
+            },
+            {
+              model: Package,
+              attributes: {
+                exclude: ["createdAt", "updatedAt"],
+              },
+            },
+          ],
+        },
+        {
+          model: User,
+          attributes: {
+            exclude: ["createdAt", "updatedAt"],
+          },
+        },
+      ],
+    })
+      .then(async (order) => {
+        if (order) {
+          var total = 0;
+          if (order.fooditems) {
+            for (var i = 0; i < order.fooditems.length; i++) {
+              total = total + order.fooditems[i].price;
             }
-        })
+          }
 
-       
+          console.log(transaction);
+          if (transaction) {
+            await Order.update(
+              {
+                address: address,
+                phone_no: phone_no,
+                note: note,
+                sub_total: total,
+                status: "in_progress",
+                ref_no: ref_no,
+                access_code: access_code,
+                commission: parseInt((commision.value / 100) * total),
+              },
+              {
+                where: {
+                  id: order.id,
+                },
+              }
+            ).catch((err) => console.log(err));
+          }
 
-        await Order.findOne({
+          const out = await Order.findOne({
             where: {
-                userId: userId,
-                new: true,
-                paid: false
+              id: order.id,
             },
             include: [
-                {
-                    model: CartItem,
-                    attributes: {
-                        exclude: ["createdAt", "updatedAt"],
-                    },
-                    include: [
-                        {
-                            model: Food,
-                            attributes: {
-                                exclude: ["createdAt", "updatedAt"],
-                            },
-                        },
-                        {
-                            model: FoodExtra,
-                            attributes: {
-                                exclude: ["createdAt", "updatedAt"],
-                            },
-                        },
-                        {
-                            model: Package,
-                            attributes: {
-                                exclude: ["createdAt", "updatedAt"]
-                            }
-                        }
-                    ]
+              {
+                model: CartItem,
+                attributes: {
+                  exclude: ["createdAt", "updatedAt"],
                 },
-                {
-                    model: User,
+                include: [
+                  {
+                    model: Food,
                     attributes: {
-                        exclude: ["createdAt", "updatedAt"],
+                      exclude: ["createdAt", "updatedAt"],
                     },
-                }
-            ]
-        }).then(async (order) => {
-            if (order) {
-                var total = 0;
-                if (order.fooditems) {
-                    for (var i = 0; i < order.fooditems.length; i++) {
-                        total = total + (order.fooditems[i].price);
-                    }
-                }
-                
-                    console.log(transaction)
-                    if (transaction) {
-                        await Order.update({
-                            address: address,
-                            phone_no: phone_no,
-                            note: note,
-                            sub_total: total,
-                            status: "in_progress",
-                            ref_no: ref_no,
-                            access_code: access_code,
-                            commission: parseInt((commision.value / 100) * total)
-                        }, {
-                            where: {
-                                id: order.id
-                            }
-                        }).catch(err => console.log(err));
-                    }
-  
-
-
-                const out = await Order.findOne({
-                    where: {
-                        id: order.id
+                  },
+                  {
+                    model: FoodExtra,
+                    attributes: {
+                      exclude: ["createdAt", "updatedAt"],
                     },
-                    include: [
-                        {
-                            model: CartItem,
-                            attributes: {
-                                exclude: ["createdAt", "updatedAt"],
-                            },
-                            include: [
-                                {
-                                    model: Food,
-                                    attributes: {
-                                        exclude: ["createdAt", "updatedAt"],
-                                    },
-                                },
-                                {
-                                    model: FoodExtra,
-                                    attributes: {
-                                        exclude: ["createdAt", "updatedAt"],
-                                    },
-                                },
-                                {
-                                    model: Package,
-                                    attributes: {
-                                        exclude: ["createdAt", "updatedAt"]
-                                    }
-                                }
-                            ]
-                        },
-                        {
-                            model: User,
-                            attributes: {
-                                exclude: ["createdAt", "updatedAt"],
-                            },
-                        }
-                    ]
-                })
-               
-
-
-            } else {
-                res.json({
-                    status: false,
-                    message: "No item found in your cart"
-                })
-            }
-        }).catch(err => console.log(err))
-
-    } catch (error) {
-        console.error(error)
-        next(error)
-    }
-
-}
-
+                  },
+                  {
+                    model: Package,
+                    attributes: {
+                      exclude: ["createdAt", "updatedAt"],
+                    },
+                  },
+                ],
+              },
+              {
+                model: User,
+                attributes: {
+                  exclude: ["createdAt", "updatedAt"],
+                },
+              },
+            ],
+          });
+        } else {
+          res.json({
+            status: false,
+            message: "No item found in your cart",
+          });
+        }
+      })
+      .catch((err) => console.log(err));
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+};
 
 exports.viewAppOrder = async (req, res, next) => {
-    try {
-        await Order.findOne({
-            where: {
-                id: req.params.orderId,
+  try {
+    await Order.findOne({
+      where: {
+        id: req.params.orderId,
+      },
+      include: [
+        {
+          model: CartItem,
+          attributes: {
+            exclude: ["createdAt", "updatedAt"],
+          },
+          include: [
+            {
+              model: Food,
+              attributes: {
+                exclude: ["createdAt", "updatedAt"],
+              },
             },
-            include: [
-                {
-                    model: CartItem,
-                    attributes: {
-                        exclude: ["createdAt", "updatedAt"],
-                    },
-                    include: [
-                        {
-                            model: Food,
-                            attributes: {
-                                exclude: ["createdAt", "updatedAt"],
-                            },
-                        },
-                        {
-                            model: FoodExtra,
-                            attributes: {
-                                exclude: ["createdAt", "updatedAt"],
-                            },
-                        },
-                        {
-                            model: Package,
-                            attributes: {
-                                exclude: ["createdAt", "updatedAt"]
-                            }
-                        }
-                    ]
-                },
-                {
-                    model: User,
-                    attributes: {
-                        exclude: ["createdAt", "updatedAt"],
-                    },
-                }
-            ]
-        }).then((order) => {
-            if (order) {
-                res.status(200).json({
-                    status: true,
-                    data: order,
-                })
-            } else {
-                res.json({
-                    status: false,
-                    message: "No order found"
-                })
-            }
-
-        })
-    } catch (error) {
-        console.error(error)
-        // res.status(500).json({
-        //      status: false,
-        //      message: "An error occured",
-        //      error: error
-        //  });
-        next(error)
-    }
-}
+            {
+              model: FoodExtra,
+              attributes: {
+                exclude: ["createdAt", "updatedAt"],
+              },
+            },
+            {
+              model: Package,
+              attributes: {
+                exclude: ["createdAt", "updatedAt"],
+              },
+            },
+          ],
+        },
+        {
+          model: User,
+          attributes: {
+            exclude: ["createdAt", "updatedAt"],
+          },
+        },
+      ],
+    }).then((order) => {
+      if (order) {
+        res.status(200).json({
+          status: true,
+          data: order,
+        });
+      } else {
+        res.json({
+          status: false,
+          message: "No order found",
+        });
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    // res.status(500).json({
+    //      status: false,
+    //      message: "An error occured",
+    //      error: error
+    //  });
+    next(error);
+  }
+};
 
 exports.viewOrder = async (req, res, next) => {
-    try {
-        await Order.findOne({
-            where: {
-                id: req.params.orderId,
+  try {
+    await Order.findOne({
+      where: {
+        id: req.params.orderId,
+      },
+      include: [
+        {
+          model: CartItem,
+          attributes: {
+            exclude: ["createdAt", "updatedAt"],
+          },
+          include: [
+            {
+              model: Food,
+              attributes: {
+                exclude: ["createdAt", "updatedAt"],
+              },
             },
-            include: [
-                {
-                    model: CartItem,
-                    attributes: {
-                        exclude: ["createdAt", "updatedAt"],
-                    },
-                    include: [
-                        {
-                            model: Food,
-                            attributes: {
-                                exclude: ["createdAt", "updatedAt"],
-                            },
-                        },
-                        {
-                            model: FoodExtra,
-                            attributes: {
-                                exclude: ["createdAt", "updatedAt"],
-                            },
-                        },
-                        {
-                            model: Package,
-                            attributes: {
-                                exclude: ["createdAt", "updatedAt"]
-                            }
-                        }
-                    ]
-                },
-                {
-                    model: User,
-                    attributes: {
-                        exclude: ["createdAt", "updatedAt"],
-                    },
-                }
-            ]
-        }).then((order) => {
-            if (order) {
-                res.status(200).json({
-                    status: true,
-                    data: order,
-                })
-            } else {
-                res.json({
-                    status: false,
-                    message: "No order found"
-                })
-            }
-
-        })
-    } catch (error) {
-        console.error(error)
-        // res.status(500).json({
-        //      status: false,
-        //      message: "An error occured",
-        //      error: error
-        //  });
-        next(error)
-    }
-}
+            {
+              model: FoodExtra,
+              attributes: {
+                exclude: ["createdAt", "updatedAt"],
+              },
+            },
+            {
+              model: Package,
+              attributes: {
+                exclude: ["createdAt", "updatedAt"],
+              },
+            },
+          ],
+        },
+        {
+          model: User,
+          attributes: {
+            exclude: ["createdAt", "updatedAt"],
+          },
+        },
+      ],
+    }).then((order) => {
+      if (order) {
+        res.status(200).json({
+          status: true,
+          data: order,
+        });
+      } else {
+        res.json({
+          status: false,
+          message: "No order found",
+        });
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    // res.status(500).json({
+    //      status: false,
+    //      message: "An error occured",
+    //      error: error
+    //  });
+    next(error);
+  }
+};
 
 exports.viewAdminOrder = async (req, res, next) => {
-    try {
-        await Order.findAll({
-            where: {
-                new: true,
-                paid: true
+  try {
+    await Order.findAll({
+      where: {
+        new: true,
+        paid: true,
+      },
+      order: [["createdAt", "ASC"]],
+      include: [
+        {
+          model: CartItem,
+          attributes: {
+            exclude: ["createdAt", "updatedAt"],
+          },
+          include: [
+            {
+              model: Food,
+              attributes: {
+                exclude: ["createdAt", "updatedAt"],
+              },
             },
-            order: [
-                ["createdAt", 'ASC']
-            ],
-            include: [
-                {
-                    model: CartItem,
-                    attributes: {
-                        exclude: ["createdAt", "updatedAt"],
-                    },
-                    include: [
-                        {
-                            model: Food,
-                            attributes: {
-                                exclude: ["createdAt", "updatedAt"],
-                            },
-                        },
-                        {
-                            model: FoodExtra,
-                            attributes: {
-                                exclude: ["createdAt", "updatedAt"],
-                            },
-                        },
-                        {
-                            model: Package,
-                            attributes: {
-                                exclude: ["createdAt", "updatedAt"]
-                            }
-                        }
-                    ]
-                },
-                {
-                    model: User,
-                    attributes: {
-                        exclude: ["createdAt", "updatedAt"],
-                    },
-                }
-            ]
-        }).then((order) => {
-            if (order) {
-                console.log("Orders found")
-                store.set("order", JSON.stringify(order));
-                let name = req.user.fullname.split(" ");
-                let email = req.user.email;
-                data = JSON.parse(store.get("order"));
-                console.log(data)
-                res.render("dashboard/admin/food-orders", {
-                    user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
-                    email: email,
-                    data
-                });
-                next();
-
-            } else {
-                console.log("No Orders found")
-                store.set("order", JSON.stringify(order));
-                let name = req.user.fullname.split(" ");
-                let email = req.user.email;
-                data = JSON.parse(store.get("order"));
-                console.log(data)
-                res.render("dashboard/admin/food-orders", {
-                    user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
-                    email: email,
-                    data
-                });
-                next();
-            }
-
-        })
-    } catch (error) {
-        console.error(error)
-        // res.status(500).json({
-        //      status: false,
-        //      message: "An error occured",
-        //      error: error
-        //  });
-        next(error)
-    }
-}
+            {
+              model: FoodExtra,
+              attributes: {
+                exclude: ["createdAt", "updatedAt"],
+              },
+            },
+            {
+              model: Package,
+              attributes: {
+                exclude: ["createdAt", "updatedAt"],
+              },
+            },
+          ],
+        },
+        {
+          model: User,
+          attributes: {
+            exclude: ["createdAt", "updatedAt"],
+          },
+        },
+      ],
+    }).then((order) => {
+      if (order) {
+        console.log("Orders found");
+        store.set("order", JSON.stringify(order));
+        let name = req.user.fullname.split(" ");
+        let email = req.user.email;
+        data = JSON.parse(store.get("order"));
+        console.log(data);
+        res.render("dashboard/admin/food-orders", {
+          user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+          email: email,
+          data,
+        });
+        next();
+      } else {
+        console.log("No Orders found");
+        store.set("order", JSON.stringify(order));
+        let name = req.user.fullname.split(" ");
+        let email = req.user.email;
+        data = JSON.parse(store.get("order"));
+        console.log(data);
+        res.render("dashboard/admin/food-orders", {
+          user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
+          email: email,
+          data,
+        });
+        next();
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    // res.status(500).json({
+    //      status: false,
+    //      message: "An error occured",
+    //      error: error
+    //  });
+    next(error);
+  }
+};
 
 exports.viewOrders = async (req, res, next) => {
-    try {
-        await Order.findAll({
-            where: {
-                userId: req.user.id,
-                new: true,
-                paid: true
+  try {
+    await Order.findAll({
+      where: {
+        userId: req.user.id,
+        new: true,
+        paid: true,
+      },
+      include: [
+        {
+          model: CartItem,
+          attributes: {
+            exclude: ["createdAt", "updatedAt"],
+          },
+          include: [
+            {
+              model: Food,
+              attributes: {
+                exclude: ["createdAt", "updatedAt"],
+              },
             },
-            include: [
-                {
-                    model: CartItem,
-                    attributes: {
-                        exclude: ["createdAt", "updatedAt"],
-                    },
-                    include: [
-                        {
-                            model: Food,
-                            attributes: {
-                                exclude: ["createdAt", "updatedAt"],
-                            },
-                        },
-                        {
-                            model: FoodExtra,
-                            attributes: {
-                                exclude: ["createdAt", "updatedAt"],
-                            },
-                        },
-                        {
-                            model: Package,
-                            attributes: {
-                                exclude: ["createdAt", "updatedAt"]
-                            }
-                        }
-                    ]
-                },
-                {
-                    model: User,
-                    attributes: {
-                        exclude: ["createdAt", "updatedAt"],
-                    },
-                }
-            ]
-        }).then((order) => {
-            if (order) {
-                res.status(200).json({
-                    status: true,
-                    data: order,
-                })
-            } else {
-                res.json({
-                    status: false,
-                    message: "No order found"
-                })
-            }
-
-        })
-    } catch (error) {
-        console.error(error)
-        // res.status(500).json({
-        //      status: false,
-        //      message: "An error occured",
-        //      error: error
-        //  });
-        next(error)
-    }
-}
+            {
+              model: FoodExtra,
+              attributes: {
+                exclude: ["createdAt", "updatedAt"],
+              },
+            },
+            {
+              model: Package,
+              attributes: {
+                exclude: ["createdAt", "updatedAt"],
+              },
+            },
+          ],
+        },
+        {
+          model: User,
+          attributes: {
+            exclude: ["createdAt", "updatedAt"],
+          },
+        },
+      ],
+    }).then((order) => {
+      if (order) {
+        res.status(200).json({
+          status: true,
+          data: order,
+        });
+      } else {
+        res.json({
+          status: false,
+          message: "No order found",
+        });
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    // res.status(500).json({
+    //      status: false,
+    //      message: "An error occured",
+    //      error: error
+    //  });
+    next(error);
+  }
+};
 
 exports.updateOrderStatus = async (req, res, next) => {
-    const { status } = req.body;
-    try {
-        if (status === "delivered" || status === "cancelled") {
-            var new_order = false
-        } else {
-            new_order = true
-        }
-        await Order.update({
-            status: status,
-            new: new_order
-        }, {
-            where: {
-                id: req.params.orderId,
-            }
-        })
-
-        await Order.findOne({
-            where: {
-                id: req.params.orderId,
-            }
-
-        }).then((order) => {
-            res.status(200).json({
-                status: true,
-                message: `Order ${status}`,
-                data: order,
-            })
-        })
-    } catch (error) {
-        console.error(error)
-        // res.status(500).json({
-        //      status: false,
-        //      message: "An error occured",
-        //      error: error
-        //  });
-        next(error)
+  const { status } = req.body;
+  try {
+    if (status === "delivered" || status === "cancelled") {
+      var new_order = false;
+    } else {
+      new_order = true;
     }
-}
+    await Order.update(
+      {
+        status: status,
+        new: new_order,
+      },
+      {
+        where: {
+          id: req.params.orderId,
+        },
+      }
+    );
+
+    await Order.findOne({
+      where: {
+        id: req.params.orderId,
+      },
+    }).then((order) => {
+      res.status(200).json({
+        status: true,
+        message: `Order ${status}`,
+        data: order,
+      });
+    });
+  } catch (error) {
+    console.error(error);
+    // res.status(500).json({
+    //      status: false,
+    //      message: "An error occured",
+    //      error: error
+    //  });
+    next(error);
+  }
+};
 
 exports.Checkout = async (req, res, next) => {
-    const ref = req.body.ref_no;
-    const {email} = req.body
-    // const userId = req.user.id
-    try {
-        await Transaction.findOne({
-            where: {
-                ref_no: ref
-            }
-        }).then(async (trn) => {
-            if (trn) {
-                var verify = "Payment Already Verified"
-                // res.json("Payment Already Verified")
-            } else {
-                paystack.transaction.verify(ref).then(async (transaction) => {
-                    console.log(transaction);
-                    // res.json(transaction)
-                    if (!transaction) {
-                        verify = `Transaction on the reference no: ${ref} not found`
-                        // res.json({
-                        //     status: false,
-                        //     message: `Transaction on the reference no: ${ref} not found`
-                        // })
-                    }
+  const ref = req.body.ref_no;
+  const { email } = req.body;
+  // const userId = req.user.id
+  try {
+    await Transaction.findOne({
+      where: {
+        ref_no: ref,
+      },
+    })
+      .then(async (trn) => {
+        if (trn) {
+          var verify = "Payment Already Verified";
+          // res.json("Payment Already Verified")
+        } else {
+          paystack.transaction
+            .verify(ref)
+            .then(async (transaction) => {
+              console.log(transaction);
+              // res.json(transaction)
+              if (!transaction) {
+                verify = `Transaction on the reference no: ${ref} not found`;
+                // res.json({
+                //     status: false,
+                //     message: `Transaction on the reference no: ${ref} not found`
+                // })
+              }
 
-                    var trnx = new Transaction({
-                        userId: transaction.data.metadata.meta.userId,
-                        ref_no: ref,
-                        status: transaction.data.status,
-                        ProductType: "Food",
-                        price: `${transaction.data.currency} ${transaction.data.amount / 100}`,
-                        description: `Food purchase #${transaction.data.metadata.meta.orderId}`
-                    })
-                    var savetrnx = await trnx.save()
+              var trnx = new Transaction({
+                userId: transaction.data.metadata.meta.userId,
+                ref_no: ref,
+                status: transaction.data.status,
+                ProductType: "Food",
+                price: `${transaction.data.currency} ${
+                  transaction.data.amount / 100
+                }`,
+                description: `Food purchase #${transaction.data.metadata.meta.orderId}`,
+              });
+              var savetrnx = await trnx.save();
 
-                    await Order.update({
-                        paid: true
-                    }, {
+              await Order.update(
+                {
+                  paid: true,
+                },
+                {
+                  where: {
+                    id: transaction.data.metadata.meta.orderId,
+                  },
+                }
+              );
+
+              await CartItem.findAll({
+                where: {
+                  orderId: transaction.data.metadata.meta.orderId,
+                },
+              }).then(async (extra) => {
+                if (extra) {
+                  for (var i = 0; i < extra.length; i++) {
+                    await CartItem.update(
+                      {
+                        ordered: true,
+                      },
+                      {
                         where: {
-                            id: transaction.data.metadata.meta.orderId
-                        }
-                    })
-
-                    await CartItem.findAll({
-                        where: {
-                            orderId: transaction.data.metadata.meta.orderId
+                          id: extra[i].id,
                         },
+                      }
+                    );
+                  }
+                }
+              });
 
-                    }).then(async (extra) => {
-                        if (extra) {
-                            for (var i = 0; i < extra.length; i++) {
-                                await CartItem.update({
-                                    ordered: true
-                                }, {
-                                    where: {
-                                        id: extra[i].id
-                                    }
-                                })
-                            }
-                        }
-                    })
+              var user = await User.findOne({
+                where: {
+                  id: transaction.data.metadata.meta.userId,
+                },
+              });
 
-                    var user = await User.findOne({
-                        where: {
-                            id: transaction.data.metadata.meta.userId,
-                        }
-                    })
-
-                    let fname = user.fullname.split(' ')
-                    const mailOptions = {
-                        from: `"Deepend" <${process.env.E_TEAM}>`,
-                        to: `${user.email}`,
-                        subject: "Deepend",
-                        html: `
+              let fname = user.fullname.split(" ");
+              const mailOptions = {
+                from: `"Deepend" <${process.env.E_TEAM}>`,
+                to: `${user.email}`,
+                subject: "Deepend",
+                html: `
                 <!DOCTYPE html>
                     <html>
                     <head>
@@ -1513,7 +1519,9 @@ exports.Checkout = async (req, res, next) => {
                             <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
                             <tr>
                                 <td align="left" bgcolor="#ffffff" style="padding: 36px 24px 0; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; border-top: 3px solid #d4dadf;">
-                                <h1 style="margin: 0; font-size: 32px; font-weight: 700; letter-spacing: -1px; line-height: 48px;">${savetrnx.ProductType} Payment confirmation</h1>
+                                <h1 style="margin: 0; font-size: 32px; font-weight: 700; letter-spacing: -1px; line-height: 48px;">${
+                                  savetrnx.ProductType
+                                } Payment confirmation</h1>
                                 </td>
                             </tr>
                             </table>
@@ -1540,14 +1548,22 @@ exports.Checkout = async (req, res, next) => {
                             <tr>
                                 <td align="left" bgcolor="#ffffff" style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;">
                         <h2> Hi ${fname[0]}, </h2>        
-                                <p style="margin: 0;"> Receiving this email means, you have just purchased ${savetrnx.ProductType} from Deepend and your was confrimed</p>
+                                <p style="margin: 0;"> Receiving this email means, you have just purchased ${
+                                  savetrnx.ProductType
+                                } from Deepend and your was confrimed</p>
                                 <br>
                                 <p style="margin: 0;"><b>Payment Details: </b></p>
                                 <br>
-                                <p style="margin: 0;">Description: ${savetrnx.description} </p>
-                                <p style="margin: 0;">Reference number: ${savetrnx.ref_no} </p>
+                                <p style="margin: 0;">Description: ${
+                                  savetrnx.description
+                                } </p>
+                                <p style="margin: 0;">Reference number: ${
+                                  savetrnx.ref_no
+                                } </p>
                                 <p style="margin: 0;">Payment Status: <b>${savetrnx.status.toUpperCase()}</b> </p>
-                                <p style="margin: 0;">Price: ${savetrnx.price} </p>
+                                <p style="margin: 0;">Price: ${
+                                  savetrnx.price
+                                } </p>
                                 </td>
                             </tr>
                             <!-- end copy -->
@@ -1602,34 +1618,34 @@ exports.Checkout = async (req, res, next) => {
                     <!-- end body -->
 
                     </body>
-                    </html>`
-                    };
+                    </html>`,
+              };
 
-                    transporter.sendMail(mailOptions, function (err, info) {
-                        if (err) {
-                            console.log(err)
-                        } else {
-                            console.log(info);
-                        }
-                    });
+              transporter.sendMail(mailOptions, function (err, info) {
+                if (err) {
+                  console.log(err);
+                } else {
+                  console.log(info);
+                }
+              });
 
-                    verify = "Payment" + " " + transaction.message
+              verify = "Payment" + " " + transaction.message;
 
-                    res.json({
-                        status: true,
-                        message: `Payment ${transaction.message}`,
-                        transaction: savetrnx,
-                    })
-                    // res.render("base/verify-food", {
-                    //     verify
-                    // })
-
-                }).catch(error => console.error(error))
-            }
-        }).catch(error => console.error(error))
-
-    } catch (error) {
-        console.error(error);
-        next(error)
-    }
-}
+              res.json({
+                status: true,
+                message: `Payment ${transaction.message}`,
+                transaction: savetrnx,
+              });
+              // res.render("base/verify-food", {
+              //     verify
+              // })
+            })
+            .catch((error) => console.error(error));
+        }
+      })
+      .catch((error) => console.error(error));
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+};
