@@ -339,27 +339,16 @@ exports.AddCart = async (req, res, next) => {
           }
 
           var extras = [];
-          // if (foodextraId != null) {
-          //     extra = await FoodExtra.findOne({
-          //         where: {
-          //             id: foodextraId
-          //         }
+          if (foodextraId != null) {
+              extra = await FoodExtra.findOne({
+                  where: {
+                      id: foodextraId
+                  }
 
-          //     })
-          //     console.log(extra)
-          // }
-          if (foodextraId.length > 0) {
-            foodextraId.forEach(async (extraId) => {
-              let _extra = await FoodExtra.findOne({
-                where: {
-                  id: extraId,
-                },
-              });
-              if (_extra !== null) {
-                extras.push(_extra);
-              }
-            });
+              })
+              console.log(extra)
           }
+         
           console.log('hello')
 
           if (foodpackageId != null) {
