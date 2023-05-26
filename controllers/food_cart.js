@@ -396,6 +396,7 @@ exports.AddCart = async (req, res, next) => {
           }
 
           let price = parseInt(food.price) + extra_price_total + packageprice;
+          console.log("hello3");
 
 
           const Items = new CartItem({
@@ -410,6 +411,7 @@ exports.AddCart = async (req, res, next) => {
           });
 
           const Cart = await Items.save();
+          console.log("hello4");
 
           const out = await CartItem.findOne({
             where: {
