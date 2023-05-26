@@ -375,7 +375,6 @@ exports.AddCart = async (req, res, next) => {
             });
           }
 
-          console.log("hello");
 
           let extra_price_total = 0;
           if (extras.length > 0) {
@@ -396,13 +395,12 @@ exports.AddCart = async (req, res, next) => {
           }
 
           let price = parseInt(food.price) + extra_price_total + packageprice;
-          console.log("hello3");
 
 
           const Items = new CartItem({
             userId: userId,
             foodId: food.id,
-            foodextrasId: 'not to be used',
+            foodextraId,
             extras,
             foodpackageId: packageId,
             orderId: orderId,
