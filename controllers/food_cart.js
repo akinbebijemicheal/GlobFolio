@@ -360,6 +360,7 @@ exports.AddCart = async (req, res, next) => {
               }
             });
           }
+          console.log('hello')
 
           if (foodpackageId != null) {
             var package = await Package.findOne({
@@ -373,6 +374,8 @@ exports.AddCart = async (req, res, next) => {
               message: "Please select a Package",
             });
           }
+
+          console.log("hello");
 
           let extra_price_total = 0;
           if (extras.length > 0) {
