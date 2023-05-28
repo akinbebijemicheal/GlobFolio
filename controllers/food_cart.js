@@ -278,9 +278,10 @@ exports.buyFood = async (req, res, next) => {
 };
 
 exports.AddCart = async (req, res, next) => {
-  var { quantity, foodextraId, foodpackageId } = req.body;
+  var { quantity, foodextrasId, foodpackageId } = req.body;
   var foodId = req.params.foodId;
   var userId = req.user.id;
+  console.log(req.body)
   try {
     const existeditem = await CartItem.findOne({
       where: {
@@ -290,7 +291,7 @@ exports.AddCart = async (req, res, next) => {
     });
     if (existeditem != null) {
       var cartqty = existeditem.qty;
-      var newqty = cartqty + 1;
+      var newqty = cartqty + quantity;
       var cartprice = existeditem.price;
       var oldprice = cartprice / cartqty;
 
@@ -339,18 +340,27 @@ exports.AddCart = async (req, res, next) => {
           }
 
           var extras = [];
-          if (foodextraId != null) {
-              extra = await FoodExtra.findOne({
+          if (foodextrasId != null) {
+              let extra = await FoodExtra.findOne({
                   where: {
-                      id: foodextraId
+                      id: foodextrasId
                   }
 
               })
               console.log(extra)
           }
-         
-          console.log('hello')
-
+          // if (foodextraId.length > 0) {
+          //   foodextraId.forEach(async (extraId) => {
+          //     let _extra = await FoodExtra.findOne({
+          //       where: {
+          //         id: extraId,
+          //       },
+          //     });
+          //     if (_extra !== null) {
+          //       extras.push(_extra);
+          //     }
+          //   });
+          // }
           if (foodpackageId != null) {
             var package = await Package.findOne({
               where: {
@@ -363,7 +373,6 @@ exports.AddCart = async (req, res, next) => {
               message: "Please select a Package",
             });
           }
-
 
           let extra_price_total = 0;
           if (extras.length > 0) {
@@ -389,7 +398,7 @@ exports.AddCart = async (req, res, next) => {
           const Items = new CartItem({
             userId: userId,
             foodId: food.id,
-            foodextraId,
+            foodextrasId: foodextrasId,
             extras,
             foodpackageId: packageId,
             orderId: orderId,
@@ -398,7 +407,6 @@ exports.AddCart = async (req, res, next) => {
           });
 
           const Cart = await Items.save();
-          console.log("hello4");
 
           const out = await CartItem.findOne({
             where: {

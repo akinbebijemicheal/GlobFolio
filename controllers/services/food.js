@@ -82,7 +82,8 @@ exports.createFoodService = async(req, res, next) => {
             }
                 
                 //console.log(top_price(req.body.top, req.body.topPrice));
-              await Extras.bulkCreate(top_price(req.body.top, req.body.topPrice), {returning: true})
+             var extra = await Extras.bulkCreate(top_price(req.body.top, req.body.topPrice), {returning: true})
+             console.log('extra', extra)
         }
 
         if(req.body.packageName && req.body.packagePrice){
