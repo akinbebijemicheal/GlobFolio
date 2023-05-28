@@ -361,6 +361,8 @@ exports.AddCart = async (req, res, next) => {
           //     }
           //   });
           // }
+
+          
           if (foodpackageId != null) {
             var package = await Package.findOne({
               where: {
