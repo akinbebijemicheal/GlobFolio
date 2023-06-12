@@ -48,7 +48,6 @@ const CartItem = db.define(
     //       return JSON.parse(this.getDataValue("foodExtras"));
     //     }
     //   },
-    //
     //   set(value) {
     //     this.setDataValue("foodExtras", JSON.stringify(value));
     //   },
