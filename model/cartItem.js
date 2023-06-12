@@ -44,12 +44,12 @@ const CartItem = db.define(
       allowNull: true,
       type: Sequelize.TEXT,
       get: function () {
-        if (this.getDataValue("foodExtras") !== undefined) {
-          return JSON.parse(this.getDataValue("foodExtras"));
+        if (this.getDataValue("foodextrasId") !== undefined) {
+          return JSON.parse(this.getDataValue("foodextrasId"));
         }
       },
       set(value) {
-        this.setDataValue("foodExtras", JSON.stringify(value));
+        this.setDataValue("foodextrasId", JSON.stringify(value));
       },
     // type: Sequelize.JSON,
     // allowNull: true,
