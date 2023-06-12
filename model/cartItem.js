@@ -87,8 +87,7 @@ User.hasMany(CartItem, {foreignKey: 'userId'});
 Food.hasMany(CartItem, {foreignKey: 'foodId'})
 CartItem.belongsTo(Food, {foreignKey: 'foodId'})
 
-// CartItem.belongsTo(FoodExtra, {foreignKey: 'foodextrasId'});
-// FoodExtra.hasMany(CartItem, {foreignKey: 'foodextrasId'});
+
 
 
 
