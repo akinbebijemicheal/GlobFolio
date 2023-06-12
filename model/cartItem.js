@@ -41,18 +41,18 @@ const CartItem = db.define(
       //     model: 'foodextras',
       //     key: 'id',
       // }
-    //   allowNull: true,
-    //   type: Sequelize.TEXT,
-    //   get: function () {
-    //     if (this.getDataValue("foodExtras") !== undefined) {
-    //       return JSON.parse(this.getDataValue("foodExtras"));
-    //     }
-    //   },
-    //   set(value) {
-    //     this.setDataValue("foodExtras", JSON.stringify(value));
-    //   },
-    type: Sequelize.JSON,
-    allowNull: true,
+      allowNull: true,
+      type: Sequelize.TEXT,
+      get: function () {
+        if (this.getDataValue("foodExtras") !== undefined) {
+          return JSON.parse(this.getDataValue("foodExtras"));
+        }
+      },
+      set(value) {
+        this.setDataValue("foodExtras", JSON.stringify(value));
+      },
+    // type: Sequelize.JSON,
+    // allowNull: true,
     },
     foodpackageId: {
       type: Sequelize.STRING(10),
@@ -87,7 +87,8 @@ User.hasMany(CartItem, {foreignKey: 'userId'});
 Food.hasMany(CartItem, {foreignKey: 'foodId'})
 CartItem.belongsTo(Food, {foreignKey: 'foodId'})
 
-
+// CartItem.belongsTo(FoodExtra, {foreignKey: 'foodextrasId'});
+// FoodExtra.hasMany(CartItem, {foreignKey: 'foodextrasId'});
 
 
 
