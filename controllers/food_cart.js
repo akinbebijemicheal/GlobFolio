@@ -640,6 +640,11 @@ exports.DeleteCartItem = async (req, res, next) => {
           where: {
             id: item.id,
           },
+          include: [
+            {
+              model: CartItemExtra,
+            },
+          ],
         });
         res.status(200).json({
           status: true,
