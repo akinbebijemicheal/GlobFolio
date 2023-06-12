@@ -470,7 +470,6 @@ exports.AddCart = async (req, res, next) => {
             userId: userId,
             foodId: food.id,
             foodextrasId: foodextrasId,
-            extras,
             foodpackageId: packageId,
             orderId: orderId,
             qty: quantity,
