@@ -282,7 +282,7 @@ exports.AddCart = async (req, res, next) => {
   var { quantity, foodextrasId, foodpackageId } = req.body;
   var foodId = req.params.foodId;
   var userId = req.user.id;
-  console.log('hello');
+  console.log(req.body);
   try {
     const existeditem = await CartItem.findAll({
       where: {
