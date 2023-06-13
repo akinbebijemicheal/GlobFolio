@@ -279,6 +279,9 @@ exports.buyFood = async (req, res, next) => {
 };
 
 exports.AddCart = async (req, res, next) => {
+  var c = JSON.stringify(req.body)
+  var og = JSON.parse(c)
+  console.log(og)
   var { quantity, foodextrasId, foodpackageId } = req.body;
   var foodId = req.params.foodId;
   var userId = req.user.id;
