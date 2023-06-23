@@ -529,7 +529,7 @@ exports.AddCart = async (req, res, next) => {
               {
                 model: Package,
                 attributes: {
-                  exclude: ["createdAt", "updatedAt"],
+                  exclude: ["createdAt", "updatedAt"], 
                 },
               },
             ],
