@@ -860,14 +860,14 @@ exports.deleteCinema = async (req, res, next) => {
         }).then(async (cinema) => {
             if (cinema) {
                 if (cinema.cinemasnacks?.length) {
-                    await snacks.findAll({
+                    await Snack.findAll({
                         where: {
                             cinemaId: cinema.id
                         }
                     }).then(async (snacks) => {
                         if (snacks?.length) {
                             for (var i = 0; i < snacks.length; i++) {
-                                await snacks.destroy({
+                                await Snack.destroy({
                                     where: {
                                         id: snacks[i].id
                                     }
