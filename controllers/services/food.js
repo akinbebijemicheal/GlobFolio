@@ -615,6 +615,7 @@ exports.deleteFood = async(req, res, next)=>{
                 }).then(async(extras)=>{
                     if(extras?.length){
                         for(var i =0; i<extras.length; i++){
+                            console.log("hello")
                             await Extras.destroy({
                                 where:{
                                     id: extras[i].id,
