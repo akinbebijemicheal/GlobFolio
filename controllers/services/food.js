@@ -617,7 +617,8 @@ exports.deleteFood = async(req, res, next)=>{
                         for(var i =0; i<extras.length; i++){
                             await Extras.destroy({
                                 where:{
-                                    id: extras[i].id
+                                    id: extras[i].id,
+                                    foodId: food.id
                                 }
                             })
                         }
@@ -634,7 +635,8 @@ exports.deleteFood = async(req, res, next)=>{
                         for(var i = 0; i<package.length; i++){
                             await Package.destroy({
                                 where:{
-                                    id: package[i].id
+                                    id: package[i].id,
+                                    foodId: food.id
                                 }
                             })
                         }
