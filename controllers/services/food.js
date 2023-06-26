@@ -605,36 +605,36 @@ exports.deleteFood = async (req, res, next) => {
     }).then(async (food) => {
         console.log(food)
       if (food) {
-               if (food.cartItem?.length) {
+               if (food.fooditems?.length) {
                  await CartItem.findAll({
                    where: {
                      foodId: food.id,
                    },
-                 }).then(async (cartItem) => {
-                   if (cartItem?.length) {
-                     for (var i = 0; i < cartItem.length; i++) {
+                 }).then(async (fooditems) => {
+                   if (fooditems?.length) {
+                     for (var i = 0; i < fooditems.length; i++) {
                        console.log("hello");
                        await CartItem.destroy({
                          where: {
-                           id: cartItem[i].id
+                           id: fooditems[i].id
                          },
                        });
                      }
                    }
                  });
                }
-             if (food.cartItemExtras?.length) {
+             if (food.fooditemextras?.length) {
                await CartItemExtra.findAll({
                  where: {
                    foodId: food.id,
                  },
-               }).then(async (cartItemExtra) => {
-                 if (cartItemExtra?.length) {
-                   for (var i = 0; i < cartItemExtra.length; i++) {
+               }).then(async (fooditemextras) => {
+                 if (fooditemextras?.length) {
+                   for (var i = 0; i < fooditemextras.length; i++) {
                      console.log("hello");
                      await CartItemExtra.destroy({
                        where: {
-                         id: cartItemExtra[i].id
+                         id: fooditemextras[i].id
                        },
                      });
                    }
