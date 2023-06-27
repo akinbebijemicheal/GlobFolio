@@ -605,7 +605,28 @@ exports.deleteFood = async (req, res, next) => {
     }).then(async (food) => {
         console.log(food)
       if (food) {
+        console.log(food.fooditems.fooditemextras)
+        if (food.fooditems.fooditemextras?.length) {
+          await CartItemExtra.findAll({
+            where: {
+              foodId: food.id,
+            },
+          }).then(async (fooditemextras) => {
+            if (fooditemextras?.length) {
+              for (var i = 0; i < fooditemextras.length; i++) {
+                console.log("hello");
+                await CartItemExtra.destroy({
+                  where: {
+                    id: fooditemextras[i].id,
+                  },
+                });
+              }
+            }
+          });
+        }
                if (food.fooditems?.length) {
+        console.log(food.fooditems);
+
                  await CartItem.findAll({
                    where: {
                      foodId: food.id,
@@ -623,24 +644,7 @@ exports.deleteFood = async (req, res, next) => {
                    }
                  });
                }
-             if (food.fooditems.fooditemextras?.length) {
-               await CartItemExtra.findAll({
-                 where: {
-                   foodId: food.id,
-                 },
-               }).then(async (fooditemextras) => {
-                 if (fooditemextras?.length) {
-                   for (var i = 0; i < fooditemextras.length; i++) {
-                     console.log("hello");
-                     await CartItemExtra.destroy({
-                       where: {
-                         id: fooditemextras[i].id
-                       },
-                     });
-                   }
-                 }
-               });
-             }
+             
         if (food.foodextras?.length) {
           await Extras.findAll({
             where: {
