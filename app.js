@@ -49,7 +49,7 @@ app.use(session({
   secret: process.env.TOKEN,
   cookie: {
     httpOnly: false,
-    maxAge: 6000
+    maxAge: 60000
   }
 }))
 app.use(flash({
