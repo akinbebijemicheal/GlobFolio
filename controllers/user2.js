@@ -140,7 +140,7 @@ exports.webLoginAdmin = async (req, res, next) => {
   }
 };
 
-exports.userAuth = passport.authenticate('jwt', {session: false});
+exports.userAuth = passport.authenticate('jwt', {session: true, failureRedirect: "/register-admin", failureFlash: true});
 
 
 exports.profile = user => {
