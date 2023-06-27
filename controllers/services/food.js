@@ -606,7 +606,6 @@ exports.deleteFood = async (req, res, next) => {
       // console.log(food)
       if (food) {
         if (food.fooditems?.length) {
-          console.log(food.fooditems);
 
           await CartItem.findAll({
             where: {
@@ -620,7 +619,6 @@ exports.deleteFood = async (req, res, next) => {
           }).then(async (fooditems) => {
             if (fooditems?.length) {
               for (var i = 0; i < fooditems.length; i++) {
-                console.log("hello");
 
                 //delete cartitem extra for all cartitem
 
@@ -633,7 +631,6 @@ exports.deleteFood = async (req, res, next) => {
                   }).then(async (fooditemextras) => {
                     if (fooditemextras?.length) {
                       for (var b = 0; b < fooditemextras.length; b++) {
-                        console.log("hello");
                         await CartItemExtra.destroy({
                           where: {
                             id: fooditemextras[b].id,
@@ -663,7 +660,6 @@ exports.deleteFood = async (req, res, next) => {
           }).then(async (extras) => {
             if (extras?.length) {
               for (var i = 0; i < extras.length; i++) {
-                console.log("hello");
                 await Extras.destroy({
                   where: {
                     id: extras[i].id,
