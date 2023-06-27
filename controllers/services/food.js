@@ -603,48 +603,58 @@ exports.deleteFood = async (req, res, next) => {
         },
       ],
     }).then(async (food) => {
-        console.log(food)
+      // console.log(food)
       if (food) {
-        console.log(food.fooditems.fooditemextras)
-        if (food.fooditems.fooditemextras?.length) {
-          await CartItemExtra.findAll({
+        if (food.fooditems?.length) {
+          console.log(food.fooditems);
+
+          await CartItem.findAll({
             where: {
               foodId: food.id,
             },
-          }).then(async (fooditemextras) => {
-            if (fooditemextras?.length) {
-              for (var i = 0; i < fooditemextras.length; i++) {
+            include: [
+              {
+                model: CartItemExtra,
+              },
+            ],
+          }).then(async (fooditems) => {
+            if (fooditems?.length) {
+              for (var i = 0; i < fooditems.length; i++) {
                 console.log("hello");
-                await CartItemExtra.destroy({
+
+                //delete cartitem extra for all cartitem
+
+            
+                if (fooditems[i].fooditemextras?.length) {
+                  await CartItemExtra.findAll({
+                    where: {
+                      cartItemId: fooditem[i].id,
+                    },
+                  }).then(async (fooditemextras) => {
+                    if (fooditemextras?.length) {
+                      for (var b = 0; b < fooditemextras.length; b++) {
+                        console.log("hello");
+                        await CartItemExtra.destroy({
+                          where: {
+                            id: fooditemextras[b].id,
+                          },
+                        });
+                      }
+                    }
+                  });
+                }
+
+                //delete cartitem
+                await CartItem.destroy({
                   where: {
-                    id: fooditemextras[i].id,
+                    id: fooditems[i].id,
                   },
                 });
               }
             }
           });
         }
-               if (food.fooditems?.length) {
-        console.log(food.fooditems);
 
-                 await CartItem.findAll({
-                   where: {
-                     foodId: food.id,
-                   },
-                 }).then(async (fooditems) => {
-                   if (fooditems?.length) {
-                     for (var i = 0; i < fooditems.length; i++) {
-                       console.log("hello");
-                       await CartItem.destroy({
-                         where: {
-                           id: fooditems[i].id
-                         },
-                       });
-                     }
-                   }
-                 });
-               }
-             
         if (food.foodextras?.length) {
           await Extras.findAll({
             where: {
