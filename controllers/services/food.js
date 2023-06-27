@@ -689,6 +689,8 @@ exports.deleteFood = async (req, res, next) => {
           });
         }
 
+
+        
         if (food.foodimages?.length) {
           await Image.findAll({
             where: {
