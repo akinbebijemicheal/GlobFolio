@@ -21,8 +21,12 @@ exports.RegisterAdmin = async (req, res, next) => {
                 }
             });
         if(user) {
-            res.redirect("back")
-            req.flash("error", "User already exist")
+            console.log("fs",user);
+ req.flash("error", "User already exist");
+              return res.redirect("register-admin"); 
+            
+          
+           
         }
         const salt = await bcrypt.genSalt(12);
         const hashedPass = await bcrypt.hash(password, salt);
@@ -41,7 +45,7 @@ exports.RegisterAdmin = async (req, res, next) => {
         //     data: Newuser
         // })
         req.flash('success', "Registration successful")
-         res.redirect(`login-admin`)
+        return res.redirect(`login-admin`)
          
 
     }catch(error){
@@ -51,7 +55,7 @@ exports.RegisterAdmin = async (req, res, next) => {
         //     message: error
         // })
         // next(error)
-        req.flash("error", "An error occured refresh the page")
+       return req.flash("error", "An error occured refresh the page")
         res.redirect("back")
         next(error)
     }
@@ -67,7 +71,7 @@ exports.webLoginAdmin = async (req, res, next) => {
       });
       if(!user || user === null){
           req.flash("warning", 'User does not exist');
-          res.redirect("/login-admin")
+          return res.redirect("/login-admin")
           
       }else if(user.role !== "admin"){
           // res.status(401).json({
@@ -75,7 +79,7 @@ exports.webLoginAdmin = async (req, res, next) => {
           //     message: 'Please ensure you are logging-in from the right portal'
           // })
         req.flash("warning", "Please ensure you are logging-in from the right portal");
-        res.redirect("/login-admin")
+       return  res.redirect("/login-admin")
       }else{
         const validate = await bcrypt.compare(password, user.password);
       if(validate){
@@ -111,12 +115,12 @@ exports.webLoginAdmin = async (req, res, next) => {
           
           req.flash("success", "Successfully logged in");
           res.cookie("jwt", token, option);
-          res.redirect("/dashboard/admin")
+       return   res.redirect("/dashboard/admin")
 
       } else{
          res.status(403)
         req.flash("warning", 'Wrong password');
-        res.redirect("/login-admin")     
+      return   res.redirect("/login-admin")     
       }
       }
       
