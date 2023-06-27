@@ -115,12 +115,12 @@ exports.webLoginAdmin = async (req, res, next) => {
           
           req.flash("success", "Successfully logged in");
           res.cookie("jwt", token, option);
-       return res.redirect("/dashboard/admin")
+       return   res.redirect("/dashboard/admin")
 
       } else{
          res.status(403)
         req.flash("warning", 'Wrong password');
-      return res.redirect("/login-admin")     
+      return   res.redirect("/login-admin")     
       }
       }
       
@@ -140,7 +140,7 @@ exports.webLoginAdmin = async (req, res, next) => {
   }
 };
 
-exports.userAuth = passport.authenticate('jwt', {session: true, failureRedirect: "/register-admin", failureFlash: true});
+exports.userAuth = passport.authenticate('jwt', {session: true, failureRedirect: "/login-admin", failureFlash: true});
 
 
 exports.profile = user => {
@@ -149,7 +149,7 @@ exports.profile = user => {
         fullname: user.fullname,
         phone_no: user.phone_no,
         country: user.country,
-        email: user.email,      
+        email: user.email,
         address: user.address,
         updatedAt: user.updatedAt,
         createdAt: user.createdAt
