@@ -623,7 +623,7 @@ exports.deleteFood = async (req, res, next) => {
                    }
                  });
                }
-             if (food.fooditemextras?.length) {
+             if (food.fooditems.fooditemextras?.length) {
                await CartItemExtra.findAll({
                  where: {
                    foodId: food.id,
