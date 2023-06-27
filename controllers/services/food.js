@@ -628,7 +628,7 @@ exports.deleteFood = async (req, res, next) => {
                 if (fooditems[i].fooditemextras?.length) {
                   await CartItemExtra.findAll({
                     where: {
-                      cartItemId: fooditem[i].id,
+                      cartItemId: fooditems[i].id,
                     },
                   }).then(async (fooditemextras) => {
                     if (fooditemextras?.length) {
