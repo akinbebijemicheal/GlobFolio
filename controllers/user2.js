@@ -42,7 +42,7 @@ exports.RegisterAdmin = async (req, res, next) => {
         // })
         req.flash('success', "Registration successful")
          res.redirect(`login-admin`)
-         next()
+         
 
     }catch(error){
         console.error(error)
@@ -68,7 +68,7 @@ exports.webLoginAdmin = async (req, res, next) => {
       if(!user || user === null){
           req.flash("warning", 'User does not exist');
           res.redirect("/login-admin")
-          next()
+          
       }else if(user.role !== "admin"){
           // res.status(401).json({
           //     status: false,
@@ -108,7 +108,7 @@ exports.webLoginAdmin = async (req, res, next) => {
               secret: process.env.CSECRET
           }
 
-          res.status(200)
+          
           req.flash("success", "Successfully logged in");
           res.cookie("jwt", token, option);
           res.redirect("/dashboard/admin")
