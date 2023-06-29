@@ -105,7 +105,7 @@ exports.webLoginAdmin = async (req, res, next) => {
           httpOnly: false,
           signed: true,
           sameSite: true,
-          secure: process.env.NODE_ENV !== "development",
+          secure: true,
           secret: process.env.CSECRET,
         };
 
@@ -132,7 +132,7 @@ exports.webLoginAdmin = async (req, res, next) => {
 };
 
 exports.userAuth = passport.authenticate("jwt", {
-  session: true,
+  session: false,
   failureRedirect: "/login-admin",
   failureFlash: true,
 });
