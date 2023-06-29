@@ -8,7 +8,12 @@ const keys = require('./keys')
 const cookieExtractor = (req) => {
     var token = null;
     if (req && req.signedCookies && req.signedCookies.jwt) {
+        console.log("token found")
+        console.log(req.signedCookies);
         token = req.signedCookies.jwt;
+    }else{
+        console.log("token not found");
+
     }
     console.log(token);
     return token;
