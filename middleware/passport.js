@@ -13,9 +13,6 @@ const cookieExtractor = (req) => {
         token = req.signedCookies.jwt;
     }else{
         console.log("token not found");
-        console.log(req.signedCookies);
-
-
     }
     console.log(token);
     return token;

@@ -58,9 +58,19 @@
                                         <%= new Date(data[i].createdAt).toDateString()%>
                                     </td>
                                     <td>
-                                        <a href="/dashboard/admin/delete-Ads/<%= data[i].id%>">
+                                    <a onclick="confirmation('<%= data[i].id%>')">
                                             <img src="assets4/img/delete.png" style="height:15px;width:15px;" draggable="false" alt="">
                                         </a>
+                                        <script>
+                                            function confirmation(id){
+                                              var result = confirm("Are you sure to delete this Advert?");
+                                              if(result){
+                                                console.log("Deleted")
+                                                console.log("/dashboard/admin/delete-Ads/" + id);
+                                                window.location="/dashboard/admin/delete-Ads/" + id;
+                                              }
+                                            }
+                                          </script>
                                     </td>
                                 </tr>
                                 <% } }else{ %>

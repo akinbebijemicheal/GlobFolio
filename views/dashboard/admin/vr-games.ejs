@@ -85,9 +85,19 @@
                                     <a href="/dashboard/admin/game-view/<%= data[i].id%>">
                                         <img src="assets4/img/edit.png" style="height:15px;width:15px;" draggable="false" alt="">
                                     </a>
-                                    <a href="/dashboard/admin/deleteGame/<%= data[i].id%>">
-                                        <img src="assets4/img/delete.png" style="height:15px;width:15px;" draggable="false" alt="">
+                                    <a onclick="confirmation('<%= data[i].id%>')">
+                                        <a href="/dashboard/admin/deleteGame/<%= data[i].id%>">
                                     </a>
+                                    <script>
+                                        function confirmation(id){
+                                          var result = confirm("Are you sure to delete this Vr Game?");
+                                          if(result){
+                                            console.log("Deleted")
+                                            console.log("/dashboard/admin/deleteGame/" + id);
+                                            window.location="/dashboard/admin/deleteGame/" + id;
+                                          }
+                                        }
+                                      </script>
                                 </td>
                             </tr>
                             <% } }else{ %>
