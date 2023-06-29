@@ -102,7 +102,7 @@ exports.webLoginAdmin = async (req, res, next) => {
         };
 
         var option = {
-          httpOnly: true,
+          httpOnly: false,
           signed: true,
           sameSite: true,
           secure: process.env.NODE_ENV !== "development",
