@@ -681,7 +681,7 @@ exports.AddCart = async (req, res, next) => {
 
             const CartExtra = await ItemsExtra.save();
           }
-
+console.log('ello')
           const out = await CartItem.findOne({
             where: {
               id: Cart.id,
