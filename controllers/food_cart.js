@@ -284,6 +284,7 @@ exports.AddCart = async (req, res, next) => {
   if (req.body.foodextrasId) {
     var { foodextrasId } = req.body;
   } else {
+    console.log("no extras");
     var foodextrasId = [];
   }
   if (Array.isArray(foodextrasId) == false) {
@@ -307,10 +308,11 @@ exports.AddCart = async (req, res, next) => {
           let array1 = foodextrasId;
           let array2 = existeditem[i].foodextrasId;
 
-
           //if user doesnt pick food extra
-          if(array1 == []){
 
+          console.log("if user doesnt pick food extra");
+            if (array1.length == 0) {
+              if (array1.length == 0 && array2.length == 0) {
                 var cartqty = existeditem[i].qty;
                 var newqty = cartqty + quantity;
                 var cartprice = existeditem[i].price;
@@ -333,8 +335,9 @@ exports.AddCart = async (req, res, next) => {
                   status: true,
                   message: "true",
                 });
-
-          }
+              }
+              
+            }
 
           // if user picks food extra
           if (array1.length === array2.length) {
@@ -397,6 +400,10 @@ exports.AddCart = async (req, res, next) => {
         }
       }
       //now run if food exist in cart but not in same manner(i mean package and extra)
+      console.log(
+        "now run if food exist in cart but not in same manner(i mean package and extra)"
+      );
+
       if (!quantity) {
         quantity = 1;
       }
@@ -585,13 +592,14 @@ exports.AddCart = async (req, res, next) => {
         }
       });
     } else {
-      // if food doesnt exist in user cart 
-      
+      // if food doesnt exist in user cart
+      console.log("if food doesnt exist in user cart");
+
       if (!quantity) {
         quantity = 1;
       }
 
-      console.log("doesnt exist")
+      console.log("doesnt exist");
       await Food.findOne({
         where: {
           id: foodId,
