@@ -3,7 +3,7 @@ const db = require('../config/config');
 const {nanoid} = require('nanoid');
 const Food = require('./food');
 
-const FoodExtra = db.define('foodpackaging', {
+const FoodPackaging = db.define('foodpackaging', {
     id: {
         type: Sequelize.STRING(10),
         autoincrement: false,
@@ -24,11 +24,10 @@ const FoodExtra = db.define('foodpackaging', {
     price: {
         type: Sequelize.BIGINT
     }
-    
 });
 
 
-FoodExtra.belongsTo(Food, {foreignKey: 'foodId'})
-Food.hasMany(FoodExtra, {foreignKey: 'foodId'});
+FoodPackaging.belongsTo(Food, {foreignKey: 'foodId'})
+Food.hasMany(FoodPackaging, {foreignKey: 'foodId'});
 
-module.exports = FoodExtra;
+module.exports = FoodPackaging;

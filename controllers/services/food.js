@@ -555,11 +555,23 @@ exports.getFoodByIdAdmin = async (req, res, next) => {
 };
 
 exports.updateFood = async (req, res, next) => {
-  const { title, description, price } = req.body;
+  
   try {
+    const {
+      title,
+      description,
+      price,
+      packageId,
+      packageName,
+      packagePrice,
+      topId,
+      top,
+      topPrice,
+    } = req.body;
+    console.log(req.body);
     const food = await Product.findOne({
       where: {
-        id: foodout.id,
+        id: req.params.foodId,
       },
       include: [
         {
@@ -584,23 +596,27 @@ exports.updateFood = async (req, res, next) => {
     });
 
     //update foodextras
-
+let output;
     if (req.body.top && req.body.topPrice) {
       if (Array.isArray(req.body.top)) {
-        var output = [];
+         output = [];
+         
         for (let i = 0; i < top.length; i++) {
           output.push({
-            foodId: foodout.id,
+            foodId: food.id,
+            topId: topId[i],
             topping: top[i],
-            price: price[i],
+            price: topPrice[i],
           });
         }
       } else {
-        var output = [];
+         output = [];
+        
         output.push({
-          foodId: foodout.id,
+          foodId: food.id,
+          topId: topId,
           topping: top,
-          price: price,
+          price: topPrice,
         });
       }
     }
@@ -608,8 +624,9 @@ exports.updateFood = async (req, res, next) => {
     console.log(output);
     for (let i = 0; i < output.length; i++) {
       let extrasup = await Extras.findOne({
-        where: { foodId: output[i].foodId },
+        where: { foodId: output[i].foodId, id: output[i].topId },
       });
+      console.log(extrasup)
 
       if (extrasup !== null) {
         await Extras.update(
@@ -629,84 +646,88 @@ exports.updateFood = async (req, res, next) => {
           topping: output[i].topping,
           price: output[i].price,
         });
-        const Eout = await extrasout.save();
-        console.log(Eout);
-      }
-    }
-
-    //update foodextras
-
-    if (req.body.top && req.body.topPrice) {
-      if (Array.isArray(req.body.top)) {
-        var output = [];
-        for (let i = 0; i < top.length; i++) {
-          output.push({
-            foodId: foodout.id,
-            topping: top[i],
-            price: price[i],
-          });
-        }
-      } else {
-        var output = [];
-        output.push({
-          foodId: foodout.id,
-          topping: top,
-          price: price,
-        });
-      }
-    }
-
-    console.log(output);
-    for (let i = 0; i < output.length; i++) {
-      let extrasup = await Extras.findOne({
-        where: { foodId: output[i].foodId },
-      });
-
-      if (extrasup !== null) {
-        await Extras.update(
-          {
-            topping: output[i].topping,
-            price: output[i].price,
-          },
-          {
-            where: {
-              id: extrasup.id,
-            },
-          }
-        );
-      } else {
-        let extrasout = new Extras({
-          foodId: output[i].foodId,
-          topping: output[i].topping,
-          price: output[i].price,
-        });
-        const Eout = await extrasout.save();
+        let Eout = await extrasout.save();
         console.log(Eout);
       }
     }
 
     //update food packaging
+let Poutput;
+      if (req.body.packageName && req.body.packagePrice) {
+      if (Array.isArray(req.body.packageName)) {
+          Poutput = [];
+          console.log(Poutput)
+          for (let i = 0; i < packageName.length; i++) {
+            Poutput.push({
+              foodId: food.id,
+              packageId: packageId[i],
+              name: packageName[i],
+              price: packagePrice[i],
+            });
+          }
+       
+        
+      } else {
+          Poutput = [];
+          Poutput.push({
+            foodId: food.id,
+            packageId: packageId,
+            name: packageName,
+            price: packagePrice,
+          });
+
+        
+      }
+    }
+    console.log(Poutput);
+    for (let i = 0; i < Poutput.length; i++) {
+      let packageup = await Package.findOne({
+        where: { foodId: Poutput[i].foodId, id: Poutput[i].packageId },
+      });
+console.log("gg", packageup)
+      if (packageup !== null) {
+       await Package.update(
+         {
+           name: Poutput[i].name,
+           price: Poutput[i].price,
+         },
+         {
+           where: {
+             id: packageup.id,
+           },
+         }
+       );
+        console.log("hello", packageup.id);
+
+      } else {
+        let packageout = new Package({
+          foodId: Poutput[i].foodId,
+          name: Poutput[i].name,
+          price: Poutput[i].price,
+        });
+        let Pout = await packageout.save();
+        console.log(Pout);
+      }
+    }
+
+    //update food
 
     await Product.update(
       {
         title: title,
-        category: category,
         description: description,
         price: price,
       },
       {
         where: {
-          id: req.params.id,
+          id: req.params.foodId,
         },
       }
     );
-    res.status(200).json({
-      status: true,
-      message: "Post updated",
-    });
-  } catch {
+req.flash("success", "Food successfully updated")
+    res.redirect("/dashboard/admin/food-view/"+req.params.foodId);
+  } catch (error) {
     console.error(error);
-    next(error);
   }
 };
 

@@ -430,6 +430,17 @@ router.post(
   }
 );
 
+router.post(
+  "/dashboard/admin/food-update/:foodId",
+  // uploaded.fields([{ name: 'food_pictures', maxCount: 10 }]),
+  userAuth,
+  checkRole(["admin"]),
+  // upload.array("food_pictures"),
+  async (req, res) => {
+    await updateFood(req, res);
+  }
+);
+
 router.get(
   "/dashboard/admin/food-products",
   userAuth,
@@ -947,7 +958,9 @@ router
 
 router
   .route("/update-food-byuser")
-  .patch(userAuth, checkRole(["admin"]), upload.array("image"), updateFood);
+  .patch(userAuth, checkRole(["admin"]),
+  //  upload.array("image"),
+    updateFood);
 
 router
   .route("/update-rent-byuser")
