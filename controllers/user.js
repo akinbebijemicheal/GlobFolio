@@ -629,6 +629,9 @@ exports.deleteUser = async (req, res) => {
       where: {
         email: req.user.email,
       },
+      include: [{
+        
+      }]
     });
 
     return res.status(200).json({

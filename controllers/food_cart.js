@@ -279,7 +279,14 @@ exports.buyFood = async (req, res, next) => {
 };
 
 exports.AddCart = async (req, res, next) => {
-  var { quantity, foodextrasId, foodpackageId } = req.body;
+  var { quantity, foodpackageId } = req.body;
+
+  if(req.body.foodextrasId){
+   var { foodextrasId } = req.body
+
+  }else{
+  var foodextrasId = []
+  }
   if (Array.isArray(foodextrasId) == false) {
     console.log(Array.isArray(foodextrasId));
     foodextrasId = [foodextrasId];

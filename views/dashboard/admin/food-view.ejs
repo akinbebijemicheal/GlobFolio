@@ -48,8 +48,9 @@
                             <th>Toppings</th>
                             <th>Price</th>
                             <th>Packagings</th>
-                            <th>packaging Price</th>
+                            <th>Packaging Price</th>
                             <th>CreatedAt</th>
+                            <th>Update</th>
                         </tr>
                             <tr class="mode-2">
                                 <td>
@@ -119,9 +120,140 @@
                                 <td>
                                     <%= new Date(data.createdAt).toDateString()%>
                                 </td> 
+                                <td>
+                                    <a data-toggle="modal" data-target=".bd-example-modal-lg">
+                                        <i class="fa fa-edit"></i>
+
+                                    </a>
+                                </td>
                             </tr>
                            
                     </table>
+
+                    <!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bd-example-modal-lg">Large modal</button> -->
+
+<div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+         <form method="post" enctype="multipart/form-data">
+                                    <div class="row bg-white py-3 rounded-lg">
+                                        <div class="col-md-12">
+                                            <div class="form-row">
+                                                <div class="form-group col-md-6">
+                                                    <label for="inputEmail4" class="text-dark">Food Name</label>
+                                                    <input  type="text" name="title" class="form-control" id="inputEmail4" required
+                                                        placeholder="food name">
+                                                </div>
+                                                <div class="form-group col-md-6">
+                                                    <label for="inputPassword4" class="text-dark">Price</label>
+                                                    <input type="number" min="0" min="0" class="form-control" name="price" id="inputPassword4" required
+                                                        placeholder="5000">
+                                                </div>
+                                            </div>
+                                            <div class="form-row">
+                                                <div class="form-group col-md-6">
+                                                    <label for="inputEmail4" class="text-dark">Package Name</label>
+                                                    <input  type="text" name="packageName" class="form-control" id="inputEmail4" required
+                                                        placeholder="Package name">
+                                                </div>
+                                                <div class="form-group col-md-6">
+                                                    <label for="inputPassword4" class="text-dark">Package Price</label>
+                                                    <input type="number" min="0" min="0" class="form-control" name="packagePrice" id="inputPassword4" required
+                                                        placeholder="5000">
+                                                </div>
+                                            </div>
+                                            <div class="form-row" id="packaging">
+                
+                                            </div>
+                                            <div class="form-group col-lg-12" >
+                                               <button id="packagingAlternate" class="btn btn-primary">Add Alternate Packaging</button>
+                                            </div>
+                                           
+                                            <div class="form-row">
+                                                <div class="form-group col-md-6">
+                                                    <label for="inputEmail4" class="text-dark">Toppings Name</label>
+                                                    <input  type="text" name="top" class="form-control" id="newtopping" required
+                                                        placeholder="Topping name">
+                                                </div>
+                                                <div class="form-group col-md-6">
+                                                    <label for="inputPassword4" class="text-dark">Topping Price</label>
+                                                    <input type="number" min="0" min="0" class="form-control" name="topPrice" id="newprice" required
+                                                        placeholder="5000">
+                                                </div>
+                                            </div>
+                                            <div class="form-row" id="topping">
+                
+                                            </div>
+                                            <div class="form-group col-lg-12" >
+                                               
+                    
+                                                <button id="toppingAlternate" class="btn btn-primary">Add Alternate Topping</button>
+                   
+                  <!-- <input type="button" value="Save" onclick="savedata()">
+                   <input type="button" value="Show data" onclick="displayData()"> -->
+                   
+                 
+                <script type="text/javascript">
+                
+                $('#toppingAlternate').on('click',function() {
+                
+                $('#topping').append('<div class="form-group col-md-6"><label for="inputEmail4" class="text-dark">Toppings Name</label><input  type="text" name="top" class="form-control" id="newtopping" required placeholder="Topping name"></div><div class="form-group col-md-6"> <label for="inputPassword4" class="text-dark">Topping Price</label> <input type="number" min="0" min="0" class="form-control" name="topPrice" id="newprice" required placeholder="5000"></div>');
+                
+                });
+                
+                $('#packagingAlternate').on('click',function() {
+                
+                $('#packaging').append(' <div class="form-group col-md-6"> <label for="inputEmail4" class="text-dark">Package Name</label><input  type="text" name="packageName" class="form-control" id="inputEmail4" required placeholder="Package name"></div> <div class="form-group col-md-6">  <label for="inputPassword4" class="text-dark">Package Price</label>  <input type="number" min="0" min="0" class="form-control" name="packagePrice" id="inputPassword4" required placeholder="5000"> </div>');
+                
+                });
+                //  var arrtopping=new Array();
+                // var arrprice=new Array();
+                 
+                // function savedata(){
+                //      var topping = document.getElementById('topping').value;
+                //     var price = document.getElementById('price').value;
+                //      arrtopping[arrtopping.length]=topping;    
+                //     arrprice[arrprice.length]=price;
+                //   }
+                   
+                 
+                // function displayData() 
+                // {
+                //   var newtopping=[...arrtopping];
+                //   var newprice=[...arrprice];
+                 
+                //    document.getElementById('newtopping').setAttribute('value', newtopping);
+                //   document.getElementById('newprice').setAttribute('value', newprice);
+                
+                // }
+                 
+                 
+                </script>
+                                            </div>
+                                            <div class="form-row">
+                                                <div class="form-group col-md-12">
+                                                    <label for="inputPassword4" class="text-dark">Upload Food Pictures</label>
+                                                    <input required type="file" accept=".jpg,.JPG,.jpeg,.JPEG,.png,.PNG" name="food_pictures" multiple class="form-control"
+                                                        id="inputPassword4" placeholder="Password" >
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="exampleFormControlTextarea1" class="text-dark">Description</label>
+                                                <textarea class="form-control" id="exampleFormControlTextarea1" name="description"
+                                                    rows="5"></textarea>
+                                            </div>
+                                            
+                
+                
+                                            <button type="submit" name="submit" value="submit" class="btn btn-primary btn-block border-0"
+                                                style="background-color: red;">Submit</button>
+                                        </div>
+                                    </div>
+                                </form>
+    </div>
+  </div>
+</div>
+
                     <div class="view">View all users <i class="bi bi-arrow-right"></i></div>
                 </div>
             </div>
