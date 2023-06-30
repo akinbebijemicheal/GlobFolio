@@ -281,11 +281,10 @@ exports.buyFood = async (req, res, next) => {
 exports.AddCart = async (req, res, next) => {
   var { quantity, foodpackageId } = req.body;
 
-  if(req.body.foodextrasId){
-   var { foodextrasId } = req.body
-
-  }else{
-  var foodextrasId = []
+  if (req.body.foodextrasId) {
+    var { foodextrasId } = req.body;
+  } else {
+    var foodextrasId = [];
   }
   if (Array.isArray(foodextrasId) == false) {
     console.log(Array.isArray(foodextrasId));
@@ -301,71 +300,103 @@ exports.AddCart = async (req, res, next) => {
         userId: userId,
       },
     });
-
+    console.log(existeditem);
     if (existeditem.length > 0) {
       for (let i = 0; i < existeditem.length; i++) {
-        let array1 = foodextrasId;
-        let array2 = existeditem[i].foodextrasId;
+        if (existeditem[i].foodpackageId == foodpackageId) {
+          let array1 = foodextrasId;
+          let array2 = existeditem[i].foodextrasId;
 
-        if (array1.length === array2.length) {
-          for (let c = 0; c < array1.length; c++) {
-            if (array2.includes(array1[c])) {
-              var cartqty = existeditem[i].qty;
-              var newqty = cartqty + quantity;
-              var cartprice = existeditem[i].price;
-              var oldprice = cartprice / cartqty;
 
-              CartItem.update(
-                {
-                  qty: newqty,
-                  price: oldprice * newqty,
-                },
-                {
-                  where: {
-                    id: existeditem[i].id,
-                    foodId: foodId,
-                    userId: userId,
-                  },
-                }
-              );
+          //if user doesnt pick food extra
+          if(array1 == []){
 
-              for (let count = 0; count < foodextrasId.length; count++) {
-                console.log(existeditem[i].id);
-                console.log(foodextrasId[count]);
-                let extra = await CartItemExtra.findOne({
-                  where: {
-                    foodextrasId: foodextrasId[count],
-                    cartItemId: existeditem[i].id,
-                  },
-                });
+                var cartqty = existeditem[i].qty;
+                var newqty = cartqty + quantity;
+                var cartprice = existeditem[i].price;
+                var oldprice = cartprice / cartqty;
 
-                var cq = extra.qty;
-                var nq = cq + quantity;
-                var cprice = extra.price;
-                var oprice = cprice / cq;
-
-                CartItemExtra.update(
+                CartItem.update(
                   {
-                    qty: nq,
-                    price: oprice * nq,
+                    qty: newqty,
+                    price: oldprice * newqty,
                   },
                   {
                     where: {
-                      cartItemId: existeditem[i].id,
-                      foodextrasId: foodextrasId[count],
+                      id: existeditem[i].id,
+                      foodId: foodId,
+                      userId: userId,
                     },
                   }
                 );
+                return res.status(201).json({
+                  status: true,
+                  message: "true",
+                });
+
+          }
+
+          // if user picks food extra
+          if (array1.length === array2.length) {
+            for (let c = 0; c < array1.length; c++) {
+              if (array2.includes(array1[c])) {
+                var cartqty = existeditem[i].qty;
+                var newqty = cartqty + quantity;
+                var cartprice = existeditem[i].price;
+                var oldprice = cartprice / cartqty;
+
+                CartItem.update(
+                  {
+                    qty: newqty,
+                    price: oldprice * newqty,
+                  },
+                  {
+                    where: {
+                      id: existeditem[i].id,
+                      foodId: foodId,
+                      userId: userId,
+                    },
+                  }
+                );
+
+                for (let count = 0; count < foodextrasId.length; count++) {
+                  console.log(existeditem[i].id);
+                  console.log(foodextrasId[count]);
+                  let extra = await CartItemExtra.findOne({
+                    where: {
+                      foodextrasId: foodextrasId[count],
+                      cartItemId: existeditem[i].id,
+                    },
+                  });
+
+                  var cq = extra.qty;
+                  var nq = cq + quantity;
+                  var cprice = extra.price;
+                  var oprice = cprice / cq;
+
+                  CartItemExtra.update(
+                    {
+                      qty: nq,
+                      price: oprice * nq,
+                    },
+                    {
+                      where: {
+                        cartItemId: existeditem[i].id,
+                        foodextrasId: foodextrasId[count],
+                      },
+                    }
+                  );
+                }
+                return res.status(201).json({
+                  status: true,
+                  message: "true",
+                });
               }
-              return res.status(201).json({
-                status: true,
-                message: "true",
-              });
             }
           }
         }
       }
-      //now run if length are not same
+      //now run if food exist in cart but not in same manner(i mean package and extra)
       if (!quantity) {
         quantity = 1;
       }
@@ -536,7 +567,7 @@ exports.AddCart = async (req, res, next) => {
               {
                 model: Package,
                 attributes: {
-                  exclude: ["createdAt", "updatedAt"], 
+                  exclude: ["createdAt", "updatedAt"],
                 },
               },
             ],
@@ -554,10 +585,13 @@ exports.AddCart = async (req, res, next) => {
         }
       });
     } else {
+      // if food doesnt exist in user cart 
+      
       if (!quantity) {
         quantity = 1;
       }
 
+      console.log("doesnt exist")
       await Food.findOne({
         where: {
           id: foodId,
@@ -681,7 +715,7 @@ exports.AddCart = async (req, res, next) => {
 
             const CartExtra = await ItemsExtra.save();
           }
-console.log('ello')
+          console.log("ello");
           const out = await CartItem.findOne({
             where: {
               id: Cart.id,
