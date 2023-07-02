@@ -398,6 +398,17 @@ router.post(
   createCinemaService
 );
 
+router.post(
+  "/dashboard/admin/cinema-update/:cinemaId",
+  // uploaded.fields([{ name: 'food_pictures', maxCount: 10 }]),
+  userAuth,
+  checkRole(["admin"]),
+  // upload.array("food_pictures"),
+  async (req, res) => {
+    await updateCinema(req, res);
+  }
+);
+
 router.get(
   "/dashboard/admin/food-recent-orders",
   userAuth,
@@ -783,6 +794,14 @@ router
     createHotelService
   );
 
+
+    router.post(
+      "/dashboard/admin/hotel-update/:hotelId",
+      userAuth,
+      checkRole(["admin"]),
+      updateHotel
+    );
+
 router
   .route("/create-food-post")
   .post(
@@ -801,6 +820,13 @@ router
     createStudioService
   );
 
+    router.post(
+      "/dashboard/admin/studio-update/:studioId",
+      userAuth,
+      checkRole(["admin"]),
+      updateStudio
+    );
+
 router
   .route("/dashboard/admin/create-gaming-post")
   .post(
@@ -809,6 +835,15 @@ router
     upload.array("vr-gaming-pictures"),
     createGamingService
   );
+
+  router.post(
+    "/dashboard/admin/game-update/:gameId",
+    userAuth,
+    checkRole(["admin"]),
+    updateGaming
+  );
+
+
 router.get(
   "/dashboard/admin/create-gaming-post",
   userAuth,
@@ -866,6 +901,17 @@ router.get(
       user: name[0].charAt(0).toUpperCase() + name[0].slice(1),
       email: email,
     });
+  }
+);
+
+router.post(
+  "/dashboard/admin/rent-update/:rentId",
+  // uploaded.fields([{ name: 'food_pictures', maxCount: 10 }]),
+  userAuth,
+  checkRole(["admin"]),
+  // upload.array("food_pictures"),
+  async (req, res) => {
+    await updateRent(req, res);
   }
 );
 

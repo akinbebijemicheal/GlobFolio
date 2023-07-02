@@ -450,15 +450,14 @@ exports.updateRent = async(req, res, next) => {
                 price: price,
                 available_rent,
             }, { where: {
-                id: req.params.id
+                id: req.params.rentId
             }})
-            res.status(200).json({
-                status: true,
-                message: "Post updated"
-            })
+             req.flash("success", "Rent successfully updated");
+             res.redirect(
+               "/dashboard/admin/rent-view/" + req.params.rentId
+             );
         
-        
-    } catch{
+    } catch (error){
         console.error(error)
         next(error);
     }

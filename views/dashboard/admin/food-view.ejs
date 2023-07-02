@@ -135,6 +135,13 @@
 <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLongTitle">Food Update</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+        <div class="modal-body">
          <form method="post" action="/dashboard/admin/food-update/<%= data.id%>">
                                     <div class="row bg-white py-3 rounded-lg">
                                         <div class="col-md-12">
@@ -159,7 +166,7 @@
                                                     <label for="inputEmail4" class="text-dark">Package Name <%= i+1%> </label>
                                                     <input  type="text" name="packageName" class="form-control" id="inputEmail4" required
                                                         placeholder="Package name" value="<%= data.foodpackagings[i].name%>">
-                                                        <input  type="text" name="packageId" class="form-control" id="inputEmail4" required
+                                                        <input  type="hidden" name="packageId" class="form-control" id="inputEmail4" required
                                                         value="<%= data.foodpackagings[i].id%>" readonly>
                                                         
                                                 </div>
@@ -196,7 +203,7 @@
                                                                 <label for="inputEmail4" class="text-dark">Toppings Name <%= i+1%> </label>
                                                                 <input  type="text" name="top" class="form-control" id="newtopping" required
                                                                     placeholder="Topping name" value="<%= data.foodextras[i].topping%>">
-                                                                    <input  type="text" name="topId" class="form-control" id="newtopping" required
+                                                                    <input  type="hidden" name="topId" class="form-control" id="newtopping" required
                                                                     value="<%= data.foodextras[i].id%>" readonly>
                                                             </div>
                                                             <div class="form-group col-md-6">
@@ -231,13 +238,13 @@
                 
                 $('#toppingAlternate').on('click',function() {
                 
-                $('#topping').append('<div class="form-group col-md-6"><label for="inputEmail4" class="text-dark">New Topping Name</label><input  type="text" name="top" class="form-control" id="newtopping" required placeholder="Topping name"> <input  type="text" name="topId" class="form-control" id="newtopping" required value="Topping name" readonly></div><div class="form-group col-md-6"> <label for="inputPassword4" class="text-dark">New Topping Price</label> <input type="number" min="0" min="0" class="form-control" name="topPrice" id="newprice" required placeholder="5000"></div>');
+                $('#topping').append('<div class="form-group col-md-6"><label for="inputEmail4" class="text-dark">New Topping Name</label><input  type="text" name="top" class="form-control" id="newtopping" required placeholder="Topping name"> <input  type="hidden" name="topId" class="form-control" id="newtopping" required value="Topping name" readonly></div><div class="form-group col-md-6"> <label for="inputPassword4" class="text-dark">New Topping Price</label> <input type="number" min="0" min="0" class="form-control" name="topPrice" id="newprice" required placeholder="5000"></div>');
                 
                 });
                 
                 $('#packagingAlternate').on('click',function() {
                 
-                $('#packaging').append(' <div class="form-group col-md-6"> <label for="inputEmail4" class="text-dark">New Package Name</label><input  type="text" name="packageName" class="form-control" id="inputEmail4" required placeholder="Package name">  <input  type="text" name="packageId" class="form-control" id="inputEmail4" required value="Package name" readonly></div> <div class="form-group col-md-6">  <label for="inputPassword4" class="text-dark">New Package Price</label>  <input type="number" min="0" min="0" class="form-control" name="packagePrice" id="inputPassword4" required placeholder="5000"> </div>');
+                $('#packaging').append(' <div class="form-group col-md-6"> <label for="inputEmail4" class="text-dark">New Package Name</label><input  type="text" name="packageName" class="form-control" id="inputEmail4" required placeholder="Package name">  <input  type="hidden" name="packageId" class="form-control" id="inputEmail4" required value="Package name" readonly></div> <div class="form-group col-md-6">  <label for="inputPassword4" class="text-dark">New Package Price</label>  <input type="number" min="0" min="0" class="form-control" name="packagePrice" id="inputPassword4" required placeholder="5000"> </div>');
                 
                 });
                 //  var arrtopping=new Array();
@@ -274,7 +281,7 @@
                                             <div class="form-group">
                                                 <label for="exampleFormControlTextarea1" class="text-dark">Description</label>
                                                 <textarea class="form-control" id="exampleFormControlTextarea1" name="description"
-                                                    rows="5" value="<%= data.description%>"></textarea>
+                                                    rows="5" value="<%= data.description%>"><%= data.description%></textarea>
                                             </div>
                                             
                 
@@ -284,6 +291,7 @@
                                         </div>
                                     </div>
                                 </form>
+                                </div>
     </div>
   </div>
 </div>

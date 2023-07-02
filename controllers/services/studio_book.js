@@ -442,15 +442,14 @@ exports.updateStudio = async(req, res, next) => {
                 price: price,
                 equipment: equipment,
             }, { where: {
-                id: req.params.id
+                id: req.params.studioId
             }})
-            res.status(200).json({
-                status: true,
-                message: "Post updated"
-            })
-           
+       
+                
+        req.flash("success", "Studio successfully updated");
+        res.redirect("/dashboard/admin/studio-view/" + req.params.studioId);
         
-    } catch{
+    } catch (error){
          console.error(error)
         next(error);
     }

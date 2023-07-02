@@ -8,10 +8,29 @@ const User = require('../../model/user');
 const { Op } = require('sequelize')
 const fs = require('fs')
 const store = require('store');
+const Cinema = require('../../model/cinema');
 
 exports.createCinemaService = async (req, res, next) => {
-    const { title, genre, storyline, rating, view_date, cast, seat, duration, age_rate, price, morningTime, afternoonTime, eveningTime, snackName, snackPrice } = req.body;
+ 
     try {
+           const {
+             title,
+             genre,
+             storyline,
+             rating,
+             view_date,
+             cast,
+             seat,
+             duration,
+             age_rate,
+             price,
+             morningTime,
+             afternoonTime,
+             eveningTime,
+             snackName,
+             snackPrice,
+           } = req.body;
+           console.log(req.body);
 
         const cinema = new Product({
             title,
@@ -728,10 +747,81 @@ exports.getCinemaByIdAdmin = async (req, res, next) => {
 }
 
 exports.updateCinema = async (req, res, next) => {
-    const { title, genre, storyline, rating, view_date, cast, seat, duration, age_rate, price, morningTime, afternoonTime, eveningTime } = req.body;
+    const { title, genre, storyline, rating, view_date, cast, seat, duration, age_rate, price, morningTime, afternoonTime, eveningTime, snackName, snackPrice, snackId} = req.body;
     try {
 
-        await Product.update({
+    const cinema = await Product.findOne({
+      where: {
+        id: req.params.cinemaId,
+      },
+      include: [
+        {
+          model: Snack,
+          attributes: {
+            exclude: ["createdAt", "updatedAt"],
+          },
+        },
+      ],
+    });
+
+
+        let output;
+        if (req.body.snackName && req.body.snackPrice) {
+          if (Array.isArray(req.body.snackName)) {
+            output = [];
+
+            for (let i = 0; i < snackName.length; i++) {
+              output.push({
+                cinemaId: cinema.id,
+                snackId: snackId[i],
+                snackName: snackName[i],
+                price: snackPrice[i],
+              });
+            }
+          } else {
+            output = [];
+
+            output.push({
+              cinemaId: cinema.id,
+              snackId: snackId,
+              snackName: snackName,
+              price: snackPrice,
+            });
+          }
+        }
+
+        console.log(output);
+        for (let i = 0; i < output.length; i++) {
+          let extrasup = await Snack.findOne({
+            where: { cinemaId: output[i].cinemaId, id: output[i].snackId },
+          });
+          console.log(extrasup);
+
+          if (extrasup !== null) {
+            await Snack.update(
+              {
+                name: output[i].snackName,
+                price: output[i].price,
+              },
+              {
+                where: {
+                  id: extrasup.id,
+                },
+              }
+            );
+          } else {
+            let extrasout = new Snack({
+              cinemaId: output[i].cinemaId,
+              name: output[i].snackName,
+              price: output[i].price,
+            });
+            let Eout = await extrasout.save();
+            console.log(Eout);
+          }
+        }
+
+
+        await Cinema.update({
             title: title,
             genre: genre,
             storyline: storyline,
@@ -747,19 +837,15 @@ exports.updateCinema = async (req, res, next) => {
             price: price,
         }, {
             where: {
-                id: req.params.id
+                id: req.params.cinemaId
             }
         })
-
-        res.status(200).json({
-            status: true,
-            message: "Post updated"
-        })
+req.flash("success", "Cinema successfully updated");
+res.redirect("/dashboard/admin/cinema-view/" + req.params.cinemaId);
 
 
     } catch {
         console.error(error)
-        next(error);
     }
 }
 

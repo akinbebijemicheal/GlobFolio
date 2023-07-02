@@ -51,6 +51,7 @@
                             <th>Price</th>
                             <th>Rating</th>
                             <th>CreatedAt</th>
+                            <th>Update</th>
                         </tr>
                             <tr class="mode-2">
                                 <td>
@@ -107,9 +108,164 @@
                                 <td>
                                     <%= new Date(data.createdAt).toDateString()%>
                                 </td> 
+                                <td>
+                                    <a data-toggle="modal" data-target=".bd-example-modal-lg">
+                                        <i class="fa fa-edit"></i>
+
+                                    </a>
+                                </td>
                             </tr>
                            
                     </table>
+
+
+
+                    <!-- modal start -->
+
+                                 <!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bd-example-modal-lg">Large modal</button> -->
+
+<div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLongTitle">Hotel Update</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+        <div class="modal-body">
+                <!-- Upload section -->
+
+
+           <form method="post" action="/dashboard/admin/hotel-update/<%= data.id%>">
+          
+            <div class="row bg-white py-3 rounded-lg">
+                <div class="col-md-12">
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="inputName" class="text-dark">Hotel Name</label>
+                            <input required type="text" name="title" class="form-control" id="inputName" required
+                                placeholder="Title" value="<%= data.title%>">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="inputName" class="text-dark">Hotel Location</label>
+                            <input required type="text" class="form-control" name="location" id="inputName" required
+                                placeholder="No 05, Apt 5, Deepend Avenue" value="<%= data.location%>">
+                        </div>
+                    </div>
+                    <% if (data.hotelextras?.length) { %>
+                                                
+                        <% for( let i = 0; i < data.hotelextras.length; i++ ) { %>
+                    <div class="form-row" id="topping">
+                        <div class="form-group col-md-4">
+                            <label for="inputName" class="text-dark">Room Name</label>
+                            <input required type="text"  name="room" class="form-control"
+                                id="inputPassword4" placeholder="Deluxe" value="<%= data.hotelextras[i].room%>">
+                                <input required type="hidden" name="roomId" class="form-control" id="inputEmail4"
+                                placeholder="5000" value="<%= data.hotelextras[i].id%>" readonly>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="inputName" class="text-dark">Price</label>
+                            <input required type="number" min="0" min="0" name="price" class="form-control"
+                                id="inputPassword4" placeholder="5000" value="<%= data.hotelextras[i].price%>">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="inputName" class="text-dark">Available Rooms</label>
+                            <input required type="number" min="0" min="0" name="available_room" class="form-control"
+                                id="inputPassword4" placeholder="15" value="<%= data.hotelextras[i].price%>">
+                        </div>
+                    </div>
+                    <% } %>
+                                                    
+                                                
+                    <% } else{ %>
+                  
+                        <% } %> 
+                    <div class="form-group col-lg-12" >
+                       
+
+                        <button id="toppingAlternate" class="btn btn-primary">Add Alternate Room</button>
+
+<!-- <input type="button" value="Save" onclick="savedata()">
+<input type="button" value="Show data" onclick="displayData()"> -->
+
+
+<script type="text/javascript">
+
+$('#toppingAlternate').on('click',function() {
+
+$('#topping').append('<div class="form-group col-md-4"> <label for="inputName" class="text-dark">New Room Name</label>  <input required type="text"  name="room" class="form-control"   id="inputPassword4" placeholder="text">  <input required type="hidden" name="roomId" class="form-control" id="inputEmail4" placeholder="5000" value="hotelId" readonly> </div><div class="form-group col-md-4">          <label for="inputName" class="text-dark">New Price</label>  <input required type="number" min="0" min="0" name="price" class="form-control"         id="inputPassword4" placeholder="5000">   </div>   <div class="form-group col-md-4">    <label for="inputName" class="text-dark">New Available Rooms</label>  <input required type="number" min="0" min="0" name="available_room" class="form-control"    id="inputPassword4" placeholder="15">    </div>');
+
+});
+
+//  var arrtopping=new Array();
+// var arrprice=new Array();
+
+// function savedata(){
+//      var topping = document.getElementById('topping').value;
+//     var price = document.getElementById('price').value;
+//      arrtopping[arrtopping.length]=topping;    
+//     arrprice[arrprice.length]=price;
+//   }
+
+
+// function displayData() 
+// {
+//   var newtopping=[...arrtopping];
+//   var newprice=[...arrprice];
+
+//    document.getElementById('newtopping').setAttribute('value', newtopping);
+//   document.getElementById('newprice').setAttribute('value', newprice);
+
+// }
+
+
+</script>
+                    </div>
+                    <div class="form-row">
+                        <!-- <div class="form-group col-md-6">
+                            <label for="inputName" class="text-dark">Upload Hotel Images</label>
+                            <input required type="file" accept=".jpg,.JPG,.jpeg,.JPEG,.png,.PNG" name="hotel_pictures" multiple class="form-control"
+                                id="inputPassword4" placeholder="Password">
+                        </div> -->
+                        <div class="form-group col-md-12">
+                            <label for="inputName" class="text-dark">Rating</label>
+                            <select name="rating" class="form-control" id="inputPassword4">
+                                <option value="<%= data.rating%>" selected><%= data.rating%></option>
+                                <option value="5">5</option>
+                                <option value="4">4</option>
+                                <option value="3">3</option>
+                                <option value="2">2</option>
+                                <option value="1">1</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="exampleFormControlTextarea1" class="text-dark">Description</label>
+                        <textarea class="form-control" id="exampleFormControlTextarea1" name="description"
+                            rows="3"><%= data.description%></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="exampleFormControlTextarea1" class="text-dark">Hotel Amenities</label>
+                        <textarea class="form-control" id="exampleFormControlTextarea1" name="amenities"
+                            rows="3"><%= data.amenities%></textarea>
+                    </div>
+
+
+
+                    <button type="submit" name="submit" value="submit"
+                        class="btn btn-primary btn-block border-0"
+                        style="background-color: red;">Submit</button>
+                </div>
+            </div>
+        </form>
+                </div>
+      </div>
+    </div>
+  </div>
+  <!-- modal end -->
                     <div class="view">View all users <i class="bi bi-arrow-right"></i></div>
                 </div>
             </div>

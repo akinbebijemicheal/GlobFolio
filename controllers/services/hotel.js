@@ -529,13 +529,13 @@ exports.getHotelByIdAdmin = async(req, res, next) => {
         ]})
         
         if(hotel){
-           
+    
             console.log("hotels found")
             store.set("hotel", JSON.stringify(hotel));
                   let name = req.user.fullname.split(" ");
                   let email = req.user.email;
                   data = JSON.parse(store.get("hotel"));
-                  console.log(data);
+                  console.log(data.hotelextras);
                   var img = data['hotelimages']
                   
             // if(img.length){ for(var i=0; i< img.length; i++) {
@@ -562,9 +562,93 @@ exports.getHotelByIdAdmin = async(req, res, next) => {
 }
 
 exports.updateHotel = async(req, res, next) => {
-    const { title, description, amenities, location, rating } = req.body;
+    const {
+      title,
+      description,
+      amenities,
+      location,
+      rating,
+      room,
+      price,
+      available_room,
+      roomId
+    } = req.body;
     try{
         
+          const hotel = await Product.findOne({
+            where: {
+              id: req.params.hotelId,
+            },
+            include: [
+              {
+                model: Extras,
+                attributes: {
+                  exclude: ["createdAt", "updatedAt"],
+                },
+              },
+            ],
+          });
+
+          let output;
+          if (req.body.room && req.body.price && req.body.available_room && req.body.roomId) {
+            if (Array.isArray(req.body.room)) {
+              output = [];
+
+              for (let i = 0; i < room.length; i++) {
+                output.push({
+                  hotelId: hotel.id,
+                  room: room[i],
+                  available_room: available_room[i],
+                  price: price[i],
+                  roomId: roomId[i],
+                });
+              }
+            } else {
+              output = [];
+
+              output.push({
+                hotelId: hotel.id,
+                room: room,
+                available_room: available_room,
+                price: price,
+                roomId: roomId,
+              });
+            }
+          }
+
+          console.log(output);
+          for (let i = 0; i < output.length; i++) {
+            let extrasup = await Extras.findOne({
+              where: { hotelId: output[i].hotelId, id: output[i].roomId },
+            });
+            console.log(extrasup);
+
+            if (extrasup !== null) {
+              await Extras.update(
+                {
+                  room: output[i].room,
+                  available_room: output[i].available_room,
+                  price: output[i].price,
+                  roomId: output[i].roomId,
+                },
+                {
+                  where: {
+                    id: extrasup.id,
+                  },
+                }
+              );
+            } else {
+              let extrasout = new Extras({
+                hotelId: output[i].hotelId,
+                room: output[i].room,
+                available_room: output[i].available_room,
+                price: output[i].price,
+                roomId: output[i].roomId,
+              });
+              let Eout = await extrasout.save();
+              console.log(Eout);
+            }
+          }
             await Product.update({
                 title: title,
                 description: description,
@@ -572,15 +656,13 @@ exports.updateHotel = async(req, res, next) => {
                 amenities: amenities,
                 rating: parseFloat(rating),
             }, { where: {
-                id: req.params.id
+                id: req.params.hotelId
             }})
-            res.status(200).json({
-                status: true,
-                message: "Post updated"
-            })
+    req.flash("success", "Hotel successfully updated");
+    res.redirect("/dashboard/admin/hotel-view/" + req.params.hotelId);
         
         
-    } catch{
+    } catch (error) {
          console.error(error)
         next(error);
     }

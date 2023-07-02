@@ -15,7 +15,7 @@ const Cinema = db.define('cinema', {
         allowNull: false
     },
     view_date: {
-        type: Sequelize.DATE
+        type: Sequelize.DATEONLY
     },
     genre: {
         type: Sequelize.STRING

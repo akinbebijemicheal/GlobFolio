@@ -44,7 +44,7 @@
                         <tr class="mode-1">
                             <th>Cinema Name</th>
                             <th>Price</th>
-                            <th>View_date</th>
+                            <th>View Date</th>
                             <th>Genre</th>
                             <th>Storyline</th>
                             <th>Cast</th>
@@ -56,6 +56,8 @@
                             <th>Afternoon</th>
                             <th>Evening</th>
                             <th>CreatedAt</th>
+                            <th>Update</th>
+
                         </tr>
                             <tr class="mode-2">
                                 <td>
@@ -100,9 +102,205 @@
                                 <td>
                                     <%= new Date(data.createdAt).toDateString()%>
                                 </td> 
+                                <td>
+                                    <a data-toggle="modal" data-target=".bd-example-modal-lg">
+                                        <i class="fa fa-edit"></i>
+
+                                    </a>
+                                </td>
                             </tr>
                            
                     </table>
+
+                    <!-- modal start -->
+                    
+                    <!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bd-example-modal-lg">Large modal</button> -->
+
+<div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLongTitle">Studio Update</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+        <div class="modal-body">
+                <!-- Upload section -->
+
+
+           <form method="post" action="/dashboard/admin/cinema-update/<%= data.id%>">
+          
+                    <div class="row bg-white py-3 rounded-lg">
+                        <div class="col-md-12">
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="inputName" class="text-dark">Movie Title</label>
+                                    <input required type="text" name="title" class="form-control" id="inputName" required
+                                        placeholder="Title" value="<%= data.title%>">
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="inputName" class="text-dark">View Date</label>
+                                    <input required type="date" class="form-control" name="view_date" id="inputName" required
+                                        placeholder="Date Showing" value="<%= data.view_date%>">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="inputName" class="text-dark">Genre</label>
+                                    <input required type="text" name="genre" class="form-control" id="inputName" required
+                                        placeholder="genre (can be multiple)" value=" <%= data.genre%>">
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="inputName" class="text-dark">Duration</label>
+                                    <input required type="text" class="form-control" name="duration" id="inputName" required
+                                        placeholder="2hr:30mins" value="<%= data.duration%>">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="exampleFormControlTextarea1" class="text-dark">Storyline</label>
+                                <textarea class="form-control" id="exampleFormControlTextarea1" name="storyline"
+                                    rows="3"><%= data.storyline%></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="exampleFormControlTextarea1" class="text-dark">Cast</label>
+                                <textarea class="form-control" id="exampleFormControlTextarea1"
+                                    placeholder="Jennifer Lawrence, Odunlade Adekola, Brad Pitt" name="cast"
+                                    rows="3"><%= data.cast%></textarea>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="inputName" class="text-dark">Seats</label>
+                                    <input required type="number" min="0" min="0" name="seat" class="form-control" id="inputEmail4"
+                                        placeholder="200" value="<%= data.seat%>">
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="inputName" class="text-dark">Age Rate</label>
+                                    <select name="age_rate" class="form-control" id="inputPassword4">
+                                        <option value="<%= data.age_rate%>" selected><%= data.age_rate%></option>
+                                        <option value="8+">8+</option>
+                                        <option value="13+">13+</option>
+                                        <option value="16+">16+</option>
+                                        <option value="18+">18+</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="inputName" class="text-dark">Price</label>
+                                    <input required type="number" min="0" min="0" name="price" class="form-control" id="inputEmail4"
+                                        placeholder="5000" value="<%= data.price%>">
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="inputName" class="text-dark">Rating</label>
+                                    <select name="rating" class="form-control" id="inputPassword4">
+                                        <option selected value="<%= data.rating%>"><%= data.rating%></option>
+                                        <option value="5">5</option>
+                                        <option value="4">4</option>
+                                        <option value="3">3</option>
+                                        <option value="2">2</option>
+                                        <option value="1">1</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-4">
+                                    <label for="inputName" class="text-dark">Morning</label>
+                                    <input required type="time" name="morningTime" class="form-control" id="inputEmail4"
+                                        placeholder="5000" value="<%= data.morning%>">
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="inputName" class="text-dark">Afternoon</label>
+                                    <input required type="time" name="afternoonTime" class="form-control" id="inputEmail4"
+                                        placeholder="5000" value="<%= data.afternoon%>">
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="inputName" class="text-dark">Evening</label>
+                                    <input required type="time" name="eveningTime" class="form-control" id="inputEmail4"
+                                        placeholder="5000" value="<%= data.evening%>">
+                                </div>
+                            </div>
+                            <% if (data.cinemasnacks?.length) { %>
+                                                
+                                <% for( let i = 0; i < data.cinemasnacks.length; i++ ) { %>
+                            <div class="form-row" id="topping">
+                                <div class="form-group col-md-6">
+                                    <label for="inputName" class="text-dark">Snack</label>
+                                    <input required type="text" name="snackName" class="form-control" id="inputEmail4"
+                                        placeholder="snack name" value="<%= data.cinemasnacks[i].name%>">
+                                        <input required type="hidden" name="snackId" class="form-control" id="inputEmail4"
+                                        placeholder="5000" value="<%= data.cinemasnacks[i].id%>" readonly>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="inputName" class="text-dark">Snack Price</label>
+                                    <input required type="number" name="snackPrice" class="form-control" id="inputEmail4"
+                                        placeholder="5000" value="<%= data.cinemasnacks[i].price%>">
+                                </div>
+                            </div>
+                            <% } %>
+                                                    
+                                                
+                            <% } else{ %>
+                          
+                                <% } %> 
+                            <div class="form-group col-lg-12" >
+                               
+    
+                                <button id="toppingAlternate" class="btn btn-primary">Add Alternate Snack</button>
+   
+  <!-- <input type="button" value="Save" onclick="savedata()">
+   <input type="button" value="Show data" onclick="displayData()"> -->
+   
+ 
+<script type="text/javascript">
+
+$('#toppingAlternate').on('click',function() {
+
+$('#topping').append('<div class="form-group col-md-6"><label for="inputName" class="text-dark">Snack</label> <input required type="text" name="snackName" class="form-control" id="inputEmail4"  placeholder="snack name">  <input required type="hidden" name="snackId" class="form-control" id="inputEmail4"  placeholder="snack name" readonly> </div> <div class="form-group col-md-6">  <label for="inputName" class="text-dark">Snack Price</label>  <input required type="number" name="snackPrice" class="form-control" id="inputEmail4"   placeholder="5000">  </div>');
+
+});
+
+//  var arrtopping=new Array();
+// var arrprice=new Array();
+ 
+// function savedata(){
+//      var topping = document.getElementById('topping').value;
+//     var price = document.getElementById('price').value;
+//      arrtopping[arrtopping.length]=topping;    
+//     arrprice[arrprice.length]=price;
+//   }
+   
+ 
+// function displayData() 
+// {
+//   var newtopping=[...arrtopping];
+//   var newprice=[...arrprice];
+ 
+//    document.getElementById('newtopping').setAttribute('value', newtopping);
+//   document.getElementById('newprice').setAttribute('value', newprice);
+
+// }
+ 
+ 
+</script>
+                            </div>
+                            <!-- <div class="form-group">
+                                <label for="inputName" class="text-dark">Upload Movie Images</label>
+                                <input required type="file" accept=".jpg,.JPG,.jpeg,.JPEG,.png,.PNG" name="cinema_pictures" multiple class="form-control"
+                                    id="inputPassword4" placeholder="Password">
+                            </div> -->
+
+                            <button type="submit" name="submit" value="submit"
+                                class="btn btn-primary btn-block border-0"
+                                style="background-color: red;">Submit</button>
+                        </div>
+                    </div>
+                </form>
+                </div>
+      </div>
+    </div>
+  </div>
+  <!-- modal end -->
                     <div class="view">View all users <i class="bi bi-arrow-right"></i></div>
                 </div>
             </div>

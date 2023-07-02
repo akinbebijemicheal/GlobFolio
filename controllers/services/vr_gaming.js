@@ -453,17 +453,14 @@ exports.updateGaming = async(req, res, next) => {
                 available_game,
                 per_time
             }, { where: {
-                id: req.params.id,
+                id: req.params.gameId,
             }})
-            res.status(200).json({
-                status: true,
-                message: "Post updated"
-            })
-        
+     
+        req.flash("success", "Vr Game successfully updated");
+        res.redirect("/dashboard/admin/game-view/" + req.params.gameId);
         
     } catch{
         console.error(error)
-        next(error);
     }
 }
 
