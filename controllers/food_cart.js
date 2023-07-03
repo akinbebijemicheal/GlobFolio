@@ -1559,11 +1559,19 @@ exports.viewAdminOrder = async (req, res, next) => {
               },
             },
             {
-              model: FoodExtra,
-              attributes: {
-                exclude: ["createdAt", "updatedAt"],
+                model: CartItemExtra,
+                attributes: {
+                  exclude: ["createdAt", "updatedAt"],
+                },
+                include: [
+                  {
+                    model: FoodExtra,
+                    attributes: {
+                      exclude: ["createdAt", "updatedAt"],
+                    },
+                  },
+                ],
               },
-            },
             {
               model: Package,
               attributes: {
