@@ -26,7 +26,6 @@ const SubscriptionPlan = db.define(
     }
   },
   { paranoid: true }
-  
 );
 
 module.exports = SubscriptionPlan;
