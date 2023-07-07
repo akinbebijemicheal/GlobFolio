@@ -13,7 +13,7 @@ const Picture = db.define('picture', {
         defaultValue: () => nanoid(10)
     },
     userid: {
-        type: Sequelize.STRING(10),
+        type: Sequelize.UUID,
         references:{ 
             model: 'users',
             key: 'id',

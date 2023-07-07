@@ -1,0 +1,14 @@
+{
+    "client_id": "YOUR_CLIENT_ID",
+    "team_id": "YOUR_TEAM_ID",
+    "key_id": "YOUR_KEY_ID",
+    "redirect_uri": "https://example.com/auth",
+    "scope": "name email",
+    "dialect": "mysql",
+    "username": "root",
+    "password": "root",
+    "port": "3306",
+    "host": "localhost",
+    "database": "bog",
+    "timezone": "+01:00"
+}

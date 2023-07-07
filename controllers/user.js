@@ -1,11 +1,23 @@
 const User = require("../model/user");
+const db = require("../config/config");
+const sequelize = db;
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const passport = require("passport");
 require("dotenv").config();
 const nodemailer = require("nodemailer");
 const store = require("store");
-const Picture = require("../model/profilepic");
+const passportfacebook = require("passport-facebook");
+const FacebookStrategy = require("passport-facebook-token");
+const axios = require("axios");
+const helpers = require("../helpers/message");
+const Notification = require("../helpers/notification");
+const EmailService = require("../service/emailService");
+const UserService = require("../service/UserService");
+const randomstring = require("randomstring");
+const { Sequelize, Op } = require("sequelize");
+
+
 
 /*const { google } = require("googleapis");
 const OAuth2 = google.auth.OAuth2;
@@ -24,354 +36,221 @@ const myAccessToken = myOAuth2Client.getAccessToken()*/
 const baseurl = process.env.BASE_URL;
 
 exports.RegisterUser = async (req, res, next) => {
-  try {
-    // console.log(req.body);
-    const { firstname, lastname, email, phone_no, address, country, password } =
-      req.body;
+  sequelize.transaction(async (t) => {
+    try {
+      // console.log(req.body);
+      const {
+        firstname,
+        lastname,
+        gender,
+        email,
+        phone_no,
+        country,
+        password,
+        userType,
+      } = req.body;
 
-    var user = await User.findOne({
-      where: {
-        email: email,
-      },
-    });
-    if (user) {
-      return res.status(302).json({
-        status: false,
-        message: "User already exist",
+      let user = await User.findOne({
+        where: {
+          email: email,
+        },
       });
-    }
-    const salt = await bcrypt.genSalt(12);
-    const hashedPass = await bcrypt.hash(password, salt);
+      if (user) {
+        return res.status(302).json({
+          status: false,
+          message: "User already exist",
+        });
+      }
 
-    const new_user = new User({
-      fullname: firstname + " " + lastname,
-      email: email,
-      phone_no: phone_no,
-      address: address,
-      country: country,
-      role: "user",
-      password: hashedPass,
-      email_verify: true
-    });
+      const isUserType = UserService.validateUserType(userType);
+      if (!isUserType) {
+        return res.status(400).send({
+          success: false,
+          message: "Invalid UserType Entity passed",
+        });
+      }
+      const salt = await bcrypt.genSalt(12);
+      const hashedPass = await bcrypt.hash(password, salt);
 
-    await new_user.save();
-    user = await User.findOne({
-      where: {
+      const new_user = {
+        fullname: firstname + " " + lastname,
         email: email,
-      },
-    });
+        phone_no: phone_no,
+        gender: gender,
+        country: country,
+        userType: "user",
+        password: hashedPass,
+        referralId: randomstring.generate(12),
+        email_verify: false,
+      };
 
-    // const token = jwt.sign({ email: user.email }, process.env.TOKEN, {
-    //   expiresIn: "24h",
-    // });
-    // const link = `${process.env.BASE_URL}/email-verification?userId=${user.id}&token=${token}`;
+      user = await UserService.createNewUser(new_user, t);
 
-    // var transporter = nodemailer.createTransport({
-    //   host: process.env.EMAIL_HOST,
-    //   port: process.env.EMAIL_PORT,
-    //   secure: true, // true for 465, false for other ports
-    //   tls: {
-    //     rejectUnauthorized: false,
-    //   },
-    //   ool: true,
-    //   maxConnections: 1,
-    //   rateDelta: 20000,
-    //   rateLimit: 5,
-    //   auth: {
-    //     user: process.env.EMAIL_USERNAME, // generated ethereal user
-    //     pass: process.env.EMAIL_PASSWORD, // generated ethereal password
-    //   },
-    // });
+      // user = await User.findOne({
+      //   where: {
+      //     email: email,
+      //   },
+      // });
+      console.log(user);
+      // const token = jwt.sign({ email: user.email }, process.env.TOKEN, {
+      //   expiresIn: "24h",
+      // });
+      let token = helpers.generateWebToken();
+      const encodeEmail = encodeURIComponent(email);
+      let name = firstname + " " + lastname;
+      let message = helpers.verifyEmailMessage(name, encodeEmail, token);
+      if (req.body.platform === "mobile") {
+        token = helpers.generateMobileToken();
+        message = helpers.mobileVerifyMessage(name, token);
+      }
+      if (userType !== "admin") {
+        await EmailService.sendMail(email, message, "Verify Email");
+      }
+      const data = {
+        token,
+        id: user.id,
+      };
+      await UserService.updateUser(data, t);
 
-    // let fname = user.fullname.split(" ");
-    // const mailOptions = {
-    //   from: `"Deepend" <${process.env.E_TEAM}>`,
-    //   to: `${user.email}`,
-    //   subject: "Deepend",
-    //   html: `
-    //             <!DOCTYPE html>
-    //                 <html>
-    //                 <head>
 
-    //                   <meta charset="utf-8">
-    //                   <meta http-equiv="x-ua-compatible" content="ie=edge">
-    //                   <title>Email Confirmation</title>
-    //                   <meta name="viewport" content="width=device-width, initial-scale=1">
-    //                   <style type="text/css">
-    //                   /**
-    //                   * Google webfonts. Recommended to include the .woff version for cross-client compatibility.
-    //                   */
-    //                   @media screen {
-    //                     @font-face {
-    //                       font-family: 'Source Sans Pro';
-    //                       font-style: normal;
-    //                       font-weight: 400;
-    //                       src: local('Source Sans Pro Regular'), local('SourceSansPro-Regular'), url(https://fonts.gstatic.com/s/sourcesanspro/v10/ODelI1aHBYDBqgeIAH2zlBM0YzuT7MdOe03otPbuUS0.woff) format('woff');
-    //                     }
-    //                     @font-face {
-    //                       font-family: 'Source Sans Pro';
-    //                       font-style: normal;
-    //                       font-weight: 700;
-    //                       src: local('Source Sans Pro Bold'), local('SourceSansPro-Bold'), url(https://fonts.gstatic.com/s/sourcesanspro/v10/toadOcfmlt9b38dHJxOBGFkQc6VGVFSmCnC_l7QZG60.woff) format('woff');
-    //                     }
-    //                   }
-    //                   /**
-    //                   * Avoid browser level font resizing.
-    //                   * 1. Windows Mobile
-    //                   * 2. iOS / OSX
-    //                   */
-    //                   body,
-    //                   table,
-    //                   td,
-    //                   a {
-    //                     -ms-text-size-adjust: 100%; /* 1 */
-    //                     -webkit-text-size-adjust: 100%; /* 2 */
-    //                   }
-    //                   /**
-    //                   * Remove extra space added to tables and cells in Outlook.
-    //                   */
-    //                   table,
-    //                   td {
-    //                     mso-table-rspace: 0pt;
-    //                     mso-table-lspace: 0pt;
-    //                   }
-    //                   /**
-    //                   * Better fluid images in Internet Explorer.
-    //                   */
-    //                   img {
-    //                     -ms-interpolation-mode: bicubic;
-    //                   }
-    //                   /**
-    //                   * Remove blue links for iOS devices.
-    //                   */
-    //                   a[x-apple-data-detectors] {
-    //                     font-family: inherit !important;
-    //                     font-size: inherit !important;
-    //                     font-weight: inherit !important;
-    //                     line-height: inherit !important;
-    //                     color: inherit !important;
-    //                     text-decoration: none !important;
-    //                   }
-    //                   /**
-    //                   * Fix centering issues in Android 4.4.
-    //                   */
-    //                   div[style*="margin: 16px 0;"] {
-    //                     margin: 0 !important;
-    //                   }
-    //                   body {
-    //                     width: 100% !important;
-    //                     height: 100% !important;
-    //                     padding: 0 !important;
-    //                     margin: 0 !important;
-    //                   }
-    //                   /**
-    //                   * Collapse table borders to avoid space between cells.
-    //                   */
-    //                   table {
-    //                     border-collapse: collapse !important;
-    //                   }
-    //                   a {
-    //                     color: #1a82e2;
-    //                   }
-    //                   img {
-    //                     height: auto;
-    //                     line-height: 100%;
-    //                     text-decoration: none;
-    //                     border: 0;
-    //                     outline: none;
-    //                   }
-    //                   </style>
+            if (req.body.reference && req.body.reference !== "") {
+              const where = {
+                referralId: {
+                  [Op.eq]: req.body.reference,
+                },
+              };
+              const reference = await UserService.findUser(where);
+              if (reference) {
+                const referenceData = {
+                  userId: reference.id,
+                  referredId: user.id,
+                };
+                await UserService.createReferral(referenceData, t);
+              }
+            }
 
-    //                 </head>
-    //                 <body style="background-color: #e9ecef;">
+            const mesg = `A new user just signed up`;
+            const userId = user.id;
+            const notifyType = "admin";
+            const { io } = req.app;
+            await Notification.createNotification({
+              userId,
+              type: notifyType,
+              message: mesg,
+            });
+            io.emit(
+              "getNotifications",
+              await Notification.fetchAdminNotification()
+            );
 
-    //                   <!-- start preheader -->
-    //                   <div class="preheader" style="display: none; max-width: 0; max-height: 0; overflow: hidden; font-size: 1px; line-height: 1px; color: #fff; opacity: 0;">
-    //                     Deepend Email Verification
-    //                   </div>
-    //                   <!-- end preheader -->
+      return res.status(201).json({
+        status: true,
+        message: "Account created!",
+      });
+    } catch (error) {
+      console.error(error);
+      // res.status(500).json({
+      //      status: false,
+      //      message: "Error occured",
+      //      error: error
+      //  });
+      t.rollback();
+      next(error);
+    }
+  });
+};
 
-    //                   <!-- start body -->
-    //                   <table border="0" cellpadding="0" cellspacing="0" width="100%">
+exports.RegisterAdmin = async (req, res, next) => {
+  sequelize.transaction(async (t) => {
+    try {
+      // console.log(req.body);
+      const {
+        firstname,
+        lastname,
+        gender,
+        email,
+        phone_no,
+        country,
+        password,
+        userType,
+      } = req.body;
 
-    //                     <!-- start logo -->
-    //                     <tr>
-    //                       <td align="center" bgcolor="#e9ecef">
-    //                         <!--[if (gte mso 9)|(IE)]>
-    //                         <table align="center" border="0" cellpadding="0" cellspacing="0" width="600">
-    //                         <tr>
-    //                         <td align="center" valign="top" width="600">
-    //                         <![endif]-->
-    //                         <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
-    //                           <tr>
-    //                             <td align="center" valign="top" style="padding: 36px 24px;">
-    //                               <a href=${baseurl} target="_blank" style="display: inline-block;">
-    //                                 <img src=${baseurl}/images/deep.png alt="Logo" border="0" width="60" style="display: flex; width: 60px; max-width: 60px; min-width: 60px;">
-    //                               </a>
-    //                             </td>
-    //                           </tr>
-    //                         </table>
-    //                         <!--[if (gte mso 9)|(IE)]>
-    //                         </td>
-    //                         </tr>
-    //                         </table>
-    //                         <![endif]-->
-    //                       </td>
-    //                     </tr>
-    //                     <!-- end logo -->
+      let user = await User.findOne({
+        where: {
+          email: email,
+        },
+      });
+      if (user) {
+        return res.status(302).json({
+          status: false,
+          message: "User already exist",
+        });
+      }
 
-    //                     <!-- start hero -->
-    //                     <tr>
-    //                       <td align="center" bgcolor="#e9ecef">
-    //                         <!--[if (gte mso 9)|(IE)]>
-    //                         <table align="center" border="0" cellpadding="0" cellspacing="0" width="600">
-    //                         <tr>
-    //                         <td align="center" valign="top" width="600">
-    //                         <![endif]-->
-    //                         <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
-    //                           <tr>
-    //                             <td align="left" bgcolor="#ffffff" style="padding: 36px 24px 0; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; border-top: 3px solid #d4dadf;">
-    //                               <h1 style="margin: 0; font-size: 32px; font-weight: 700; letter-spacing: -1px; line-height: 48px;">Confirm Your Email Address</h1>
-    //                             </td>
-    //                           </tr>
-    //                         </table>
-    //                         <!--[if (gte mso 9)|(IE)]>
-    //                         </td>
-    //                         </tr>
-    //                         </table>
-    //                         <![endif]-->
-    //                       </td>
-    //                     </tr>
-    //                     <!-- end hero -->
+      const isUserType = UserService.validateUserType(userType);
+      if (!isUserType) {
+        return res.status(400).send({
+          success: false,
+          message: "Invalid UserType Entity passed",
+        });
+      }
+      const salt = await bcrypt.genSalt(12);
+      const hashedPass = await bcrypt.hash(password, salt);
 
-    //                     <!-- start copy block -->
-    //                     <tr>
-    //                       <td align="center" bgcolor="#e9ecef">
-    //                         <!--[if (gte mso 9)|(IE)]>
-    //                         <table align="center" border="0" cellpadding="0" cellspacing="0" width="600">
-    //                         <tr>
-    //                         <td align="center" valign="top" width="600">
-    //                         <![endif]-->
-    //                         <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+      const new_user = {
+        fullname: firstname + " " + lastname,
+        email: email,
+        phone_no: phone_no,
+        gender: gender,
+        country: country,
+        userType: "user",
+        password: hashedPass,
+        email_verify: false,
+      };
 
-    //                           <!-- start copy -->
-    //                           <tr>
-    //                             <td align="left" bgcolor="#ffffff" style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;">
-    //                       <h2> Hi ${fname[0]}, </h2>        
-    //                               <p style="margin: 0;"> You Have Successfully created an account with Deepend. Tap the button below to confirm your email address. If you didn't create an account with Deepend, you can safely delete this email.</p>
-    //                             </td>
-    //                           </tr>
-    //                           <!-- end copy -->
+      user = await UserService.createNewUser(new_user, t);
 
-    //                           <!-- start button -->
-    //                           <tr>
-    //                             <td align="left" bgcolor="#ffffff">
-    //                               <table border="0" cellpadding="0" cellspacing="0" width="100%">
-    //                                 <tr>
-    //                                   <td align="center" bgcolor="#ffffff" style="padding: 12px;">
-    //                                     <table border="0" cellpadding="0" cellspacing="0">
-    //                                       <tr>
-    //                                         <td align="center" bgcolor="#1a82e2" style="border-radius: 6px;">
-    //                                           <a href=${link} target="_blank" style="display: inline-block; padding: 16px 36px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; color: #ffffff; text-decoration: none; border-radius: 6px;">Verify Email</a>
-    //                                         </td>
-    //                                       </tr>
-    //                                     </table>
-    //                                   </td>
-    //                                 </tr>
-    //                               </table>
-    //                             </td>
-    //                           </tr>
-    //                           <!-- end button -->
+      // user = await User.findOne({
+      //   where: {
+      //     email: email,
+      //   },
+      // });
+      console.log(user);
+      // const token = jwt.sign({ email: user.email }, process.env.TOKEN, {
+      //   expiresIn: "24h",
+      // });
+      let token = helpers.generateWebToken();
+      const encodeEmail = encodeURIComponent(email);
+      let name = firstname + " " + lastname;
+      let message = helpers.verifyEmailMessage(name, encodeEmail, token);
+      if (req.body.platform === "mobile") {
+        token = helpers.generateMobileToken();
+        message = helpers.mobileVerifyMessage(name, token);
+      }
+      if (userType !== "admin") {
+        await EmailService.sendMail(email, message, "Verify Email");
+      }
+      const data = {
+        token,
+        id: user.id,
+      };
+      await UserService.updateUser(data, t);
 
-    //                           <!-- start copy -->
-    //                           <tr>
-    //                             <td align="left" bgcolor="#ffffff" style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;">
-    //                               <p style="margin: 0;">If that doesn't work, copy and paste the following link in your browser:</p>
-    //                               <p style="margin: 0;"><a href=${link} target="_blank">${link}</a></p>
-    //                             </td>
-    //                           </tr>
-    //                           <!-- end copy -->
-
-    //                           <!-- start copy -->
-    //                           <tr>
-    //                             <td align="left" bgcolor="#ffffff" style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px; border-bottom: 3px solid #d4dadf">
-    //                               <p style="margin: 0;">Cheers,<br> Deepend Team</p>
-    //                             </td>
-    //                           </tr>
-    //                           <!-- end copy -->
-
-    //                         </table>
-    //                         <!--[if (gte mso 9)|(IE)]>
-    //                         </td>
-    //                         </tr>
-    //                         </table>
-    //                         <![endif]-->
-    //                       </td>
-    //                     </tr>
-    //                     <!-- end copy block -->
-
-    //                     <!-- start footer -->
-    //                     <tr>
-    //                       <td align="center" bgcolor="#e9ecef" style="padding: 24px;">
-    //                         <!--[if (gte mso 9)|(IE)]>
-    //                         <table align="center" border="0" cellpadding="0" cellspacing="0" width="600">
-    //                         <tr>
-    //                         <td align="center" valign="top" width="600">
-    //                         <![endif]-->
-    //                         <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
-
-    //                           <!-- start permission -->
-    //                           <tr>
-    //                             <td align="center" bgcolor="#e9ecef" style="padding: 12px 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 20px; color: #666;">
-    //                               <p style="margin: 0;">You received this email because we received a request for signing up for your DEEPEND account. If you didn't request signing up you can safely delete this email.</p>
-    //                             </td>
-    //                           </tr>
-    //                           <!-- end permission -->
-
-    //                         </table>
-    //                         <!--[if (gte mso 9)|(IE)]>
-    //                         </td>
-    //                         </tr>
-    //                         </table>
-    //                         <![endif]-->
-    //                       </td>
-    //                     </tr>
-    //                     <!-- end footer -->
-
-    //                   </table>
-    //                   <!-- end body -->
-
-    //                 </body>
-    //                 </html>`,
-    // };
-
-    // transporter.sendMail(mailOptions, function (err, info) {
-    //   if (err) {
-    //     console.log(err);
-    //   } else {
-    //     console.log(info);
-    //     return res.status(201).json({
-    //       status: true,
-    //       message:
-    //         "Account created and An email has been sent to you, Check your inbox",
-    //     });
-    //   }
-    // });
-
-    return res.status(201).json({
-      status: true,
-      message:
-        "Account created!",
-    });
-  } catch (error) {
-    console.error(error);
-    // res.status(500).json({
-    //      status: false,
-    //      message: "Error occured",
-    //      error: error
-    //  });
-    next(error);
-  }
+      return res.status(201).json({
+        status: true,
+        message: "Account created!",
+      });
+    } catch (error) {
+      console.error(error);
+      // res.status(500).json({
+      //      status: false,
+      //      message: "Error occured",
+      //      error: error
+      //  });
+      t.rollback();
+      next(error);
+    }
+  });
 };
 
 exports.LoginUser = async (req, res, next) => {
@@ -390,7 +269,7 @@ exports.LoginUser = async (req, res, next) => {
       });
     }
 
-    if (user.role !== "user") {
+    if (user.userType !== "user") {
       return res.status(401).json({
         status: false,
         message: "Please ensure you are logging-in from the right portal",
@@ -409,7 +288,7 @@ exports.LoginUser = async (req, res, next) => {
         id: user.id,
         fullname: user.fullname,
         email: user.email,
-        role: user.role,
+        userType: user.userType,
         phone_no: user.phone_no,
         country: user.country,
         address: user.address,
@@ -442,92 +321,6 @@ exports.LoginUser = async (req, res, next) => {
   }
 };
 
-// exports.webLoginUser = async (role, req, res, next) => {
-//     try{
-
-//         const {email, password } = req.body;
-//         const user = await User.findOne({where: {
-//             email: email }
-//         });
-//         if(!user){
-//             return res.status(404).json({
-//                 status: false,
-//                 message: 'User does not exist',
-
-//             });
-//         }
-
-//         if(user.role !== role){
-//             return res.status(401).json({
-//                 status: false,
-//                 message: "Please ensure you are logging-in from the right portal",
-
-//             });
-//         }
-
-//         const validate = await bcrypt.compare(password, user.password);
-//         if(validate){
-
-//             let token = jwt.sign(
-//                 {
-//                 fullname: user.fullname,
-//                 email: user.email,
-//                 role: user.role,
-//                 id: user.id},
-//                 process.env.TOKEN, { expiresIn: 24 * 60 * 60});
-
-//             let result = {
-//                 id: user.id,
-//                 fullname: user.fullname,
-//                 email: user.email,
-//                 role: user.role,
-//                 phone_no: user.phone_no,
-//                 country: user.country,
-//                 address: user.address,
-//                 expiresIn: '24 hours',
-//                 verified: user.verified,
-//                 email_verify: user.email_verify,
-//                 updatedAt: user.updatedAt,
-//                 createdAt: user.createdAt,
-//             };
-
-//             var option = {
-//                 httpOnly: true,
-//                 signed: true,
-//                 sameSite: true,
-//                 secure: (process.env.NODE_ENV !== 'development'),
-//                 secret: process.env.CSECRET
-//             }
-
-//             res.cookie("jwt", token, option);
-
-//             return res.status(200).json({
-
-//                 status: true,
-//                 message: "Successfully logged in",
-//                 data: result
-
-//             });
-
-//         } else{
-//            return res.status(403).json({
-//                 status: false,
-//                 message: 'Wrong password',
-
-//             });
-//         }
-
-//     } catch(error){
-//         console.error(error)
-//         res.status(500).json({
-//             status: false,
-//             message: "Error occured",
-//             error: error
-//         })
-//         next(error);
-//     }
-// };
-
 exports.userAuth = passport.authenticate("jwt", { session: false });
 
 exports.profile = (user) => {
@@ -545,7 +338,21 @@ exports.profile = (user) => {
 
 exports.getUsers = async (req, res) => {
   try {
-    const users = await User.findAll({ where: { role: "user" } });
+          const admin = await UserService.getUserDetails({ id: req.user.id });
+          if (!admin) {
+            return res.status(404).send({
+              success: false,
+              message: "Login first",
+            });
+          }
+
+          if (admin.userType !== "admin") {
+            return res.status(404).send({
+              success: false,
+              message: "Only Admin can on this route",
+            });
+          }
+    const users = await User.findAll({ where: { userType: "user" } });
     if (users) {
       return res.status(200).json({
         status: true,
@@ -567,8 +374,109 @@ exports.getUsers = async (req, res) => {
   }
 };
 
+
+exports.getUserById = async (req, res) => {
+  try {
+    const admin = await UserService.getUserDetails({ id: req.user.id });
+    if (!admin) {
+      return res.status(404).send({
+        success: false,
+        message: "Login first",
+      });
+    }
+
+    if (admin.userType !== "admin") {
+      return res.status(404).send({
+        success: false,
+        message: "Only Admin can access this route",
+      });
+    }
+    const user = await User.findOne({
+      where: {
+        id: req.params.userId,
+        userType: "admin",
+      },
+    });
+    if (user) {
+      return res.status(200).json({
+        status: true,
+        message: user,
+      });
+    } else {
+      return res.status(404).json({
+        status: false,
+        message: "No user found",
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      status: false,
+      message: "error occured",
+      error: error,
+    });
+  }
+};
+
+exports.getAdminById = async (req, res) => {
+  try {
+    const admin = await UserService.getUserDetails({ id: req.user.id });
+    if (!admin) {
+      return res.status(404).send({
+        success: false,
+        message: "Login first",
+      });
+    }
+
+    if (admin.userType !== "admin") {
+      return res.status(404).send({
+        success: false,
+        message: "Only Admin can access route",
+      });
+    }
+    const user = await User.findOne({
+      where: {
+        id: req.params.userId,
+        userType: "admin"
+      },
+    });
+    if (user) {
+      return res.status(200).json({
+        status: true,
+        message: user,
+      });
+    } else {
+      return res.status(404).json({
+        status: false,
+        message: "No user found",
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      status: false,
+      message: "error occured",
+      error: error,
+    });
+  }
+};
+
 exports.getUser = async (req, res) => {
   try {
+          const admin = await UserService.getUserDetails({ id: req.user.id });
+          if (!admin) {
+            return res.status(404).send({
+              success: false,
+              message: "Login First",
+            });
+          }
+
+          if (admin.userType !== "admin") {
+            return res.status(404).send({
+              success: false,
+              message: "Only Admin can get all feedbacks",
+            });
+          }
     const user = await User.findOne({
       where: {
         username: req.params.username,
@@ -593,6 +501,38 @@ exports.getUser = async (req, res) => {
       error: error,
     });
   }
+};
+
+exports.verifyUserEmail = async (req, res, next) => {
+  sequelize.transaction(async (transaction) => {
+    try {
+      const { email, token } = req.query;
+
+      const user = await UserService.findUser({ email, token });
+
+      if (!user) {
+        return res.status(404).send({
+          success: false,
+          message: "No User found with this email",
+        });
+      }
+
+      const data = {
+        id: user.id,
+        isActive: true,
+        email_verify: true,
+        token: null,
+      };
+      await UserService.updateUser(data, transaction);
+      return res.status(200).send({
+        success: true,
+        message: "Account Activated Successfully",
+      });
+    } catch (error) {
+      transaction.rollback();
+      return next(error);
+    }
+  });
 };
 
 exports.updateUser = async (req, res) => {
@@ -625,18 +565,54 @@ exports.updateUser = async (req, res) => {
 
 exports.deleteUser = async (req, res) => {
   try {
+
     const user = await User.destroy({
       where: {
         email: req.user.email,
       },
-      include: [{
-        
-      }]
+      include: [{}],
     });
 
     return res.status(200).json({
       status: true,
       message: "Updated successfully",
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      status: false,
+      message: "Error occured",
+      error: error,
+    });
+  }
+};
+
+exports.deleteUserByAdmin = async (req, res) => {
+  try {
+          const admin = await UserService.getUserDetails({ id: req.user.id });
+          if (!admin) {
+            return res.status(404).send({
+              success: false,
+              message: "Login first",
+            });
+          }
+
+          if (admin.userType !== "admin") {
+            return res.status(404).send({
+              success: false,
+              message: "Only Admin can access route",
+            });
+          }
+    const user = await User.destroy({
+      where: {
+        email: req.params.userId,
+      },
+      include: [{}],
+    });
+
+    return res.status(200).json({
+      status: true,
+      message: "Deleted successfully",
     });
   } catch (error) {
     console.error(error);
@@ -657,3 +633,1236 @@ exports.checkRole = (roles) => (req, res, next) => {
   }
   return next();
 };
+
+// exports.registerUser = async (req, res, next) => {
+//   sequelize.transaction(async (t) => {
+//     try {
+//       const { email, userType, name, captcha } = req.body;
+
+//       if (!req.body.platform && userType !== "admin") {
+//         const validateCaptcha = await UserService.validateCaptcha(captcha);
+//         if (!validateCaptcha) {
+//           return res.status(400).send({
+//             success: false,
+//             message: "Please answer the captcha correctly",
+//             validateCaptcha,
+//           });
+//         }
+//       }
+
+//       const isUserType = UserService.validateUserType(userType);
+//       if (!isUserType) {
+//         return res.status(400).send({
+//           success: false,
+//           message: "Invalid User Entity passed",
+//         });
+//       }
+//       let user = await UserService.findUser({ email });
+
+//       if (!user) {
+//         const userData = {
+//           name: req.body.name,
+//           fname: req.body.fname,
+//           lname: req.body.lname,
+//           email: req.body.email,
+//           phone: req.body.phone,
+//           password: bcrypt.hashSync(req.body.password, 10),
+//           userType: req.body.userType,
+//           address: req.body.address,
+//           level: req.body.level,
+//           referralId: randomstring.generate(12),
+//           aboutUs: req.body.aboutUs,
+//         };
+
+//         user = await UserService.createNewUser(userData, t);
+//         let token = helpers.generateWebToken();
+//         const encodeEmail = encodeURIComponent(email);
+//         let message = helpers.verifyEmailMessage(name, encodeEmail, token);
+//         if (req.body.platform === "mobile") {
+//           token = helpers.generateMobileToken();
+//           message = helpers.mobileVerifyMessage(name, token);
+//         }
+//         if (userType !== "admin") {
+//           await EmailService.sendMail(email, message, "Verify Email");
+//         }
+//         const data = {
+//           token,
+//           id: user.id,
+//         };
+//         await UserService.updateUser(data, t);
+//         // check if refferalId was passed
+//         if (req.body.reference && req.body.reference !== "") {
+//           const where = {
+//             referralId: {
+//               [Op.eq]: req.body.reference,
+//             },
+//           };
+//           const reference = await UserService.findUser(where);
+//           if (reference) {
+//             const referenceData = {
+//               userId: reference.id,
+//               referredId: user.id,
+//             };
+//             await UserService.createReferral(referenceData, t);
+//           }
+//         }
+//         if (userType !== "admin" || userType !== "other") {
+//           const request = {
+//             userId: user.id,
+//             userType,
+//             company_name: req.body.company_name,
+//             serviceTypeId: req.body.serviceTypeId,
+//           };
+//           const result = await this.addUserProfile(request, t);
+//         }
+//       } else {
+//         const isUser = await this.checkIfAccountExist(userType, user.id);
+//         if (isUser) {
+//           return res.status(400).send({
+//             success: false,
+//             message: "This Email is already in Use for this user entity",
+//           });
+//         }
+//         if (userType !== "admin" || userType !== "other") {
+//           const request = {
+//             userId: user.id,
+//             userType,
+//             company_name: req.body.company_name,
+//             serviceTypeId: req.body.serviceTypeId,
+//           };
+//           const result = await this.addUserProfile(request, t);
+//         }
+//       }
+
+//       const type = ["professional", "vendor", "corporate_client"];
+//       if (type.includes(userType)) {
+//         const data = {
+//           userId: user.id,
+//           company_name: req.body.company_name,
+//         };
+//         await UserService.createProfile(data, t);
+//       }
+
+//       const mesg = `A new user just signed up as ${UserService.getUserType(
+//         userType
+//       )}`;
+//       const userId = user.id;
+//       const notifyType = "admin";
+//       const { io } = req.app;
+//       await Notification.createNotification({
+//         userId,
+//         type: notifyType,
+//         message: mesg,
+//       });
+//       io.emit("getNotifications", await Notification.fetchAdminNotification());
+
+//       return res.status(201).send({
+//         success: true,
+//         message: "User Created Successfully",
+//       });
+//     } catch (error) {
+//       console.log(error);
+//       t.rollback();
+//       return next(error);
+//     }
+//   });
+// };
+
+exports.testfblogin = async (req, res) => {
+  passportfacebook.authenticate("facebook");
+};
+
+/**
+ *
+ * @method POST
+ * @param {string} facebook_first_name
+ * @param {string} facebook_last_name
+ * @param {string} facebook_email
+ * @param {string} facebook_id
+ * @param {string} user_type
+ * @param {string} company_name
+ * @return {json} response
+ */
+exports.facebookSignup = async (req, res, next) => {
+  sequelize.transaction(async (t) => {
+    let first_name = req.body.facebook_first_name;
+    let last_name = req.body.facebook_last_name;
+    let name = `${first_name} ${last_name}`;
+    let email = req.body.facebook_email;
+    let facebook_id = req.body.facebook_id;
+    let user_type = req.body.user_type;
+    let company_name = req.body.company_name;
+
+    try {
+      const user = await User.findOne({ where: { email } });
+      if (user !== null) {
+        return res.status(404).json({
+          success: false,
+          message: "Account exists!",
+        });
+      }
+
+      const user_ = await User.create({
+        name,
+        fname: first_name,
+        lname: last_name,
+        email,
+        userType: user_type,
+        level: 1,
+        facebook_id,
+        isActive: true,
+        app: "facebook",
+      });
+
+      // if (user_type !== "admin" || user_type !== "other") {
+      //   const request = {
+      //     userId: user_.id,
+      //     userType: user_type,
+      //     company_name,
+      //   };
+      //   const result = await this.addUserProfile(request, t);
+      // }
+
+      // const type = ["corporate_client"];
+      // if (type.includes(user_type)) {
+      //   const data = {
+      //     userId: user_.id,
+      //     company_name,
+      //   };
+      //   await UserService.createProfile(data, t);
+      // }
+
+      // const mesg = `A new user just signed up as ${UserService.getUserType(
+      //   user_type
+      // )}`;
+      // const userId = user_.id;
+      // const notifyType = "admin";
+      // const { io } = req.app;
+      // await Notification.createNotification({
+      //   userId,
+      //   type: notifyType,
+      //   message: mesg,
+      // });
+      // io.emit("getNotifications", await Notification.fetchAdminNotification());
+
+      return res.status(201).send({
+        success: true,
+        message: "User Created Successfully",
+      });
+    } catch (err) {
+      console.error(err);
+      t.rollback();
+      return next(err);
+    }
+  });
+};
+
+/**
+ * Apple login/signup for clients only
+ * @method POST
+ * @param {string} access_token
+ * @param {string} google_first_name
+ * @param {string} google_last_name
+ * @param {string} google_email
+ * @param {string} google_id
+ * @param {string} user_type
+ * @param {string} company_name
+ * @return {json} response
+ */
+exports.appleSign = async (req, res, next) => {
+  sequelize.transaction(async (t) => {
+    const { user_type, company_name } = req.body;
+    const { id, email, name } = req.apple_details;
+
+    try {
+      const user = await User.findOne({ where: { email } });
+
+      /**
+       * If user is found, login, else signup
+       */
+      if (user !== null) {
+        const payload = {
+          user: {
+            id: user.id,
+          },
+        };
+        const token = jwt.sign(payload, process.env.JWT_SECRET, {
+          expiresIn: 36000,
+        });
+        let profile;
+        const data = {
+          ...user.toJSON(),
+        };
+        const userId = user.id;
+        profile = await UserService.getUserTypeProfile(user_type, userId);
+        if (profile) {
+          data.profile = profile;
+          data.userType = user_type;
+        }
+
+        return res.status(200).send({
+          success: true,
+          message: "User Logged In Sucessfully",
+          token,
+          user: data,
+        });
+      }
+
+      const user_ = await User.create({
+        name,
+        fname: name.split(" ")[0],
+        lname: name.split(" ")[1],
+        email,
+        userType: user_type,
+        level: 1,
+        apple_id: id,
+        isActive: true,
+        app: "apple",
+      });
+
+      if (user_type !== "admin" || user_type !== "other") {
+        const request = {
+          userId: user_.id,
+          userType: user_type,
+          company_name: company_name !== undefined ? company_name : null,
+        };
+        const result = await this.addUserProfile(request, t);
+      }
+
+      const type = ["corporate_client"];
+      if (type.includes(user_type)) {
+        const data = {
+          userId: user_.id,
+          company_name: company_name !== undefined ? company_name : null,
+        };
+        await UserService.createProfile(data, t);
+      }
+
+      const mesg = `A new user just signed up as ${UserService.getUserType(
+        user_type
+      )} through ${"apple"}`;
+      const userId = user_.id;
+      const notifyType = "admin";
+      const { io } = req.app;
+      await Notification.createNotification({
+        userId,
+        type: notifyType,
+        message: mesg,
+      });
+      io.emit("getNotifications", await Notification.fetchAdminNotification());
+
+      return res.status(201).send({
+        success: true,
+        message: "User Created Successfully",
+      });
+    } catch (err) {
+      console.error(err);
+      t.rollback();
+      return next(err);
+    }
+  });
+};
+
+/**
+ * Google login/signup for clients only
+ * @method POST
+ * @param {string} access_token
+ * @param {string} google_first_name
+ * @param {string} google_last_name
+ * @param {string} google_email
+ * @param {string} google_id
+ * @param {string} user_type
+ * @param {string} company_name
+ * @return {json} response
+ */
+exports.googleSign = async (req, res, next) => {
+  sequelize.transaction(async (t) => {
+    const { user_type, company_name } = req.body;
+    const { id, email, verified_email, name } = req.google_details;
+
+    try {
+      const user = await User.findOne({ where: { email } });
+
+      /**
+       * If user is found, login, else signup
+       */
+      if (user !== null) {
+        const payload = {
+          user: {
+            id: user.id,
+          },
+        };
+        const token = jwt.sign(payload, process.env.JWT_SECRET, {
+          expiresIn: 36000,
+        });
+        let profile;
+        const data = {
+          ...user.toJSON(),
+        };
+        const userId = user.id;
+        profile = await UserService.getUserTypeProfile(user_type, userId);
+        if (profile) {
+          data.profile = profile;
+          data.userType = user_type;
+        }
+
+        return res.status(200).send({
+          success: true,
+          message: "User Logged In Sucessfully",
+          token,
+          user: data,
+        });
+      }
+
+      const user_ = await User.create({
+        name,
+        fname: name.split(" ")[0],
+        lname: name.split(" ")[1],
+        email,
+        userType: user_type,
+        level: 1,
+        google_id: id,
+        isActive: true,
+        app: "google",
+      });
+
+      if (user_type !== "admin" || user_type !== "other") {
+        const request = {
+          userId: user_.id,
+          userType: user_type,
+          company_name: company_name !== undefined ? company_name : null,
+        };
+        const result = await this.addUserProfile(request, t);
+      }
+
+      const type = ["corporate_client"];
+      if (type.includes(user_type)) {
+        const data = {
+          userId: user_.id,
+          company_name: company_name !== undefined ? company_name : null,
+        };
+        await UserService.createProfile(data, t);
+      }
+
+      const mesg = `A new user just signed up as ${UserService.getUserType(
+        user_type
+      )} through ${"google"}`;
+      const userId = user_.id;
+      const notifyType = "admin";
+      const { io } = req.app;
+      await Notification.createNotification({
+        userId,
+        type: notifyType,
+        message: mesg,
+      });
+      io.emit("getNotifications", await Notification.fetchAdminNotification());
+
+      return res.status(201).send({
+        success: true,
+        message: "User Created Successfully",
+      });
+    } catch (err) {
+      console.error(err);
+      t.rollback();
+      return next(err);
+    }
+  });
+};
+
+/**
+ * Sign in using facebook account
+ * @method  POST
+ * @param   {string} facebook_id
+ * @return    {json} response
+ */
+exports.facebookSignin = async (req, res) => {
+  let facebook_id = req.body.facebook_id;
+
+  try {
+    const user = await User.findOne({
+      where: {
+        facebook_id,
+      },
+    });
+
+    if (user === null) {
+      return res.status(404).json({
+        success: false,
+        message: "Facebook account not found!",
+      });
+    }
+
+    const payload = {
+      user: {
+        id: user.id,
+      },
+    };
+    const token = jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: 36000,
+    });
+    let profile;
+    const data = {
+      ...user.toJSON(),
+    };
+    const userId = user.id;
+    if (req.body.userType && req.body.userType !== "") {
+      const { userType } = req.body;
+      profile = await UserService.getUserTypeProfile(userType, userId);
+      if (profile) {
+        data.profile = profile;
+        data.userType = userType;
+      }
+    } else {
+      profile = await UserService.getUserTypeProfile(user.userType, userId);
+      if (profile) {
+        data.profile = profile;
+        data.userType = user.userType;
+      }
+    }
+
+    return res.status(200).send({
+      success: true,
+      message: "User Logged In Sucessfully",
+      token,
+      user: data,
+    });
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+/**
+ * Sign in using google account
+ * @method  POST
+ * @param   {string} facebook_id
+ * @return    {json} response
+ */
+exports.googleSignin = async (req, res) => {
+  let google_id = req.body.google_id;
+
+  try {
+    const user = await User.findOne({
+      where: {
+        google_id,
+      },
+    });
+
+    if (user === null) {
+      return res.status(404).json({
+        success: false,
+        message: "Google account not found!",
+      });
+    }
+
+    const payload = {
+      user: {
+        id: user.id,
+      },
+    };
+    const token = jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: 36000,
+    });
+    let profile;
+    const data = {
+      ...user,
+    };
+    const userId = user.id;
+    if (req.body.userType && req.body.userType !== "") {
+      const { userType } = req.body;
+      profile = await UserService.getUserTypeProfile(userType, userId);
+      if (profile) {
+        data.profile = profile;
+        data.userType = userType;
+      }
+    } else {
+      profile = await UserService.getUserTypeProfile(user.userType, userId);
+      if (profile) {
+        data.profile = profile;
+        data.userType = user.userType;
+      }
+    }
+
+    return res.status(200).send({
+      success: true,
+      message: "User Logged In Sucessfully",
+      token,
+      user: data,
+    });
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+exports.getAccounts = async (req, res, next) => {
+  sequelize.transaction(async (t) => {
+    try {
+      const userId = req.user.id;
+      const accounts = await this.getAccountsData(userId);
+
+      return res.status(201).send({
+        success: true,
+        accounts,
+      });
+    } catch (error) {
+      t.rollback();
+      return next(error);
+    }
+  });
+};
+
+exports.contactAdmin = async (req, res, next) => {
+  sequelize.transaction(async (t) => {
+    try {
+      const { first_name, last_name, phone, email, message, captcha } =
+        req.body;
+
+      if (!req.body.platform) {
+        const validateCaptcha = await UserService.validateCaptcha(captcha);
+        if (!validateCaptcha) {
+          return res.status(400).send({
+            success: false,
+            message: "Please answer the captcha correctly",
+            validateCaptcha,
+          });
+        }
+      }
+
+      const html_data = `
+        Name: ${first_name} ${last_name}<br/>
+        Phone Number: ${phone}<br/>
+        Email: ${email}<br/><br/>
+        Message: <br/>
+        ${message}
+      `;
+      await EmailService.sendMail(
+        process.env.EMAIL_FROM,
+        html_data,
+        "Contact Us"
+      );
+
+      return res.status(200).send({
+        success: true,
+        message: "Message sent successfully!",
+      });
+    } catch (error) {
+      t.rollback();
+      return next(error);
+    }
+  });
+};
+
+exports.getAccountsData = async (userId) => {
+  try {
+    const attributes = ["id", "userId", "userType"];
+    const accounts = {
+      service_partner: await ServicePartner.findOne({
+        where: { userId },
+        attributes,
+      }),
+      product_partner: await ProductPartner.findOne({
+        where: { userId },
+        attributes,
+      }),
+      private_client: await PrivateClient.findOne({
+        where: { userId },
+        attributes,
+      }),
+      corporate_client: await CorporateClient.findOne({
+        where: { userId },
+        attributes,
+      }),
+    };
+    const data = [];
+    for (const key in accounts) {
+      if (accounts[key] === null || accounts[key] === undefined) {
+        delete accounts[key];
+      }
+      data.push(accounts[key]);
+    }
+    const filtered = data.filter((where) => where != null);
+
+    return filtered;
+  } catch (error) {
+    return error;
+  }
+};
+
+/**
+ * verification before login
+ * @param {*} req
+ * @param {*} res
+ * @param {*} next
+ */
+exports.verifyLogin = async (req, res, next) => {
+  sequelize.transaction(async (t) => {
+    try {
+      const { email, password } = req.body;
+      if (typeof email !== "undefined") {
+        const user = await UserService.findUser({ email });
+
+        if (!user) {
+          return res.status(400).send({
+            success: false,
+            message: "Invalid Email Address!",
+          });
+        }
+
+        if (typeof password !== "undefined") {
+          const isMatch = await bcrypt.compare(password, user.password);
+          if (!isMatch) {
+            return res.status(404).send({
+              success: false,
+              message: "Incorrect Password!",
+            });
+          }
+        }
+      }
+    } catch (error) {
+      t.rollback();
+      return next(error);
+    }
+  });
+};
+
+exports.loginAdmin = async (req, res, next) => {
+  sequelize.transaction(async (t) => {
+    try {
+      const { email, password } = req.body;
+      const user = await UserService.findUser({ email });
+
+      if (!user) {
+        return res.status(400).send({
+          success: false,
+          message: "Invalid Email Address!",
+        });
+      }
+      if (user.userType !== "admin") {
+        return res.status(400).send({
+          success: false,
+          message: "This Account is not known",
+        });
+      }
+      if (user.isSuspended) {
+        return res.status(400).send({
+          success: false,
+          message: "Your access has been revoked by the superadmin",
+        });
+      }
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        return res.status(404).send({
+          success: false,
+          message: "Invalid Password!",
+        });
+      }
+      const payload = {
+        user: {
+          id: user.id,
+        },
+      };
+      let token = jwt.sign(payload, process.env.TOKEN);
+
+      let result = {
+        id: user.id,
+        fullname: user.fullname,
+        email: user.email,
+        userType: user.userType,
+        phone_no: user.phone_no,
+        country: user.country,
+        address: user.address,
+        expiresIn: "24 hours",
+        email_verify: user.email_verify,
+        updatedAt: user.updatedAt,
+        createdAt: user.createdAt,
+        access_token: token,
+      };
+
+      return res.status(201).send({
+        success: true,
+        message: "Admin Logged In Sucessfully",
+        data: result,
+      });
+    } catch (error) {
+      t.rollback();
+      return next(error);
+    }
+  });
+};
+
+exports.getLoggedInUser = async (req, res) => {
+  try {
+    const user = JSON.parse(
+      JSON.stringify(await UserService.findUserById(req.user.id))
+    );
+    if (!user) {
+      return res.status(404).send({
+        success: false,
+        message: "No User Found",
+        user: null,
+      });
+    }
+    let profile;
+    const data = {
+      ...user,
+    };
+    const userId = user.id;
+    if (req.query.userType && req.query.userType !== "") {
+      const { userType } = req.query;
+      profile = await UserService.getUserTypeProfile(userType, userId);
+      if (profile) {
+        data.profile = profile;
+        data.userType = userType;
+      }
+    } else if (user.userType !== "admin") {
+      profile = await UserService.getUserTypeProfile(user.userType, userId);
+      if (profile) {
+        data.profile = profile;
+        data.userType = user.userType;
+      }
+    }
+
+    return res.status(200).send({
+      success: true,
+      user: data,
+    });
+  } catch (error) {
+    return res.status(500).send({
+      success: false,
+      message: "Server Error",
+    });
+  }
+};
+
+exports.resendCode = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await UserService.findUser({ email });
+    if (!user) {
+      return res.status(404).send({
+        success: false,
+        message: "No User found with this email",
+      });
+    }
+
+    let token = helpers.generateWebToken();
+    let message = helpers.verifyEmailMessage(user.name, email, token);
+    if (req.body.platform === "mobile") {
+      token = helpers.generateMobileToken();
+      message = helpers.mobileVerifyMessage(user.name, token);
+    }
+
+    await EmailService.sendMail(email, message, "Verify Email");
+    const data = {
+      token,
+      id: user.id,
+    };
+    await UserService.updateUser(data);
+
+    return res.status(200).send({
+      success: true,
+      message: "Token Sent check email or mobile number",
+    });
+  } catch (error) {
+    return res.status(500).send({
+      success: false,
+      message: "Server Error",
+    });
+  }
+};
+
+// exports.getAllUsers = async (req, res) => {
+//   try {
+//     const user = await UserService.getUserDetails({ id: req.user.id });
+//     if (!user) {
+//       return res.status(404).send({
+//         success: false,
+//         message: "No User Found",
+//       });
+//     }
+
+//     const where = {
+//       userType: {
+//         [Op.ne]: "admin",
+//       },
+//     };
+//     const userData = JSON.parse(
+//       JSON.stringify(await UserService.getAllUsers(where))
+//     );
+//     // const usersAccounts = [];
+//     // const users = await Promise.all(
+//     //   userData.map(async (customer) => {
+//     //     const accounts = await this.getAccountsData(customer.id);
+//     //     if (accounts.length > 1) {
+//     //       for (const account of accounts) {
+//     //         if (account.userType !== customer.userType) {
+//     //           const userEntity = await UserService.getUserTypeProfile(
+//     //             account.userType,
+//     //             customer.id
+//     //           );
+//     //           const customerData = { ...customer };
+//     //           customerData.userType = account.userType;
+//     //           customerData.profile = userEntity;
+//     //           usersAccounts.push({ user: customerData, accounts });
+//     //         }
+//     //       }
+//     //     }
+//     //     const profile = await UserService.getUserTypeProfile(
+//     //       customer.userType,
+//     //       customer.id
+//     //     );
+//     //     customer.profile = profile;
+//     //     return {
+//     //       user: customer,
+//     //       accounts: JSON.parse(JSON.stringify(accounts)),
+//     //     };
+//     //   })
+//     // );
+//     // const data = [...users, ...usersAccounts];
+//     return res.status(200).send({
+//       success: true,
+//       users: userData,
+//     });
+//   } catch (error) {
+//     console.log(error);
+//     return res.status(500).send({
+//       success: false,
+//       message: "Server Error",
+//     });
+//   }
+// };
+
+exports.analyzeUser = async (req, res, next) => {
+  sequelize.transaction(async (t) => {
+    try {
+      let { y } = req.query;
+
+      if (y === undefined) {
+        y = new Date().getFullYear();
+      }
+
+      const usersByYear = await User.findAll({
+        where: sequelize.where(
+          sequelize.fn("YEAR", sequelize.col("createdAt")),
+          y
+        ),
+      });
+
+      return res.send({
+        success: true,
+        users: usersByYear,
+      });
+    } catch (error) {
+      t.rollback();
+      return next(error);
+    }
+  });
+};
+
+exports.getAllAdmin = async (req, res) => {
+  try {
+    const user = await UserService.getUserDetails({ id: req.user.id });
+    if (!user) {
+      return res.status(404).send({
+        success: false,
+        message: "No User Found",
+      });
+    }
+
+    const where = {
+      userType: "admin",
+    };
+    const users = await User.findAll({ where, order: [["createdAt", "DESC"]] });
+
+    return res.status(200).send({
+      success: true,
+      users,
+    });
+  } catch (error) {
+    return res.status(500).send({
+      success: false,
+      message: "Server Error",
+    });
+  }
+};
+
+exports.findAdmin = async (req, res) => {
+  try {
+    const user = await UserService.getUserDetails({ id: req.user.id });
+    if (!user) {
+      return res.status(404).send({
+        success: false,
+        message: "No User Found",
+      });
+    }
+
+    const where = {
+      userType: "admin",
+      id: req.params.adminId,
+    };
+    const admin = await User.findOne({ where });
+
+    return res.status(200).send({
+      success: true,
+      admin,
+    });
+  } catch (error) {
+    return res.status(500).send({
+      success: false,
+      message: "Server Error",
+    });
+  }
+};
+
+exports.revokeAccess = async (req, res) => {
+  try {
+    const { userId } = req.body;
+    const user = await UserService.getUserDetails({ id: req.user.id });
+    if (!user) {
+      return res.status(404).send({
+        success: false,
+        message: "No User Found",
+      });
+    }
+    if (user.level === 1) {
+      return res.status(401).send({
+        success: false,
+        message: "UnAuthorised access",
+      });
+    }
+    await User.destroy({ where: { id: userId } });
+
+    const mesg = `The Admin ${user.email} rights has been revoked by super admin`;
+    const notifyType = "admin";
+    const { io } = req.app;
+    await Notification.createNotification({
+      userId,
+      type: notifyType,
+      message: mesg,
+    });
+    io.emit("getNotifications", await Notification.fetchAdminNotification());
+
+    return res.status(200).send({
+      success: true,
+      message: "Admin Access revoked",
+    });
+  } catch (error) {
+    return res.status(500).send({
+      success: false,
+      message: "Server Error",
+    });
+  }
+};
+
+exports.findSingleUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const userData = JSON.parse(
+      JSON.stringify(await UserService.findUserDetail({ id: userId }))
+    );
+    const profile = await UserService.getUserTypeProfile(
+      req.query.userType,
+      userData.id
+    );
+    userData.userType = req.query.userType;
+    userData.profile = profile;
+
+    const accounts = await this.getAccountsData(userId);
+
+    const servicePartner = await ServicePartner.findOne({ where: { userId } });
+    let ongoingProjects = [];
+    let completedProjects = [];
+    if (servicePartner !== null) {
+      const projectDetails = await Projects.findAll({
+        where: { serviceProviderId: servicePartner.id },
+      });
+      ongoingProjects = projectDetails.filter(
+        (_detail) => _detail.status === "ongoing"
+      );
+      completedProjects = projectDetails.filter(
+        (_detail) => _detail.status === "completed"
+      );
+    }
+
+    return res.status(200).send({
+      success: true,
+      data: {
+        user: userData,
+        accounts,
+        ongoingProjects,
+        completedProjects,
+      },
+    });
+  } catch (error) {
+    return res.status(500).send({
+      success: false,
+      message: "Server Error",
+    });
+  }
+};
+
+exports.addUserProfile = async (data, t) => {
+  try {
+    const { userType, userId, company_name, serviceTypeId } = data;
+    const where = {
+      userId,
+    };
+    if (userType === "professional") {
+      const request = {
+        userId,
+        company_name,
+        userType: "professional",
+        serviceTypeId,
+      };
+      await ServicePartner.create(request, { transaction: t });
+    } else if (userType === "vendor") {
+      const request = {
+        userId,
+        company_name,
+        userType: "vendor",
+      };
+      await ProductPartner.create(request, { transaction: t });
+    } else if (userType === "private_client") {
+      const request = {
+        userId,
+        userType: "private_client",
+      };
+      await PrivateClient.create(request, { transaction: t });
+    } else if (userType === "corporate_client") {
+      const request = {
+        userId,
+        company_name,
+        userType: "corporate_client",
+      };
+      await CorporateClient.create(request, { transaction: t });
+    }
+    return true;
+  } catch (error) {
+    t.rollback();
+    return error;
+  }
+};
+
+exports.checkIfAccountExist = async (userType, userId) => {
+  const where = {
+    userId,
+  };
+  let user;
+  if (userType === "professional") {
+    user = await ServicePartner.findOne({ where });
+  } else if (userType === "vendor") {
+    user = await ProductPartner.findOne({ where });
+  } else if (userType === "private_client") {
+    user = await PrivateClient.findOne({ where });
+  } else if (userType === "corporate_client") {
+    user = await CorporateClient.findOne({ where });
+  }
+  return user;
+};
+
+exports.deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await UserService.getUserDetails({ id });
+    if (!user) {
+      return res.status(404).send({
+        success: false,
+        message: "No User Found",
+      });
+    }
+
+    await User.destroy({ where: { id } });
+
+    return res.status(200).send({
+      success: true,
+      message: "User deleted!",
+    });
+  } catch (error) {
+    return res.status(500).send({
+      success: false,
+      message: "Server Error",
+    });
+  }
+};
+
+// exports.suspendUser = async (req, res) => {
+//   try {
+//     const { userId, reason } = req.body;
+//     const user = await UserService.getUserDetails({ id: req.user.id });
+//     if (!user) {
+//       return res.status(404).send({
+//         success: false,
+//         message: "No User Found",
+//       });
+//     }
+
+//     const update = {
+//       isSuspended: true,
+//       reason_for_suspension: reason,
+//     };
+
+//     const userdetails = await User.findOne({ where: { id: userId } });
+
+//     const super_admins = JSON.parse(
+//       JSON.stringify(
+//         await User.findAll({
+//           where: { userType: "admin", level: 1, isActive: 1, isSuspended: 0 },
+//         })
+//       )
+//     );
+
+//     await User.update(update, { where: { id: userId } });
+
+//     // Mailer methods
+//     await AdminSuspendUserMailerForUser(
+//       { first_name: userdetails.first_name, email: userdetails.email },
+//       reason
+//     );
+//     await AdminSuspendUserMailerForAdmin(userdetails, super_admins, reason);
+
+//     return res.status(200).send({
+//       success: true,
+//       message: "User suspended",
+//     });
+//   } catch (error) {
+//     console.log(error);
+//     return res.status(500).send({
+//       success: false,
+//       message: "Server Error",
+//     });
+//   }
+// };
+
+// exports.unsuspendUser = async (req, res) => {
+//   try {
+//     const { userId } = req.body;
+//     const user = await UserService.getUserDetails({ id: req.user.id });
+//     if (!user) {
+//       return res.status(404).send({
+//         success: false,
+//         message: "No User Found",
+//       });
+//     }
+//     if (user.userType !== "admin") {
+//       return res.status(401).send({
+//         success: false,
+//         message: "UnAuthorised access",
+//       });
+//     }
+//     const update = {
+//       isSuspended: false,
+//       isActive: true,
+//     };
+
+//     await User.update(update, { where: { id: userId } });
+
+//     return res.status(200).send({
+//       success: true,
+//       message: "User suspended",
+//     });
+//   } catch (error) {
+//     return res.status(500).send({
+//       success: false,
+//       message: "Server Error",
+//     });
+//   }
+// };

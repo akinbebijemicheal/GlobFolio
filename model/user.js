@@ -2,48 +2,86 @@ const Sequelize = require('sequelize');
 const db = require('../config/config');
 const {nanoid} = require('nanoid');
 
-const User = db.define('user', {
+const User = db.define(
+  "user",
+  {
     id: {
-        type: Sequelize.STRING(10),
-        autoincrement: false,
-        allowNull: false,
-        primaryKey: true,
-        defaultValue: () => nanoid(10)
+      type: Sequelize.UUID,
+      defaultValue: Sequelize.UUIDV4,
+      unique: true,
+      primaryKey: true,
     },
     fullname: {
-        type: Sequelize.STRING,
-        allowNull: true
+      type: Sequelize.STRING,
+      allowNull: true,
     },
     email: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        unique: true,
+      type: Sequelize.STRING,
+      allowNull: false,
+      unique: true,
     },
     password: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        min: 6,
-        max: 20
+      type: Sequelize.STRING,
+      allowNull: false,
+      min: 6,
+      max: 20,
     },
     phone_no: {
-        type: Sequelize.STRING
+      type: Sequelize.STRING,
+    },
+    gender: {
+      type: Sequelize.STRING,
     },
     country: {
-      type: Sequelize.STRING  
+      type: Sequelize.STRING,
     },
-    address: {
-        type: Sequelize.STRING
+    isActive: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: false,
     },
-    role: {
-        type: Sequelize.ENUM,
-        values: ['user', 'admin', "moderator", "publisher"],
-        defaultValue: 'user'
+    token: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    },
+    userType: {
+      type: Sequelize.ENUM,
+      values: ["user", "admin", "moderator", "publisher"],
+      defaultValue: "user",
     },
     email_verify: {
-        type: Sequelize.BOOLEAN,
-        defaultValue: false
-    }
-},
-{timestamps: true});
+      type: Sequelize.BOOLEAN,
+      defaultValue: false,
+    },
+    referralId: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    },
+    aboutUs: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    },
+    isSuspended: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: false,
+    },
+    app: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    },
+    facebook_id: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    },
+    google_id: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    },
+    apple_id: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    },
+  },
+  { timestamps: true }
+);
 
 module.exports = User;

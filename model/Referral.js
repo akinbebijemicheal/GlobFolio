@@ -3,8 +3,8 @@ const Sequelize = require("sequelize");
 const db = require("../config/config");
 
 
-const Subscription = db.define(
-  "subscriptions",
+const Referral = db.define(
+  "referral",
   {
     id: {
       type: Sequelize.UUID,
@@ -16,25 +16,12 @@ const Subscription = db.define(
       allowNull: true,
       type: Sequelize.UUID
     },
-    planId: {
+    referredId: {
       allowNull: true,
       type: Sequelize.UUID
-    },
-    expiredAt: {
-      allowNull: true,
-      type: Sequelize.DATE
-    },
-    amount: {
-      allowNull: true,
-      type: Sequelize.FLOAT
-    },
-    status: {
-      allowNull: true,
-      type: Sequelize.BOOLEAN,
-      defaultValue: true
     }
   },
   { paranoid: true }
 );
 
-module.exports = Subscription;
+module.exports = Referral;

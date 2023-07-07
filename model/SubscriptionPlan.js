@@ -3,8 +3,8 @@ const Sequelize = require("sequelize");
 const db = require("../config/config");
 
 
-const Subscription = db.define(
-  "subscriptions",
+const SubscriptionPlan = db.define(
+  "subscription_plans",
   {
     id: {
       type: Sequelize.UUID,
@@ -12,29 +12,20 @@ const Subscription = db.define(
       unique: true,
       primaryKey: true
     },
-    userId: {
+    name: {
       allowNull: true,
-      type: Sequelize.UUID
+      type: Sequelize.STRING
     },
-    planId: {
+    duration: {
       allowNull: true,
-      type: Sequelize.UUID
-    },
-    expiredAt: {
-      allowNull: true,
-      type: Sequelize.DATE
+      type: Sequelize.INTEGER
     },
     amount: {
       allowNull: true,
       type: Sequelize.FLOAT
-    },
-    status: {
-      allowNull: true,
-      type: Sequelize.BOOLEAN,
-      defaultValue: true
     }
   },
   { paranoid: true }
 );
 
-module.exports = Subscription;
+module.exports = SubscriptionPlan;
