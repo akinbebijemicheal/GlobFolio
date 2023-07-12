@@ -198,8 +198,8 @@ exports.invoice = (data) => {
         </tr>
         <tr>
             <td>
-                <b>Reference:</b> ${data.transaction.reference}<br/>
-                <b>Name:</b> ${data.user.name}<br/>
+                <b>Reference Cod:</b> ${data.transaction.reference}<br/>
+                <b>Name:</b> ${data.user.fullname}<br/>
                 <b>Email Address:</b> ${data.user.email}<br/>
                 <b>Subscription Expiry Date:</b> ${data.expiryDate}<br/>
                 ${data.client.client_custom_1}<br/>
@@ -236,7 +236,7 @@ exports.invoice = (data) => {
                 <td>${data.plan.name}</td>
                 <td align="center">One month</td>
                 <td>${data.plan.amount}</td>
-                <td>${data.total}</td>
+                <td>${data.amount}</td>
             </tr>
       
         </tbody>
@@ -259,7 +259,7 @@ exports.invoice = (data) => {
         <tr>
             <td></td>
             <td><b>Subtotal:</b></td>
-            <td>${data.subtotal}</td>
+            <td>${data.plan.amount}</td>
         </tr>
        
         </thead>
@@ -276,7 +276,7 @@ exports.invoice = (data) => {
         <tr>
             <td></td>
             <td><b>Total:</b></td>
-            <td>${data.total}</td>
+            <td>${data.amount}</td>
         </tr>
         </tfoot>
     </table>

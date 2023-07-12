@@ -278,7 +278,7 @@ exports.verifySubscription = async (req, res, next) => {
             filename: `${orderData.user.fullname} Subscription.pdf`,
           },
         ];
-        const message = helpers.invoiceMessage(user.name);
+        const message = helpers.invoiceMessage(user.fullname);
         sendMail(user.email, message, "GlobFolio Subscription Invoice", files);
       }
       // Notify admin
