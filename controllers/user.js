@@ -35,6 +35,18 @@ const myAccessToken = myOAuth2Client.getAccessToken()*/
 
 const baseurl = process.env.BASE_URL;
 
+exports.checkRole = (roles) => (req, res, next) => {
+  console.log(roles, req.user)
+  if (!roles.includes(req.user.userType)) {
+    return res.status(401).json({
+      status: false,
+      message: "Unauthorized",
+    });
+  }
+  return next();
+};
+
+
 exports.RegisterUser = async (req, res, next) => {
   sequelize.transaction(async (t) => {
     try {
@@ -624,15 +636,7 @@ exports.deleteUserByAdmin = async (req, res) => {
   }
 };
 
-exports.checkRole = (roles) => (req, res, next) => {
-  if (!roles.includes(req.user.role)) {
-    return res.status(401).json({
-      status: false,
-      message: "Unauthorized",
-    });
-  }
-  return next();
-};
+
 
 // exports.registerUser = async (req, res, next) => {
 //   sequelize.transaction(async (t) => {
@@ -1356,9 +1360,7 @@ exports.loginAdmin = async (req, res, next) => {
         });
       }
       const payload = {
-        user: {
-          id: user.id,
-        },
+        user: user
       };
       let token = jwt.sign(payload, process.env.TOKEN);
 

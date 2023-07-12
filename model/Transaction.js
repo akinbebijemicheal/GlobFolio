@@ -1,8 +1,8 @@
 const Sequelize = require("sequelize");
-const sequelise = require("../config/database/connection");
-const User = require("./User");
+const db = require('../config/config');
+const User = require("./user");
 
-const Transaction = sequelise.define(
+const Transaction = db.define(
   "transactions",
   {
     id: {
@@ -16,7 +16,7 @@ const Transaction = sequelise.define(
       allowNull: true
     },
     userId: {
-      type: Sequelize.STRING,
+      type: Sequelize.UUID,
       allowNull: true
     },
     amount: {

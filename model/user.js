@@ -80,6 +80,18 @@ const User = db.define(
       type: Sequelize.STRING,
       allowNull: true,
     },
+    planId: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    },
+    hasActiveSubscription: {
+      type: Sequelize.BOOLEAN,
+      allowNull: true,
+    },
+    expiredAt: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    },
   },
   { timestamps: true }
 );

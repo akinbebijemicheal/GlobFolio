@@ -2,6 +2,8 @@ require("dotenv").config();
 const axios = require("axios");
 const User = require("../model/user");
 const Referral = require("../model/Referral");
+// const BankDetail = require("../model/BankDetail");
+
 
 exports.findUser = async (where) => {
   const user = await User.findOne({ where });
