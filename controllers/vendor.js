@@ -1,5 +1,5 @@
 const User = require('../model/user');
-const Subscription = require('../model/subscription')
+const Subscription = require('../model/Subscription')
 require('dotenv').config();
 
 
