@@ -7,6 +7,7 @@ const helpers = require("../helpers/message");
 const EmailService = require("../service/emailService");
 const UserService = require("../service/UserService");
 const db = require("../config/config");
+const { ClientForgotPasswordMobileMailer, ClientForgotPasswordMailer } = require("../helpers/mailer/samples");
 const sequelize = db;
 /*const { google } = require("googleapis");
 const OAuth2 = google.auth.OAuth2;
