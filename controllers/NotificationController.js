@@ -41,12 +41,16 @@ exports.getAllAdminNotifications = async (req, res, next) => {
 
 exports.getAllAUserNotifications = async (req, res, next) => {
   try {
+    const userId = req.params.userId
     const notifications = await Notification.findAll({
       where: {
-        type: "user",
-        userId: req.params.userId
+        [Op.or]: [
+          { [Op.and]: [{ userId: userId }, { type: "user" }] },
+          { type: "general" },
+        ],
+        [Op.or]: [{ status: "pending" }, { status: "unread" }],
       },
-      order: [["createdAt", "DESC"]]
+      order: [["createdAt", "DESC"]],
     });
     return res.status(200).send({
       success: true,

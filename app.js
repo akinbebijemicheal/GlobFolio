@@ -13,6 +13,8 @@ const flash = require('express-flash-messages');
 const store = require('store');
 const multerpic = require('multer');
 const Notification = require("./helpers/notification");
+const cron = require("node-cron");
+
 
 
 
@@ -38,9 +40,7 @@ app.use(session({
 app.use(flash({
   passToView: true
 }))
-app.get("/", (req, res) => {
-  res.send(`IWTYS APP ${new Date()}`);
-});
+
 app.use(passport.initialize());
 app.use(passport.session());
 require('./middleware/passport')(passport);
@@ -48,6 +48,8 @@ app.use('/api', apirouter);
 
 const http = require("http");
 const { Server } = require("socket.io");
+const User = require('./model/user');
+const Subscription = require('./model/Subscription');
 const server = http.createServer(app);
 
 const io = new Server(server, {
@@ -84,8 +86,45 @@ io.on("connection", async (socket) => {
   });
 });
 
+
+// scheduler for subscription
+cron.schedule("* 6 * * *", () => {
+  Subscription.findAll({
+    where: { status: 1 },
+  })
+    .then(async (activeSubscriptions) => {
+      // console.log(activeSubscriptions);
+      await Promise.all(
+        activeSubscriptions.map(async (sub) => {
+          if (sub.expiredAt < moment()) {
+            await Subscription.update({ status: 0 }, { where: { id: sub.id } });
+            let user = await User.findOne({
+              where: { id: sub.userId },
+            });
+            const updateData = {
+              hasActiveSubscription: false,
+              planId: null,
+            };
+            if (user) {
+              await User.update(updateData, {
+                where: { id: user.id },
+              });
+            } else {
+             ('No Subscription Updated')
+            }
+          }
+        })
+      );
+      console.log(`No Subscription updated`);
+    })
+    .catch((error) => {
+      return null;
+    });
+  // }
+});
+
 app.get("/", (req, res) => {
-  res.send(`BOG APP ${new Date()}`);
+  res.send(`GLOBFOLIO APP ${new Date()}`);
 });
 
 db.authenticate()

@@ -28,7 +28,10 @@ exports.fetchUserNotification = async ({ userId }) => {
   try {
     const notifications = await Notification.findAll({
       where: {
-        [Op.or]: [{userId: userId}, {type: "user"}],
+        [Op.or]: [
+          { [Op.and]: [{ userId: userId }, { type: "user" }] },
+          { type: "general" },
+        ],
         [Op.or]: [{ status: "pending" }, { status: "unread" }],
       },
       order: [["createdAt", "DESC"]],
@@ -48,7 +51,7 @@ exports.fetchUserNotificationApi = async notifyParam => {
     const { userId } = notifyParam;
     const notifications = await Notification.findAll({
       where: {
-        [Op.or]: [{ userId: userId }, { type: "general" }],
+        [Op.or]: [{[Op.and]: [{ userId: userId }, {type: "user"}]}, { type: "general" }],
         [Op.or]: [{ status: "pending" }, { status: "unread" }],
       },
       order: [["createdAt", "DESC"]],

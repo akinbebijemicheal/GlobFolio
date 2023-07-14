@@ -348,3 +348,132 @@ exports.getUserSubscriptionHistory = async (req, res, next) => {
     return next(error);
   }
 };
+
+exports.upgradeSubscriptionPlan = async (req, res, next) => {
+  sequelize.transaction(async (t) => {
+    try {
+      const { userId, reference, planId } = req.body;
+      const plan = await SubscriptionPlan.findOne({ where: { id: planId } });
+      const { duration, amount, name } = plan;
+
+      const response = await Service.Paystack.verifyPayment(reference);
+      console.log(response);
+      if (response.status === false) {
+        return res.status(400).json({
+          success: false,
+          message: response.message || "Transaction reference not valid",
+        });
+      }
+
+      const profile = await UserService.findUserById(userId);
+      const { id } = profile;
+      // safe payment made for reference
+      const paymentData = {
+        userId: id,
+        payment_reference: reference,
+        amount,
+        payment_category: "Subscription",
+      };
+
+      await Payment.create(paymentData, { transaction: t });
+      // get user has active sub
+      const sub = await Subscription.findOne({
+        where: { userId: id, status: 1 },
+      });
+      const now = moment();
+      let remainingDays = 0;
+      if (sub) {
+        // get expiration Date
+        const { expiredAt } = sub;
+        const then = moment(expiredAt);
+        remainingDays = then.diff(now, "days");
+        // console.log(expiredAt, remainingDays);
+        await sub.update({ status: 0 }, { transaction: t });
+      }
+      const days = Number(duration) * 7 + remainingDays;
+
+      // create subscription
+      const newDate = moment(now, "DD-MM-YYYY").add(days, "days");
+      const request = {
+        userId: id,
+        planId,
+        status: 1,
+        expiredAt: newDate,
+        amount,
+      };
+      await Subscription.create(request, { transaction: t });
+      // update user profile
+      const userData = {
+        id: id,
+        planId,
+        hasActiveSubscription: true,
+        expiredAt: newDate,
+      };
+      await UserService.updateUser({
+        userData,
+        transaction: t,
+      });
+
+      // save transaction
+      const description = `Made Payment for ${plan.name}`;
+      const slug = Math.floor(190000000 + Math.random() * 990000000);
+      const txSlug = `BOG/TXN/${slug}`;
+      const transaction = {
+        TransactionId: txSlug,
+        userId: id,
+        type: "Subscription",
+        amount,
+        description,
+        paymentReference: reference,
+        status: "PAID",
+      };
+      await Transaction.create(transaction, { transaction: t });
+      const user = await User.findByPk(userId);
+
+      let orderData = {
+        user: user,
+        transaction: transaction,
+        plan: plan,
+        expiryDate: newDate,
+      };
+
+      const invoice = await invoiceService.createInvoice(orderData, user);
+      if (invoice) {
+        const files = [
+          {
+            path: `uploads/${orderData.user.fullname} Subscription.pdf`,
+            filename: `${orderData.user.fullname} Subscription.pdf`,
+          },
+        ];
+        const message = helpers.invoiceMessage(user.fullname);
+        sendMail(user.email, message, "GlobFolio Subscription Invoice", files);
+      }
+      // Notify admin
+      const mesg = `${
+        user.name ? user.name : `${user.fullname}`
+      } just subscribed to ${name} with their ${UserService.getUserType(
+        user.userType
+      )} account`;
+      const notifyType = "admin";
+      const { io } = req.app;
+      await Notification.createNotification({
+        type: notifyType,
+        message: mesg,
+        userId: id,
+      });
+      io.emit("getNotifications", await Notification.fetchAdminNotification());
+
+      return res.send({
+        success: true,
+        message: "Subscription Made Sucessfully",
+        data: response,
+      });
+    } catch (error) {
+      console.log(error);
+      t.rollback();
+      return next(error);
+    }
+  });
+};
+
+

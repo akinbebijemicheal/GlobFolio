@@ -62,6 +62,12 @@ const userVerify = require("../middleware/verify");
 const { support, getSupportMessages } = require("../controllers/support");
 const passport = require("passport");
 const { createFeedback, getAllFeedbacks } = require("../controllers/feedback");
+
+
+
+router.get("/", (req, res) => {
+  res.send(`GLOBFOLIO APP ${new Date()}`);
+});
 //user
 router.post("/register-user", async (req, res, next) => {
   await RegisterUser(req, res, next);
@@ -141,7 +147,7 @@ router.route("/verification").post(jwtAuth, checkRole(["admin"]), verification);
 
 // router.route("/reset-password/:id/:token").get(forgotPassword);
 
-router.route("/change-password").patch(jwtAuth, changePassword);
+router.route("/user/change-password").patch(jwtAuth, changePassword);
 
 router.route("/verifyemail").get(verifyUserEmail);
 
