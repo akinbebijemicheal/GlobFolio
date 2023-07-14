@@ -28,18 +28,19 @@ exports.fetchUserNotification = async ({ userId }) => {
   try {
     const notifications = await Notification.findAll({
       where: {
-        userId,
-        type: "user",
-        [Op.or]: [{ status: "pending" }, { status: "unread" }]
+        [Op.or]: [{userId: userId}, {type: "user"}],
+        [Op.or]: [{ status: "pending" }, { status: "unread" }],
       },
       order: [["createdAt", "DESC"]],
-      limit: 5
+      limit: 5,
     });
     return notifications;
   } catch (error) {
     return error;
   }
 };
+
+
 exports.fetchUserNotificationApi = async notifyParam => {
   try {
 
@@ -47,12 +48,11 @@ exports.fetchUserNotificationApi = async notifyParam => {
     const { userId } = notifyParam;
     const notifications = await Notification.findAll({
       where: {
-        userId,
-        type: "user",
-        [Op.or]: [{ status: "pending" }, { status: "unread" }]
+        [Op.or]: [{ userId: userId }, { type: "general" }],
+        [Op.or]: [{ status: "pending" }, { status: "unread" }],
       },
       order: [["createdAt", "DESC"]],
-      limit: 5
+      limit: 5,
     });
     return notifications;
   } catch (error) {

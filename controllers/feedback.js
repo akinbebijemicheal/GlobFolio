@@ -13,6 +13,8 @@ const UserService = require("../service/UserService");
 const randomstring = require("randomstring");
 const Feedback = require("../model/feedback");
 const { Sequelize, Op } = require("sequelize");
+const Notification = require("../helpers/notification");
+
 
 exports.createFeedback = async (req, res, next) => {
   sequelize.transaction(async (t) => {
@@ -63,6 +65,19 @@ exports.createFeedback = async (req, res, next) => {
       //     message: mesg,
       //   });
       //   io.emit("getNotifications", await Notification.fetchAdminNotification());
+           const mesgAdmin = `A new user feedback was made by ${user.email}`;
+           const userIdAdmin = user.id;
+           const notifyTypeAdmin = "admin";
+           await Notification.createNotification({
+             userId: userIdAdmin,
+             type: notifyTypeAdmin,
+             message: mesgAdmin,
+           });
+
+           io.emit(
+             "getNotifications",
+             await Notification.fetchAdminNotification()
+           );
 
       return res.status(201).send({
         success: true,

@@ -10,12 +10,37 @@ const User = require("../model/user");
 const Notification = require("../helpers/notification");
 const TopGainer = require("../model/topGainer");
 
+
 exports.createTopGainer = async (req, res, next) => {
   sequelize.transaction(async (t) => {
     try {
       const topGainer = await TopGainer.create(req.body, {
         transaction: t,
       });
+
+         const mesg = `A new Top Gainer was just posted`;
+         // const userId = "general";
+         const notifyType = "general";
+         const { io } = req.app;
+         await Notification.createNotification({
+           // userId,
+           type: notifyType,
+           message: mesg,
+         });
+
+         const mesgAdmin = `A admin just created a new top gainer`;
+         const userIdAdmin = req.user.id;
+         const notifyTypeAdmin = "admin";
+         await Notification.createNotification({
+           userId: userIdAdmin,
+           type: notifyTypeAdmin,
+           message: mesgAdmin,
+         });
+
+         io.emit(
+           "getNotifications",
+           await Notification.fetchAdminNotification()
+         );
 
       return res.status(200).send({
         success: true,
@@ -38,6 +63,30 @@ exports.updateTopGainer = async (req, res, next) => {
        const topGainer = await TopGainer.findByPk(topGainerId);
 
 
+          const mesg = `Top Gainer ${req.body.name} was just updated`;
+          // const userId = "general";
+          const notifyType = "general";
+          const { io } = req.app;
+          await Notification.createNotification({
+            // userId,
+            type: notifyType,
+            message: mesg,
+          });
+
+          const mesgAdmin = `A admin just updated top gainer ${req.body.name}`;
+          const userIdAdmin = req.user.id;
+          const notifyTypeAdmin = "admin";
+          await Notification.createNotification({
+            userId: userIdAdmin,
+            type: notifyTypeAdmin,
+            message: mesgAdmin,
+          });
+
+          io.emit(
+            "getNotifications",
+            await Notification.fetchAdminNotification()
+          );
+
       return res.status(200).send({
         success: true,
         message: "TopGainer updated successfully",
@@ -59,6 +108,19 @@ exports.deleteTopGainer = async (req, res, next) => {
         where: { id: topGainerId },
       });
 
+            const mesgAdmin = `A admin just deleted top gainer ${req.body.name}`;
+            const userIdAdmin = req.user.id;
+            const notifyTypeAdmin = "admin";
+            await Notification.createNotification({
+              userId: userIdAdmin,
+              type: notifyTypeAdmin,
+              message: mesgAdmin,
+            });
+
+            io.emit(
+              "getNotifications",
+              await Notification.fetchAdminNotification()
+            );
       return res.status(200).send({
         success: true,
         message: "TopGainer delete successfully",

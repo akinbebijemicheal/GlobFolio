@@ -11,7 +11,6 @@ const PaystackController = require("../controllers/PaystackController");
 
 const { validate, bankValidation } = require("../helpers/validators");
 
-
 const {
   profile,
   RegisterUser,
@@ -31,6 +30,9 @@ const {
   getUserById,
   getAdminById,
   deleteUserByAdmin,
+  revokeAccess,
+  unsuspendUser,
+  suspendUser,
 } = require("../controllers/user");
 const {
   checkEmail,
@@ -151,9 +153,6 @@ router
   .route("/admin/reset-password/:id")
   .put(jwtAuth, checkRole(["admin"]), resetUserPassword);
 
-
-
-
 //-----------------------------Support--------------------------------
 router.post("/support", support);
 router.post(
@@ -163,9 +162,6 @@ router.post(
   getSupportMessages
 );
 
-
-
-
 //-----------------------------Feedback--------------------------------
 router.post("/dashboard/createFeedback", jwtAuth, createFeedback);
 router.get(
@@ -174,9 +170,6 @@ router.get(
   checkRole(["admin"]),
   getAllFeedbacks
 );
-
-
-
 
 //-----------------------------Admin User Manage--------------------------------
 router.get(
@@ -193,6 +186,7 @@ router.get(
 );
 // router.post("/admin/getUserByName", jwtAuth, getUser);
 router.get("/admin/getAllUsers", jwtAuth, checkRole(["admin"]), getUsers);
+
 router.delete(
   "/admin/deleteUser/:userId",
   jwtAuth,
@@ -200,7 +194,22 @@ router.delete(
   deleteUserByAdmin
 );
 
+router
+  .route("/admin/revoke-access")
+  .post(jwtAuth,
+  checkRole(["admin"]), revokeAccess);
 
+router
+  .route("/admin/suspend-user")
+  .post(
+    jwtAuth,
+    checkRole(["admin"]),
+    suspendUser
+  );
+
+router
+  .route("/admin/unsuspend-user")
+  .post(jwtAuth, checkRole(["admin"]), unsuspendUser);
 
 //-----------------------------Subscription--------------------------------
 
@@ -260,13 +269,9 @@ router
     SubscriptionController.subscribeToPlan
   );
 
-  router
-    .route("/subscription/verifySubscription")
-    .post(
-      jwtAuth,
-      SubscriptionController.verifySubscription
-    );
-
+router
+  .route("/subscription/verifySubscription")
+  .post(jwtAuth, SubscriptionController.verifySubscription);
 
 //-----------------------------Paystack Bank--------------------------------
 
@@ -281,9 +286,6 @@ router
 router
   .route("/bank/save-bank")
   .post(bankValidation(), validate, jwtAuth, PaystackController.saveBankDetail);
-
-
-
 
 //-----------------------------Top Gainers--------------------------------
 
@@ -308,7 +310,6 @@ router
   .route("/topGainer/topGainers/:topGainerId")
   .get(jwtAuth, TopGainerController.getSingleTopGainer);
 
-
 router
   .route("/topGainer/update")
   .patch(jwtAuth, checkRole(["admin"]), TopGainerController.updateTopGainer);
@@ -316,9 +317,6 @@ router
 router
   .route("/topGainer/delete/:topGainerId")
   .delete(jwtAuth, checkRole(["admin"]), TopGainerController.deleteTopGainer);
-
-
-
 
 //-----------------------------Stock Advisory--------------------------------
 
@@ -346,15 +344,53 @@ router
 
 router
   .route("/stockAdvisory/update")
-  .patch(jwtAuth, checkRole(["admin"]), upload.any(), TopGainerController.updateTopGainer);
+  .patch(
+    jwtAuth,
+    checkRole(["admin"]),
+    upload.any(),
+    TopGainerController.updateTopGainer
+  );
 
 router
   .route("/stockAdvisory/delete/:stockAdvisoryId")
   .delete(jwtAuth, checkRole(["admin"]), TopGainerController.deleteTopGainer);
 
 
+//------------------------------Announcements-------------------------------
 
 
+  const AdminMessageController = require("../controllers/AdminMessageController");
+
+  // const upload = require("../helpers/upload");
+
+  router
+    .route("/announcements/all")
+    .get(AdminMessageController.viewAnnouncements);
+
+  router
+    .route("/announcements")
+    .get(
+      jwtAuth,
+      checkRole(["admin"]),
+      AdminMessageController.allAdminMessages
+    );
+
+  router
+    .route("/announcements/delete-message/:id")
+    .delete(
+      jwtAuth,
+      checkRole(["admin"]),
+      AdminMessageController.deleteAnnouncement
+    );
+
+  router
+    .route("/announcements/new-announcement")
+    .post(
+      jwtAuth,
+      checkRole(["admin"]),
+      upload.single("supportingDocument"),
+      AdminMessageController.postAnnouncement
+    );
 
 
 module.exports = router;

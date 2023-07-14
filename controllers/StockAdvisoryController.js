@@ -32,6 +32,29 @@ exports.createStockAdvisory = async (req, res, next) => {
       const stockAdvisory = await StockAdvisory.create(req.body, {
         transaction: t,
       });
+        const mesg = `A new Analyst Pick was just posted`;
+        // const userId = "general";
+        const notifyType = "general";
+        const { io } = req.app;
+        await Notification.createNotification({
+          // userId,
+          type: notifyType,
+          message: mesg,
+        });
+
+        const mesgAdmin = `A admin just created a new Analyst Pick`;
+        const userIdAdmin = req.user.id;
+        const notifyTypeAdmin = "admin";
+        await Notification.createNotification({
+          userId: userIdAdmin,
+          type: notifyTypeAdmin,
+          message: mesgAdmin,
+        });
+
+        io.emit(
+          "getNotifications",
+          await Notification.fetchAdminNotification()
+        );
 
       return res.status(200).send({
         success: true,
@@ -68,6 +91,29 @@ exports.updateStockAdvisory = async (req, res, next) => {
       await StockAdvisory.update(req.body, { where, transaction: t });
       const stockAdvisory = await StockAdvisory.findByPk(stockAdvisoryId);
 
+        const mesg = `Analyst Pick ${stockAdvisory.intro}`;
+        // const userId = "general";
+        const notifyType = "general";
+        const { io } = req.app;
+        await Notification.createNotification({
+          // userId,
+          type: notifyType,
+          message: mesg,
+        });
+
+        const mesgAdmin = `A admin just updated analyst pick ${stockAdvisory.intro}`;
+        const userIdAdmin = req.user.id;
+        const notifyTypeAdmin = "admin";
+        await Notification.createNotification({
+          userId: userIdAdmin,
+          type: notifyTypeAdmin,
+          message: mesgAdmin,
+        });
+
+        io.emit(
+          "getNotifications",
+          await Notification.fetchAdminNotification()
+        );
       return res.status(200).send({
         success: true,
         message: "StockAdvisory updated successfully",
@@ -89,6 +135,20 @@ exports.deleteStockAdvisory = async (req, res, next) => {
         where: { id: stockAdvisoryId },
       });
 
+
+        const mesgAdmin = `A admin just deleted an Analyst Pick`;
+        const userIdAdmin = req.user.id;
+        const notifyTypeAdmin = "admin";
+        await Notification.createNotification({
+          userId: userIdAdmin,
+          type: notifyTypeAdmin,
+          message: mesgAdmin,
+        });
+
+        io.emit(
+          "getNotifications",
+          await Notification.fetchAdminNotification()
+        );
       return res.status(200).send({
         success: true,
         message: "StockAdvisory delete successfully",

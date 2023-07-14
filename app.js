@@ -70,18 +70,17 @@ io.on("connection", async (socket) => {
     "getUserNotifications",
     await Notification.fetchUserNotificationApi(socket.handshake.query)
   );
+  io.emit(
+    "getGeneralNotifications",
+    await Notification.fetchGeneralNotification(socket.handshake.query)
+  );
   socket.on("notification_read", async (data) => {
     const { id } = data;
     socket.emit("markAsRead", await Notification.updateNotification(id));
   });
 
-  
-
   socket.on("disconnect", () => {
-    onlineUsers = onlineUsers.filter((user) => user.socketId !== socket.id);
-
-    console.log("Online Users", onlineUsers);
-    io.emit("getOnlineUsers", onlineUsers);
+    
   });
 });
 
