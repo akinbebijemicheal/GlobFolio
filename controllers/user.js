@@ -17,8 +17,6 @@ const UserService = require("../service/UserService");
 const randomstring = require("randomstring");
 const { Sequelize, Op } = require("sequelize");
 
-
-
 /*const { google } = require("googleapis");
 const OAuth2 = google.auth.OAuth2;
 
@@ -36,7 +34,7 @@ const myAccessToken = myOAuth2Client.getAccessToken()*/
 const baseurl = process.env.BASE_URL;
 
 exports.checkRole = (roles) => (req, res, next) => {
-  console.log(roles, req.user)
+  console.log(roles, req.user);
   if (!roles.includes(req.user.userType)) {
     return res.status(401).json({
       status: false,
@@ -45,7 +43,6 @@ exports.checkRole = (roles) => (req, res, next) => {
   }
   return next();
 };
-
 
 exports.RegisterUser = async (req, res, next) => {
   sequelize.transaction(async (t) => {
@@ -124,36 +121,32 @@ exports.RegisterUser = async (req, res, next) => {
       };
       await UserService.updateUser(data, t);
 
+      if (req.body.reference && req.body.reference !== "") {
+        const where = {
+          referralId: {
+            [Op.eq]: req.body.reference,
+          },
+        };
+        const reference = await UserService.findUser(where);
+        if (reference) {
+          const referenceData = {
+            userId: reference.id,
+            referredId: user.id,
+          };
+          await UserService.createReferral(referenceData, t);
+        }
+      }
 
-            if (req.body.reference && req.body.reference !== "") {
-              const where = {
-                referralId: {
-                  [Op.eq]: req.body.reference,
-                },
-              };
-              const reference = await UserService.findUser(where);
-              if (reference) {
-                const referenceData = {
-                  userId: reference.id,
-                  referredId: user.id,
-                };
-                await UserService.createReferral(referenceData, t);
-              }
-            }
-
-            const mesg = `A new user just signed up`;
-            const userId = user.id;
-            const notifyType = "admin";
-            const { io } = req.app;
-            await Notification.createNotification({
-              userId,
-              type: notifyType,
-              message: mesg,
-            });
-            io.emit(
-              "getNotifications",
-              await Notification.fetchAdminNotification()
-            );
+      const mesg = `A new user just signed up`;
+      const userId = user.id;
+      const notifyType = "admin";
+      const { io } = req.app;
+      await Notification.createNotification({
+        userId,
+        type: notifyType,
+        message: mesg,
+      });
+      io.emit("getNotifications", await Notification.fetchAdminNotification());
 
       return res.status(201).json({
         status: true,
@@ -350,20 +343,20 @@ exports.profile = (user) => {
 
 exports.getUsers = async (req, res) => {
   try {
-          const admin = await UserService.getUserDetails({ id: req.user.id });
-          if (!admin) {
-            return res.status(404).send({
-              success: false,
-              message: "Login first",
-            });
-          }
+    const admin = await UserService.getUserDetails({ id: req.user.id });
+    if (!admin) {
+      return res.status(404).send({
+        success: false,
+        message: "Login first",
+      });
+    }
 
-          if (admin.userType !== "admin") {
-            return res.status(404).send({
-              success: false,
-              message: "Only Admin can on this route",
-            });
-          }
+    if (admin.userType !== "admin") {
+      return res.status(404).send({
+        success: false,
+        message: "Only Admin can on this route",
+      });
+    }
     const users = await User.findAll({ where: { userType: "user" } });
     if (users) {
       return res.status(200).json({
@@ -385,7 +378,6 @@ exports.getUsers = async (req, res) => {
     });
   }
 };
-
 
 exports.getUserById = async (req, res) => {
   try {
@@ -449,7 +441,7 @@ exports.getAdminById = async (req, res) => {
     const user = await User.findOne({
       where: {
         id: req.params.userId,
-        userType: "admin"
+        userType: "admin",
       },
     });
     if (user) {
@@ -475,20 +467,20 @@ exports.getAdminById = async (req, res) => {
 
 exports.getUser = async (req, res) => {
   try {
-          const admin = await UserService.getUserDetails({ id: req.user.id });
-          if (!admin) {
-            return res.status(404).send({
-              success: false,
-              message: "Login First",
-            });
-          }
+    const admin = await UserService.getUserDetails({ id: req.user.id });
+    if (!admin) {
+      return res.status(404).send({
+        success: false,
+        message: "Login First",
+      });
+    }
 
-          if (admin.userType !== "admin") {
-            return res.status(404).send({
-              success: false,
-              message: "Only Admin can get all feedbacks",
-            });
-          }
+    if (admin.userType !== "admin") {
+      return res.status(404).send({
+        success: false,
+        message: "Only Admin can get all feedbacks",
+      });
+    }
     const user = await User.findOne({
       where: {
         username: req.params.username,
@@ -577,7 +569,6 @@ exports.updateUser = async (req, res) => {
 
 exports.deleteUser = async (req, res) => {
   try {
-
     const user = await User.destroy({
       where: {
         email: req.user.email,
@@ -601,20 +592,20 @@ exports.deleteUser = async (req, res) => {
 
 exports.deleteUserByAdmin = async (req, res) => {
   try {
-          const admin = await UserService.getUserDetails({ id: req.user.id });
-          if (!admin) {
-            return res.status(404).send({
-              success: false,
-              message: "Login first",
-            });
-          }
+    const admin = await UserService.getUserDetails({ id: req.user.id });
+    if (!admin) {
+      return res.status(404).send({
+        success: false,
+        message: "Login first",
+      });
+    }
 
-          if (admin.userType !== "admin") {
-            return res.status(404).send({
-              success: false,
-              message: "Only Admin can access route",
-            });
-          }
+    if (admin.userType !== "admin") {
+      return res.status(404).send({
+        success: false,
+        message: "Only Admin can access route",
+      });
+    }
     const user = await User.destroy({
       where: {
         email: req.params.userId,
@@ -635,8 +626,6 @@ exports.deleteUserByAdmin = async (req, res) => {
     });
   }
 };
-
-
 
 // exports.registerUser = async (req, res, next) => {
 //   sequelize.transaction(async (t) => {
@@ -1208,6 +1197,7 @@ exports.getAccounts = async (req, res, next) => {
         accounts,
       });
     } catch (error) {
+      console.log(error);
       t.rollback();
       return next(error);
     }
@@ -1249,6 +1239,7 @@ exports.contactAdmin = async (req, res, next) => {
         message: "Message sent successfully!",
       });
     } catch (error) {
+      console.log(error);
       t.rollback();
       return next(error);
     }
@@ -1322,6 +1313,7 @@ exports.verifyLogin = async (req, res, next) => {
         }
       }
     } catch (error) {
+      console.log(error);
       t.rollback();
       return next(error);
     }
@@ -1360,7 +1352,7 @@ exports.loginAdmin = async (req, res, next) => {
         });
       }
       const payload = {
-        user: user
+        user: user,
       };
       let token = jwt.sign(payload, process.env.TOKEN);
 
@@ -1385,6 +1377,7 @@ exports.loginAdmin = async (req, res, next) => {
         data: result,
       });
     } catch (error) {
+      console.log(error);
       t.rollback();
       return next(error);
     }
@@ -1554,6 +1547,7 @@ exports.analyzeUser = async (req, res, next) => {
         users: usersByYear,
       });
     } catch (error) {
+      console.log(error);
       t.rollback();
       return next(error);
     }
@@ -1834,8 +1828,6 @@ exports.suspendUser = async (req, res) => {
   }
 };
 
-
-
 exports.unsuspendUser = async (req, res) => {
   try {
     const { userId } = req.body;
@@ -1870,8 +1862,6 @@ exports.unsuspendUser = async (req, res) => {
     });
   }
 };
-
-
 
 // exports.suspendUser = async (req, res) => {
 //   try {

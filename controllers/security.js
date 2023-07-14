@@ -1,8 +1,8 @@
-const User = require('../model/user');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const nodemailer = require('nodemailer')
-require('dotenv').config();
+const User = require("../model/user");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const nodemailer = require("nodemailer");
+require("dotenv").config();
 const helpers = require("../helpers/message");
 const EmailService = require("../service/emailService");
 const UserService = require("../service/UserService");
@@ -21,7 +21,7 @@ myOAuth2Client.setCredentials({
 });
 
 const myAccessToken = myOAuth2Client.getAccessToken()*/
-const baseurl = process.env.BASE_URL
+const baseurl = process.env.BASE_URL;
 
 // exports.emailVerification_V1 = async(req, res) => {
 //     try {
@@ -48,8 +48,7 @@ const baseurl = process.env.BASE_URL
 //                         pass: process.env.EMAIL_PASSWORD, // generated ethereal password
 //                         },
 //                   });
-            
-            
+
 //             const fname = user.fullname.split(' ')
 //             const mailOptions = {
 //                 from:  `${process.env.E_TEAM}`,
@@ -58,7 +57,7 @@ const baseurl = process.env.BASE_URL
 //                 html: `<!DOCTYPE html>
 //                 <html>
 //                 <head>
-                
+
 //                   <meta charset="utf-8">
 //                   <meta http-equiv="x-ua-compatible" content="ie=edge">
 //                   <title>Email Confirmation</title>
@@ -147,19 +146,19 @@ const baseurl = process.env.BASE_URL
 //                     outline: none;
 //                   }
 //                   </style>
-                
+
 //                 </head>
 //                 <body style="background-color: #e9ecef;">
-                
+
 //                   <!-- start preheader -->
 //                   <div class="preheader" style="display: none; max-width: 0; max-height: 0; overflow: hidden; font-size: 1px; line-height: 1px; color: #fff; opacity: 0;">
 //                     Deepend Email Verification
 //                   </div>
 //                   <!-- end preheader -->
-                
+
 //                   <!-- start body -->
 //                   <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                
+
 //                     <!-- start logo -->
 //                     <tr>
 //                       <td align="center" bgcolor="#e9ecef">
@@ -185,7 +184,7 @@ const baseurl = process.env.BASE_URL
 //                       </td>
 //                     </tr>
 //                     <!-- end logo -->
-                
+
 //                     <!-- start hero -->
 //                     <tr>
 //                       <td align="center" bgcolor="#e9ecef">
@@ -209,7 +208,7 @@ const baseurl = process.env.BASE_URL
 //                       </td>
 //                     </tr>
 //                     <!-- end hero -->
-                
+
 //                     <!-- start copy block -->
 //                     <tr>
 //                       <td align="center" bgcolor="#e9ecef">
@@ -219,16 +218,16 @@ const baseurl = process.env.BASE_URL
 //                         <td align="center" valign="top" width="600">
 //                         <![endif]-->
 //                         <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
-                
+
 //                           <!-- start copy -->
 //                           <tr>
 //                             <td align="left" bgcolor="#ffffff" style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;">
-//                       <h2> Hi ${fname[0]}, </h2>        
+//                       <h2> Hi ${fname[0]}, </h2>
 //                               <p style="margin: 0;"> You Have Successfully created an account with Deepend. Tap the button below to confirm your email address. If you didn't create an account with Deepend, you can safely delete this email.</p>
 //                             </td>
 //                           </tr>
 //                           <!-- end copy -->
-                
+
 //                           <!-- start button -->
 //                           <tr>
 //                             <td align="left" bgcolor="#ffffff">
@@ -248,7 +247,7 @@ const baseurl = process.env.BASE_URL
 //                             </td>
 //                           </tr>
 //                           <!-- end button -->
-                
+
 //                           <!-- start copy -->
 //                           <tr>
 //                             <td align="left" bgcolor="#ffffff" style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;">
@@ -257,7 +256,7 @@ const baseurl = process.env.BASE_URL
 //                             </td>
 //                           </tr>
 //                           <!-- end copy -->
-                
+
 //                           <!-- start copy -->
 //                           <tr>
 //                             <td align="left" bgcolor="#ffffff" style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px; border-bottom: 3px solid #d4dadf">
@@ -265,7 +264,7 @@ const baseurl = process.env.BASE_URL
 //                             </td>
 //                           </tr>
 //                           <!-- end copy -->
-                
+
 //                         </table>
 //                         <!--[if (gte mso 9)|(IE)]>
 //                         </td>
@@ -275,7 +274,7 @@ const baseurl = process.env.BASE_URL
 //                       </td>
 //                     </tr>
 //                     <!-- end copy block -->
-                
+
 //                     <!-- start footer -->
 //                     <tr>
 //                       <td align="center" bgcolor="#e9ecef" style="padding: 24px;">
@@ -285,7 +284,7 @@ const baseurl = process.env.BASE_URL
 //                         <td align="center" valign="top" width="600">
 //                         <![endif]-->
 //                         <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
-                
+
 //                           <!-- start permission -->
 //                           <tr>
 //                             <td align="center" bgcolor="#e9ecef" style="padding: 12px 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 20px; color: #666;">
@@ -293,7 +292,7 @@ const baseurl = process.env.BASE_URL
 //                             </td>
 //                           </tr>
 //                           <!-- end permission -->
-                
+
 //                         </table>
 //                         <!--[if (gte mso 9)|(IE)]>
 //                         </td>
@@ -303,10 +302,10 @@ const baseurl = process.env.BASE_URL
 //                       </td>
 //                     </tr>
 //                     <!-- end footer -->
-                
+
 //                   </table>
 //                   <!-- end body -->
-                
+
 //                 </body>
 //                 </html> `
 //             };
@@ -323,7 +322,6 @@ const baseurl = process.env.BASE_URL
 //                 }
 //             });
 
-            
 //         } else {
 //             res.status(404).json({
 //                 status: false,
@@ -348,7 +346,7 @@ const baseurl = process.env.BASE_URL
 //                 await User.update({email_verify: true}, {where: {
 //                     id: id
 //                 }})
-//                 res.status(200).json({ 
+//                 res.status(200).json({
 //                     status: true,
 //                     message: "Email Verified successfully updated"})
 //         }else{
@@ -367,7 +365,6 @@ const baseurl = process.env.BASE_URL
 // }
 
 // }
-
 
 // exports.checkEmail = async(req, res) => {
 //     const {email} = req.body;
@@ -396,7 +393,6 @@ const baseurl = process.env.BASE_URL
 //                     pass: process.env.EMAIL_PASSWORD, // generated ethereal password
 //                     },
 //                   });
-            
 
 //             var firstname = user.fullname.split(' ');
 //             const mailOptions = {
@@ -570,7 +566,7 @@ const baseurl = process.env.BASE_URL
 //     <!-- end hero -->
 
 //     <!-- start copy block -->
-   
+
 //     <tr>
 //       <td align="center" bgcolor="#e9ecef">
 //         <!--[if (gte mso 9)|(IE)]>
@@ -681,7 +677,6 @@ const baseurl = process.env.BASE_URL
 //                 }
 //             });
 
-            
 //         } else {
 //             res.status(404).json({
 //                 status: false,
@@ -697,7 +692,6 @@ const baseurl = process.env.BASE_URL
 //     }
 // };
 
-
 // exports.forgotPassword = async(req, res) => {
 //         const {new_password, confirm_password} = req.body;
 //     try {
@@ -707,11 +701,11 @@ const baseurl = process.env.BASE_URL
 //                 if( new_password === confirm_password){
 //                     const salt = await bcrypt.genSalt(12);
 //                     const hashedPass = await bcrypt.hash(new_password, salt);
-                    
+
 //                     await User.update({password: hashedPass}, {where: {
 //                         id: `${req.params.id}`
 //                     }})
-//                     res.status(200).json({ 
+//                     res.status(200).json({
 //                         status: true,
 //                         message: "User password successfully updated"})
 //                 } else {
@@ -725,8 +719,7 @@ const baseurl = process.env.BASE_URL
 //                     message: "Invalid Link"
 //                 })
 //             }
-           
-        
+
 //         } catch (error) {
 //             console.error(error)
 //             return res.status(500).json({
@@ -738,49 +731,60 @@ const baseurl = process.env.BASE_URL
 
 // }
 
-exports.changePassword = async(req, res) => {
-    const { password, new_password, confirm_password} = req.body;
-    try { 
-        const user = await User.findOne({where: {
-            id: req.user.id
-        }})
-        if(user){
-            const validate = await bcrypt.compare(password, user.password);
-            if(validate){
-                if(new_password === confirm_password){
-                    const salt = await bcrypt.genSalt(12);
-                    const hashedPass = await bcrypt.hash(new_password, salt);
-                    
-                    await User.update({password: hashedPass}, {where: {
-                        id: user.id
-                    }})
-                    res.status(202).json({
-                        status: true,
-                        message: "Password updated"})
-                }else{
-                    res.status(406).json({
-                        status: false,
-                        message: "New password not equal to confirm password"})
-                }
-            } else{
-                res.status(406).json({
-                    status: false,
-                    message: "Wrong password"})
+exports.changePassword = async (req, res) => {
+  const { password, new_password, confirm_password } = req.body;
+  try {
+    const user = await User.findOne({
+      where: {
+        id: req.user.id,
+      },
+    });
+    if (user) {
+      const validate = await bcrypt.compare(password, user.password);
+      if (validate) {
+        if (new_password === confirm_password) {
+          const salt = await bcrypt.genSalt(12);
+          const hashedPass = await bcrypt.hash(new_password, salt);
+
+          await User.update(
+            { password: hashedPass },
+            {
+              where: {
+                id: user.id,
+              },
             }
-        }else{
-            res.status(404).json({
-                status: false,
-                message: "User not logged in"})
+          );
+          res.status(202).json({
+            status: true,
+            message: "Password updated",
+          });
+        } else {
+          res.status(406).json({
+            status: false,
+            message: "New password not equal to confirm password",
+          });
         }
-    } catch (error) {
-        console.error(error)
-        return res.status(500).json({
-             status: false,
-             message: "An error occured",
-             error: error
-         })
+      } else {
+        res.status(406).json({
+          status: false,
+          message: "Wrong password",
+        });
+      }
+    } else {
+      res.status(404).json({
+        status: false,
+        message: "User not logged in",
+      });
     }
-}
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      status: false,
+      message: "An error occured",
+      error: error,
+    });
+  }
+};
 
 exports.forgotPassword = async (req, res, next) => {
   sequelize.transaction(async (t) => {
@@ -822,6 +826,7 @@ exports.forgotPassword = async (req, res, next) => {
         message: "Password Reset Email Sent Successfully",
       });
     } catch (error) {
+      console.log(error);
       t.rollback();
       return next(error);
     }
@@ -842,8 +847,8 @@ exports.resetPassword = async (req, res, next) => {
       }
 
       // const currentPassword = bcrypt.hashSync(password, 10);
-       const salt = await bcrypt.genSalt(12);
-       const currentPassword = await bcrypt.hash(password, salt);
+      const salt = await bcrypt.genSalt(12);
+      const currentPassword = await bcrypt.hash(password, salt);
       const data = {
         password: currentPassword,
         id: user.id,
@@ -854,6 +859,7 @@ exports.resetPassword = async (req, res, next) => {
         message: "Password Changed Successfully",
       });
     } catch (error) {
+      console.log(error);
       t.rollback();
       return next(error);
     }
@@ -872,11 +878,10 @@ exports.resetUserPassword = async (req, res) => {
       });
     }
 
-     const salt = await bcrypt.genSalt(12);
-     const hashedpass = await bcrypt.hash(password, salt);
+    const salt = await bcrypt.genSalt(12);
+    const hashedpass = await bcrypt.hash(password, salt);
     const update = {
       password: hashedpass,
-      
     };
 
     await User.update(update, { where: { id } });

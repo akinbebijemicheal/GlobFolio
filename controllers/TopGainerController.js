@@ -10,7 +10,6 @@ const User = require("../model/user");
 const Notification = require("../helpers/notification");
 const TopGainer = require("../model/topGainer");
 
-
 exports.createTopGainer = async (req, res, next) => {
   sequelize.transaction(async (t) => {
     try {
@@ -18,35 +17,33 @@ exports.createTopGainer = async (req, res, next) => {
         transaction: t,
       });
 
-         const mesg = `A new Top Gainer was just posted`;
-         // const userId = "general";
-         const notifyType = "general";
-         const { io } = req.app;
-         await Notification.createNotification({
-           // userId,
-           type: notifyType,
-           message: mesg,
-         });
+      const mesg = `A new Top Gainer was just posted`;
+      // const userId = "general";
+      const notifyType = "general";
+      const { io } = req.app;
+      await Notification.createNotification({
+        // userId,
+        type: notifyType,
+        message: mesg,
+      });
 
-         const mesgAdmin = `A admin just created a new top gainer`;
-         const userIdAdmin = req.user.id;
-         const notifyTypeAdmin = "admin";
-         await Notification.createNotification({
-           userId: userIdAdmin,
-           type: notifyTypeAdmin,
-           message: mesgAdmin,
-         });
+      const mesgAdmin = `A admin just created a new top gainer`;
+      const userIdAdmin = req.user.id;
+      const notifyTypeAdmin = "admin";
+      await Notification.createNotification({
+        userId: userIdAdmin,
+        type: notifyTypeAdmin,
+        message: mesgAdmin,
+      });
 
-         io.emit(
-           "getNotifications",
-           await Notification.fetchAdminNotification()
-         );
+      io.emit("getNotifications", await Notification.fetchAdminNotification());
 
       return res.status(200).send({
         success: true,
         data: topGainer,
       });
     } catch (error) {
+      console.log(error);
       t.rollback();
       return next(error);
     }
@@ -57,44 +54,41 @@ exports.updateTopGainer = async (req, res, next) => {
   sequelize.transaction(async (t) => {
     try {
       const { topGainerId, ...other } = req.body;
-     
-      let  where = {id: topGainerId}
-      await TopGainer.update(other, {where, transaction: t });
-       const topGainer = await TopGainer.findByPk(topGainerId);
 
+      let where = { id: topGainerId };
+      await TopGainer.update(other, { where, transaction: t });
+      const topGainer = await TopGainer.findByPk(topGainerId);
 
-          const mesg = `Top Gainer ${req.body.name} was just updated`;
-          // const userId = "general";
-          const notifyType = "general";
-          const { io } = req.app;
-          await Notification.createNotification({
-            // userId,
-            type: notifyType,
-            message: mesg,
-          });
+      const mesg = `Top Gainer ${req.body.name} was just updated`;
+      // const userId = "general";
+      const notifyType = "general";
+      const { io } = req.app;
+      await Notification.createNotification({
+        // userId,
+        type: notifyType,
+        message: mesg,
+      });
 
-          const mesgAdmin = `A admin just updated top gainer ${req.body.name}`;
-          const userIdAdmin = req.user.id;
-          const notifyTypeAdmin = "admin";
-          await Notification.createNotification({
-            userId: userIdAdmin,
-            type: notifyTypeAdmin,
-            message: mesgAdmin,
-          });
+      const mesgAdmin = `A admin just updated top gainer ${req.body.name}`;
+      const userIdAdmin = req.user.id;
+      const notifyTypeAdmin = "admin";
+      await Notification.createNotification({
+        userId: userIdAdmin,
+        type: notifyTypeAdmin,
+        message: mesgAdmin,
+      });
 
-          io.emit(
-            "getNotifications",
-            await Notification.fetchAdminNotification()
-          );
+      io.emit("getNotifications", await Notification.fetchAdminNotification());
 
       return res.status(200).send({
         success: true,
         message: "TopGainer updated successfully",
-        data: topGainer
+        data: topGainer,
       });
     } catch (error) {
+      console.log(error);
       t.rollback();
-      console.log(error)
+      console.log(error);
       return next(error);
     }
   });
@@ -108,24 +102,22 @@ exports.deleteTopGainer = async (req, res, next) => {
         where: { id: topGainerId },
       });
 
-            const mesgAdmin = `A admin just deleted top gainer ${req.body.name}`;
-            const userIdAdmin = req.user.id;
-            const notifyTypeAdmin = "admin";
-            await Notification.createNotification({
-              userId: userIdAdmin,
-              type: notifyTypeAdmin,
-              message: mesgAdmin,
-            });
+      const mesgAdmin = `A admin just deleted top gainer ${req.body.name}`;
+      const userIdAdmin = req.user.id;
+      const notifyTypeAdmin = "admin";
+      await Notification.createNotification({
+        userId: userIdAdmin,
+        type: notifyTypeAdmin,
+        message: mesgAdmin,
+      });
 
-            io.emit(
-              "getNotifications",
-              await Notification.fetchAdminNotification()
-            );
+      io.emit("getNotifications", await Notification.fetchAdminNotification());
       return res.status(200).send({
         success: true,
         message: "TopGainer delete successfully",
       });
     } catch (error) {
+      console.log(error);
       t.rollback();
       return next(error);
     }
@@ -135,7 +127,7 @@ exports.deleteTopGainer = async (req, res, next) => {
 exports.getTopGainers = async (req, res, next) => {
   try {
     const topGainers = await TopGainer.findAll({
-      order: [["createdAt", "DESC"]]
+      order: [["createdAt", "DESC"]],
     });
     return res.status(200).send({
       success: true,
@@ -149,7 +141,7 @@ exports.getTopGainers = async (req, res, next) => {
 exports.getSingleTopGainer = async (req, res, next) => {
   try {
     const topGainer = await TopGainer.findOne({
-      where: { id: req.params.topGainerId }
+      where: { id: req.params.topGainerId },
     });
     return res.status(200).send({
       success: true,
@@ -159,4 +151,3 @@ exports.getSingleTopGainer = async (req, res, next) => {
     return next(error);
   }
 };
-

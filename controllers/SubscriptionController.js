@@ -4,7 +4,7 @@
 require("dotenv").config();
 const moment = require("moment");
 const db = require("../config/config");
-const sequelize = db
+const sequelize = db;
 // const Testimony = require("../models/Testimonies");
 const User = require("../model/user");
 const Notification = require("../helpers/notification");
@@ -19,26 +19,25 @@ const invoiceService = require("../service/invoiceService2");
 const helpers = require("../helpers/message");
 const { sendMail } = require("../service/attachmentEmailService");
 
-
-
 exports.createSubscriptionPlan = async (req, res, next) => {
-  sequelize.transaction(async t => {
+  sequelize.transaction(async (t) => {
     try {
       const plan = await SubscriptionPlan.create(req.body, {
         include: [
           {
             model: SubscriptionPlanPackage,
-            as: "benefits"
-          }
+            as: "benefits",
+          },
         ],
-        transaction: t
+        transaction: t,
       });
 
       return res.status(200).send({
         success: true,
-        data: plan
+        data: plan,
       });
     } catch (error) {
+      console.log(error);
       t.rollback();
       return next(error);
     }
@@ -46,13 +45,13 @@ exports.createSubscriptionPlan = async (req, res, next) => {
 };
 
 exports.updateSubscriptionPlan = async (req, res, next) => {
-  sequelize.transaction(async t => {
+  sequelize.transaction(async (t) => {
     try {
       const { benefits, planId, ...other } = req.body;
       const plan = await SubscriptionPlan.findByPk(planId);
       await plan.update(other, { transaction: t });
       await Promise.all(
-        benefits.map(async item => {
+        benefits.map(async (item) => {
           const benefit = await SubscriptionPlanPackage.findByPk(item.id);
           if (benefit) {
             await benefit.update({ benefit: item.benefit }, { transaction: t });
@@ -60,7 +59,7 @@ exports.updateSubscriptionPlan = async (req, res, next) => {
             await SubscriptionPlanPackage.create(
               {
                 benefit: item.benefit,
-                planId
+                planId,
               },
               { transaction: t }
             );
@@ -70,9 +69,10 @@ exports.updateSubscriptionPlan = async (req, res, next) => {
 
       return res.status(200).send({
         success: true,
-        message: "Subscription plan updated successfully"
+        message: "Subscription plan updated successfully",
       });
     } catch (error) {
+      console.log(error);
       t.rollback();
       return next(error);
     }
@@ -80,7 +80,7 @@ exports.updateSubscriptionPlan = async (req, res, next) => {
 };
 
 exports.deleteSubscriptionPlan = async (req, res, next) => {
-  sequelize.transaction(async t => {
+  sequelize.transaction(async (t) => {
     try {
       const { planId } = req.params;
       const plan = await SubscriptionPlan.destroy({
@@ -88,16 +88,17 @@ exports.deleteSubscriptionPlan = async (req, res, next) => {
         include: [
           {
             model: SubscriptionPlanPackage,
-            as: "benefits"
-          }
-        ]
+            as: "benefits",
+          },
+        ],
       });
 
       return res.status(200).send({
         success: true,
-        message: "Subscription plan delete successfully"
+        message: "Subscription plan delete successfully",
       });
     } catch (error) {
+      console.log(error);
       t.rollback();
       return next(error);
     }
@@ -111,13 +112,13 @@ exports.getSubscriptionPlans = async (req, res, next) => {
       include: [
         {
           model: SubscriptionPlanPackage,
-          as: "benefits"
-        }
-      ]
+          as: "benefits",
+        },
+      ],
     });
     return res.status(200).send({
       success: true,
-      data: plans
+      data: plans,
     });
   } catch (error) {
     return next(error);
@@ -131,13 +132,13 @@ exports.getSingleSubscriptionPlan = async (req, res, next) => {
       include: [
         {
           model: SubscriptionPlanPackage,
-          as: "benefits"
-        }
-      ]
+          as: "benefits",
+        },
+      ],
     });
     return res.status(200).send({
       success: true,
-      data: plan
+      data: plan,
     });
   } catch (error) {
     return next(error);
@@ -145,7 +146,7 @@ exports.getSingleSubscriptionPlan = async (req, res, next) => {
 };
 
 exports.subscribeToPlan = async (req, res, next) => {
-  sequelize.transaction(async t => {
+  sequelize.transaction(async (t) => {
     try {
       const { userId, reference, planId, userType } = req.body;
       const plan = await SubscriptionPlan.findOne({ where: { id: planId } });
@@ -157,13 +158,10 @@ exports.subscribeToPlan = async (req, res, next) => {
         userId: id,
         payment_reference: reference,
         amount,
-        payment_category: "Subscription"
+        payment_category: "Subscription",
       };
 
       await Payment.create(paymentData, { transaction: t });
-     
-
-
 
       return res.send({
         success: true,
@@ -178,25 +176,22 @@ exports.subscribeToPlan = async (req, res, next) => {
   });
 };
 
-
 exports.verifySubscription = async (req, res, next) => {
   sequelize.transaction(async (t) => {
     try {
-      const { userId, reference, planId, } = req.body;
+      const { userId, reference, planId } = req.body;
       const plan = await SubscriptionPlan.findOne({ where: { id: planId } });
       const { duration, amount, name } = plan;
 
-           const response = await Service.Paystack.verifyPayment(
-             reference
-           );
-           console.log(response)
-           if (response.status === false) {
-             return res.status(400).json({
-               success: false,
-               message: response.message || "Transaction reference not valid",
-             });
-           }
-      
+      const response = await Service.Paystack.verifyPayment(reference);
+      console.log(response);
+      if (response.status === false) {
+        return res.status(400).json({
+          success: false,
+          message: response.message || "Transaction reference not valid",
+        });
+      }
+
       const profile = await UserService.findUserById(userId);
       const { id } = profile;
       // safe payment made for reference
@@ -263,14 +258,13 @@ exports.verifySubscription = async (req, res, next) => {
       const user = await User.findByPk(userId);
 
       let orderData = {
-        "user": user,
-        "transaction": transaction,
-        "plan": plan,
-        "expiryDate": newDate
+        user: user,
+        transaction: transaction,
+        plan: plan,
+        expiryDate: newDate,
+      };
 
-      }
-
-            const invoice = await invoiceService.createInvoice(orderData, user);
+      const invoice = await invoiceService.createInvoice(orderData, user);
       if (invoice) {
         const files = [
           {
@@ -299,7 +293,7 @@ exports.verifySubscription = async (req, res, next) => {
       return res.send({
         success: true,
         message: "Subscription Made Sucessfully",
-        data: response
+        data: response,
       });
     } catch (error) {
       console.log(error);
@@ -312,21 +306,21 @@ exports.verifySubscription = async (req, res, next) => {
 exports.getSubscriptionHistory = async (req, res, next) => {
   try {
     const plans = await Subscription.findAll({
-      order: [["createdAt", "DESC"]]
+      order: [["createdAt", "DESC"]],
     });
     const subscriptions = await Promise.all(
-      plans.map(async plan => {
+      plans.map(async (plan) => {
         let user = await User.findOne({
-          where: { id: plan.userId }
+          where: { id: plan.userId },
         });
-      
+
         plan.user = user;
         return plan;
       })
     );
     return res.status(200).send({
       success: true,
-      data: subscriptions
+      data: subscriptions,
     });
   } catch (error) {
     return next(error);
@@ -337,12 +331,12 @@ exports.getUserSubscriptionHistory = async (req, res, next) => {
   try {
     const subscriptions = await Subscription.findAll({
       where: { userId: req.params.userId },
-      order: [["createdAt", "DESC"]]
+      order: [["createdAt", "DESC"]],
     });
 
     return res.status(200).send({
       success: true,
-      data: subscriptions
+      data: subscriptions,
     });
   } catch (error) {
     return next(error);
@@ -475,5 +469,3 @@ exports.upgradeSubscriptionPlan = async (req, res, next) => {
     }
   });
 };
-
-
