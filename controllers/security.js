@@ -787,6 +787,62 @@ exports.changePassword = async (req, res) => {
   }
 };
 
+
+exports.adminChangePassword = async (req, res) => {
+  const { password, new_password, confirm_password } = req.body;
+  try {
+    const user = await User.findOne({
+      where: {
+        id: req.user.id,
+      },
+    });
+    if (user) {
+      const validate = await bcrypt.compare(password, user.password);
+      if (validate) {
+        if (new_password === confirm_password) {
+          const salt = await bcrypt.genSalt(12);
+          const hashedPass = await bcrypt.hash(new_password, salt);
+
+          await User.update(
+            { password: hashedPass },
+            {
+              where: {
+                id: user.id,
+              },
+            }
+          );
+          res.status(202).json({
+            status: true,
+            message: "Password updated",
+          });
+        } else {
+          res.status(406).json({
+            status: false,
+            message: "New password not equal to confirm password",
+          });
+        }
+      } else {
+        res.status(406).json({
+          status: false,
+          message: "Wrong password",
+        });
+      }
+    } else {
+      res.status(404).json({
+        status: false,
+        message: "User not logged in",
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      status: false,
+      message: "An error occured",
+      error: error,
+    });
+  }
+};
+
 exports.forgotPassword = async (req, res, next) => {
   sequelize.transaction(async (t) => {
     try {

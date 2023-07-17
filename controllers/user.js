@@ -16,6 +16,8 @@ const EmailService = require("../service/emailService");
 const UserService = require("../service/UserService");
 const randomstring = require("randomstring");
 const { Sequelize, Op } = require("sequelize");
+const Picture = require("../model/profilepic");
+
 
 /*const { google } = require("googleapis");
 const OAuth2 = google.auth.OAuth2;
@@ -265,6 +267,11 @@ exports.LoginUser = async (req, res, next) => {
       where: {
         email: email,
       },
+      include: [
+        {
+          model: Picture,
+        },
+      ],
     });
     console.log(user);
     if (!user) {

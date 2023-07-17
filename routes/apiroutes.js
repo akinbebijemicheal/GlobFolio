@@ -42,6 +42,7 @@ const {
   emailVerification_V2,
   resetPassword,
   resetUserPassword,
+  adminChangePassword,
 } = require("../controllers/security");
 const {
   verification,
@@ -154,6 +155,10 @@ router.route("/verifyemail").get(verifyUserEmail);
 router.route("/forgot-password").get(forgotPassword);
 
 router.route("/reset-password").post(resetPassword);
+
+router.route("/user/change-password").patch(jwtAuth,
+checkRole(["admin"]),
+   adminChangePassword);
 
 router
   .route("/admin/reset-password/:id")

@@ -2,9 +2,10 @@ require("dotenv").config();
 const nodemailer = require("nodemailer");
 
 const transporter = nodemailer.createTransport({
+  name: 'GlobFolio',
   host: process.env.EMAIL_HOST,
   port: process.env.EMAIL_PORT,
-  secure: true, // true for 465, false for other ports
+  // secure: true, // true for 465, false for other ports
   auth: {
     user: process.env.EMAIL_USERNAME, // generated ethereal user
     pass: process.env.EMAIL_PASSWORD // generated ethereal password
