@@ -9,26 +9,30 @@ const sequelize = db;
 const User = require("../model/user");
 const Notification = require("../helpers/notification");
 const StockAdvisory = require("../model/stockAdvisory");
+const { cloudinary } = require("../util/cloudinary");
 
 exports.createStockAdvisory = async (req, res, next) => {
   sequelize.transaction(async (t) => {
     try {
+      const { intro, country, industry, description } = req.body;
       let photos = [];
-      if (req.file) {
-        // const result = await cloudinary.uploader.upload(req.files[i].path);
-        // const docPath = result.secure_url;
-        const url = `${process.env.APP_URL}/${req.files[i].path}`;
-        photos.push({
-          name: req.files[i].originalname,
-          image: req.files[i].path,
-          creatorId,
-          url,
-        });
+      const request = {
+        intro,
+        country,
+        industry,
+        description,
+      };
+      if (req.files || req.file) {
+        for (let i = 0; i < req.files.length; i++) {
+          const result = await cloudinary.uploader.upload(req.files[i].path);
+          console.log(result);
+
+          request.image = result.secure_url;
+        }
       }
-      if (photos.length > 0) {
-        req.body.image = photos[0].url;
-      }
-      const stockAdvisory = await StockAdvisory.create(req.body, {
+
+      console.log(request);
+      const stockAdvisory = await StockAdvisory.create(request, {
         transaction: t,
       });
       const mesg = `A new Analyst Pick was just posted`;
@@ -70,23 +74,21 @@ exports.updateStockAdvisory = async (req, res, next) => {
       const { stockAdvisoryId, ...other } = req.body;
 
       let where = { id: stockAdvisoryId };
-      let photos = [];
-      if (req.file) {
-        // const result = await cloudinary.uploader.upload(req.files[i].path);
-        // const docPath = result.secure_url;
-        const url = `${process.env.APP_URL}/${req.files[i].path}`;
-        photos.push({
-          name: req.files[i].originalname,
-          image: req.files[i].path,
-          creatorId,
-          url,
-        });
+      const request = req.body;
+      if (req.files || req.file) {
+        for (let i = 0; i < req.files.length; i++) {
+          const result = await cloudinary.uploader.upload(req.files[i].path);
+          console.log(result);
+
+          request.image = result.secure_url;
+        }
       }
-      if (photos.length > 0) {
-        req.body.image = photos[0].url;
-      }
-      await StockAdvisory.update(req.body, { where, transaction: t });
-      const stockAdvisory = await StockAdvisory.findByPk(stockAdvisoryId);
+      await StockAdvisory.update(request, {
+        where,
+        transaction: t,
+      })
+        const stockAdvisory = await StockAdvisory.findByPk(stockAdvisoryId);
+
 
       const mesg = `Analyst Pick ${stockAdvisory.intro}`;
       // const userId = "general";
@@ -108,10 +110,10 @@ exports.updateStockAdvisory = async (req, res, next) => {
       });
 
       io.emit("getNotifications", await Notification.fetchAdminNotification());
+
       return res.status(200).send({
         success: true,
         message: "StockAdvisory updated successfully",
-        data: stockAdvisory,
       });
     } catch (error) {
       console.log(error);
@@ -126,13 +128,22 @@ exports.deleteStockAdvisory = async (req, res, next) => {
   sequelize.transaction(async (t) => {
     try {
       const { stockAdvisoryId } = req.params;
-      const stockAdvisory = await StockAdvisory.destroy({
+        const stockAdvisory = await StockAdvisory.findByPk(stockAdvisoryId);
+if(!stockAdvisory){
+    return res.status(400).send({
+      success: false,
+      message: "StockAdvisory not found",
+    });
+}
+       await StockAdvisory.destroy({
         where: { id: stockAdvisoryId },
       });
 
       const mesgAdmin = `A admin just deleted an Analyst Pick`;
       const userIdAdmin = req.user.id;
       const notifyTypeAdmin = "admin";
+      const { io } = req.app;
+
       await Notification.createNotification({
         userId: userIdAdmin,
         type: notifyTypeAdmin,

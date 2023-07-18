@@ -64,8 +64,6 @@ const { support, getSupportMessages } = require("../controllers/support");
 const passport = require("passport");
 const { createFeedback, getAllFeedbacks } = require("../controllers/feedback");
 
-
-
 router.get("/", (req, res) => {
   res.send(`GLOBFOLIO APP ${new Date()}`);
 });
@@ -156,9 +154,9 @@ router.route("/forgot-password").get(forgotPassword);
 
 router.route("/reset-password").post(resetPassword);
 
-router.route("/user/change-password").patch(jwtAuth,
-checkRole(["admin"]),
-   adminChangePassword);
+router
+  .route("/user/change-password")
+  .patch(jwtAuth, checkRole(["admin"]), adminChangePassword);
 
 router
   .route("/admin/reset-password/:id")
@@ -190,14 +188,13 @@ router
 
 router.route("/admin/change-password").patch(jwtAuth, changePassword);
 
-  router
-    .route("/admin/profile/update-pic")
-    .post(jwtAuth, checkRole(["admin"]), multer.single("image"), updatePicture);
+router
+  .route("/admin/profile/update-pic")
+  .post(jwtAuth, checkRole(["admin"]), multer.single("image"), updatePicture);
 
 router
   .route("/admin/profile/delete-pic")
   .delete(jwtAuth, checkRole(["admin"]), deletePicture);
-
 
 router.get(
   "/admin/getUser/:userId",
@@ -223,16 +220,11 @@ router.delete(
 
 router
   .route("/admin/revoke-access")
-  .post(jwtAuth,
-  checkRole(["admin"]), revokeAccess);
+  .post(jwtAuth, checkRole(["admin"]), revokeAccess);
 
 router
   .route("/admin/suspend-user")
-  .post(
-    jwtAuth,
-    checkRole(["admin"]),
-    suspendUser
-  );
+  .post(jwtAuth, checkRole(["admin"]), suspendUser);
 
 router
   .route("/admin/unsuspend-user")
@@ -358,16 +350,16 @@ router.route("/stockAdvisory/create").post(
   checkRole(["admin"]),
   validate,
   upload.any(),
-  TopGainerController.createTopGainer
+  StockAdvisoryController.createStockAdvisory
 );
 
 router
   .route("/stockAdvisory/stockAdvisorys")
-  .get(jwtAuth, TopGainerController.getTopGainers);
+  .get(jwtAuth, StockAdvisoryController.getStockAdvisorys);
 
 router
   .route("/stockAdvisory/stockAdvisorys/:stockAdvisoryId")
-  .get(jwtAuth, TopGainerController.getSingleTopGainer);
+  .get(jwtAuth, StockAdvisoryController.getSingleStockAdvisory);
 
 router
   .route("/stockAdvisory/update")
@@ -375,49 +367,46 @@ router
     jwtAuth,
     checkRole(["admin"]),
     upload.any(),
-    TopGainerController.updateTopGainer
+    StockAdvisoryController.updateStockAdvisory
   );
 
 router
   .route("/stockAdvisory/delete/:stockAdvisoryId")
-  .delete(jwtAuth, checkRole(["admin"]), TopGainerController.deleteTopGainer);
-
+  .delete(
+    jwtAuth,
+    checkRole(["admin"]),
+    StockAdvisoryController.deleteStockAdvisory
+  );
 
 //------------------------------Announcements-------------------------------
 
+const AdminMessageController = require("../controllers/AdminMessageController");
 
-  const AdminMessageController = require("../controllers/AdminMessageController");
+// const upload = require("../helpers/upload");
 
-  // const upload = require("../helpers/upload");
+router
+  .route("/announcements/all")
+  .get(AdminMessageController.viewAnnouncements);
 
-  router
-    .route("/announcements/all")
-    .get(AdminMessageController.viewAnnouncements);
+router
+  .route("/announcements")
+  .get(jwtAuth, checkRole(["admin"]), AdminMessageController.allAdminMessages);
 
-  router
-    .route("/announcements")
-    .get(
-      jwtAuth,
-      checkRole(["admin"]),
-      AdminMessageController.allAdminMessages
-    );
+router
+  .route("/announcements/delete-message/:id")
+  .delete(
+    jwtAuth,
+    checkRole(["admin"]),
+    AdminMessageController.deleteAnnouncement
+  );
 
-  router
-    .route("/announcements/delete-message/:id")
-    .delete(
-      jwtAuth,
-      checkRole(["admin"]),
-      AdminMessageController.deleteAnnouncement
-    );
-
-  router
-    .route("/announcements/new-announcement")
-    .post(
-      jwtAuth,
-      checkRole(["admin"]),
-      upload.single("supportingDocument"),
-      AdminMessageController.postAnnouncement
-    );
-
+router
+  .route("/announcements/new-announcement")
+  .post(
+    jwtAuth,
+    checkRole(["admin"]),
+    upload.single("supportingDocument"),
+    AdminMessageController.postAnnouncement
+  );
 
 module.exports = router;
