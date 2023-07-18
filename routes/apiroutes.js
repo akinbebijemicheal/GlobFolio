@@ -188,6 +188,8 @@ router
   .route("/admin/update-account")
   .patch(jwtAuth, checkRole(["admin"]), updateUser);
 
+router.route("/admin/change-password").patch(jwtAuth, changePassword);
+
   router
     .route("/admin/profile/update-pic")
     .post(jwtAuth, checkRole(["admin"]), multer.single("image"), updatePicture);

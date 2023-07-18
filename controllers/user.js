@@ -18,7 +18,6 @@ const randomstring = require("randomstring");
 const { Sequelize, Op } = require("sequelize");
 const Picture = require("../model/profilepic");
 
-
 /*const { google } = require("googleapis");
 const OAuth2 = google.auth.OAuth2;
 
@@ -91,7 +90,7 @@ exports.RegisterUser = async (req, res, next) => {
         country: country,
         userType: "user",
         password: hashedPass,
-        referralId: randomstring.generate(12),
+        referralId: randomstring.generate(6),
         email_verify: false,
       };
 
@@ -309,7 +308,7 @@ exports.LoginUser = async (req, res, next) => {
         updatedAt: user.updatedAt,
         createdAt: user.createdAt,
         access_token: token,
-        pictures: user.pictures
+        pictures: user.pictures,
       };
 
       return res.status(200).json({
