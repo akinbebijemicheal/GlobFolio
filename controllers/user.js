@@ -309,6 +309,7 @@ exports.LoginUser = async (req, res, next) => {
         updatedAt: user.updatedAt,
         createdAt: user.createdAt,
         access_token: token,
+        pictures: user.pictures
       };
 
       return res.status(200).json({

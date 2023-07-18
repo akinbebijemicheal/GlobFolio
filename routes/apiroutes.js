@@ -120,23 +120,23 @@ router.route("/auth/google-signin").post(
   googleSignin
 );
 
-router.route("/dashboard/profile").get(jwtAuth, async (req, res) => {
+router.route("/user/profile").get(jwtAuth, async (req, res) => {
   return res.json(profile(req.user));
 });
 
-router.route("/dashboard/update-account").patch(jwtAuth, updateUser);
+router.route("/user/update-account").patch(jwtAuth, updateUser);
 
 router
-  .route("/dashboard/profile/upload-pic")
+  .route("/user/profile/upload-pic")
   .post(jwtAuth, multer.single("image"), uploadPicture);
 
 router
-  .route("/dashboard/profile/update-pic")
+  .route("/user/profile/update-pic")
   .post(jwtAuth, multer.single("image"), updatePicture);
 
-router.route("/dashboard/profile/delete-pic").delete(jwtAuth, deletePicture);
+router.route("/user/profile/delete-pic").delete(jwtAuth, deletePicture);
 
-router.route("/dashboard/profile/get-pic/").get(jwtAuth, getPicture);
+router.route("/user/profile/get-pic/").get(jwtAuth, getPicture);
 
 router.route("/verification").post(jwtAuth, checkRole(["admin"]), verification);
 
@@ -174,7 +174,7 @@ router.post(
 );
 
 //-----------------------------Feedback--------------------------------
-router.post("/dashboard/createFeedback", jwtAuth, createFeedback);
+router.post("/user/createFeedback", jwtAuth, createFeedback);
 router.get(
   "/admin/getFeedbacks",
   jwtAuth,
@@ -183,6 +183,20 @@ router.get(
 );
 
 //-----------------------------Admin User Manage--------------------------------
+
+router
+  .route("/admin/update-account")
+  .patch(jwtAuth, checkRole(["admin"]), updateUser);
+
+  router
+    .route("/admin/profile/update-pic")
+    .post(jwtAuth, checkRole(["admin"]), multer.single("image"), updatePicture);
+
+router
+  .route("/admin/profile/delete-pic")
+  .delete(jwtAuth, checkRole(["admin"]), deletePicture);
+
+
 router.get(
   "/admin/getUser/:userId",
   jwtAuth,
