@@ -5,6 +5,7 @@ const Access = require("../middleware/access");
 const SubscriptionController = require("../controllers/SubscriptionController");
 const TopGainerController = require("../controllers/TopGainerController");
 const StockAdvisoryController = require("../controllers/StockAdvisoryController");
+const UserStockAdvisoryController = require("../controllers/UserStockAdvisoryController");
 const upload = require("../helpers/upload");
 
 const PaystackController = require("../controllers/PaystackController");
@@ -376,6 +377,55 @@ router
     jwtAuth,
     checkRole(["admin"]),
     StockAdvisoryController.deleteStockAdvisory
+  );
+
+  //Admin stock advisory draft
+  router.route("/stockAdvisory/createDraft").post(
+    // stockAdvisoryRequestValidation(),
+    jwtAuth,
+    checkRole(["admin"]),
+    validate,
+    upload.any(),
+    StockAdvisoryController.createStockAdvisoryDraft
+  );
+
+  router
+    .route("/stockAdvisory/stockAdvisorysDraft")
+    .get(jwtAuth, StockAdvisoryController.getStockAdvisorysDraft);
+
+  router
+    .route("/stockAdvisory/stockAdvisorysDraft/:stockAdvisoryId")
+    .get(jwtAuth, StockAdvisoryController.getSingleStockAdvisoryDraft);
+
+  router
+    .route("/stockAdvisory/draftToMain")
+    .patch(
+      jwtAuth,
+      checkRole(["admin"]),
+      upload.any(),
+      StockAdvisoryController.stockAdvisoryToDraft
+    );
+
+    //user stock advisory saves
+      router.route("/user/stockAdvisory/save").post(
+        // stockAdvisoryRequestValidation(),
+        jwtAuth,
+        UserStockAdvisoryController.createStockAdvisorySave
+      );
+
+      router
+        .route("/user/stockAdvisory/:userId")
+        .get(jwtAuth, UserStockAdvisoryController.getStockAdvisorysSave);
+
+      router
+        .route("/user/stockAdvisory/singleStockAdvisorySave")
+        .get(jwtAuth, UserStockAdvisoryController.getSingleStockAdvisorySave);
+
+router
+  .route("/user/stockAdvisory/delete")
+  .delete(
+    jwtAuth,
+    UserStockAdvisoryController.deleteStockAdvisorySave
   );
 
 //------------------------------Announcements-------------------------------

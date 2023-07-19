@@ -24,9 +24,6 @@ const AdminMessage = sequelise.define(
       type: Sequelize.ENUM(
         "all",
         "private_client",
-        "corporate_client",
-        "service_partner",
-        "product_partner",
         "other"
       ),
       defaultValue: "all",

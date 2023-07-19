@@ -19,6 +19,11 @@ const StockAdvisory = db.define(
       allowNull: true,
       type: Sequelize.STRING,
     },
+    status: {
+      type: Sequelize.ENUM("pending", "approved"),
+      defaultValue: "pending",
+      allowNull: true,
+    },
     image: {
       allowNull: true,
       type: Sequelize.STRING,
