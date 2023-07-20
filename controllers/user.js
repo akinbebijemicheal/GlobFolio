@@ -405,7 +405,6 @@ exports.getUserById = async (req, res) => {
     const user = await User.findOne({
       where: {
         id: req.params.userId,
-        userType: "admin",
       },
     });
     if (user) {
@@ -1790,37 +1789,31 @@ exports.deleteUser = async (req, res) => {
 exports.suspendUser = async (req, res) => {
   try {
     const { userId, reason } = req.body;
-    const user = await UserService.getUserDetails({ id: req.user.id });
-    if (!user) {
-      return res.status(404).send({
-        success: false,
-        message: "No User Found",
-      });
-    }
+
 
     const update = {
       isSuspended: true,
-      reason_for_suspension: reason,
+      // reason_for_suspension: reason,
     };
 
-    const userdetails = await User.findOne({ where: { id: userId } });
+    const user = await User.findOne({ where: { id: userId } });
+      if (!user) {
+        return res.status(404).send({
+          success: false,
+          message: "No User Found",
+        });
+      }
 
-    const super_admins = JSON.parse(
-      JSON.stringify(
-        await User.findAll({
-          where: { userType: "admin", level: 1, isActive: 1, isSuspended: 0 },
-        })
-      )
-    );
+
 
     await User.update(update, { where: { id: userId } });
 
     // Mailer methods
-    await AdminSuspendUserMailerForUser(
-      { first_name: userdetails.fullame, email: userdetails.email },
-      reason
-    );
-    await AdminSuspendUserMailerForAdmin(userdetails, super_admins, reason);
+    // await AdminSuspendUserMailerForUser(
+    //   { first_name: userdetails.fullame, email: userdetails.email },
+    //   reason
+    // );
+    // await AdminSuspendUserMailerForAdmin(userdetails, super_admins, reason);
 
     return res.status(200).send({
       success: true,
