@@ -17,6 +17,8 @@ const UserService = require("../service/UserService");
 const randomstring = require("randomstring");
 const { Sequelize, Op } = require("sequelize");
 const Picture = require("../model/profilepic");
+const Subscription = require("../model/Subscription");
+const SubscriptionPlan = require("../model/SubscriptionPlan");
 
 /*const { google } = require("googleapis");
 const OAuth2 = google.auth.OAuth2;
@@ -270,6 +272,10 @@ exports.LoginUser = async (req, res, next) => {
         {
           model: Picture,
         },
+        {
+          model: Subscription,
+          as: "subscription",
+        },
       ],
     });
     console.log(user);
@@ -309,6 +315,7 @@ exports.LoginUser = async (req, res, next) => {
         createdAt: user.createdAt,
         access_token: token,
         pictures: user.pictures,
+        Subscription: user.subscription,
       };
 
       return res.status(200).json({
@@ -406,6 +413,21 @@ exports.getUserById = async (req, res) => {
       where: {
         id: req.params.userId,
       },
+      include: [
+        {
+          model: Picture,
+        },
+        {
+          model: SubscriptionPlan,
+          as: "subscriptionPlan",
+          include: [
+            {
+              model: Subscription,
+              as: "subscriptions"
+            },
+          ],
+        },
+      ],
     });
     if (user) {
       return res.status(200).json({
@@ -1796,7 +1818,7 @@ exports.suspendUser = async (req, res) => {
     };
 
     const user = await User.findOne({ where: { id: userId } });
-    if (!user){
+    if (!user) {
       return res.status(404).send({
         success: false,
         message: "No User Found",

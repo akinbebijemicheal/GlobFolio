@@ -1,6 +1,8 @@
 const Sequelize = require("sequelize");
 // const sequelise = require("../config/database/connection");
 const db = require("../config/config");
+const User = require("./user");
+const SubscriptionPlan = require("./SubscriptionPlan");
 
 
 const Subscription = db.define(
@@ -37,4 +39,9 @@ const Subscription = db.define(
   { paranoid: true }
 );
 
+Subscription.belongsTo(User, { foreignKey: "userId" });
+User.hasOne(Subscription, { foreignKey: "userId" });
+
+Subscription.belongsTo(SubscriptionPlan, { foreignKey: "planId", as: "subscriptionPlan" });
+SubscriptionPlan.hasMany(Subscription, { foreignKey: "planId", as: "subscriptions" });
 module.exports = Subscription;

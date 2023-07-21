@@ -22,6 +22,17 @@ const { sendMail } = require("../service/attachmentEmailService");
 exports.createSubscriptionPlan = async (req, res, next) => {
   sequelize.transaction(async (t) => {
     try {
+      const existsub = await SubscriptionPlan.findOne({
+        where: { name: req.body.name },
+      });
+      if (existsub != null) {
+        return res.status(404).send({
+          success: false,
+          message:
+            "Subscription plan with this name exists, name must be unique",
+        });
+      }
+
       const plan = await SubscriptionPlan.create(req.body, {
         include: [
           {
@@ -145,6 +156,35 @@ exports.getSingleSubscriptionPlan = async (req, res, next) => {
   }
 };
 
+exports.getSubUsersByPlanId = async (req, res, next) => {
+  try {
+    const plans = await SubscriptionPlan.findOne({
+      where: { id: req.params.planId },
+      order: [["createdAt", "DESC"]],
+      include: [
+        {
+          model: SubscriptionPlanPackage,
+          as: "benefits",
+        },
+        {
+          model: Subscription,
+          as: "subscriptions",
+          include: [
+            {
+              model: User,
+            },
+          ],
+        },
+      ],
+    });
+    return res.status(200).send({
+      success: true,
+      data: plans,
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
 
 exports.getSubscriptionHistory = async (req, res, next) => {
   try {
@@ -372,4 +412,93 @@ exports.verifySubscription = async (req, res, next) => {
       return next(error);
     }
   });
+};
+
+exports.getSubUsers = async (req, res, next) => {
+  try {
+    const plans = await SubscriptionPlan.findAll({
+      order: [["createdAt", "DESC"]],
+      include: [
+        {
+          model: Subscription,
+          as: "subscriptions",
+        },
+      ],
+    });
+    // for(let i = 0; i < plans.length; i++){
+
+    // }
+
+    return res.status(200).send({
+      success: true,
+      message: "subusers",
+      data: plans,
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+exports.getSubUsersCount = async (req, res, next) => {
+  try {
+    const plans = await SubscriptionPlan.findAll({
+      order: [["createdAt", "DESC"]],
+      include: [
+        {
+          model: SubscriptionPlanPackage,
+          as: "benefits",
+        },
+      ],
+    });
+    return res.status(200).send({
+      success: true,
+      data: plans,
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+exports.getSubUsersByPlanId = async (req, res, next) => {
+  try {
+    const planId = req.params.planId
+    const plans = await SubscriptionPlan.findOne({
+      where: {id: planId},
+      order: [["createdAt", "DESC"]],
+      include: [
+        {
+          model: SubscriptionPlanPackage,
+          as: "benefits",
+        },
+      ],
+    });
+    return res.status(200).send({
+      success: true,
+      data: plans,
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+exports.getPlanByName = async (req, res, next) => {
+  try {
+    const name = req.query.name;
+    const plan = await SubscriptionPlan.findOne({
+      where: { name },
+      order: [["createdAt", "DESC"]],
+      include: [
+        {
+          model: SubscriptionPlanPackage,
+          as: "benefits",
+        },
+      ],
+    });
+    return res.status(200).send({
+      success: true,
+      data: plan,
+    });
+  } catch (error) {
+    return next(error);
+  }
 };

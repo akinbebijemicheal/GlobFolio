@@ -1,6 +1,7 @@
 const Sequelize = require('sequelize');
 const db = require('../config/config');
 const {nanoid} = require('nanoid');
+const SubscriptionPlan = require('./SubscriptionPlan');
 
 const User = db.define(
   "user",
@@ -99,5 +100,15 @@ const User = db.define(
   },
   { timestamps: true }
 );
+
+SubscriptionPlan.hasMany(User, {
+  foreignKey: "planId",
+  as: "subscriptionPlan",
+});
+
+User.belongsTo(SubscriptionPlan, {
+  foreignKey: "planId",
+  as: "subscriptionPlan",
+});
 
 module.exports = User;

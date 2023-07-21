@@ -28,6 +28,6 @@ const Picture = db.define('picture', {
 }, {timestamps: true});
 
 Picture.belongsTo(User, {foreignKey: 'userid'})
-User.hasMany(Picture, {foreignKey: 'userid'});
+User.hasOne(Picture, {foreignKey: 'userid'});
 
 module.exports = Picture;

@@ -228,7 +228,7 @@ router
   .post(jwtAuth, checkRole(["admin"]), suspendUser);
 
 router
-  .route("/admin/unsuspend-user")
+  .route("/admin/unSuspend-user")
   .post(jwtAuth, checkRole(["admin"]), unsuspendUser);
 
 //-----------------------------Subscription--------------------------------
@@ -255,6 +255,18 @@ router
 router
   .route("/subscription/plans/:planId")
   .get(SubscriptionController.getSingleSubscriptionPlan);
+
+router
+  .route("/subscription/getPlanByName")
+  .get(SubscriptionController.getPlanByName);
+
+router
+  .route("/subscription/getPlanUsers")
+  .get(SubscriptionController.getSubUsers);
+
+router
+  .route("/subscription/getSinglePlanUsers/:planId")
+  .get(SubscriptionController.getSubUsersByPlanId);
 
 router
   .route("/subscription/history")
@@ -379,54 +391,51 @@ router
     StockAdvisoryController.deleteStockAdvisory
   );
 
-  //Admin stock advisory draft
-  router.route("/stockAdvisory/createDraft").post(
-    // stockAdvisoryRequestValidation(),
+//Admin stock advisory draft
+router.route("/stockAdvisory/createDraft").post(
+  // stockAdvisoryRequestValidation(),
+  jwtAuth,
+  checkRole(["admin"]),
+  validate,
+  upload.any(),
+  StockAdvisoryController.createStockAdvisoryDraft
+);
+
+router
+  .route("/stockAdvisory/stockAdvisorysDraft")
+  .get(jwtAuth, StockAdvisoryController.getStockAdvisorysDraft);
+
+router
+  .route("/stockAdvisory/stockAdvisorysDraft/:stockAdvisoryId")
+  .get(jwtAuth, StockAdvisoryController.getSingleStockAdvisoryDraft);
+
+router
+  .route("/stockAdvisory/draftToMain")
+  .patch(
     jwtAuth,
     checkRole(["admin"]),
-    validate,
     upload.any(),
-    StockAdvisoryController.createStockAdvisoryDraft
+    StockAdvisoryController.stockAdvisoryToDraft
   );
 
-  router
-    .route("/stockAdvisory/stockAdvisorysDraft")
-    .get(jwtAuth, StockAdvisoryController.getStockAdvisorysDraft);
+//user stock advisory saves
+router.route("/user/stockAdvisory/save").post(
+  // stockAdvisoryRequestValidation(),
+  jwtAuth,
+  UserStockAdvisoryController.createStockAdvisorySave
+);
 
-  router
-    .route("/stockAdvisory/stockAdvisorysDraft/:stockAdvisoryId")
-    .get(jwtAuth, StockAdvisoryController.getSingleStockAdvisoryDraft);
+router
+  .route("/user/stockAdvisory/:userId")
+  .get(jwtAuth, UserStockAdvisoryController.getStockAdvisorysSave);
 
-  router
-    .route("/stockAdvisory/draftToMain")
-    .patch(
-      jwtAuth,
-      checkRole(["admin"]),
-      upload.any(),
-      StockAdvisoryController.stockAdvisoryToDraft
-    );
-
-    //user stock advisory saves
-      router.route("/user/stockAdvisory/save").post(
-        // stockAdvisoryRequestValidation(),
-        jwtAuth,
-        UserStockAdvisoryController.createStockAdvisorySave
-      );
-
-      router
-        .route("/user/stockAdvisory/:userId")
-        .get(jwtAuth, UserStockAdvisoryController.getStockAdvisorysSave);
-
-      router
-        .route("/user/stockAdvisory/singleStockAdvisorySave")
-        .get(jwtAuth, UserStockAdvisoryController.getSingleStockAdvisorySave);
+router
+  .route("/user/stockAdvisory/singleStockAdvisorySave")
+  .get(jwtAuth, UserStockAdvisoryController.getSingleStockAdvisorySave);
 
 router
   .route("/user/stockAdvisory/delete")
-  .delete(
-    jwtAuth,
-    UserStockAdvisoryController.deleteStockAdvisorySave
-  );
+  .delete(jwtAuth, UserStockAdvisoryController.deleteStockAdvisorySave);
 
 //------------------------------Announcements-------------------------------
 
