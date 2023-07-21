@@ -20,7 +20,7 @@ exports.createInvoice = async (orderData, user) => {
   //     description: items.product.name.substring(0, 27),
   //     quantity: items.quantity,
   //     price: parseInt(items.product.price),
-  //     "tax-rate": items.taxrate || 0,  
+  //     "tax-rate": items.taxrate || 0,
   //   };
   // });
 
@@ -39,8 +39,6 @@ exports.createInvoice = async (orderData, user) => {
   //     row_total: (orderItem.product.price * orderItem.quantity).toLocaleString(),
   //   };
   // });
-
- 
 
   const invoiceData = {
     logo: "https://res.cloudinary.com/greenmouse-tech/image/upload/v1669563824/BOG/logo_1_1_ubgtnr.png",
@@ -66,7 +64,7 @@ exports.createInvoice = async (orderData, user) => {
     expiryDate: orderData.expiryDate,
   };
 
-  console.log("Invoice Generator")
+  console.log("Invoice Generator");
   const preparedInvoiceTemplate = invoice(invoiceData);
   const data = {
     customize: {
@@ -75,7 +73,7 @@ exports.createInvoice = async (orderData, user) => {
     },
     // information: {
     //   logo:
-    //     "https://res.cloudinary.com/yhomi1996/image/upload/v1665783638/bog_moijdl.png",
+    //     "https://res.cloudinary.com/greenmouse-tech/image/upload/v1689001814/globfolio/Group_48319_zrfe2h.png",
     //   "document-title": "BOG LTD",
     //   "company-from": "Sample Street 123",
     //   "zip-from": "1234 AB",
@@ -113,7 +111,11 @@ exports.createInvoice = async (orderData, user) => {
   const result = await easyinvoice.createInvoice(data);
   // The response will contain a base64 encoded PDF file
   // console.log('PDF base64 string: ', result.pdf);
-  fs.writeFileSync(`uploads/${orderData.user.fullname} Subscription.pdf`, result.pdf, "base64");
+  fs.writeFileSync(
+    `uploads/${orderData.user.fullname} Subscription.pdf`,
+    result.pdf,
+    "base64"
+  );
   // easyinvoice.download('myInvoice.pdf', result.pdf);
 
   return true;
