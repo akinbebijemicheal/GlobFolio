@@ -64,6 +64,10 @@ const User = db.define(
       type: Sequelize.BOOLEAN,
       defaultValue: false,
     },
+    reason_for_suspension: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    },
     app: {
       type: Sequelize.STRING,
       allowNull: true,

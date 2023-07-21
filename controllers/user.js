@@ -1790,21 +1790,18 @@ exports.suspendUser = async (req, res) => {
   try {
     const { userId, reason } = req.body;
 
-
     const update = {
       isSuspended: true,
-      // reason_for_suspension: reason,
+      reason_for_suspension: reason,
     };
 
     const user = await User.findOne({ where: { id: userId } });
-      if (!user) {
-        return res.status(404).send({
-          success: false,
-          message: "No User Found",
-        });
-      }
-
-
+    if (!user){
+      return res.status(404).send({
+        success: false,
+        message: "No User Found",
+      });
+    }
 
     await User.update(update, { where: { id: userId } });
 
@@ -1853,7 +1850,7 @@ exports.unsuspendUser = async (req, res) => {
 
     return res.status(200).send({
       success: true,
-      message: "User suspended",
+      message: "User unsuspended",
     });
   } catch (error) {
     return res.status(500).send({
