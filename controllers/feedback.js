@@ -20,6 +20,7 @@ exports.createFeedback = async (req, res, next) => {
   sequelize.transaction(async (t) => {
     try {
       const { rating, subject, message } = req.body;
+      console.log(req.user)
 
       const id = req.user.id;
 
