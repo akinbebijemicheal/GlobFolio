@@ -149,7 +149,7 @@ router.route("/verification").post(jwtAuth, checkRole(["admin"]), verification);
 
 router.route("/user/change-password").patch(jwtAuth, changePassword);
 
-router.route("/verifyemail").get(verifyUserEmail);
+router.route("/verifyemail").post(verifyUserEmail);
 
 router.route("/forgot-password").get(forgotPassword);
 

@@ -998,7 +998,7 @@ exports.appleSign = async (req, res, next) => {
  */
 exports.googleSign = async (req, res, next) => {
   sequelize.transaction(async (t) => {
-    const { user_type, company_name } = req.body;
+    const { user_type } = req.body;
     const { id, email, verified_email, name } = req.google_details;
 
     try {
