@@ -7,7 +7,10 @@ const helpers = require("../helpers/message");
 const EmailService = require("../service/emailService");
 const UserService = require("../service/UserService");
 const db = require("../config/config");
-const { ClientForgotPasswordMobileMailer, ClientForgotPasswordMailer } = require("../helpers/mailer/samples");
+const {
+  ClientForgotPasswordMobileMailer,
+  ClientForgotPasswordMailer,
+} = require("../helpers/mailer/samples");
 const sequelize = db;
 /*const { google } = require("googleapis");
 const OAuth2 = google.auth.OAuth2;
@@ -317,7 +320,7 @@ const baseurl = process.env.BASE_URL;
 //                 } else {
 //                     console.log(info);
 //                     res.status(200).json({
-//                         status: true,
+//                         success: true,
 //                         message: "An email has been sent to you, Check your inbox"
 //                     })
 //                 }
@@ -325,13 +328,13 @@ const baseurl = process.env.BASE_URL;
 
 //         } else {
 //             res.status(404).json({
-//                 status: false,
+//                 success: false,
 //                 message: "User email not found"})
 //         }
 //     } catch (error) {
 //         console.error(error)
 //        return res.status(500).json({
-//             status: false,
+//             success: false,
 //             message: "An error occured",
 //             error: error
 //         })
@@ -348,18 +351,18 @@ const baseurl = process.env.BASE_URL;
 //                     id: id
 //                 }})
 //                 res.status(200).json({
-//                     status: true,
+//                     success: true,
 //                     message: "Email Verified successfully updated"})
 //         }else{
 //             res.status(403).json({
-//                 status: false,
+//                 success: false,
 //                 message: "Invalid Link"
 //             })
 //         }
 //     } catch (error) {
 //         console.error(error)
 //         return res.status(500).json({
-//              status: false,
+//              success: false,
 //              message: "An error occured",
 //              error: error
 //          })
@@ -672,7 +675,7 @@ const baseurl = process.env.BASE_URL;
 //                 } else {
 //                     console.log(info);
 //                     res.status(200).json({
-//                         status: true,
+//                         success: true,
 //                         message: "An email has been sent to you, Check your inbox"
 //                     })
 //                 }
@@ -680,13 +683,13 @@ const baseurl = process.env.BASE_URL;
 
 //         } else {
 //             res.status(404).json({
-//                 status: false,
+//                 success: false,
 //                 message: "User email not found"})
 //         }
 //     } catch (error) {
 //         console.error(error)
 //        return res.status(500).json({
-//             status: false,
+//             success: false,
 //             message: "An error occured",
 //             error: error
 //         })
@@ -707,16 +710,16 @@ const baseurl = process.env.BASE_URL;
 //                         id: `${req.params.id}`
 //                     }})
 //                     res.status(200).json({
-//                         status: true,
+//                         success: true,
 //                         message: "User password successfully updated"})
 //                 } else {
 //                     res.status(406).json({
-//                         status: false,
+//                         success: false,
 //                         message: "Password don't match"})
 //                 }
 //             }else{
 //                 res.status(403).json({
-//                     status: false,
+//                     success: false,
 //                     message: "Invalid Link"
 //                 })
 //             }
@@ -724,7 +727,7 @@ const baseurl = process.env.BASE_URL;
 //         } catch (error) {
 //             console.error(error)
 //             return res.status(500).json({
-//                  status: false,
+//                  success: false,
 //                  message: "An error occured",
 //                  error: error
 //              })
@@ -756,37 +759,36 @@ exports.changePassword = async (req, res) => {
             }
           );
           res.status(202).json({
-            status: true,
+            success: true,
             message: "Password updated",
           });
         } else {
           res.status(406).json({
-            status: false,
+            success: false,
             message: "New password not equal to confirm password",
           });
         }
       } else {
         res.status(406).json({
-          status: false,
+          success: false,
           message: "Wrong password",
         });
       }
     } else {
       res.status(404).json({
-        status: false,
+        success: false,
         message: "User not logged in",
       });
     }
   } catch (error) {
     console.error(error);
     return res.status(500).json({
-      status: false,
+      success: false,
       message: "An error occured",
       error: error,
     });
   }
 };
-
 
 exports.adminChangePassword = async (req, res) => {
   const { password, new_password, confirm_password } = req.body;
@@ -812,31 +814,31 @@ exports.adminChangePassword = async (req, res) => {
             }
           );
           res.status(202).json({
-            status: true,
+            success: true,
             message: "Password updated",
           });
         } else {
           res.status(406).json({
-            status: false,
+            success: false,
             message: "New password not equal to confirm password",
           });
         }
       } else {
         res.status(406).json({
-          status: false,
+          success: false,
           message: "Wrong password",
         });
       }
     } else {
       res.status(404).json({
-        status: false,
+        success: false,
         message: "User not logged in",
       });
     }
   } catch (error) {
     console.error(error);
     return res.status(500).json({
-      status: false,
+      success: false,
       message: "An error occured",
       error: error,
     });
@@ -860,14 +862,14 @@ exports.forgotPassword = async (req, res, next) => {
       if (req.body.platform === "mobile") {
         token = helpers.generateMobileToken();
         await ClientForgotPasswordMobileMailer(
-          { email, first_name: user.fname },
+          { email, first_name: user.fullname },
           token
         );
         // message = helpers.resetPasswordMobileMessage(token);
       } else {
         token = helpers.generateWebToken();
         await ClientForgotPasswordMailer(
-          { email, first_name: user.fname },
+          { email, first_name: user.fullname },
           token
         );
         // let message = helpers.resetPasswordMessage(email, token);
@@ -912,7 +914,7 @@ exports.resetPassword = async (req, res, next) => {
       };
       await UserService.updateUser(data, t);
       return res.status(200).send({
-        status: true,
+        success: true,
         message: "Password Changed Successfully",
       });
     } catch (error) {

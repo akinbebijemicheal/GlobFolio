@@ -41,7 +41,7 @@ exports.createInvoice = async (orderData, user) => {
   // });
 
   const invoiceData = {
-    logo: "https://res.cloudinary.com/greenmouse-tech/image/upload/v1669563824/BOG/logo_1_1_ubgtnr.png",
+    logo: "https://res.cloudinary.com/greenmouse-tech/image/upload/v1689001814/globfolio/Group_48319_zrfe2h.png",
     document_title: "INVOICE",
     company_from: "13, Olufunmilola Okikiolu Street",
     zip_from: "Off Toyin Street, Ikeja",

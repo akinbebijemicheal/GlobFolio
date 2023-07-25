@@ -1,16 +1,17 @@
-const request = require('request');
-const nodemailer = require('nodemailer');
+const request = require("request");
+const nodemailer = require("nodemailer");
 // require('dotenv').config()
 
-exports.Logo = 'https://res.cloudinary.com/greenmouse-tech/image/upload/v1669563824/BOG/logo_1_1_ubgtnr.png';
+exports.Logo =
+  "https://res.cloudinary.com/greenmouse-tech/image/upload/v1689001814/globfolio/Group_48319_zrfe2h.png";
 
 exports.TermiiMailProvider = (data) => {
   // console.log(process.env.TERMII_API_KEY)
   const options = {
-    method: 'POST',
+    method: "POST",
     url: process.env.TERMII_API_ENDPOINT,
     headers: {
-      'Content-Type': ['application/json', 'application/json'],
+      "Content-Type": ["application/json", "application/json"],
     },
     body: JSON.stringify(data),
   };
@@ -23,6 +24,7 @@ exports.TermiiMailProvider = (data) => {
 
 exports.Mailer = async (template, data) => {
   let transporter = nodemailer.createTransport({
+    name: "GlobFolio",
     host: process.env.EMAIL_HOST,
     port: process.env.EMAIL_PORT,
     secure: process.env.EMAIL_SECURE, // true for 465, false for other ports
@@ -31,25 +33,26 @@ exports.Mailer = async (template, data) => {
       pass: process.env.EMAIL_PASSWORD,
     },
   });
-//   let transporter = nodemailer.createTransport({
-//     host: process.env.MAILER_HOST,
-//     port: process.env.MAILER_PORT,
-//     secure: process.env.MAILER_SECURE, // true for 465, false for other ports
-//     auth: {
-//       user: process.env.MAILER_USER,
-//       pass: process.env.MAILER_PASS,
-//     },
-//   });
+  //   let transporter = nodemailer.createTransport({
+  //     host: process.env.MAILER_HOST,
+  //     port: process.env.MAILER_PORT,
+  //     secure: process.env.MAILER_SECURE, // true for 465, false for other ports
+  //     auth: {
+  //       user: process.env.MAILER_USER,
+  //       pass: process.env.MAILER_PASS,
+  //     },
+  //   });
 
-  const receivers = typeof data.email === "string" ? data.email : data.email.toString()
+  const receivers =
+    typeof data.email === "string" ? data.email : data.email.toString();
 
   // send mail with defined transport object
   let info = await transporter.sendMail({
-    from: `${process.env.APP_NAME} <${process.env.MAILER_USER}>`, // sender address
+    from: `${process.env.APP_NAME} <${process.env.EMAIL_FROMIT}>`, // sender address
     to: receivers, // list of receivers
     subject: data.subject, // Subject line
     html: template, // html body
-    attachments: data.files !== undefined ? data.files : ''
+    attachments: data.files !== undefined ? data.files : "",
   });
 
   return info;

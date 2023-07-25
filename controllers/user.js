@@ -40,7 +40,7 @@ exports.checkRole = (roles) => (req, res, next) => {
   console.log(roles, req.user);
   if (!roles.includes(req.user.userType)) {
     return res.status(401).json({
-      status: false,
+      success: false,
       message: "Unauthorized",
     });
   }
@@ -69,7 +69,7 @@ exports.RegisterUser = async (req, res, next) => {
       });
       if (user) {
         return res.status(302).json({
-          status: false,
+          success: false,
           message: "User already exist",
         });
       }
@@ -152,13 +152,13 @@ exports.RegisterUser = async (req, res, next) => {
       io.emit("getNotifications", await Notification.fetchAdminNotification());
 
       return res.status(201).json({
-        status: true,
+        success: true,
         message: "Account created!",
       });
     } catch (error) {
       console.error(error);
       // res.status(500).json({
-      //      status: false,
+      //      success: false,
       //      message: "Error occured",
       //      error: error
       //  });
@@ -190,7 +190,7 @@ exports.RegisterAdmin = async (req, res, next) => {
       });
       if (user) {
         return res.status(302).json({
-          status: false,
+          success: false,
           message: "User already exist",
         });
       }
@@ -245,13 +245,13 @@ exports.RegisterAdmin = async (req, res, next) => {
       await UserService.updateUser(data, t);
 
       return res.status(201).json({
-        status: true,
+        success: true,
         message: "Account created!",
       });
     } catch (error) {
       console.error(error);
       // res.status(500).json({
-      //      status: false,
+      //      success: false,
       //      message: "Error occured",
       //      error: error
       //  });
@@ -281,17 +281,30 @@ exports.LoginUser = async (req, res, next) => {
     console.log(user);
     if (!user) {
       return res.status(404).json({
-        status: false,
+        success: false,
         message: "User does not exist",
       });
     }
 
     if (user.userType !== "user") {
       return res.status(401).json({
-        status: false,
+        success: false,
         message: "Please ensure you are logging-in from the right portal",
       });
     }
+      //  if (!user.isActive) {
+      //    return res.status(400).send({
+      //      success: false,
+      //      message: "Please Verify account",
+      //    });
+      //  }
+       if (user.isSuspended) {
+         return res.status(400).send({
+           success: false,
+           message:
+             "Your account has been suspended. Reach out to the admin for further information",
+         });
+       }
 
     const validate = await bcrypt.compare(password, user.password);
     if (validate) {
@@ -319,20 +332,20 @@ exports.LoginUser = async (req, res, next) => {
       };
 
       return res.status(200).json({
-        status: true,
+        success: true,
         message: "Successfully logged in",
         data: result,
       });
     } else {
       return res.status(403).json({
-        status: false,
+        success: false,
         message: "Wrong password",
       });
     }
   } catch (error) {
     console.error(error);
     // res.status(500).json({
-    //     status: false,
+    //     success: false,
     //     message: "Error occured",
     //     error: error
     // });
@@ -374,19 +387,19 @@ exports.getUsers = async (req, res) => {
     const users = await User.findAll({ where: { userType: "user" } });
     if (users) {
       return res.status(200).json({
-        status: true,
+        success: true,
         data: users,
       });
     } else {
       return res.status(404).json({
-        status: false,
+        success: false,
         message: "No user found",
       });
     }
   } catch (error) {
     console.error(error);
     return res.status(500).json({
-      status: false,
+      success: false,
       message: "error occured",
       error: error,
     });
@@ -423,7 +436,7 @@ exports.getUserById = async (req, res) => {
           include: [
             {
               model: Subscription,
-              as: "subscriptions"
+              as: "subscriptions",
             },
           ],
         },
@@ -431,19 +444,19 @@ exports.getUserById = async (req, res) => {
     });
     if (user) {
       return res.status(200).json({
-        status: true,
+        success: true,
         message: user,
       });
     } else {
       return res.status(404).json({
-        status: false,
+        success: false,
         message: "No user found",
       });
     }
   } catch (error) {
     console.error(error);
     return res.status(500).json({
-      status: false,
+      success: false,
       message: "error occured",
       error: error,
     });
@@ -474,19 +487,19 @@ exports.getAdminById = async (req, res) => {
     });
     if (user) {
       return res.status(200).json({
-        status: true,
+        success: true,
         message: user,
       });
     } else {
       return res.status(404).json({
-        status: false,
+        success: false,
         message: "No user found",
       });
     }
   } catch (error) {
     console.error(error);
     return res.status(500).json({
-      status: false,
+      success: false,
       message: "error occured",
       error: error,
     });
@@ -516,19 +529,19 @@ exports.getUser = async (req, res) => {
     });
     if (user) {
       return res.status(200).json({
-        status: true,
+        success: true,
         message: user,
       });
     } else {
       return res.status(404).json({
-        status: false,
+        success: false,
         message: "No user found",
       });
     }
   } catch (error) {
     console.error(error);
     return res.status(500).json({
-      status: false,
+      success: false,
       message: "error occured",
       error: error,
     });
@@ -581,14 +594,14 @@ exports.updateUser = async (req, res) => {
       },
     });
     return res.status(200).json({
-      status: true,
+      success: true,
       message: "Updated successfully",
       data: user,
     });
   } catch (error) {
     console.error(error);
     return res.status(500).json({
-      status: false,
+      success: false,
       message: "Error occured",
       error: error,
     });
@@ -605,13 +618,13 @@ exports.deleteUser = async (req, res) => {
     });
 
     return res.status(200).json({
-      status: true,
+      success: true,
       message: "Updated successfully",
     });
   } catch (error) {
     console.error(error);
     return res.status(500).json({
-      status: false,
+      success: false,
       message: "Error occured",
       error: error,
     });
@@ -642,13 +655,13 @@ exports.deleteUserByAdmin = async (req, res) => {
     });
 
     return res.status(200).json({
-      status: true,
+      success: true,
       message: "Deleted successfully",
     });
   } catch (error) {
     console.error(error);
     return res.status(500).json({
-      status: false,
+      success: false,
       message: "Error occured",
       error: error,
     });
@@ -998,8 +1011,8 @@ exports.appleSign = async (req, res, next) => {
  */
 exports.googleSign = async (req, res, next) => {
   sequelize.transaction(async (t) => {
-    const { user_type } = req.body;
-    const { id, email, verified_email, name } = req.google_details;
+    const { userType } = req.body;
+    const { id, email, verified_email, name, gender } = req.google_details;
 
     try {
       const user = await User.findOne({ where: { email } });
@@ -1008,66 +1021,28 @@ exports.googleSign = async (req, res, next) => {
        * If user is found, login, else signup
        */
       if (user !== null) {
-        const payload = {
-          user: {
-            id: user.id,
-          },
-        };
-        const token = jwt.sign(payload, process.env.JWT_SECRET, {
-          expiresIn: 36000,
-        });
-        let profile;
-        const data = {
-          ...user.toJSON(),
-        };
-        const userId = user.id;
-        profile = await UserService.getUserTypeProfile(user_type, userId);
-        if (profile) {
-          data.profile = profile;
-          data.userType = user_type;
-        }
-
-        return res.status(200).send({
-          success: true,
-          message: "User Logged In Sucessfully",
-          token,
-          user: data,
+        return res.status(400).send({
+          success: false,
+          message: "User exists with email, proceed to login",
         });
       }
 
       const user_ = await User.create({
-        name,
-        fname: name.split(" ")[0],
-        lname: name.split(" ")[1],
+        fullname: name,
         email,
-        userType: user_type,
-        level: 1,
+        gender,
+        userType: userType,
         google_id: id,
-        isActive: true,
         app: "google",
+        isActive: true,
+        referralId: randomstring.generate(6),
+        email_verify: false,
       });
 
-      if (user_type !== "admin" || user_type !== "other") {
-        const request = {
-          userId: user_.id,
-          userType: user_type,
-          company_name: company_name !== undefined ? company_name : null,
-        };
-        const result = await this.addUserProfile(request, t);
+      if (userType !== "admin") {
       }
 
-      const type = ["corporate_client"];
-      if (type.includes(user_type)) {
-        const data = {
-          userId: user_.id,
-          company_name: company_name !== undefined ? company_name : null,
-        };
-        await UserService.createProfile(data, t);
-      }
-
-      const mesg = `A new user just signed up as ${UserService.getUserType(
-        user_type
-      )} through ${"google"}`;
+      const mesg = `A new user just signed up through ${"google"}`;
       const userId = user_.id;
       const notifyType = "admin";
       const { io } = req.app;
@@ -1166,48 +1141,56 @@ exports.googleSignin = async (req, res) => {
       where: {
         google_id,
       },
+      include: [
+        {
+          model: Picture,
+        },
+        {
+          model: Subscription,
+          as: "subscription",
+        },
+      ],
     });
 
     if (user === null) {
       return res.status(404).json({
         success: false,
-        message: "Google account not found!",
+        message: "Google account not found, go to sign up!",
       });
     }
-
+    if (user.userType !== "user") {
+      return res.status(401).json({
+        success: false,
+        message: "Please ensure you are logging-in from the right portal",
+      });
+    }
     const payload = {
       user: {
-        id: user.id,
+        user: user,
       },
     };
-    const token = jwt.sign(payload, process.env.JWT_SECRET, {
-      expiresIn: 36000,
-    });
-    let profile;
-    const data = {
-      ...user,
+    const token = jwt.sign(payload, process.env.TOKEN);
+    let result = {
+      id: user.id,
+      fullname: user.fullname,
+      email: user.email,
+      userType: user.userType,
+      phone_no: user.phone_no,
+      country: user.country,
+      address: user.address,
+      expiresIn: "24 hours",
+      email_verify: user.email_verify,
+      updatedAt: user.updatedAt,
+      createdAt: user.createdAt,
+      access_token: token,
+      pictures: user.pictures,
+      Subscription: user.subscription,
     };
-    const userId = user.id;
-    if (req.body.userType && req.body.userType !== "") {
-      const { userType } = req.body;
-      profile = await UserService.getUserTypeProfile(userType, userId);
-      if (profile) {
-        data.profile = profile;
-        data.userType = userType;
-      }
-    } else {
-      profile = await UserService.getUserTypeProfile(user.userType, userId);
-      if (profile) {
-        data.profile = profile;
-        data.userType = user.userType;
-      }
-    }
 
     return res.status(200).send({
       success: true,
       message: "User Logged In Sucessfully",
-      token,
-      user: data,
+      data: result,
     });
   } catch (err) {
     console.error(err);

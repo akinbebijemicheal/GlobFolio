@@ -36,7 +36,7 @@ exports.RegisterAdmin = async (req, res, next) => {
 
     const Newuser = await user.save();
     // res.status(200).json({
-    //     status: true,
+    //     success: true,
     //     data: Newuser
     // })
     req.flash("success", "Registration successful");
@@ -44,7 +44,7 @@ exports.RegisterAdmin = async (req, res, next) => {
   } catch (error) {
     console.error(error);
     // res.status(500).json({
-    //     status: false,
+    //     success: false,
     //     message: error
     // })
     // next(error)
@@ -67,7 +67,7 @@ exports.webLoginAdmin = async (req, res, next) => {
       return res.redirect("/login-admin");
     } else if (user.role !== "admin") {
       // res.status(401).json({
-      //     status: false,
+      //     success: false,
       //     message: 'Please ensure you are logging-in from the right portal'
       // })
       req.flash(
@@ -110,8 +110,7 @@ exports.webLoginAdmin = async (req, res, next) => {
         };
 
         req.flash("success", "Successfully logged in");
-     return res.cookie("jwt", token, option)
-         .redirect("/dashboard/admin");
+        return res.cookie("jwt", token, option).redirect("/dashboard/admin");
       } else {
         res.status(403);
         req.flash("warning", "Wrong password");
@@ -121,7 +120,7 @@ exports.webLoginAdmin = async (req, res, next) => {
   } catch (error) {
     console.error(error);
     // res.status(500).json({
-    //     status: false,
+    //     success: false,
     //     message: error
     // });
     // next(error);
@@ -160,7 +159,7 @@ exports.createAdmin = async (req, res, next) => {
     });
     if (user) {
       // res.status(302).json({
-      //     status: false,
+      //     success: false,
       //     message: "User already exist"
       // })
       req.flash("error", "User already exist");
@@ -178,7 +177,7 @@ exports.createAdmin = async (req, res, next) => {
 
     const Newuser = await user.save();
     res.status(200).json({
-      status: true,
+      success: true,
       data: Newuser,
     });
   } catch (error) {
@@ -203,7 +202,7 @@ exports.userCount = async (rea, res, next) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({
-      status: false,
+      success: false,
       message: "An error occured refresh the page",
     });
     next(error);
@@ -220,7 +219,7 @@ exports.getUsers = async (req, res, next) => {
       // res.status(200)
       //res.send(users)
       // return res.status(200).json({
-      // status: true,
+      // success: true,
       // data: users});
       let name = req.user.fullname.split(" ");
       let email = req.user.email;
@@ -249,7 +248,7 @@ exports.getUsers = async (req, res, next) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({
-      status: false,
+      success: false,
       message: "An error occured refresh the page",
     });
     next(error);
@@ -266,19 +265,19 @@ exports.getUser = async (req, res, next) => {
     });
     if (user) {
       return res.status(200).json({
-        status: true,
+        success: true,
         message: user,
       });
     } else {
       return res.status(404).json({
-        status: false,
+        success: false,
         message: "No user found",
       });
     }
   } catch (error) {
     console.error(error);
     res.status(500).json({
-      status: false,
+      success: false,
       message: "An error occured refresh the page",
     });
     next(error);
@@ -304,7 +303,7 @@ exports.updateUser = async (req, res, next) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({
-      status: false,
+      success: false,
       message: "An error occured refresh the page",
     });
     next(error);
@@ -323,7 +322,7 @@ exports.deleteUser = async (req, res, next) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({
-      status: false,
+      success: false,
       message: "An error occured refresh the page",
     });
     next(error);
@@ -333,7 +332,7 @@ exports.deleteUser = async (req, res, next) => {
 // exports.checkRole = (roles) => (req, res, next) => {
 //   if (!roles.includes(req.user.role)) {
 //     return res.status(401).json({
-//       status: false,
+//       success: false,
 //       message: "Unauthorized",
 //     });
 //   }
