@@ -859,21 +859,16 @@ exports.forgotPassword = async (req, res, next) => {
       }
 
       let token = "";
-      if (req.body.platform === "mobile") {
         token = helpers.generateMobileToken();
-        await ClientForgotPasswordMobileMailer(
+        let message = helpers.forgotPasswordMessage(
           { email, first_name: user.fullname },
           token
         );
+        await EmailService.sendMail(email, message, "Reset Password");
+
         // message = helpers.resetPasswordMobileMessage(token);
-      } else {
-        token = helpers.generateWebToken();
-        await ClientForgotPasswordMailer(
-          { email, first_name: user.fullname },
-          token
-        );
-        // let message = helpers.resetPasswordMessage(email, token);
-      }
+  // let message = helpers.resetPasswordMessage(email, token);
+      
       // await EmailService.sendMail(email, message, "Reset Password");
       const data = {
         token,
