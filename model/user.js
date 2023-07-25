@@ -44,6 +44,10 @@ const User = db.define(
       type: Sequelize.STRING,
       allowNull: true,
     },
+    password_token: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    },
     userType: {
       type: Sequelize.ENUM,
       values: ["user", "admin", "moderator", "publisher"],

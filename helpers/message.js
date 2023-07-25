@@ -468,7 +468,6 @@ const verifyEmailMessage = (name, email, token) => {
 const forgotPasswordMessage = (user, token) => {
     const { email, first_name } = user;
 let name = first_name
-    const link = `${process.env.SITE_URL}/resetpassword?email=${email}&token=${token}`;
 
 
   const message = `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -614,13 +613,11 @@ let name = first_name
   <table style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:separate;border-spacing:0px;border-radius:4px;background-color:#FFFFFF" width="100%" cellspacing="0" cellpadding="0" bgcolor="#ffffff" role="presentation">
   <tr style="border-collapse:collapse">
   <td class="es-m-txt-l" bgcolor="#ffffff" align="left" style="Margin:0;padding-top:20px;padding-bottom:20px;padding-left:30px;padding-right:30px"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:lato, 'helvetica neue', helvetica, arial, sans-serif;line-height:27px;color:#666666;font-size:18px">Hi, <strong>${name}</strong><br><p style="font-size: 1.4em;">This is to inform you that you just initiated a password change action.</p><br/>
-                    <p style="font-size: 1.4em;">To reset your password, you have to click the button below!</p>
+                    <p style="font-size: 1.4em;">To reset your password, you have input the token below in the app!</p>
                     <p style="font-size: 1.4em;">If this was not initiated by you, do not proceed.</p>.</p></td>
   </tr>
   <tr style="border-collapse:collapse">
-  <td align="center" style="Margin:0;padding-left:10px;padding-right:10px;padding-top:35px;padding-bottom:35px"> <p style="margin-top:30px; font-size: 1em;">
-                        <a href="${link}" target="_BLANK" title="Reset Password" style="padding: 15px;color:white;font-size:1em;background-color:#000;text-decoration:none;border-radius:5px;border:0">Reset Password</a>
-                    </p></td>
+  <td align="center" style="Margin:0;padding-left:10px;padding-right:10px;padding-top:35px;padding-bottom:35px">${token}</td>
   </tr>
 
 
@@ -689,6 +686,7 @@ let name = first_name
   </html>`;
   return message;
 };
+
 const kycApprovalMessage = (name, email) => {
   const message = `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
   <html xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office" style="width:100%;font-family:lato, 'helvetica neue', helvetica, arial, sans-serif;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;padding:0;Margin:0">

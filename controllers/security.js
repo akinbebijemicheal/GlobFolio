@@ -871,7 +871,7 @@ exports.forgotPassword = async (req, res, next) => {
       
       // await EmailService.sendMail(email, message, "Reset Password");
       const data = {
-        token,
+         password_token: token,
         id: user.id,
       };
       await UserService.updateUser(data, t);
@@ -891,8 +891,8 @@ exports.resetPassword = async (req, res, next) => {
   sequelize.transaction(async (t) => {
     try {
       const { email, token, password } = req.body;
-
-      const user = await UserService.findUser({ token, email });
+const password_token = token
+      const user = await UserService.findUser({ password_token, email });
       if (!user) {
         return res.status(404).send({
           success: false,
