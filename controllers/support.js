@@ -5,6 +5,7 @@ const db = require("../config/config");
 const sequelize = db;
 const baseurl = process.env.BASE_URL;
 const helpers = require("../helpers/message");
+const EmailService = require("../service/emailService");
 
 
 exports.support = async (req, res, next) => {
