@@ -14,7 +14,6 @@ const { cloudinary } = require("../util/cloudinary");
 exports.createStockAdvisory = async (req, res, next) => {
   sequelize.transaction(async (t) => {
     try {
-      console.log('body')
       const { intro, country, industry, description } = req.body;
       let photos = [];
       const request = {
@@ -22,7 +21,7 @@ exports.createStockAdvisory = async (req, res, next) => {
         country,
         industry,
         description,
-        status: 'approved'
+        status: "approved",
       };
       if (req.files || req.file) {
         for (let i = 0; i < req.files.length; i++) {
