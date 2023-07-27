@@ -365,7 +365,7 @@ router.route("/stockAdvisory/create").post(
   // stockAdvisoryRequestValidation(),
   jwtAuth,
   checkRole(["admin"]),
-  validate,
+  // validate,
   upload.any(),
   StockAdvisoryController.createStockAdvisory
 );

@@ -14,6 +14,7 @@ const { cloudinary } = require("../util/cloudinary");
 exports.createStockAdvisory = async (req, res, next) => {
   sequelize.transaction(async (t) => {
     try {
+      console.log('body')
       const { intro, country, industry, description } = req.body;
       let photos = [];
       const request = {

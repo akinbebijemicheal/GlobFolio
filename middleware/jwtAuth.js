@@ -29,6 +29,7 @@ module.exports = async (req, res, next) => {
       }
 
     req.user = decoded.user;
+    console.log('Authenticated')
     next();
   } catch (error) {
     console.log(error);
