@@ -73,6 +73,10 @@ exports.getStockAdvisorysSave = async (req, res, next) => {
     const stockAdvisorys = await userStockAdvisory.findAll({
       where: { userId },
       order: [["createdAt", "DESC"]],
+       include: [
+        {
+          model: StockAdvisory,
+        },]
     });
     return res.status(200).send({
       success: true,
@@ -88,6 +92,11 @@ exports.getSingleStockAdvisorySave = async (req, res, next) => {
     const { userId, stockAdvisoryId } = req.query;
     const stockAdvisorys = await userStockAdvisory.findOne({
       where: { userId, stockAdvisoryId },
+      include: [
+        {
+          model: StockAdvisory,
+        },
+      ],
     });
     return res.status(200).send({
       success: true,
