@@ -170,6 +170,7 @@ exports.getSubUsersByPlanId = async (req, res, next) => {
           include: [
             {
               model: User,
+              as: "subscriptionPlan",
             },
           ],
         },
@@ -423,6 +424,7 @@ exports.getSubUsers = async (req, res, next) => {
         },
         {
           model: User,
+          as: "subscriptionPlan",
         },
       ],
     });

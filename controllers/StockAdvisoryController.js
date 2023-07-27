@@ -168,20 +168,36 @@ exports.getStockAdvisorys = async (req, res, next) => {
       let limit = 10;   // number of records per page
   let offset = 0;
     let page = req.params.page;      // page number
-    let pages = Math.ceil(data.count / limit);
-		offset = limit * (page - 1);
-    const stockAdvisorys = await StockAdvisory.findAll({
-      where: { status: "approved" },
-      order: [["createdAt", "DESC"]],
-      limit: limit,
-      offset: offset,
-    });
-    return res.status(200).send({
-      success: true,
-      data: stockAdvisorys,
-      page: pages,
-      count: stockAdvisorys.length + 1
-    });
+
+        const data = await StockAdvisory.count({
+          where: { status: "approved" },
+          order: [["createdAt", "DESC"]]
+        });
+
+  
+if(data > 0){
+let pages = Math.ceil(data / limit);
+offset = limit * (page - 1);
+const stockAdvisorys = await StockAdvisory.findAll({
+  where: { status: "approved" },
+  order: [["createdAt", "DESC"]],
+  limit: limit,
+  offset: offset,
+});
+return res.status(200).send({
+  success: true,
+  data: stockAdvisorys,
+  page: pages,
+  count: stockAdvisorys.length + 1,
+});
+}else{
+return res.status(200).send({
+  success: true,
+  data: null,
+});
+}
+    
+
   } catch (error) {
     return next(error);
   }
