@@ -66,6 +66,7 @@ exports.createFeedback = async (req, res, next) => {
       //     message: mesg,
       //   });
       //   io.emit("getNotifications", await Notification.fetchAdminNotification());
+      const { io } = req.app;
       const mesgAdmin = `A new user feedback was made by ${user.email}`;
       const userIdAdmin = user.id;
       const notifyTypeAdmin = "admin";
