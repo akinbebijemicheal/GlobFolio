@@ -16,17 +16,20 @@ exports.createStockAdvisorySave = async (req, res, next) => {
   sequelize.transaction(async (t) => {
     try {
       const { userId, stockAdvisoryId } = req.query;
-        const stockAdvisory = await StockAdvisory.findByPk(stockAdvisoryId);
-if (!stockAdvisory) {
-  return res.status(400).send({
-    success: false,
-    message: "StockAdvisory not found",
-  });
-}
+      const stockAdvisory = await StockAdvisory.findByPk(stockAdvisoryId);
+      if (!stockAdvisory) {
+        return res.status(400).send({
+          success: false,
+          message: "StockAdvisory not found",
+        });
+      }
 
-      const stockAdvisorySave = await userStockAdvisory.create({userId, stockAdvisoryId}, {
-        transaction: t,
-      });
+      const stockAdvisorySave = await userStockAdvisory.create(
+        { userId, stockAdvisoryId },
+        {
+          transaction: t,
+        }
+      );
 
       return res.status(200).send({
         success: true,
@@ -44,18 +47,13 @@ if (!stockAdvisory) {
 exports.deleteStockAdvisorySave = async (req, res, next) => {
   sequelize.transaction(async (t) => {
     try {
-      const { stockAdvisoryId, userId } = req.query;
-        const stockAdvisory = await StockAdvisory.findByPk(stockAdvisoryId);
-if(!stockAdvisory){
-    return res.status(400).send({
-      success: false,
-      message: "StockAdvisory not found",
-    });
-}
-       await userStockAdvisory.destroy({
-        where: { stockAdvisoryId, userId },
-      });
+      const { stockAdvisoryIds, userId } = req.body;
 
+      for (let i = 0; i, stockAdvisoryIds.length; i++) {
+        await userStockAdvisory.destroy({
+          where: { stockAdvisoryId: stockAdvisoryIds[i], userId },
+        });
+      }
 
       return res.status(200).send({
         success: true,
@@ -71,8 +69,9 @@ if(!stockAdvisory){
 
 exports.getStockAdvisorysSave = async (req, res, next) => {
   try {
-    const {userId} = req.params
-    const stockAdvisorys = await userStockAdvisory.findAll({where:{userId},
+    const { userId } = req.params;
+    const stockAdvisorys = await userStockAdvisory.findAll({
+      where: { userId },
       order: [["createdAt", "DESC"]],
     });
     return res.status(200).send({
@@ -84,10 +83,9 @@ exports.getStockAdvisorysSave = async (req, res, next) => {
   }
 };
 
-
 exports.getSingleStockAdvisorySave = async (req, res, next) => {
   try {
-    const {userId, stockAdvisoryId} = req.query
+    const { userId, stockAdvisoryId } = req.query;
     const stockAdvisorys = await userStockAdvisory.findOne({
       where: { userId, stockAdvisoryId },
     });

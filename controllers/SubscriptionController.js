@@ -423,6 +423,9 @@ exports.getSubUsers = async (req, res, next) => {
           model: Subscription,
           as: "subscriptions",
         },
+        {
+          model: User,
+        },
       ],
     });
     // for(let i = 0; i < plans.length; i++){

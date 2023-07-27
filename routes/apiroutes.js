@@ -262,11 +262,15 @@ router
 
 router
   .route("/subscription/getPlanUsers")
-  .get(SubscriptionController.getSubUsers);
+  .get(jwtAuth, checkRole(["admin"]), SubscriptionController.getSubUsers);
 
 router
   .route("/subscription/getSinglePlanUsers/:planId")
-  .get(SubscriptionController.getSubUsersByPlanId);
+  .get(
+    jwtAuth,
+    checkRole(["admin"]),
+    SubscriptionController.getSubUsersByPlanId
+  );
 
 router
   .route("/subscription/history")

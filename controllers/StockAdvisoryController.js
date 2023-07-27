@@ -166,6 +166,7 @@ exports.deleteStockAdvisory = async (req, res, next) => {
 exports.getStockAdvisorys = async (req, res, next) => {
   try {
     const stockAdvisorys = await StockAdvisory.findAll({
+      where: { status: "pending" },
       order: [["createdAt", "DESC"]],
     });
     return res.status(200).send({
@@ -180,6 +181,7 @@ exports.getStockAdvisorys = async (req, res, next) => {
 exports.getSingleStockAdvisory = async (req, res, next) => {
   try {
     const stockAdvisory = await StockAdvisory.findOne({
+      where: { status: "pending" },
       where: { id: req.params.stockAdvisoryId },
     });
     return res.status(200).send({
