@@ -299,8 +299,6 @@ router
 router
   .route("/subscription/subscribe")
   .post(
-    subscribeRequestValidation(),
-    validate,
     jwtAuth,
     SubscriptionController.subscribeToPlan
   );
@@ -369,15 +367,6 @@ router.route("/stockAdvisory/create").post(
   StockAdvisoryController.createStockAdvisory
 );
 
-router
-  .route("/stockAdvisory/createNew")
-  .post(
-    jwtAuth,
-    checkRole(["admin"]),
-    validate,
-    upload.any(),
-    StockAdvisoryController.createStockAdvisory
-  );
 
 router
   .route("/stockAdvisory/stockAdvisorys")

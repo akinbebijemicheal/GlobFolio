@@ -169,7 +169,7 @@ exports.getStockAdvisorys = async (req, res, next) => {
     let page = req.params.page;      // page number
 const getPagination = (page) => {
   const limit = 5;
-  const offset = page ? page * limit : 0;
+  const offset = page * limit;
 
   return { limit, offset };
 };
@@ -188,13 +188,12 @@ const stockAdvisorys = await StockAdvisory.findAll({
   where: { status: "approved" },
   limit,
   offset,
-  order: [["createdAt", "DESC"]],
 });
 return res.status(200).send({
   success: true,
   data: stockAdvisorys,
-  page: totalPages,
-  count: stockAdvisorys.length + 1,
+  totalpage: totalPages,
+  count: stockAdvisorys.length,
 });
 }else{
 return res.status(200).send({
