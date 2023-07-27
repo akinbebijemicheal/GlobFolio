@@ -362,13 +362,22 @@ router
 // } = require("../helpers/validators");
 
 router.route("/stockAdvisory/create").post(
-  // stockAdvisoryRequestValidation(),
   jwtAuth,
   checkRole(["admin"]),
-  // validate,
+  validate,
   upload.any(),
   StockAdvisoryController.createStockAdvisory
 );
+
+router
+  .route("/stockAdvisory/createNew")
+  .post(
+    jwtAuth,
+    checkRole(["admin"]),
+    validate,
+    upload.any(),
+    StockAdvisoryController.createStockAdvisory
+  );
 
 router
   .route("/stockAdvisory/stockAdvisorys")

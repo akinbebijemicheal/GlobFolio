@@ -24,6 +24,16 @@ exports.createStockAdvisorySave = async (req, res, next) => {
         });
       }
 
+      
+      const stockAdvisorySaveCheck = await userStockAdvisory.findOne(
+        {where: {userId, stockAdvisoryId }},
+      );
+          if (stockAdvisorySaveCheck !== null) {
+            return res.status(400).send({
+              success: false,
+              message: "StockAdvisory already saved",
+            });
+          }
       const stockAdvisorySave = await userStockAdvisory.create(
         { userId, stockAdvisoryId },
         {
