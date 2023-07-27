@@ -171,7 +171,7 @@ exports.getStockAdvisorys = async (req, res, next) => {
     let pages = Math.ceil(data.count / limit);
 		offset = limit * (page - 1);
     const stockAdvisorys = await StockAdvisory.findAll({
-      where: { status: "pending" },
+      where: { status: "approved" },
       order: [["createdAt", "DESC"]],
       limit: limit,
       offset: offset,
@@ -181,6 +181,31 @@ exports.getStockAdvisorys = async (req, res, next) => {
       data: stockAdvisorys,
       page: pages,
       count: stockAdvisorys.length + 1
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+exports.getStockAdvisorysFree = async (req, res, next) => {
+  try {
+    let limit = 10; // number of records per page
+    let offset = 0;
+    let page = req.params.page; // page number
+    let pages = Math.ceil(data.count / limit);
+    offset = limit * (page - 1);
+    const stockAdvisorys = await StockAdvisory.findAll({
+      where: { status: "approved" },
+      attributes: ["intro", "image", "industry" ],
+      order: [["createdAt", "DESC"]],
+      limit: limit,
+      offset: offset,
+    });
+    return res.status(200).send({
+      success: true,
+      data: stockAdvisorys,
+      page: pages,
+      count: stockAdvisorys.length + 1,
     });
   } catch (error) {
     return next(error);

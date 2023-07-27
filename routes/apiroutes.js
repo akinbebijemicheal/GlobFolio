@@ -374,6 +374,10 @@ router
   .route("/stockAdvisory/stockAdvisorys")
   .get(jwtAuth, StockAdvisoryController.getStockAdvisorys);
 
+  router
+    .route("/stockAdvisory/stockAdvisorysFree")
+    .get( StockAdvisoryController.getStockAdvisorysFree);
+
 router
   .route("/stockAdvisory/stockAdvisorys/:stockAdvisoryId")
   .get(jwtAuth, StockAdvisoryController.getSingleStockAdvisory);

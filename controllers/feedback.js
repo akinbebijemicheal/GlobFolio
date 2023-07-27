@@ -15,12 +15,11 @@ const Feedback = require("../model/feedback");
 const { Sequelize, Op } = require("sequelize");
 const Notification = require("../helpers/notification");
 
-
 exports.createFeedback = async (req, res, next) => {
   sequelize.transaction(async (t) => {
     try {
       const { rating, subject, message } = req.body;
-      console.log(req.user)
+      console.log(req.user);
 
       const id = req.user.id;
 
@@ -42,6 +41,7 @@ exports.createFeedback = async (req, res, next) => {
 
       let feedback = new Feedback({
         rating: rating,
+        userId: req.user.id,
         subject: subject,
         message: message,
       });
@@ -66,19 +66,16 @@ exports.createFeedback = async (req, res, next) => {
       //     message: mesg,
       //   });
       //   io.emit("getNotifications", await Notification.fetchAdminNotification());
-           const mesgAdmin = `A new user feedback was made by ${user.email}`;
-           const userIdAdmin = user.id;
-           const notifyTypeAdmin = "admin";
-           await Notification.createNotification({
-             userId: userIdAdmin,
-             type: notifyTypeAdmin,
-             message: mesgAdmin,
-           });
+      const mesgAdmin = `A new user feedback was made by ${user.email}`;
+      const userIdAdmin = user.id;
+      const notifyTypeAdmin = "admin";
+      await Notification.createNotification({
+        userId: userIdAdmin,
+        type: notifyTypeAdmin,
+        message: mesgAdmin,
+      });
 
-           io.emit(
-             "getNotifications",
-             await Notification.fetchAdminNotification()
-           );
+      io.emit("getNotifications", await Notification.fetchAdminNotification());
 
       return res.status(201).send({
         success: true,
@@ -102,18 +99,24 @@ exports.getAllFeedbacks = async (req, res) => {
       });
     }
 
-        if (user.userType !== "admin") {
-          return res.status(404).send({
-            success: false,
-            message: "Only Admin can get all feedbacks",
-          });
-        }
+    if (user.userType !== "admin") {
+      return res.status(404).send({
+        success: false,
+        message: "Only Admin can get all feedbacks",
+      });
+    }
 
-
-
-   
     const feedbacks = JSON.parse(
-      JSON.stringify(await Feedback.findAll())
+      JSON.stringify(
+        await Feedback.findAll({
+          order: [["createdAt", "DESC"]],
+          include: [
+            {
+              model: User,
+            },
+          ],
+        })
+      )
     );
     // const usersAccounts = [];
     // const users = await Promise.all(

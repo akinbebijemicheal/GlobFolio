@@ -61,20 +61,18 @@ exports.updateSubscriptionPlan = async (req, res, next) => {
       const { benefits, planId, ...other } = req.body;
       const plan = await SubscriptionPlan.findByPk(planId);
       await plan.update(other, { transaction: t });
+      await SubscriptionPlanPackage.destroy({
+        where: { planId },
+      });
       await Promise.all(
         benefits.map(async (item) => {
-          const benefit = await SubscriptionPlanPackage.findByPk(item.id);
-          if (benefit) {
-            await benefit.update({ benefit: item.benefit }, { transaction: t });
-          } else {
-            await SubscriptionPlanPackage.create(
-              {
-                benefit: item.benefit,
-                planId,
-              },
-              { transaction: t }
-            );
-          }
+          await SubscriptionPlanPackage.create(
+            {
+              benefit: item.benefit,
+              planId,
+            },
+            { transaction: t }
+          );
         })
       );
 
@@ -464,9 +462,9 @@ exports.getSubUsersCount = async (req, res, next) => {
 
 exports.getSubUsersByPlanId = async (req, res, next) => {
   try {
-    const planId = req.params.planId
+    const planId = req.params.planId;
     const plans = await SubscriptionPlan.findOne({
-      where: {id: planId},
+      where: { id: planId },
       order: [["createdAt", "DESC"]],
       include: [
         {
