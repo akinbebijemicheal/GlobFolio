@@ -165,48 +165,80 @@ exports.deleteStockAdvisory = async (req, res, next) => {
 
 exports.getStockAdvisorys = async (req, res, next) => {
   try {
-     
-    let page = +req.query.page;   // page number
-const getPagination = (page) => {
-  const limit = 5;
-  let h = page-1;
-  let offset = h*limit
+    let page; // page number
+    let limit = 5;
+    // let offset;
+    let stockAdvisorys;
+    let totalPages;
+    let data;
+    if (!req.query.page) {
+      // if page not sent
+      page = 0;
 
+      data = await StockAdvisory.count({
+        where: { status: "approved" },
+        order: [["createdAt", "DESC"]],
+      });
 
-  return { limit, offset };
-};
-
-
-        const data = await StockAdvisory.count({
+      if (data > 0) {
+        totalPages = Math.ceil(data / limit);
+        stockAdvisorys = await StockAdvisory.findAll({
           where: { status: "approved" },
-          order: [["createdAt", "DESC"]]
-        });
-
-   const { limit, offset } = getPagination(page);
-if(data > 0){
-  const totalPages = Math.ceil(data / limit);
-
-const stockAdvisorys = await StockAdvisory.findAll({
-  where: { status: "approved" },
           order: [["createdAt", "DESC"]],
-  limit,
-  offset,
-});
-return res.status(200).send({
-  success: true,
-  data: stockAdvisorys,
-  totalpage: totalPages,
-  count: stockAdvisorys.length,
-  totalcount: data
-});
-}else{
-return res.status(200).send({
-  success: true,
-  data: null,
-});
-}
-    
+        });
+        return res.status(200).send({
+          success: true,
+          data: stockAdvisorys,
+          totalpage: totalPages,
+          count: stockAdvisorys.length,
+          totalcount: data,
+        });
+      } else {
+        return res.status(200).send({
+          success: true,
+          data: null,
+        });
+      }
+    } else {
+      //if page is sent
+      page = +req.query.page;
+      const getPagination = (page) => {
+        limit = 5;
+        h = page - 1;
+        offset = h * limit;
 
+        return { limit, offset };
+      };
+
+      data = await StockAdvisory.count({
+        where: { status: "approved" },
+        order: [["createdAt", "DESC"]],
+      });
+
+      const { offset } = getPagination(page);
+      if (data > 0) {
+        let totalPages = Math.ceil(data / limit);
+
+        stockAdvisorys = await StockAdvisory.findAll({
+          where: { status: "approved" },
+          order: [["createdAt", "DESC"]],
+          limit,
+          offset,
+        });
+        return res.status(200).send({
+          success: true,
+          data: stockAdvisorys,
+          totalpage: totalPages,
+          count: stockAdvisorys.length,
+          totalcount: data,
+        });
+      } else {
+        return res.status(200).send({
+          success: true,
+          data: null,
+        });
+      }
+    }
   } catch (error) {
     return next(error);
   }
@@ -214,48 +246,44 @@ return res.status(200).send({
 
 exports.getStockAdvisorysFree = async (req, res, next) => {
   try {
+    let page = +req.query.page; // page number
+    const getPagination = (page) => {
+      const limit = 5;
+      let h = page - 1;
+      let offset = h * limit;
 
+      return { limit, offset };
+    };
 
-        let page = +req.query.page; // page number
-        const getPagination = (page) => {
-          const limit = 5;
-          let h = page - 1;
-          let offset = h * limit;
+    const data = await StockAdvisory.count({
+      where: { status: "approved" },
+      order: [["createdAt", "DESC"]],
+    });
 
-          return { limit, offset };
-        };
+    const { limit, offset } = getPagination(page);
+    if (data > 0) {
+      const totalPages = Math.ceil(data / limit);
 
-        const data = await StockAdvisory.count({
-          where: { status: "approved" },
-          order: [["createdAt", "DESC"]],
-        });
-
-        const { limit, offset } = getPagination(page);
-        if (data > 0) {
-          const totalPages = Math.ceil(data / limit);
-
-          const stockAdvisorys = await StockAdvisory.findAll({
-            where: { status: "approved" },
-            attributes: ["intro", "image", "industry"],
-            order: [["createdAt", "DESC"]],
-            limit,
-            offset,
-          });
-          return res.status(200).send({
-            success: true,
-            data: stockAdvisorys,
-            totalpage: totalPages,
-            count: stockAdvisorys.length,
-            totalcount: data,
-          });
-        } else {
-          return res.status(200).send({
-            success: true,
-            data: null,
-          });
-        }
-    
-
+      const stockAdvisorys = await StockAdvisory.findAll({
+        where: { status: "approved" },
+        attributes: ["intro", "image", "industry"],
+        order: [["createdAt", "DESC"]],
+        limit,
+        offset,
+      });
+      return res.status(200).send({
+        success: true,
+        data: stockAdvisorys,
+        totalpage: totalPages,
+        count: stockAdvisorys.length,
+        totalcount: data,
+      });
+    } else {
+      return res.status(200).send({
+        success: true,
+        data: null,
+      });
+    }
   } catch (error) {
     return next(error);
   }
