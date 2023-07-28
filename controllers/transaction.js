@@ -106,8 +106,7 @@ exports.getAllApprovedTransactions = async (req, res, next) => {
         transaction = await Transaction.findAll({
           where: { status: "approved" },
           order: [["createdAt", "DESC"]],
-          limit,
-          offset,
+      
         });
         return res.status(200).send({
           success: true,
@@ -191,8 +190,7 @@ exports.getAllPendingTransactions = async (req, res, next) => {
         transaction = await Transaction.findAll({
           where: { status: "pending" },
           order: [["createdAt", "DESC"]],
-          limit,
-          offset,
+      
         });
         return res.status(200).send({
           success: true,
@@ -280,8 +278,7 @@ exports.getUserTransactions = async (req, res, next) => {
                transaction = await Transaction.findAll({
                  where: { userId },
                  order: [["createdAt", "DESC"]],
-                 limit,
-                 offset,
+               
                });
                return res.status(200).send({
                  success: true,
