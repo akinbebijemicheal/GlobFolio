@@ -536,12 +536,12 @@ exports.verifySubscription = async (req, res, next) => {
       console.log(newDate)
       const userData = {
         id: id,
-        planId,
+        planId: planId,
         hasActiveSubscription: true,
         expiredAt: "",
       };
-      const h = await User.update(userData, { where: { id }, transaction: t });
-      console.log(h);
+      await User.update(userData, { where: { id }, transaction: t });
+      // console.log(h);
 
       // save transaction
       const description = `Payment for ${plan.name}`;
