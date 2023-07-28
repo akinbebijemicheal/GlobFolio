@@ -8,16 +8,84 @@ const db = require("../config/config");
 
 exports.getAllAdminNotifications = async (req, res, next) => {
   try {
-    let notifications = await Notification.findAll({
-      where: {
-        type: "admin"
-      },
-      order: [["createdAt", "DESC"]]
-    });
-    return res.status(200).send({
-      success: true,
-      data: notifications
-    });
+ 
+
+
+
+     let page; // page number
+     let limit = 20;
+     // let offset;
+     let notifications;
+     let totalPages;
+     let data;
+     if (!req.query.page) {
+       // if page not sent
+       page = 0;
+
+       data = await Notification.count({
+         where: { type: "admin" },
+         order: [["createdAt", "DESC"]],
+       });
+
+       if (data > 0) {
+         totalPages = Math.ceil(data / limit);
+         notifications = await Notification.findAll({
+           where: { type: "admin" },
+           order: [["createdAt", "DESC"]],
+         });
+         return res.status(200).send({
+           success: true,
+           data: notifications,
+           totalpage: totalPages,
+           count: notifications.length,
+           totalcount: data,
+         });
+       } else {
+         return res.status(200).send({
+           success: true,
+           data: null,
+         });
+       }
+     } else {
+       //if page is sent
+       page = +req.query.page;
+       const getPagination = (page) => {
+         limit = 20;
+         h = page - 1;
+         let offset = h * limit;
+
+         return { limit, offset };
+       };
+
+       data = await Notification.count({
+         where: { type: "admin" },
+         order: [["createdAt", "DESC"]],
+       });
+
+       const { offset } = getPagination(page);
+       if (data > 0) {
+         let totalPages = Math.ceil(data / limit);
+
+         notifications = await Notification.findAll({
+           where: { type: "admin" },
+           order: [["createdAt", "DESC"]],
+           limit,
+           offset,
+         });
+         return res.status(200).send({
+           success: true,
+           data: notifications,
+           totalpage: totalPages,
+           count: notifications.length,
+           totalcount: data,
+         });
+       } else {
+         return res.status(200).send({
+           success: true,
+           data: null,
+         });
+       }
+     }
   } catch (error) {
     return next(error);
   }
@@ -26,20 +94,106 @@ exports.getAllAdminNotifications = async (req, res, next) => {
 exports.getAllAUserNotifications = async (req, res, next) => {
   try {
     const userId = req.params.userId
-    const notifications = await Notification.findAll({
-      where: {
-        [Op.or]: [
-          { [Op.and]: [{ userId: userId }, { type: "user" }] },
-          { type: "general" },
-        ],
-        [Op.or]: [{ status: "pending" }, { status: "unread" }],
-      },
-      order: [["createdAt", "DESC"]],
-    });
-    return res.status(200).send({
-      success: true,
-      data: notifications
-    });
+
+
+     let page; // page number
+     let limit = 20;
+     // let offset;
+     let notifications;
+     let totalPages;
+     let data;
+     if (!req.query.page) {
+       // if page not sent
+       page = 0;
+
+       data = await Notification.count({
+         where: {
+           [Op.or]: [
+             { [Op.and]: [{ userId: userId }, { type: "user" }] },
+             { type: "general" },
+           ],
+           [Op.or]: [{ status: "pending" }, { status: "unread" }],
+         },
+         order: [["createdAt", "DESC"]],
+       });
+
+       if (data > 0) {
+         totalPages = Math.ceil(data / limit);
+         notifications = await Notification.findAll({
+           where: {
+             [Op.or]: [
+               { [Op.and]: [{ userId: userId }, { type: "user" }] },
+               { type: "general" },
+             ],
+             [Op.or]: [{ status: "pending" }, { status: "unread" }],
+           },
+           order: [["createdAt", "DESC"]],
+         });
+         return res.status(200).send({
+           success: true,
+           data: notifications,
+           totalpage: totalPages,
+           count: notifications.length,
+           totalcount: data,
+         });
+       } else {
+         return res.status(200).send({
+           success: true,
+           data: null,
+         });
+       }
+     } else {
+       //if page is sent
+       page = +req.query.page;
+       const getPagination = (page) => {
+         limit = 20;
+         h = page - 1;
+         let offset = h * limit;
+
+         return { limit, offset };
+       };
+
+       data = await Notification.count({
+         where: {
+           [Op.or]: [
+             { [Op.and]: [{ userId: userId }, { type: "user" }] },
+             { type: "general" },
+           ],
+           [Op.or]: [{ status: "pending" }, { status: "unread" }],
+         },
+         order: [["createdAt", "DESC"]],
+       });
+
+       const { offset } = getPagination(page);
+       if (data > 0) {
+         let totalPages = Math.ceil(data / limit);
+
+         notifications = await Notification.findAll({
+           where: {
+             [Op.or]: [
+               { [Op.and]: [{ userId: userId }, { type: "user" }] },
+               { type: "general" },
+             ],
+             [Op.or]: [{ status: "pending" }, { status: "unread" }],
+           },
+           order: [["createdAt", "DESC"]],
+           limit,
+           offset,
+         });
+         return res.status(200).send({
+           success: true,
+           data: notifications,
+           totalpage: totalPages,
+           count: notifications.length,
+           totalcount: data,
+         });
+       } else {
+         return res.status(200).send({
+           success: true,
+           data: null,
+         });
+       }
+     }
   } catch (error) {
     return next(error);
   }
