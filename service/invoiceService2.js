@@ -40,6 +40,8 @@ exports.createInvoice = async (orderData, user) => {
   //   };
   // });
 
+  // console.log(orderData)
+
   const invoiceData = {
     logo: "https://res.cloudinary.com/greenmouse-tech/image/upload/v1689001814/globfolio/Group_48319_zrfe2h.png",
     document_title: "INVOICE",
@@ -108,9 +110,12 @@ exports.createInvoice = async (orderData, user) => {
     // },
   };
   // Create your invoice! Easy!
+  console.log('hello')
   const result = await easyinvoice.createInvoice(data);
   // The response will contain a base64 encoded PDF file
   // console.log('PDF base64 string: ', result.pdf);
+  console.log('hello');
+  
   fs.writeFileSync(
     `uploads/${orderData.user.fullname} Subscription.pdf`,
     result.pdf,

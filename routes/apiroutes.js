@@ -480,42 +480,44 @@ router
 
 //------------------------------Transactions-------------------------------
 router
-  .route("/transactions/allTransactions")
-  .post(
-    jwtAuth,
-    checkRole(["admin"]),
-    TransactionController.getAllTransactions
-  );
+  .route("/transactions")
+  .get(jwtAuth, checkRole(["admin"]), TransactionController.getAllTransactions);
+
+router
+  .route("/transactions/approved")
+  .get(jwtAuth, checkRole(["admin"]), TransactionController.getAllApprovedTransactions);
+router
+  .route("/transactions/pending")
+  .get(jwtAuth, checkRole(["admin"]), TransactionController.getAllPendingTransactions);
 
 router
   .route("/transactions/getUserTransactions")
-  .post(jwtAuth, TransactionController.getUserTransactions);
+  .get(jwtAuth, TransactionController.getUserTransactions);
 
 router
   .route("/transactions")
-  .post(jwtAuth, TransactionController.getSingleTransaction);
+  .get(jwtAuth, TransactionController.getSingleTransaction);
 
 //------------------------------Notifications-------------------------------
 
+router
+  .route("/notifications/admin")
+  .get(
+    jwtAuth,
+    checkRole(["admin"]),
+    NotificationController.getAllAdminNotifications
+  );
 
-  router
-    .route("/notifications/admin")
-    .get(
-      jwtAuth,
-      checkRole(["admin"]),
-      NotificationController.getAllAdminNotifications
-    );
+router
+  .route("/notifications/user/:userId")
+  .get(jwtAuth, NotificationController.getAllAUserNotifications);
 
-  router
-    .route("/notifications/user/:userId")
-    .get(jwtAuth, NotificationController.getAllAUserNotifications);
+router
+  .route("/notifications/mark-read/:notificationId")
+  .patch(jwtAuth, NotificationController.markNotificationAsRead);
 
-  router
-    .route("/notifications/mark-read/:notificationId")
-    .patch(jwtAuth, NotificationController.markNotificationAsRead);
-
-  router
-    .route("/notifications/delete/:notificationId")
-    .delete(jwtAuth, NotificationController.deleteNotification);
+router
+  .route("/notifications/delete/:notificationId")
+  .delete(jwtAuth, NotificationController.deleteNotification);
 
 module.exports = router;

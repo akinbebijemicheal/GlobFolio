@@ -18,6 +18,7 @@ const { Service } = require("../helpers/paystack");
 const invoiceService = require("../service/invoiceService2");
 const helpers = require("../helpers/message");
 const { sendMail } = require("../service/attachmentEmailService");
+const { has } = require("config");
 
 exports.createSubscriptionPlan = async (req, res, next) => {
   sequelize.transaction(async (t) => {
@@ -242,22 +243,10 @@ exports.subscribeToPlan = async (req, res, next) => {
       const now = moment();
       let remainingDays = 0;
       let amountToPay = 0;
-      if (sub) {
-        // get expiration Date and remaining days for current plan
-        const { expiredAt } = sub;
-        const then = moment(expiredAt);
-        remainingDays = then.diff(now, "days");
-        //get amount of money worth remaining for customer from current plan
-        const prevSubPlan = await SubscriptionPlan.findByPk(sub.planId);
-        const prevSubPlanDays = prevSubPlan.duration * 7;
-        const prevSubPlanRemainingAmount = prevSubPlan.amount / prevSubPlanDays;
-        amountToPay = amount - prevSubPlanRemainingAmount;
-        // console.log(expiredAt, remainingDays);
-        // await sub.update({ status: 0 }, { transaction: t });
-      } else {
-        amountToPay = amount;
-      }
-      const days = Number(duration) * 7;
+
+      let amountOfMonths = Number(duration) * 12;
+      let pricePerMonth = amount / amountOfMonths;
+      const days = amountOfMonths * 31;
 
       // create subscription
       const newDate = moment(now, "DD-MM-YYYY").add(days, "days");
@@ -371,7 +360,7 @@ exports.upgradePlan = async (req, res, next) => {
   });
 };
 
-exports.verifySubscription = async (req, res, next) => {
+exports.verifySubscriptionUpgrade = async (req, res, next) => {
   sequelize.transaction(async (t) => {
     try {
       const { userId, newExpiryDate, reference, planId, TransactionId } =
@@ -477,6 +466,144 @@ exports.verifySubscription = async (req, res, next) => {
         success: true,
         message: "Subscription Payment Made Sucessfully",
         data: response,
+      });
+    } catch (error) {
+      console.log(error);
+      t.rollback();
+      return next(error);
+    }
+  });
+};
+
+exports.verifySubscription = async (req, res, next) => {
+  sequelize.transaction(async (t) => {
+    try {
+      const { userId, reference, planId } = req.body;
+      const plan = await SubscriptionPlan.findOne({ where: { id: planId } });
+      console.log(plan)
+         if (plan == null) {
+           return res.status(400).json({
+             success: false,
+             message: "Plan doesnt exist",
+           });
+         }
+      const { duration, amount, name } = plan;
+
+      const response = await Service.Paystack.verifyPayment(reference);
+      console.log(response);
+      if (response.status === false) {
+        return res.status(400).json({
+          success: false,
+          message: response.message || "Transaction reference not valid",
+        });
+      }
+
+      const profile = await UserService.findUserById(userId);
+      const { id } = profile;
+      // safe payment made for reference
+      const paymentData = {
+        userId: id,
+        payment_reference: reference,
+        amount,
+        payment_category: "Subscription",
+      };
+
+      await Payment.create(paymentData, { transaction: t });
+
+      const now = moment();
+      // let remainingDays = 0;
+      let amountToPay = 0;
+
+      let amountOfMonths = Number(duration) * 12;
+      let pricePerMonth = amount / amountOfMonths;
+      const days = amountOfMonths * 31;
+
+      const user = await User.findByPk(userId);
+
+      // create subscription
+      const newDate = moment(now, "DD-MM-YYYY").add(days, "days");
+
+      // create new subscription
+      const request = {
+        userId: id,
+        planId,
+        status: 1,
+        expiredAt: newDate,
+        amount,
+      };
+      await Subscription.create(request, { transaction: t });
+      // update user profile
+      const userData = {
+        id: id,
+        planId,
+        hasActiveSubscription: true,
+        expiredAt: newDate,
+      };
+      const h= await UserService.updateUser({
+        userData,
+        transaction: t,
+      });
+      console.log(h)
+
+      // save transaction
+      const description = `${user.fullname} Payment for ${plan.name}`;
+      const slug = Math.floor(190000000 + Math.random() * 990000000);
+      const txSlug = `GLOBFOLIO/TXN/${slug}`;
+      const newtransaction = {
+        TransactionId: txSlug,
+        userId: id,
+        type: "Subscription",
+        amount: amountToPay,
+        description,
+        status: "approved",
+      };
+      const transaction = JSON.parse(
+        JSON.stringify(
+          await Transaction.create(newtransaction, { transaction: t })
+        )
+      );
+      console.log(transaction);
+
+      let orderData = {
+        user: JSON.parse(JSON.stringify(user)),
+        transaction: transaction,
+        plan: JSON.parse(JSON.stringify(plan)),
+        expiryDate: newDate,
+      };
+
+      // const invoice = await invoiceService.createInvoice(orderData, user);
+      // if (invoice) {
+      //   const files = [
+      //     {
+      //       path: `uploads/${orderData.user.fullname} Subscription.pdf`,
+      //       filename: `${orderData.user.fullname} Subscription.pdf`,
+      //     },
+      //   ];
+
+      // //   const message = helpers.invoiceMessage(user.fullname);
+      // //   sendMail(user.email, message, "GlobFolio Subscription Invoice", files);
+      // }
+      const userUpdated = await User.findByPk(userId);
+
+      // Notify admin
+      const mesg = `${
+        user.name ? user.name : `${user.fullname}`
+      } just subscribed to ${name} with their ${UserService.getUserType(
+        user.userType
+      )} account`;
+      const notifyType = "admin";
+      const { io } = req.app;
+      await Notification.createNotification({
+        type: notifyType,
+        message: mesg,
+        userId: id,
+      });
+      io.emit("getNotifications", await Notification.fetchAdminNotification());
+
+      return res.send({
+        success: true,
+        message: "Subscription Payment Made Sucessfully",
+        data: userUpdated,
       });
     } catch (error) {
       console.log(error);
