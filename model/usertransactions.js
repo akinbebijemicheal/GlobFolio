@@ -4,37 +4,41 @@ const db = require('../config/config');
 const {nanoid} = require('nanoid');
 const User = require('./user');
 
-const Transaction = db.define('usertransaction', {
+const Transaction = db.define(
+  "usertransaction",
+  {
     id: {
-        type: Sequelize.STRING(10),
-        autoincrement: false,
-        allowNull: false,
-        primaryKey: true,
-        defaultValue: () => nanoid(10)
+      type: Sequelize.STRING(10),
+      autoincrement: false,
+      allowNull: false,
+      primaryKey: true,
+      defaultValue: () => nanoid(10),
     },
-    userId:{
-        type: Sequelize.STRING,
-        references:{ 
-        model: 'users',
-        key: 'id',
-    }
+    userId: {
+      type: Sequelize.UUID,
+      references: {
+        model: "users",
+        key: "id",
+      },
     },
-    description:{
-        type: Sequelize.TEXT
+    description: {
+      type: Sequelize.TEXT,
     },
     ref_no: {
-        type: Sequelize.STRING
+      type: Sequelize.STRING,
     },
     ProductType: {
-        type: Sequelize.STRING
+      type: Sequelize.STRING,
     },
     price: {
-        type: Sequelize.STRING
+      type: Sequelize.STRING,
     },
-    status:{
-        type: Sequelize.STRING
-    }
-},{timestamps: true});
+    status: {
+      type: Sequelize.STRING,
+    },
+  },
+  { timestamps: true }
+);
 
 Transaction.belongsTo(User, {foreignKey: 'userId'})
 User.hasMany(Transaction, {foreignKey: 'userId'});
