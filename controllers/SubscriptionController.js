@@ -298,6 +298,79 @@ exports.subscribeToPlan = async (req, res, next) => {
   });
 };
 
+exports.upgradePlan = async (req, res, next) => {
+  sequelize.transaction(async (t) => {
+    try {
+      const { userId, planId } = req.body;
+      const plan = await SubscriptionPlan.findOne({ where: { id: planId } });
+      const { duration, amount, name } = plan;
+
+      const profile = await UserService.findUserById(userId);
+      const { id } = profile;
+
+      // get user has active sub
+      const sub = await Subscription.findOne({
+        where: { userId: id, status: 1 },
+      });
+      const now = moment();
+      let remainingDays = 0;
+      let amountToPay = 0;
+      if (sub) {
+        // get expiration Date and remaining days for current plan
+        const { expiredAt } = sub;
+        const then = moment(expiredAt);
+        remainingDays = then.diff(now, "days");
+        //get amount of money worth remaining for customer from current plan
+        const prevSubPlan = await SubscriptionPlan.findByPk(sub.planId);
+        const prevSubPlanDays = prevSubPlan.duration * 7;
+        const prevSubPlanRemainingAmount = prevSubPlan.amount / prevSubPlanDays;
+        amountToPay = amount - prevSubPlanRemainingAmount;
+        // console.log(expiredAt, remainingDays);
+        // await sub.update({ status: 0 }, { transaction: t });
+      } else {
+        amountToPay = amount;
+      }
+      const days = Number(duration) * 7;
+
+      // create subscription
+      const newDate = moment(now, "DD-MM-YYYY").add(days, "days");
+
+      // save transaction
+      const description = `${user.fullname} Payment for ${plan.name}`;
+      const slug = Math.floor(190000000 + Math.random() * 990000000);
+      const txSlug = `GLOBFOLIO/TXN/${slug}`;
+      const transaction = {
+        TransactionId: txSlug,
+        userId: id,
+        type: "Subscription",
+        amount: amountToPay,
+        description,
+        status: "PENDING",
+      };
+      await Transaction.create(transaction, { transaction: t });
+      const user = await User.findByPk(userId);
+
+      const response = {
+        user: user,
+        amount: amountToPay,
+        newExpiryDate: newDate,
+        TransactionId: txSlug,
+        plan: plan,
+      };
+
+      return res.send({
+        success: true,
+        message: "Subscription Initiated",
+        data: response,
+      });
+    } catch (error) {
+      console.log(error);
+      t.rollback();
+      return next(error);
+    }
+  });
+};
+
 exports.verifySubscription = async (req, res, next) => {
   sequelize.transaction(async (t) => {
     try {

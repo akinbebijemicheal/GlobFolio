@@ -3,6 +3,8 @@ const router = express.Router();
 const multer = require("../util/multer2");
 const Access = require("../middleware/access");
 const SubscriptionController = require("../controllers/SubscriptionController");
+const TransactionController = require("../controllers/transaction");
+const NotificationController = require("../controllers/NotificationController");
 const TopGainerController = require("../controllers/TopGainerController");
 const StockAdvisoryController = require("../controllers/StockAdvisoryController");
 const UserStockAdvisoryController = require("../controllers/UserStockAdvisoryController");
@@ -298,10 +300,11 @@ router
 
 router
   .route("/subscription/subscribe")
-  .post(
-    jwtAuth,
-    SubscriptionController.subscribeToPlan
-  );
+  .post(jwtAuth, SubscriptionController.subscribeToPlan);
+
+router
+  .route("/subscription/upgrade")
+  .post(jwtAuth, SubscriptionController.upgradePlan);
 
 router
   .route("/subscription/verifySubscription")
@@ -359,22 +362,23 @@ router
 //   subscribeRequestValidation,
 // } = require("../helpers/validators");
 
-router.route("/stockAdvisory/create").post(
-  jwtAuth,
-  checkRole(["admin"]),
-  validate,
-  upload.any(),
-  StockAdvisoryController.createStockAdvisory
-);
-
+router
+  .route("/stockAdvisory/create")
+  .post(
+    jwtAuth,
+    checkRole(["admin"]),
+    validate,
+    upload.any(),
+    StockAdvisoryController.createStockAdvisory
+  );
 
 router
   .route("/stockAdvisory/stockAdvisorys")
   .get(jwtAuth, StockAdvisoryController.getStockAdvisorys);
 
-  router
-    .route("/stockAdvisory/stockAdvisorysFree")
-    .get( StockAdvisoryController.getStockAdvisorysFree);
+router
+  .route("/stockAdvisory/stockAdvisorysFree")
+  .get(StockAdvisoryController.getStockAdvisorysFree);
 
 router
   .route("/stockAdvisory/stockAdvisorys/:stockAdvisoryId")
@@ -470,8 +474,48 @@ router
   .post(
     jwtAuth,
     checkRole(["admin"]),
-    upload.single("supportingDocument"),
+    upload.single("image"),
     AdminMessageController.postAnnouncement
   );
+
+//------------------------------Transactions-------------------------------
+router
+  .route("/transactions/allTransactions")
+  .post(
+    jwtAuth,
+    checkRole(["admin"]),
+    TransactionController.getAllTransactions
+  );
+
+router
+  .route("/transactions/getUserTransactions")
+  .post(jwtAuth, TransactionController.getUserTransactions);
+
+router
+  .route("/transactions")
+  .post(jwtAuth, TransactionController.getSingleTransaction);
+
+//------------------------------Notifications-------------------------------
+
+
+  router
+    .route("/notifications/admin")
+    .get(
+      jwtAuth,
+      checkRole(["admin"]),
+      NotificationController.getAllAdminNotifications
+    );
+
+  router
+    .route("/notifications/user/:userId")
+    .get(jwtAuth, NotificationController.getAllAUserNotifications);
+
+  router
+    .route("/notifications/mark-read/:notificationId")
+    .patch(jwtAuth, NotificationController.markNotificationAsRead);
+
+  router
+    .route("/notifications/delete/:notificationId")
+    .delete(jwtAuth, NotificationController.deleteNotification);
 
 module.exports = router;
