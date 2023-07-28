@@ -538,7 +538,7 @@ exports.verifySubscription = async (req, res, next) => {
         id: id,
         planId,
         hasActiveSubscription: true,
-        expiredAt: newDate,
+        expiredAt: "",
       };
       const h = await User.update(userData, { where: { id }, transaction: t });
       console.log(h);
@@ -552,6 +552,7 @@ exports.verifySubscription = async (req, res, next) => {
         userId: id,
         type: "Subscription",
         amount: amountToPay,
+        payment_reference: reference,
         description,
         status: "approved",
       };
