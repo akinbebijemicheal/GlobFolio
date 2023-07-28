@@ -480,13 +480,13 @@ exports.verifySubscription = async (req, res, next) => {
     try {
       const { userId, reference, planId } = req.body;
       const plan = await SubscriptionPlan.findOne({ where: { id: planId } });
-      console.log(plan)
-         if (plan == null) {
-           return res.status(400).json({
-             success: false,
-             message: "Plan doesnt exist",
-           });
-         }
+      console.log(plan);
+      if (plan == null) {
+        return res.status(400).json({
+          success: false,
+          message: "Plan doesnt exist",
+        });
+      }
       const { duration, amount, name } = plan;
 
       const response = await Service.Paystack.verifyPayment(reference);
@@ -533,22 +533,20 @@ exports.verifySubscription = async (req, res, next) => {
       };
       await Subscription.create(request, { transaction: t });
       // update user profile
+      console.log(newDate)
       const userData = {
         id: id,
         planId,
         hasActiveSubscription: true,
         expiredAt: newDate,
       };
-      const h= await UserService.updateUser({
-        userData,
-        transaction: t,
-      });
-      console.log(h)
+      const h = await User.update(userData, { where: { id }, transaction: t });
+      console.log(h);
 
       // save transaction
-      const description = `${user.fullname} Payment for ${plan.name}`;
+      const description = `Payment for ${plan.name}`;
       const slug = Math.floor(190000000 + Math.random() * 990000000);
-      const txSlug = `GLOBFOLIO/TXN/${slug}`;
+      const txSlug = `GLF/TXN/${slug}`;
       const newtransaction = {
         TransactionId: txSlug,
         userId: id,

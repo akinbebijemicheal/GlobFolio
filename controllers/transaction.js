@@ -1,5 +1,6 @@
 const store = require("store");
 const Transaction = require("../model/Transaction");
+const User = require("../model/user");
 
 
 exports.getAllTransactions = async (req, res, next) => {
@@ -25,6 +26,12 @@ exports.getAllTransactions = async (req, res, next) => {
            totalPages = Math.ceil(data / limit);
        transaction = await Transaction.findAll({
          order: [["createdAt", "DESC"]],
+         include: [
+           {
+             model: User,
+             as: "user"
+           },
+         ],
        });
         return res.status(200).send({
           success: true,
@@ -60,6 +67,12 @@ exports.getAllTransactions = async (req, res, next) => {
 
            transaction = await Transaction.findAll({
              order: [["createdAt", "DESC"]],
+             include: [
+               {
+                 model: User,
+                 as: "user",
+               },
+             ],
              limit,
              offset,
            });
