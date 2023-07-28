@@ -60,9 +60,10 @@ exports.deleteStockAdvisorySave = async (req, res, next) => {
       const { stockAdvisoryIds, userId } = req.body;
 
       for (let i = 0; i, stockAdvisoryIds.length; i++) {
-        await userStockAdvisory.destroy({
-          where: { stockAdvisoryId: stockAdvisoryIds[i], userId },
-        });
+       console.log(stockAdvisoryIds[i]);
+          await userStockAdvisory.destroy({
+            where: { stockAdvisoryId: stockAdvisoryIds[i], userId },
+          });
       }
 
       return res.status(200).send({

@@ -36,7 +36,7 @@ exports.getAllTransactions = async (req, res, next) => {
          } else {
            return res.status(200).send({
              success: true,
-             data: null,
+             data: [],
            });
          }
        } else {
@@ -73,7 +73,7 @@ exports.getAllTransactions = async (req, res, next) => {
          } else {
            return res.status(200).send({
              success: true,
-             data: null,
+             data: [ ],
            });
          }
        }
@@ -118,7 +118,7 @@ exports.getAllApprovedTransactions = async (req, res, next) => {
       } else {
         return res.status(200).send({
           success: true,
-          data: null,
+          data: [ ],
         });
       }
     } else {
@@ -157,7 +157,7 @@ exports.getAllApprovedTransactions = async (req, res, next) => {
       } else {
         return res.status(200).send({
           success: true,
-          data: null,
+          data: [ ],
         });
       }
     }
@@ -202,7 +202,7 @@ exports.getAllPendingTransactions = async (req, res, next) => {
       } else {
         return res.status(200).send({
           success: true,
-          data: null,
+          data: [ ],
         });
       }
     } else {
@@ -241,7 +241,7 @@ exports.getAllPendingTransactions = async (req, res, next) => {
       } else {
         return res.status(200).send({
           success: true,
-          data: null,
+          data: [ ],
         });
       }
     }
@@ -290,7 +290,7 @@ exports.getUserTransactions = async (req, res, next) => {
              } else {
                return res.status(200).send({
                  success: true,
-                 data: null,
+                 data: [ ],
                });
              }
            } else {
@@ -329,7 +329,7 @@ exports.getUserTransactions = async (req, res, next) => {
              } else {
                return res.status(200).send({
                  success: true,
-                 data: null,
+                 data: [ ],
                });
              }
            }
