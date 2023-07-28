@@ -205,7 +205,7 @@ exports.getStockAdvisorys = async (req, res, next) => {
       const getPagination = (page) => {
         limit = 5;
         h = page - 1;
-        offset = h * limit;
+        let offset = h * limit;
 
         return { limit, offset };
       };
