@@ -247,7 +247,7 @@ exports.getStockAdvisorys = async (req, res, next) => {
 exports.getStockAdvisorysFree = async (req, res, next) => {
   try {
     let page; // page number
-    let limit = 20;
+    let limit = 10;
     // let offset;
     let stockAdvisorys;
     let totalPages;
@@ -285,7 +285,7 @@ exports.getStockAdvisorysFree = async (req, res, next) => {
       //if page is sent
       page = +req.query.page;
       const getPagination = (page) => {
-        limit = 20;
+        limit = 10;
         h = page - 1;
         let offset = h * limit;
 
