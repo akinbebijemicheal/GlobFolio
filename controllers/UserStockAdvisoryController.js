@@ -58,8 +58,9 @@ exports.deleteStockAdvisorySave = async (req, res, next) => {
   sequelize.transaction(async (t) => {
     try {
       const { stockAdvisoryIds, userId } = req.body;
+      console.log(req.body)
 
-      for (let i = 0; i, stockAdvisoryIds.length; i++) {
+      for (let i = 0; i < stockAdvisoryIds.length; i++) {
        console.log(stockAdvisoryIds[i]);
           await userStockAdvisory.destroy({
             where: { stockAdvisoryId: stockAdvisoryIds[i], userId },
