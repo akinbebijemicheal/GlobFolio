@@ -23,6 +23,10 @@ const TopGainer = db.define(
       allowNull: true,
       type: Sequelize.STRING,
     },
+    currency: {
+      allowNull: true,
+      type: Sequelize.STRING,
+    },
     percentageChange: {
       allowNull: true,
       type: Sequelize.STRING,

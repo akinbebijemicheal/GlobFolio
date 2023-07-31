@@ -569,6 +569,15 @@ exports.verifyUserEmail = async (req, res, next) => {
         token: null,
       };
       await UserService.updateUser(data, transaction);
+            const mesg = `Email Verified Successfully`;
+            const userId = user.id;
+            const notifyType = "user";
+            const { io } = req.app;
+            await Notification.createNotification({
+              userId,
+              type: notifyType,
+              message: mesg,
+            });
       return res.status(200).send({
         success: true,
         message: "Account Activated Successfully",
@@ -593,6 +602,15 @@ exports.updateUser = async (req, res) => {
         email: req.user.email,
       },
     });
+         const mesg = `Profile Update Successfully`;
+         const userId = user.id;
+         const notifyType = "user";
+         const { io } = req.app;
+         await Notification.createNotification({
+           userId,
+           type: notifyType,
+           message: mesg,
+         });
     return res.status(200).json({
       success: true,
       message: "Updated successfully",
@@ -653,7 +671,15 @@ exports.deleteUserByAdmin = async (req, res) => {
       },
       include: [{}],
     });
-
+     const mesg = `User Deleted Successfully`;
+     const userId = admin.id;
+     const notifyType = "admin";
+     const { io } = req.app;
+     await Notification.createNotification({
+       userId,
+       type: notifyType,
+       message: mesg,
+     });
     return res.status(200).json({
       success: true,
       message: "Deleted successfully",

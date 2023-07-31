@@ -37,12 +37,12 @@ const SubscriptionPlan = db.define(
       type: Sequelize.TEXT,
       allowNull: true,
       get: function () {
-        if (this.getDataValue("deliveryaddress") !== undefined) {
-          return JSON.parse(this.getDataValue("deliveryaddress"));
+        if (this.getDataValue("countries") !== undefined) {
+          return JSON.parse(this.getDataValue("countries"));
         }
       },
       set(value) {
-        this.setDataValue("deliveryaddress", JSON.stringify(value));
+        this.setDataValue("countries", JSON.stringify(value));
       },
     },
     chatUsers: {

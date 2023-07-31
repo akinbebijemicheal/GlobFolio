@@ -268,7 +268,7 @@ exports.getAllPendingTransactions = async (req, res, next) => {
 exports.getUserTransactions = async (req, res, next) => {
   try {
    
-    let userId = req.body.userId; // page number
+    let userId = req.query.userId; // page number
 
     
            let page; // page number

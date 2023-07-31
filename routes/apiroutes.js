@@ -510,7 +510,7 @@ router
 
 router
   .route("/notifications/user/:userId")
-  .get(jwtAuth, NotificationController.getAllAUserNotifications);
+  .get(jwtAuth, NotificationController.getAllAUserNotificationss);
 
 router
   .route("/notifications/mark-read/:notificationId")

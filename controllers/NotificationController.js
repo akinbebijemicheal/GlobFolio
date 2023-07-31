@@ -199,6 +199,24 @@ exports.getAllAUserNotifications = async (req, res, next) => {
   }
 };
 
+exports.getAllAUserNotificationss = async (req, res, next) => {
+  try {
+    const notifications = await Notification.findAll({
+      where: {
+        type: "user",
+      },
+      order: [["createdAt", "DESC"]],
+    });
+    return res.status(200).send({
+      success: true,
+      data: notifications,
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+
 exports.markNotificationAsRead = async (req, res, next) => {
   try {
     const data = {

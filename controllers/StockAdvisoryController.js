@@ -265,7 +265,7 @@ exports.getStockAdvisorysFree = async (req, res, next) => {
         totalPages = Math.ceil(data / limit);
         stockAdvisorys = await StockAdvisory.findAll({
           where: { status: "approved" },
-          attributes: ["intro", "image", "industry"],
+          attributes: ["intro", "image", "industry", "countries"],
           order: [["createdAt", "DESC"]],
         });
         return res.status(200).send({
