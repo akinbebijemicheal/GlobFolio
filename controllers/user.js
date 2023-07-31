@@ -324,7 +324,7 @@ exports.LoginUser = async (req, res, next) => {
         address: user.address,
         expiresIn: "24 hours",
         email_verify: user.email_verify,
-        updatedAt: user.updatedAt,
+        referralId: user.referralId,
         createdAt: user.createdAt,
         access_token: token,
         pictures: user.pictures,
