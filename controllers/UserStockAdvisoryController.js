@@ -20,20 +20,19 @@ exports.createStockAdvisorySave = async (req, res, next) => {
       if (!stockAdvisory) {
         return res.status(400).send({
           success: false,
-          message: "StockAdvisory not found",
+          message: "Analyst Pick not found",
         });
       }
 
-      
-      const stockAdvisorySaveCheck = await userStockAdvisory.findOne(
-        {where: {userId, stockAdvisoryId }},
-      );
-          if (stockAdvisorySaveCheck !== null) {
-            return res.status(400).send({
-              success: false,
-              message: "StockAdvisory already saved",
-            });
-          }
+      const stockAdvisorySaveCheck = await userStockAdvisory.findOne({
+        where: { userId, stockAdvisoryId },
+      });
+      if (stockAdvisorySaveCheck !== null) {
+        return res.status(400).send({
+          success: false,
+          message: "Analyst Pick already saved",
+        });
+      }
       const stockAdvisorySave = await userStockAdvisory.create(
         { userId, stockAdvisoryId },
         {
@@ -43,7 +42,7 @@ exports.createStockAdvisorySave = async (req, res, next) => {
 
       return res.status(200).send({
         success: true,
-        message: "StockAdvisory Saved successfully",
+        message: "Analyst Pick Saved successfully",
         data: stockAdvisorySave,
       });
     } catch (error) {
@@ -58,18 +57,18 @@ exports.deleteStockAdvisorySave = async (req, res, next) => {
   sequelize.transaction(async (t) => {
     try {
       const { stockAdvisoryIds, userId } = req.body;
-      console.log(req.body)
+      console.log(req.body);
 
       for (let i = 0; i < stockAdvisoryIds.length; i++) {
-       console.log(stockAdvisoryIds[i]);
-          await userStockAdvisory.destroy({
-            where: { stockAdvisoryId: stockAdvisoryIds[i], userId },
-          });
+        console.log(stockAdvisoryIds[i]);
+        await userStockAdvisory.destroy({
+          where: { stockAdvisoryId: stockAdvisoryIds[i], userId },
+        });
       }
 
       return res.status(200).send({
         success: true,
-        message: "StockAdvisory Save deleted successfully",
+        message: "Analyst Pick Save deleted successfully",
       });
     } catch (error) {
       console.log(error);
@@ -85,10 +84,11 @@ exports.getStockAdvisorysSave = async (req, res, next) => {
     const stockAdvisorys = await userStockAdvisory.findAll({
       where: { userId },
       order: [["createdAt", "DESC"]],
-       include: [
+      include: [
         {
           model: StockAdvisory,
-        },]
+        },
+      ],
     });
     return res.status(200).send({
       success: true,

@@ -46,7 +46,7 @@ exports.createStockAdvisory = async (req, res, next) => {
         message: mesg,
       });
 
-      const mesgAdmin = `A admin just created a new Analyst Pick`;
+      const mesgAdmin = `A admin just created a new Admin  Pick`;
       const userIdAdmin = req.user.id;
       const notifyTypeAdmin = "admin";
       await Notification.createNotification({
@@ -113,7 +113,7 @@ exports.updateStockAdvisory = async (req, res, next) => {
 
       return res.status(200).send({
         success: true,
-        message: "StockAdvisory updated successfully",
+        message: "Analyst Pick updated successfully",
       });
     } catch (error) {
       console.log(error);
@@ -139,7 +139,7 @@ exports.deleteStockAdvisory = async (req, res, next) => {
         where: { id: stockAdvisoryId },
       });
 
-      const mesgAdmin = `A admin just deleted an Analyst Pick`;
+      const mesgAdmin = `A admin just deleted an Admin  Pick`;
       const userIdAdmin = req.user.id;
       const notifyTypeAdmin = "admin";
       const { io } = req.app;
@@ -153,7 +153,7 @@ exports.deleteStockAdvisory = async (req, res, next) => {
       io.emit("getNotifications", await Notification.fetchAdminNotification());
       return res.status(200).send({
         success: true,
-        message: "StockAdvisory delete successfully",
+        message: "Analyst Pick delete successfully",
       });
     } catch (error) {
       console.log(error);
@@ -443,7 +443,7 @@ exports.stockAdvisoryToDraft = async (req, res, next) => {
         message: mesg,
       });
 
-      const mesgAdmin = `A admin just added stock advisory ${stockAdvisory.intro} from draft`;
+      const mesgAdmin = `A admin just added Analyst Pick ${stockAdvisory.intro} from draft`;
       const userIdAdmin = req.user.id;
       const notifyTypeAdmin = "admin";
       await Notification.createNotification({
@@ -456,7 +456,7 @@ exports.stockAdvisoryToDraft = async (req, res, next) => {
 
       return res.status(200).send({
         success: true,
-        message: "StockAdvisory added to main successfully",
+        message: "Analyst Pick added to main successfully",
       });
     } catch (error) {
       console.log(error);
