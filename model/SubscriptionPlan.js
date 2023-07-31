@@ -33,19 +33,31 @@ const SubscriptionPlan = db.define(
       allowNull: true,
       type: Sequelize.STRING,
     },
-    countries: {
+    chatAccess: {
       type: Sequelize.TEXT,
       allowNull: true,
       get: function () {
-        if (this.getDataValue("countries") !== undefined) {
-          return JSON.parse(this.getDataValue("countries"));
+        if (this.getDataValue("chatAccess") !== undefined) {
+          return JSON.parse(this.getDataValue("chatAccess"));
         }
       },
       set(value) {
-        this.setDataValue("countries", JSON.stringify(value));
+        this.setDataValue("chatAccess", JSON.stringify(value));
       },
     },
-    chatUsers: {
+    analystPickAccess: {
+      type: Sequelize.TEXT,
+      allowNull: true,
+      get: function () {
+        if (this.getDataValue("analystPickAccess") !== undefined) {
+          return JSON.parse(this.getDataValue("analystPickAccess"));
+        }
+      },
+      set(value) {
+        this.setDataValue("analystPickAccess", JSON.stringify(value));
+      },
+    },
+    privateMessaging: {
       allowNull: true,
       type: Sequelize.BOOLEAN,
       defaultValue: false,

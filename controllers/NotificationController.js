@@ -43,7 +43,7 @@ exports.getAllAdminNotifications = async (req, res, next) => {
        } else {
          return res.status(200).send({
            success: true,
-           data: null,
+           data: [],
          });
        }
      } else {
@@ -82,7 +82,7 @@ exports.getAllAdminNotifications = async (req, res, next) => {
        } else {
          return res.status(200).send({
            success: true,
-           data: null,
+           data: [],
          });
        }
      }
@@ -139,7 +139,7 @@ exports.getAllAUserNotifications = async (req, res, next) => {
        } else {
          return res.status(200).send({
            success: true,
-           data: null,
+           data: [],
          });
        }
      } else {
@@ -190,7 +190,7 @@ exports.getAllAUserNotifications = async (req, res, next) => {
        } else {
          return res.status(200).send({
            success: true,
-           data: null,
+           data: [],
          });
        }
      }

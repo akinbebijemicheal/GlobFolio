@@ -18,7 +18,7 @@ const Notifications = db.define(
     },
     type: {
       allowNull: true,
-      type: Sequelize.ENUM("user", "admin")
+      type: Sequelize.ENUM("user", "admin", "general")
     },
     message: {
       allowNull: true,
