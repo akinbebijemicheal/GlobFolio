@@ -1466,6 +1466,8 @@ exports.getLoggedInUser = async (req, res) => {
 };
 
 exports.resendCode = async (req, res) => {
+  sequelize.transaction(async (t) => {
+
   try {
     const { email } = req.body;
     const user = await UserService.findUser({ email });
@@ -1476,30 +1478,34 @@ exports.resendCode = async (req, res) => {
       });
     }
 
-    let token = helpers.generateWebToken();
-    let message = helpers.verifyEmailMessage(user.name, email, token);
-    if (req.body.platform === "mobile") {
-      token = helpers.generateMobileToken();
-      message = helpers.mobileVerifyMessage(user.name, token);
-    }
-
-    await EmailService.sendMail(email, message, "Verify Email");
-    const data = {
-      token,
-      id: user.id,
-    };
-    await UserService.updateUser(data);
+      let token = helpers.generateWebToken();
+      const encodeEmail = encodeURIComponent(email);
+      let message = helpers.verifyEmailMessage(user.fullname, encodeEmail, token);
+      if (req.body.platform === "mobile") {
+        token = helpers.generateMobileToken();
+        message = helpers.mobileVerifyMessage(user.fullname, token);
+      }
+      if (user.userType !== "admin") {
+        await EmailService.sendMail(email, message, "Verify Email");
+      }
+      const data = {
+        token,
+        id: user.id,
+      };
+      await UserService.updateUser(data, t);
 
     return res.status(200).send({
       success: true,
       message: "Token Sent check email or mobile number",
     });
   } catch (error) {
+    console.log(error)
     return res.status(500).send({
       success: false,
-      message: "Server Error",
+      message: error,
     });
   }
+})
 };
 
 // exports.getAllUsers = async (req, res) => {

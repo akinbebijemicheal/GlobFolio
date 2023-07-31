@@ -36,6 +36,7 @@ const {
   revokeAccess,
   unsuspendUser,
   suspendUser,
+  resendCode,
 } = require("../controllers/user");
 const {
   checkEmail,
@@ -152,6 +153,7 @@ router.route("/verification").post(jwtAuth, checkRole(["admin"]), verification);
 router.route("/user/change-password").patch(jwtAuth, changePassword);
 
 router.route("/verifyemail").post(verifyUserEmail);
+router.route("/resendCode").post(resendCode);
 
 router.route("/forgot-password").get(forgotPassword);
 
@@ -485,10 +487,18 @@ router
 
 router
   .route("/transactions/approved")
-  .get(jwtAuth, checkRole(["admin"]), TransactionController.getAllApprovedTransactions);
+  .get(
+    jwtAuth,
+    checkRole(["admin"]),
+    TransactionController.getAllApprovedTransactions
+  );
 router
   .route("/transactions/pending")
-  .get(jwtAuth, checkRole(["admin"]), TransactionController.getAllPendingTransactions);
+  .get(
+    jwtAuth,
+    checkRole(["admin"]),
+    TransactionController.getAllPendingTransactions
+  );
 
 router
   .route("/transactions/getUserTransactions")
@@ -510,7 +520,7 @@ router
 
 router
   .route("/notifications/user/:userId")
-  .get(jwtAuth, NotificationController.getAllAUserNotificationss);
+  .get(jwtAuth, NotificationController.getAllAUserNotifications);
 
 router
   .route("/notifications/mark-read/:notificationId")

@@ -112,7 +112,7 @@ exports.getAllAUserNotifications = async (req, res, next) => {
              { [Op.and]: [{ userId: userId }, { type: "user" }] },
              { type: "general" },
            ],
-           [Op.or]: [{ status: "pending" }, { status: "unread" }],
+           status: "pending",
          },
          order: [["createdAt", "DESC"]],
        });
@@ -125,7 +125,7 @@ exports.getAllAUserNotifications = async (req, res, next) => {
                { [Op.and]: [{ userId: userId }, { type: "user" }] },
                { type: "general" },
              ],
-             [Op.or]: [{ status: "pending" }, { status: "unread" }],
+             status: "pending",
            },
            order: [["createdAt", "DESC"]],
          });
@@ -159,7 +159,7 @@ exports.getAllAUserNotifications = async (req, res, next) => {
              { [Op.and]: [{ userId: userId }, { type: "user" }] },
              { type: "general" },
            ],
-           [Op.or]: [{ status: "pending" }, { status: "unread" }],
+           status: "pending",
          },
          order: [["createdAt", "DESC"]],
        });
@@ -174,7 +174,7 @@ exports.getAllAUserNotifications = async (req, res, next) => {
                { [Op.and]: [{ userId: userId }, { type: "user" }] },
                { type: "general" },
              ],
-             [Op.or]: [{ status: "pending" }, { status: "unread" }],
+             status: "pending",
            },
            order: [["createdAt", "DESC"]],
            limit,
@@ -201,9 +201,14 @@ exports.getAllAUserNotifications = async (req, res, next) => {
 
 exports.getAllAUserNotificationss = async (req, res, next) => {
   try {
+    const userId = req.params.userId
     const notifications = await Notification.findAll({
       where: {
-        type: "user",
+        [Op.or]: [
+          { [Op.and]: [{ userId: userId }, { type: "user" }] },
+          { type: "general" },
+        ],
+        status: "pending",
       },
       order: [["createdAt", "DESC"]],
     });
