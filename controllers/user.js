@@ -1046,7 +1046,8 @@ exports.googleSign = async (req, res, next) => {
     const { id, email, verified_email, name } = req.google_details;
 
     try {
-      const user = await User.findOne({ where: { email } });
+      let user
+       user = await User.findOne({ where: { email } });
 
       /**
        * If user is found, login, else signup
@@ -1069,6 +1070,11 @@ exports.googleSign = async (req, res, next) => {
         email_verify: true,
       });
 
+
+      user = await User.findOne({ where: { email } });
+
+      
+
       const mesg = `A new user just signed up through ${"google"}`;
       const userId = user_.id;
       const notifyType = "admin";
@@ -1083,6 +1089,7 @@ exports.googleSign = async (req, res, next) => {
       return res.status(201).send({
         success: true,
         message: "User Created Successfully",
+        data: user
       });
     } catch (err) {
       console.error(err);
@@ -1161,12 +1168,13 @@ exports.facebookSignin = async (req, res) => {
  * @return    {json} response
  */
 exports.googleSignin = async (req, res) => {
-  let google_id = req.body.google_id;
+    const { id, email, verified_email, name } = req.google_details;
+  
 
   try {
     const user = await User.findOne({
       where: {
-        google_id,
+        email
       },
       include: [
         {

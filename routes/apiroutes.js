@@ -119,6 +119,7 @@ router.route("/auth/google").post(
 
 router.route("/auth/google-signin").post(
   // [googleLoginValidation(), validate],
+  Access.authenticateGoogleSignin,
   googleSignin
 );
 
