@@ -1070,9 +1070,55 @@ exports.googleSign = async (req, res, next) => {
         email_verify: true,
       });
 
+ user = await User.findOne({
+  where: {
+    email,
+  },
+  include: [
+    {
+      model: Picture,
+    },
+    {
+      model: Subscription,
+      as: "subscription",
+    },
+  ],
+});
 
-      user = await User.findOne({ where: { email } });
-
+if (user === null) {
+  return res.status(404).json({
+    success: false,
+    message: "Google account not found, go to sign up!",
+  });
+}
+if (user.userType !== "user") {
+  return res.status(401).json({
+    success: false,
+    message: "Please ensure you are logging-in from the right portal",
+  });
+}
+const payload = {
+  user: {
+    user: user,
+  },
+};
+const token = jwt.sign(payload, process.env.TOKEN);
+let result = {
+  id: user.id,
+  fullname: user.fullname,
+  email: user.email,
+  userType: user.userType,
+  phone_no: user.phone_no,
+  country: user.country,
+  address: user.address,
+  expiresIn: "24 hours",
+  email_verify: user.email_verify,
+  updatedAt: user.updatedAt,
+  createdAt: user.createdAt,
+  access_token: token,
+  pictures: user.pictures,
+  Subscription: user.subscription,
+};
       
 
       const mesg = `A new user just signed up through ${"google"}`;
@@ -1089,7 +1135,7 @@ exports.googleSign = async (req, res, next) => {
       return res.status(201).send({
         success: true,
         message: "User Created Successfully",
-        data: user
+        data: result
       });
     } catch (err) {
       console.error(err);
