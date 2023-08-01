@@ -111,7 +111,7 @@ exports.RegisterUser = async (req, res, next) => {
       // const encodeEmail = encodeURIComponent(email);
       let name = firstname + " " + lastname;
       let message = helpers.verifyEmailMessage(name, email, token);
-      
+
       if (userType !== "admin") {
         await EmailService.sendMail(email, message, "Verify Email");
       }
@@ -228,7 +228,7 @@ exports.RegisterAdmin = async (req, res, next) => {
       const encodeEmail = encodeURIComponent(email);
       let name = firstname + " " + lastname;
       let message = helpers.verifyEmailMessage(name, email, token);
-  
+
       if (userType !== "admin") {
         await EmailService.sendMail(email, message, "Verify Email");
       }
@@ -1046,13 +1046,13 @@ exports.googleSign = async (req, res, next) => {
     const { id, email, verified_email, name } = req.google_details;
 
     try {
-      let user
-       user = await User.findOne({ where: { email } });
+      let userdetails;
+      userdetails = await User.findOne({ where: { email } });
 
       /**
        * If user is found, login, else signup
        */
-      if (user !== null) {
+      if (userdetails !== null) {
         return res.status(400).send({
           success: false,
           message: "User exists with email, proceed to login",
@@ -1070,56 +1070,47 @@ exports.googleSign = async (req, res, next) => {
         email_verify: true,
       });
 
- user = await User.findOne({
-  where: {
-    email,
-  },
-  include: [
-    {
-      model: Picture,
-    },
-    {
-      model: Subscription,
-      as: "subscription",
-    },
-  ],
-});
+      const user = await User.findOne({
+        where: {
+          email,
+        },
+        include: [
+          {
+            model: Picture,
+          },
+          {
+            model: Subscription,
+            as: "subscription",
+          },
+        ],
+      });
 
-if (user === null) {
-  return res.status(404).json({
-    success: false,
-    message: "Google account not found, go to sign up!",
-  });
-}
-if (user.userType !== "user") {
-  return res.status(401).json({
-    success: false,
-    message: "Please ensure you are logging-in from the right portal",
-  });
-}
-const payload = {
-  user: {
-    user: user,
-  },
-};
-const token = jwt.sign(payload, process.env.TOKEN);
-let result = {
-  id: user.id,
-  fullname: user.fullname,
-  email: user.email,
-  userType: user.userType,
-  phone_no: user.phone_no,
-  country: user.country,
-  address: user.address,
-  expiresIn: "24 hours",
-  email_verify: user.email_verify,
-  updatedAt: user.updatedAt,
-  createdAt: user.createdAt,
-  access_token: token,
-  pictures: user.pictures,
-  Subscription: user.subscription,
-};
-      
+      if (user.userType !== "user") {
+        return res.status(401).json({
+          success: false,
+          message: "Please ensure you are logging-in from the right portal",
+        });
+      }
+      const payload = {
+        user: user,
+      };
+      const token = jwt.sign(payload, process.env.TOKEN);
+      let result = {
+        id: user.id,
+        fullname: user.fullname,
+        email: user.email,
+        userType: user.userType,
+        phone_no: user.phone_no,
+        country: user.country,
+        address: user.address,
+        expiresIn: "24 hours",
+        email_verify: user.email_verify,
+        updatedAt: user.updatedAt,
+        createdAt: user.createdAt,
+        access_token: token,
+        pictures: user.pictures,
+        Subscription: user.subscription,
+      };
 
       const mesg = `A new user just signed up through ${"google"}`;
       const userId = user_.id;
@@ -1135,7 +1126,7 @@ let result = {
       return res.status(201).send({
         success: true,
         message: "User Created Successfully",
-        data: result
+        data: result,
       });
     } catch (err) {
       console.error(err);
@@ -1214,13 +1205,12 @@ exports.facebookSignin = async (req, res) => {
  * @return    {json} response
  */
 exports.googleSignin = async (req, res) => {
-    const { id, email, verified_email, name } = req.google_details;
-  
+  const { id, email, verified_email, name } = req.google_details;
 
   try {
     const user = await User.findOne({
       where: {
-        email
+        email,
       },
       include: [
         {
@@ -1245,11 +1235,9 @@ exports.googleSignin = async (req, res) => {
         message: "Please ensure you are logging-in from the right portal",
       });
     }
-    const payload = {
-      user: {
-        user: user,
-      },
-    };
+     const payload = {
+       user: user,
+     };
     const token = jwt.sign(payload, process.env.TOKEN);
     let result = {
       id: user.id,
@@ -1542,12 +1530,8 @@ exports.resendCode = async (req, res) => {
 
       let token = helpers.generateWebToken();
       const encodeEmail = encodeURIComponent(email);
-      let message = helpers.verifyEmailMessage(
-        user.fullname,
-        email,
-        token
-      );
-      
+      let message = helpers.verifyEmailMessage(user.fullname, email, token);
+
       if (user.userType !== "admin") {
         await EmailService.sendMail(email, message, "Verify Email");
       }
