@@ -850,7 +850,7 @@ exports.forgotPassword = async (req, res, next) => {
     try {
       const { email } = req.query;
 
-      const user = await UserService.findOne({ where: email });
+      const user = await User.findOne({ where: {email} });
       if (!user) {
         return res.status(404).send({
           success: false,
