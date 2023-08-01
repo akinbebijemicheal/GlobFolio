@@ -315,6 +315,7 @@ exports.LoginUser = async (req, res, next) => {
         userType: user.userType,
         phone_no: user.phone_no,
         country: user.country,
+        gender: user.gender,
         address: user.address,
         expiresIn: "24 hours",
         email_verify: user.email_verify,
@@ -365,6 +366,7 @@ exports.profile = (user) => {
     fullname: user.fullname,
     phone_no: user.phone_no,
     country: user.country,
+    gender: user.gender,
     email: user.email,
     address: user.address,
     updatedAt: user.updatedAt,
@@ -1102,6 +1104,7 @@ exports.googleSign = async (req, res, next) => {
         userType: user.userType,
         phone_no: user.phone_no,
         country: user.country,
+        gender: user.gender,
         address: user.address,
         expiresIn: "24 hours",
         email_verify: user.email_verify,
@@ -1235,9 +1238,9 @@ exports.googleSignin = async (req, res) => {
         message: "Please ensure you are logging-in from the right portal",
       });
     }
-     const payload = {
-       user: user,
-     };
+    const payload = {
+      user: user,
+    };
     const token = jwt.sign(payload, process.env.TOKEN);
     let result = {
       id: user.id,
@@ -1246,6 +1249,8 @@ exports.googleSignin = async (req, res) => {
       userType: user.userType,
       phone_no: user.phone_no,
       country: user.country,
+      gender: user.gender,
+      gender: user.gender,
       address: user.address,
       expiresIn: "24 hours",
       email_verify: user.email_verify,
@@ -1451,6 +1456,7 @@ exports.loginAdmin = async (req, res, next) => {
         userType: user.userType,
         phone_no: user.phone_no,
         country: user.country,
+        gender: user.gender,
         address: user.address,
         expiresIn: "24 hours",
         email_verify: user.email_verify,
