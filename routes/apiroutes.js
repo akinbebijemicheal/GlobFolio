@@ -68,7 +68,11 @@ const { support, getSupportMessages } = require("../controllers/support");
 const passport = require("passport");
 const { createFeedback, getAllFeedbacks } = require("../controllers/feedback");
 
-router.get("/", (req, res) => {
+const EmailService = require("../service/emailService");
+
+
+router.get("/", async (req, res) => {
+  // await EmailService.sendMail("chizotavictor@gmail.com", "This is a test email.", "Verify Email");
   res.send(`GLOBFOLIO APP ${new Date()}`);
 });
 //user
