@@ -3,14 +3,13 @@
 const { Op } = require("sequelize");
 const Notification = require("../model/Notification");
 const NotificationService = require("../helpers/notification");
+// const db = require("../config/config");
 const db = require("../config/config");
+const sequelize = db;
 
 
 exports.getAllAdminNotifications = async (req, res, next) => {
   try {
- 
-
-
 
      let page; // page number
      let limit = 20;
@@ -112,7 +111,6 @@ exports.getAllAUserNotifications = async (req, res, next) => {
              { [Op.and]: [{ userId: userId }, { type: "user" }] },
              { type: "general" },
            ],
-           status: "pending",
          },
          order: [["createdAt", "DESC"]],
        });
@@ -125,7 +123,6 @@ exports.getAllAUserNotifications = async (req, res, next) => {
                { [Op.and]: [{ userId: userId }, { type: "user" }] },
                { type: "general" },
              ],
-             status: "pending",
            },
            order: [["createdAt", "DESC"]],
          });
@@ -159,7 +156,6 @@ exports.getAllAUserNotifications = async (req, res, next) => {
              { [Op.and]: [{ userId: userId }, { type: "user" }] },
              { type: "general" },
            ],
-           status: "pending",
          },
          order: [["createdAt", "DESC"]],
        });
@@ -174,7 +170,6 @@ exports.getAllAUserNotifications = async (req, res, next) => {
                { [Op.and]: [{ userId: userId }, { type: "user" }] },
                { type: "general" },
              ],
-             status: "pending",
            },
            order: [["createdAt", "DESC"]],
            limit,
@@ -266,7 +261,8 @@ exports.deleteNotification = async (req, res, next) => {
   sequelize.transaction(async t => {
     try {
       const { notificationId } = req.params;
-      await NotificationService.deleteNotifications(notificationId);
+        await Notification.destroy({ where: { id: notificationId } });
+
       return res.status(200).send({
         success: true,
         message: "Notification deleted"
