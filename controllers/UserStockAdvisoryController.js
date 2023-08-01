@@ -40,6 +40,14 @@ exports.createStockAdvisorySave = async (req, res, next) => {
         }
       );
 
+        const mesg = `You just saved an analyst pick`;
+        const notifyType = "user";
+        const { io } = req.app;
+        await Notification.createNotification({
+          userId,
+          type: notifyType,
+          message: mesg,
+        });
       return res.status(200).send({
         success: true,
         message: "Analyst Pick Saved successfully",
@@ -65,6 +73,14 @@ exports.deleteStockAdvisorySave = async (req, res, next) => {
           where: { stockAdvisoryId: stockAdvisoryIds[i], userId },
         });
       }
+            const mesg = `You just deleted a saved analyst pick`;
+            const notifyType = "user";
+            const { io } = req.app;
+            await Notification.createNotification({
+              userId,
+              type: notifyType,
+              message: mesg,
+            });
 
       return res.status(200).send({
         success: true,

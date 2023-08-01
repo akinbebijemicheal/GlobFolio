@@ -292,19 +292,19 @@ exports.LoginUser = async (req, res, next) => {
         message: "Please ensure you are logging-in from the right portal",
       });
     }
-      //  if (!user.isActive) {
-      //    return res.status(400).send({
-      //      success: false,
-      //      message: "Please Verify account",
-      //    });
-      //  }
-       if (user.isSuspended) {
-         return res.status(400).send({
-           success: false,
-           message:
-             "Your account has been suspended. Reach out to the admin for further information",
-         });
-       }
+    //  if (!user.isActive) {
+    //    return res.status(400).send({
+    //      success: false,
+    //      message: "Please Verify account",
+    //    });
+    //  }
+    if (user.isSuspended) {
+      return res.status(400).send({
+        success: false,
+        message:
+          "Your account has been suspended. Reach out to the admin for further information",
+      });
+    }
 
     const validate = await bcrypt.compare(password, user.password);
     if (validate) {
@@ -330,6 +330,16 @@ exports.LoginUser = async (req, res, next) => {
         pictures: user.pictures,
         Subscription: user.subscription,
       };
+
+      const mesg = `You just signed in`;
+      const userId = user.id;
+      const notifyType = "user";
+      const { io } = req.app;
+      await Notification.createNotification({
+        userId,
+        type: notifyType,
+        message: mesg,
+      });
 
       return res.status(200).json({
         success: true,
@@ -569,15 +579,15 @@ exports.verifyUserEmail = async (req, res, next) => {
         token: null,
       };
       await UserService.updateUser(data, transaction);
-            const mesg = `Email Verified Successfully`;
-            const userId = user.id;
-            const notifyType = "user";
-            const { io } = req.app;
-            await Notification.createNotification({
-              userId,
-              type: notifyType,
-              message: mesg,
-            });
+      const mesg = `Email Verified Successfully`;
+      const userId = user.id;
+      const notifyType = "user";
+      const { io } = req.app;
+      await Notification.createNotification({
+        userId,
+        type: notifyType,
+        message: mesg,
+      });
       return res.status(200).send({
         success: true,
         message: "Account Activated Successfully",
@@ -602,15 +612,15 @@ exports.updateUser = async (req, res) => {
         email: req.user.email,
       },
     });
-         const mesg = `Profile Update Successfully`;
-         const userId = user.id;
-         const notifyType = "user";
-         const { io } = req.app;
-         await Notification.createNotification({
-           userId,
-           type: notifyType,
-           message: mesg,
-         });
+    const mesg = `Profile Update Successfully`;
+    const userId = user.id;
+    const notifyType = "user";
+    const { io } = req.app;
+    await Notification.createNotification({
+      userId,
+      type: notifyType,
+      message: mesg,
+    });
     return res.status(200).json({
       success: true,
       message: "Updated successfully",
@@ -671,15 +681,15 @@ exports.deleteUserByAdmin = async (req, res) => {
       },
       include: [{}],
     });
-     const mesg = `User Deleted Successfully`;
-     const userId = admin.id;
-     const notifyType = "admin";
-     const { io } = req.app;
-     await Notification.createNotification({
-       userId,
-       type: notifyType,
-       message: mesg,
-     });
+    const mesg = `User Deleted Successfully`;
+    const userId = admin.id;
+    const notifyType = "admin";
+    const { io } = req.app;
+    await Notification.createNotification({
+      userId,
+      type: notifyType,
+      message: mesg,
+    });
     return res.status(200).json({
       success: true,
       message: "Deleted successfully",
@@ -1037,8 +1047,9 @@ exports.appleSign = async (req, res, next) => {
  */
 exports.googleSign = async (req, res, next) => {
   sequelize.transaction(async (t) => {
-    const { userType } = req.body;
-    const { id, email, verified_email, name, gender } = req.google_details;
+    // const { userType } = req.body;
+    // console.log(req.google_details)
+    const { id, email, verified_email, name } = req.google_details;
 
     try {
       const user = await User.findOne({ where: { email } });
@@ -1055,18 +1066,14 @@ exports.googleSign = async (req, res, next) => {
 
       const user_ = await User.create({
         fullname: name,
-        email,
-        gender,
-        userType: userType,
+        email: email,
+        userType: "user",
         google_id: id,
         app: "google",
         isActive: true,
         referralId: randomstring.generate(6),
-        email_verify: false,
+        email_verify: true,
       });
-
-      if (userType !== "admin") {
-      }
 
       const mesg = `A new user just signed up through ${"google"}`;
       const userId = user_.id;
@@ -1212,7 +1219,15 @@ exports.googleSignin = async (req, res) => {
       pictures: user.pictures,
       Subscription: user.subscription,
     };
-
+    const mesg = `You just logged in using ${"google"}`;
+    const userId = user.id;
+    const notifyType = "user";
+    const { io } = req.app;
+    await Notification.createNotification({
+      userId,
+      type: notifyType,
+      message: mesg,
+    });
     return res.status(200).send({
       success: true,
       message: "User Logged In Sucessfully",
@@ -1467,20 +1482,23 @@ exports.getLoggedInUser = async (req, res) => {
 
 exports.resendCode = async (req, res) => {
   sequelize.transaction(async (t) => {
-
-  try {
-    const { email } = req.body;
-    const user = await UserService.findUser({ email });
-    if (!user) {
-      return res.status(404).send({
-        success: false,
-        message: "No User found with this email",
-      });
-    }
+    try {
+      const { email } = req.body;
+      const user = await UserService.findUser({ email });
+      if (!user) {
+        return res.status(404).send({
+          success: false,
+          message: "No User found with this email",
+        });
+      }
 
       let token = helpers.generateWebToken();
       const encodeEmail = encodeURIComponent(email);
-      let message = helpers.verifyEmailMessage(user.fullname, encodeEmail, token);
+      let message = helpers.verifyEmailMessage(
+        user.fullname,
+        encodeEmail,
+        token
+      );
       if (req.body.platform === "mobile") {
         token = helpers.generateMobileToken();
         message = helpers.mobileVerifyMessage(user.fullname, token);
@@ -1494,18 +1512,18 @@ exports.resendCode = async (req, res) => {
       };
       await UserService.updateUser(data, t);
 
-    return res.status(200).send({
-      success: true,
-      message: "Token Sent check email or mobile number",
-    });
-  } catch (error) {
-    console.log(error)
-    return res.status(500).send({
-      success: false,
-      message: error,
-    });
-  }
-})
+      return res.status(200).send({
+        success: true,
+        message: "Token Sent check email or mobile number",
+      });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send({
+        success: false,
+        message: error,
+      });
+    }
+  });
 };
 
 // exports.getAllUsers = async (req, res) => {

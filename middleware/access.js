@@ -141,7 +141,7 @@ exports.authenticateFBSignup = async (req, res, next) => {
 exports.authenticateGoogleSignin = async (req, res, next) => {
   try {
     const { access_token } = req.body;
-    console.log(access_token)
+  
     const { data } = await axios.get(
       `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${access_token}`,
       {
@@ -160,6 +160,8 @@ exports.authenticateGoogleSignin = async (req, res, next) => {
     }
 
     req.google_details = data;
+    
+
     next();
   } catch (error) {
     return res.status(400).json({
