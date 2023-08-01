@@ -11,6 +11,7 @@ const Notification = require("../helpers/notification");
 const SubscriptionPlan = require("../model/SubscriptionPlan");
 const SubscriptionPlanPackage = require("../model/SubscriptionPlanPackage");
 const Subscription = require("../model/Subscription");
+const Sector = require("../model/Sector");
 const Payment = require("../model/Payment");
 const Transaction = require("../model/Transaction");
 const UserService = require("../service/UserService");
@@ -19,6 +20,37 @@ const invoiceService = require("../service/invoiceService2");
 const helpers = require("../helpers/message");
 const { sendMail } = require("../service/attachmentEmailService");
 const { has } = require("config");
+
+exports.createSector = async (req, res, next) => {
+  sequelize.transaction(async (t) => {
+    try {
+      const existsub = await Sector.findOne({
+        where: { name: req.body.name },
+      });
+      if (existsub != null) {
+        return res.status(404).send({
+          success: false,
+          message:
+            "Sector with this name exists, name must be unique",
+        });
+      }
+
+      const sector = await Sector.create(req.body, {
+        transaction: t,
+      });
+
+      return res.status(200).send({
+        success: true,
+        data: sector,
+      });
+    } catch (error) {
+      console.log(error);
+      t.rollback();
+      return next(error);
+    }
+
+  });
+}
 
 exports.createSubscriptionPlan = async (req, res, next) => {
   sequelize.transaction(async (t) => {
@@ -89,6 +121,45 @@ exports.updateSubscriptionPlan = async (req, res, next) => {
   });
 };
 
+
+exports.updateSector = async (req, res, next) => {
+  sequelize.transaction(async (t) => {
+    try {
+      const { sectorId, name} = req.body;
+      const sector = await Sector.findByPk(sectorId);
+      await sector.update({name: name}, { transaction: t });
+      return res.status(200).send({
+        success: true,
+        message: "sector updated successfully",
+      });
+    } catch (error) {
+      console.log(error);
+      t.rollback();
+      return next(error);
+    }
+  });
+};
+
+exports.deleteSector = async (req, res, next) => {
+  sequelize.transaction(async (t) => {
+    try {
+      const { sectorId } = req.params;
+      const plan = await Sector.destroy({
+        where: { id: sectorId }
+      });
+
+      return res.status(200).send({
+        success: true,
+        message: "Sector delete successfully",
+      });
+    } catch (error) {
+      console.log(error);
+      t.rollback();
+      return next(error);
+    }
+  });
+};
+
 exports.deleteSubscriptionPlan = async (req, res, next) => {
   sequelize.transaction(async (t) => {
     try {
@@ -129,6 +200,20 @@ exports.getSubscriptionPlans = async (req, res, next) => {
     return res.status(200).send({
       success: true,
       data: plans,
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+exports.getSectors = async (req, res, next) => {
+  try {
+    const sectors = await Sector.findAll({
+      order: [["createdAt", "DESC"]],
+    });
+    return res.status(200).send({
+      success: true,
+      data: sectors,
     });
   } catch (error) {
     return next(error);

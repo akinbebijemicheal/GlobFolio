@@ -317,6 +317,26 @@ router
   .route("/subscription/verifySubscription")
   .post(jwtAuth, SubscriptionController.verifySubscription);
 
+router
+  .route("/subscription/sector")
+  .get(jwtAuth, SubscriptionController.getSectors);
+
+router
+  .route("/subscription/sector")
+  .post(jwtAuth, SubscriptionController.createSector);
+
+router
+  .route("/subscription/sector/:sectorId")
+  .patch(jwtAuth, SubscriptionController.updateSector);
+
+router
+  .route("/subscription/sector/:sectionId")
+  .delete(
+    jwtAuth,
+    checkRole(["admin"]),
+    SubscriptionController.deleteSector
+  );
+
 //-----------------------------Paystack Bank--------------------------------
 
 router.route("/bank/allbanks").get(PaystackController.getBanks);

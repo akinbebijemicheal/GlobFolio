@@ -136,7 +136,7 @@ db.authenticate()
   .then(() => console.log("Database connected"))
   .catch((err) => console.log("Error: " + err));
 
-// db.sync();
+db.sync();
 
 const port = process.env.PORT || 3000;
 server.listen(port, () => {
