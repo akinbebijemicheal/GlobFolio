@@ -131,6 +131,7 @@ exports.updatePicture = async (req, res) => {
       role: user.role,
       phone_no: user.phone_no,
       country: user.country,
+      gender: user.gender,
       serviceType: user.serviceType,
       address: user.address,
       expiresIn: "24 hours",
