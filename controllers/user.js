@@ -108,13 +108,10 @@ exports.RegisterUser = async (req, res, next) => {
       //   expiresIn: "24h",
       // });
       let token = helpers.generateWebToken();
-      const encodeEmail = encodeURIComponent(email);
+      // const encodeEmail = encodeURIComponent(email);
       let name = firstname + " " + lastname;
-      let message = helpers.verifyEmailMessage(name, encodeEmail, token);
-      if (req.body.platform === "mobile") {
-        token = helpers.generateMobileToken();
-        message = helpers.mobileVerifyMessage(name, token);
-      }
+      let message = helpers.verifyEmailMessage(name, email, token);
+      
       if (userType !== "admin") {
         await EmailService.sendMail(email, message, "Verify Email");
       }
@@ -230,11 +227,8 @@ exports.RegisterAdmin = async (req, res, next) => {
       let token = helpers.generateWebToken();
       const encodeEmail = encodeURIComponent(email);
       let name = firstname + " " + lastname;
-      let message = helpers.verifyEmailMessage(name, encodeEmail, token);
-      if (req.body.platform === "mobile") {
-        token = helpers.generateMobileToken();
-        message = helpers.mobileVerifyMessage(name, token);
-      }
+      let message = helpers.verifyEmailMessage(name, email, token);
+  
       if (userType !== "admin") {
         await EmailService.sendMail(email, message, "Verify Email");
       }
@@ -1496,13 +1490,10 @@ exports.resendCode = async (req, res) => {
       const encodeEmail = encodeURIComponent(email);
       let message = helpers.verifyEmailMessage(
         user.fullname,
-        encodeEmail,
+        email,
         token
       );
-      if (req.body.platform === "mobile") {
-        token = helpers.generateMobileToken();
-        message = helpers.mobileVerifyMessage(user.fullname, token);
-      }
+      
       if (user.userType !== "admin") {
         await EmailService.sendMail(email, message, "Verify Email");
       }

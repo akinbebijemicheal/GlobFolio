@@ -50,7 +50,7 @@ exports.createFeedback = async (req, res, next) => {
       console.log(newFeedback);
 
       let name = user.fullname;
-      let emailmessage = helpers.feedbackMessage(name);
+      let emailmessage = helpers.feedbackMessage(name, user.email);
 
       await EmailService.sendMail(
         user.email,
