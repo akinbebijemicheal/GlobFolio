@@ -160,7 +160,7 @@ router.route("/user/change-password").patch(jwtAuth, changePassword);
 router.route("/verifyemail").post(verifyUserEmail);
 router.route("/resendCode").post(resendCode);
 
-router.route("/forgot-password/:email").get(forgotPassword);
+router.route("/forgot-password").post(forgotPassword);
 
 router.route("/reset-password").post(resetPassword);
 

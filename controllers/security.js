@@ -848,7 +848,7 @@ exports.adminChangePassword = async (req, res) => {
 exports.forgotPassword = async (req, res, next) => {
   sequelize.transaction(async (t) => {
     try {
-      const { email } = req.params;
+      const { email } = req.body;
       console.log(email)
 
       const user = await User.findOne({ where: {email: email} });

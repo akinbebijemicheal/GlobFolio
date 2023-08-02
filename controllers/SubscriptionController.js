@@ -396,7 +396,7 @@ exports.upgradePlan = async (req, res, next) => {
         remainingDays = then.diff(now, "days");
         //get amount of money worth remaining for customer from current plan
         const prevSubPlan = await SubscriptionPlan.findByPk(sub.planId);
-        const prevSubPlanDays = prevSubPlan.duration * 7;
+        const prevSubPlanDays = prevSubPlan.duration * 31;
         const prevSubPlanRemainingAmount = prevSubPlan.amount / prevSubPlanDays;
         amountToPay = amount - prevSubPlanRemainingAmount;
         // console.log(expiredAt, remainingDays);
@@ -410,9 +410,9 @@ exports.upgradePlan = async (req, res, next) => {
       const newDate = moment(now, "DD-MM-YYYY").add(days, "days");
 
       // save transaction
-      const description = `${user.fullname} Payment for ${plan.name}`;
+      const description = `Payment for ${plan.name}`;
       const slug = Math.floor(190000000 + Math.random() * 990000000);
-      const txSlug = `GLOBFOLIO/TXN/${slug}`;
+      const txSlug = `GLF/TXN/${slug}`;
       const transaction = {
         TransactionId: txSlug,
         userId: id,
@@ -425,11 +425,11 @@ exports.upgradePlan = async (req, res, next) => {
       const user = await User.findByPk(userId);
 
       const response = {
-        user: user,
-        amount: amountToPay,
+        userId: user.id,
+        amountpaid: amountToPay,
         newExpiryDate: newDate,
         TransactionId: txSlug,
-        plan: plan,
+        planId: plan.included,
       };
 
       return res.send({
@@ -448,7 +448,7 @@ exports.upgradePlan = async (req, res, next) => {
 exports.verifySubscriptionUpgrade = async (req, res, next) => {
   sequelize.transaction(async (t) => {
     try {
-      const { userId, newExpiryDate, reference, planId, TransactionId } =
+      const { userId, amountpaid, newExpiryDate, reference, planId, TransactionId } =
         req.body;
       const plan = await SubscriptionPlan.findOne({ where: { id: planId } });
       const { duration, amount, name } = plan;
@@ -468,7 +468,7 @@ exports.verifySubscriptionUpgrade = async (req, res, next) => {
       const paymentData = {
         userId: id,
         payment_reference: reference,
-        amount,
+        amount: amountpaid,
         payment_category: "Subscription",
       };
 
@@ -629,6 +629,9 @@ exports.verifySubscription = async (req, res, next) => {
       await User.update(userData, { where: { id }, transaction: t });
       // console.log(h);
 
+      const userUpdated = await User.findByPk(userId);
+
+
       // save transaction
       const description = `Payment for ${plan.name}`;
       const slug = Math.floor(190000000 + Math.random() * 990000000);
@@ -668,7 +671,6 @@ exports.verifySubscription = async (req, res, next) => {
       // //   const message = helpers.invoiceMessage(user.fullname);
       // //   sendMail(user.email, message, "GlobFolio Subscription Invoice", files);
       // }
-      const userUpdated = await User.findByPk(userId);
 
       // Notify admin
       const mesg = `${
