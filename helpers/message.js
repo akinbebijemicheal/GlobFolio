@@ -617,7 +617,7 @@ let name = first_name
                     <p style="font-size: 1.4em;">If this was not initiated by you, do not proceed.</p>.</p></td>
   </tr>
   <tr style="border-collapse:collapse">
-  <td align="center" style="Margin:0;padding-left:10px;padding-right:10px;padding-top:35px;padding-bottom:35px">${token}</td>
+    <td align="center" style="Margin:0;padding-left:10px;padding-right:10px;padding-top:35px;padding-bottom:35px"><span class="es-button-border" style="border-style:solid;border-color:#3F79AD;background:1px;border-width:1px;display:inline-block;border-radius:2px;width:auto; font-size: 30px; padding: 10px;" s="Input this otp to Activate Account">${token}</span></td>
   </tr>
 
 

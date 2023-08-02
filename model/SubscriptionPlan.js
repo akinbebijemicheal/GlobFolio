@@ -19,7 +19,7 @@ const SubscriptionPlan = db.define(
     duration: {
       //months
       allowNull: true,
-      type: Sequelize.FLOAT,
+      type: Sequelize.INTEGER,
     },
     amount: {
       allowNull: true,

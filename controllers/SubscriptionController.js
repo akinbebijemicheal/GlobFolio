@@ -599,9 +599,10 @@ exports.verifySubscription = async (req, res, next) => {
       // let remainingDays = 0;
       let amountToPay = 0;
 
-      let amountOfMonths = Number(duration) * 12;
+      let amountOfMonths = Number(duration);
       let pricePerMonth = amount / amountOfMonths;
-      const days = amountOfMonths * 31;
+      let days = duration * 31;
+      let pricerPerDay = amount / days
 
       const user = await User.findByPk(userId);
 
