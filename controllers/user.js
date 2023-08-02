@@ -601,6 +601,15 @@ exports.updateUser = async (req, res) => {
       where: {
         email: req.user.email,
       },
+      include: [
+        {
+          model: Picture,
+        },
+        {
+          model: Subscription,
+          as: "subscription",
+        },
+      ],
     });
 
     const user = await User.findOne({
