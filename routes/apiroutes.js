@@ -315,6 +315,10 @@ router
   .route("/subscription/upgrade")
   .post(jwtAuth, SubscriptionController.upgradePlan);
 
+  router
+    .route("/subscription/upgradeVerify")
+    .post(jwtAuth, SubscriptionController.verifySubscriptionUpgrade);
+
 router
   .route("/subscription/verifySubscription")
   .post(jwtAuth, SubscriptionController.verifySubscription);

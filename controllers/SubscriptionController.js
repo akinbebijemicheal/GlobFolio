@@ -30,8 +30,7 @@ exports.createSector = async (req, res, next) => {
       if (existsub != null) {
         return res.status(404).send({
           success: false,
-          message:
-            "Sector with this name exists, name must be unique",
+          message: "Sector with this name exists, name must be unique",
         });
       }
 
@@ -48,9 +47,8 @@ exports.createSector = async (req, res, next) => {
       t.rollback();
       return next(error);
     }
-
   });
-}
+};
 
 exports.createSubscriptionPlan = async (req, res, next) => {
   sequelize.transaction(async (t) => {
@@ -121,13 +119,12 @@ exports.updateSubscriptionPlan = async (req, res, next) => {
   });
 };
 
-
 exports.updateSector = async (req, res, next) => {
   sequelize.transaction(async (t) => {
     try {
-      const { sectorId, name} = req.body;
+      const { sectorId, name } = req.body;
       const sector = await Sector.findByPk(sectorId);
-      await sector.update({name: name}, { transaction: t });
+      await sector.update({ name: name }, { transaction: t });
       return res.status(200).send({
         success: true,
         message: "sector updated successfully",
@@ -145,7 +142,7 @@ exports.deleteSector = async (req, res, next) => {
     try {
       const { sectorId } = req.params;
       const plan = await Sector.destroy({
-        where: { id: sectorId }
+        where: { id: sectorId },
       });
 
       return res.status(200).send({
@@ -318,7 +315,7 @@ exports.subscribeToPlan = async (req, res, next) => {
       const plan = await SubscriptionPlan.findOne({ where: { id: planId } });
       const { duration, amount, name } = plan;
 
-      const profile = await UserService.findUserById(userId);
+      const profile = await UserService.findUser(userId);
       const { id } = profile;
 
       // get user has active sub
@@ -402,6 +399,7 @@ exports.upgradePlan = async (req, res, next) => {
         // console.log(expiredAt, remainingDays);
         // await sub.update({ status: 0 }, { transaction: t });
       } else {
+        console.log("no sub");
         amountToPay = amount;
       }
       const days = Number(duration) * 7;
@@ -429,7 +427,7 @@ exports.upgradePlan = async (req, res, next) => {
         amountpaid: amountToPay,
         newExpiryDate: newDate,
         TransactionId: txSlug,
-        planId: plan.included,
+        planId: plan.id,
       };
 
       return res.send({
@@ -448,8 +446,14 @@ exports.upgradePlan = async (req, res, next) => {
 exports.verifySubscriptionUpgrade = async (req, res, next) => {
   sequelize.transaction(async (t) => {
     try {
-      const { userId, amountpaid, newExpiryDate, reference, planId, TransactionId } =
-        req.body;
+      const {
+        userId,
+        amountpaid,
+        newExpiryDate,
+        reference,
+        planId,
+        TransactionId,
+      } = req.body;
       const plan = await SubscriptionPlan.findOne({ where: { id: planId } });
       const { duration, amount, name } = plan;
 
@@ -495,7 +499,7 @@ exports.verifySubscriptionUpgrade = async (req, res, next) => {
         id: id,
         planId,
         hasActiveSubscription: true,
-        expiredAt: newDate,
+        expiredAt: newExpiryDate,
       };
       await UserService.updateUser({
         userData,
@@ -505,7 +509,7 @@ exports.verifySubscriptionUpgrade = async (req, res, next) => {
       // update transaction
 
       await Transaction.update(
-        { status: "PAID", payment_reference: reference },
+        { status: "PAID", paymentReference: reference },
         { where: { TransactionId }, transaction: t }
       );
 
@@ -516,9 +520,10 @@ exports.verifySubscriptionUpgrade = async (req, res, next) => {
 
       let orderData = {
         user: user,
-        transaction: transaction,
+        transaction: JSON.parse(JSON.stringify(transaction)),
         plan: plan,
-        expiryDate: newDate,
+        amountPaid: amountpaid,
+        expiryDate: newExpiryDate,
       };
 
       const invoice = await invoiceService.createInvoice(orderData, user);
@@ -550,7 +555,7 @@ exports.verifySubscriptionUpgrade = async (req, res, next) => {
       return res.send({
         success: true,
         message: "Subscription Payment Made Sucessfully",
-        data: response,
+        data: user,
       });
     } catch (error) {
       console.log(error);
@@ -584,8 +589,9 @@ exports.verifySubscription = async (req, res, next) => {
       }
 
       const profile = await UserService.findUserById(userId);
-      const { id } = profile;
-      // safe payment made for reference
+      let id;
+      id = profile.id;
+      // save payment made for reference
       const paymentData = {
         userId: id,
         payment_reference: reference,
@@ -597,17 +603,24 @@ exports.verifySubscription = async (req, res, next) => {
 
       const now = moment();
       // let remainingDays = 0;
-      let amountToPay = 0;
+      let amountToPay = amount;
 
       let amountOfMonths = Number(duration);
       let pricePerMonth = amount / amountOfMonths;
       let days = duration * 31;
-      let pricerPerDay = amount / days
+      let pricerPerDay = amount / days;
 
       const user = await User.findByPk(userId);
 
       // create subscription
       const newDate = moment(now, "DD-MM-YYYY").add(days, "days");
+
+      const sub = await Subscription.findOne({
+        where: { userId: id, status: 1 },
+      });
+      if (sub) {
+        await sub.update({ status: 0 }, { transaction: t });
+      }
 
       // create new subscription
       const request = {
@@ -619,7 +632,7 @@ exports.verifySubscription = async (req, res, next) => {
       };
       await Subscription.create(request, { transaction: t });
       // update user profile
-      console.log(newDate)
+      console.log(newDate);
       const userData = {
         id: id,
         planId: planId,
@@ -631,7 +644,6 @@ exports.verifySubscription = async (req, res, next) => {
 
       const userUpdated = await User.findByPk(userId);
 
-
       // save transaction
       const description = `Payment for ${plan.name}`;
       const slug = Math.floor(190000000 + Math.random() * 990000000);
@@ -641,36 +653,42 @@ exports.verifySubscription = async (req, res, next) => {
         userId: id,
         type: "Subscription",
         amount: amountToPay,
-        payment_reference: reference,
+        paymentReference: reference,
         description,
-        status: "approved",
+        status: "PAID",
       };
-      const transaction = JSON.parse(
-        JSON.stringify(
-          await Transaction.create(newtransaction, { transaction: t })
-        )
-      );
+
+      const Txn = await Transaction.create(newtransaction, { transaction: t });
+      const TxnNew = JSON.parse(JSON.stringify(Txn));
+
+      id = TxnNew.id;
+      const transaction = await Transaction.findOne({
+        where: { id },
+      });
+
+      console.log(TxnNew);
       console.log(transaction);
 
       let orderData = {
         user: JSON.parse(JSON.stringify(user)),
-        transaction: transaction,
+        transaction: JSON.parse(JSON.stringify(transaction)),
         plan: JSON.parse(JSON.stringify(plan)),
         expiryDate: newDate,
+        amountPaid: amount,
       };
 
-      // const invoice = await invoiceService.createInvoice(orderData, user);
-      // if (invoice) {
-      //   const files = [
-      //     {
-      //       path: `uploads/${orderData.user.fullname} Subscription.pdf`,
-      //       filename: `${orderData.user.fullname} Subscription.pdf`,
-      //     },
-      //   ];
+      const invoice = await invoiceService.createInvoice(orderData, user);
+      if (invoice) {
+        const files = [
+          {
+            path: `uploads/${orderData.user.fullname} Subscription.pdf`,
+            filename: `${orderData.user.fullname} Subscription.pdf`,
+          },
+        ];
 
-      // //   const message = helpers.invoiceMessage(user.fullname);
-      // //   sendMail(user.email, message, "GlobFolio Subscription Invoice", files);
-      // }
+        const message = helpers.invoiceMessage(user.fullname);
+        sendMail(user.email, message, "GlobFolio Subscription Invoice", files);
+      }
 
       // Notify admin
       const mesg = `${
@@ -751,19 +769,19 @@ exports.getSubUsersCount = async (req, res, next) => {
 exports.getSubUsersByPlanId = async (req, res, next) => {
   try {
     const planId = req.params.planId;
-       const plans = await SubscriptionPlan.findAll({
-        where: {id: planId},
-         order: [["createdAt", "DESC"]],
-         include: [
-           {
-             model: User,
-             as: "subscriptionPlanUsers",
-             attributes: {
-               exclude: ["password", "deletedAt"],
-             },
-           },
-         ],
-       });
+    const plans = await SubscriptionPlan.findAll({
+      where: { id: planId },
+      order: [["createdAt", "DESC"]],
+      include: [
+        {
+          model: User,
+          as: "subscriptionPlanUsers",
+          attributes: {
+            exclude: ["password", "deletedAt"],
+          },
+        },
+      ],
+    });
     return res.status(200).send({
       success: true,
       data: plans,

@@ -40,7 +40,7 @@ exports.createInvoice = async (orderData, user) => {
   //   };
   // });
 
-  // console.log(orderData)
+  console.log(orderData.transaction)
 
   const invoiceData = {
     logo: "https://res.cloudinary.com/greenmouse-tech/image/upload/v1689001814/globfolio/Group_48319_zrfe2h.png",
@@ -64,6 +64,7 @@ exports.createInvoice = async (orderData, user) => {
     plan: orderData.plan,
     transaction: orderData.transaction,
     expiryDate: orderData.expiryDate,
+    amountPaid: orderData.amountPaid
   };
 
   console.log("Invoice Generator");

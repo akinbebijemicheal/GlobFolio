@@ -177,7 +177,7 @@ exports.invoice = (data) => {
         </tr>
         <tr>
             <td id="logo-wrapper">
-                <img src="${data.logo}" style="width: 100px" />
+                <img src="${data.logo}" style="width: 200px" />
             </td>
             <td id="document-type-wrapper">
                 <p id="document-type">${data.document_title}</p><br/>
@@ -198,7 +198,7 @@ exports.invoice = (data) => {
         </tr>
         <tr>
             <td>
-                <b>Reference Cod:</b> ${data.transaction.reference}<br/>
+                <b>Reference Cod:</b> ${data.transaction}<br/>
                 <b>Name:</b> ${data.user.fullname}<br/>
                 <b>Email Address:</b> ${data.user.email}<br/>
                 <b>Subscription Expiry Date:</b> ${data.expiryDate}<br/>
@@ -222,7 +222,7 @@ exports.invoice = (data) => {
             <td><b>Item</b></td>
             <td><b>Quantity</b></td>
             <td><b>Price</b></td>
-            <td><b>Total</b></td>
+            <td><b>Amount Paid</b></td>
         </tr>
         <tr>
             <td colspan="4">
@@ -236,7 +236,7 @@ exports.invoice = (data) => {
                 <td>${data.plan.name}</td>
                 <td align="center">One month</td>
                 <td>${data.plan.amount}</td>
-                <td>${data.amount}</td>
+                <td>${data.amountPaid}</td>
             </tr>
       
         </tbody>
@@ -259,7 +259,7 @@ exports.invoice = (data) => {
         <tr>
             <td></td>
             <td><b>Subtotal:</b></td>
-            <td>${data.plan.amount}</td>
+            <td>${data.amountPaid}</td>
         </tr>
        
         </thead>
@@ -276,7 +276,7 @@ exports.invoice = (data) => {
         <tr>
             <td></td>
             <td><b>Total:</b></td>
-            <td>${data.amount}</td>
+            <td>${data.amountPaid}</td>
         </tr>
         </tfoot>
     </table>
