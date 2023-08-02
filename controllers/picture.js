@@ -134,6 +134,7 @@ exports.updatePicture = async (req, res) => {
       ],
     });
 
+    
     let output = {
       id: user.id,
       fullname: user.fullname,

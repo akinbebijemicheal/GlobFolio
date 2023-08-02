@@ -601,6 +601,12 @@ exports.updateUser = async (req, res) => {
       where: {
         email: req.user.email,
       },
+    });
+
+    const user = await User.findOne({
+      where: {
+        email: req.user.email,
+      },
       include: [
         {
           model: Picture,
@@ -610,12 +616,6 @@ exports.updateUser = async (req, res) => {
           as: "subscription",
         },
       ],
-    });
-
-    const user = await User.findOne({
-      where: {
-        email: req.user.email,
-      },
     });
     const mesg = `Profile Update Successfully`;
     const userId = user.id;
