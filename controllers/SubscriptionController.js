@@ -624,7 +624,7 @@ exports.verifySubscription = async (req, res, next) => {
         id: id,
         planId: planId,
         hasActiveSubscription: true,
-        expiredAt: "",
+        expiredAt: newDate,
       };
       await User.update(userData, { where: { id }, transaction: t });
       // console.log(h);
