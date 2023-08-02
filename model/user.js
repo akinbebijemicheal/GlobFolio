@@ -98,7 +98,7 @@ const User = db.define(
       allowNull: true,
     },
     expiredAt: {
-      type: Sequelize.STRING,
+      type: Sequelize.DATE,
       allowNull: true,
     },
   },
@@ -107,7 +107,7 @@ const User = db.define(
 
 SubscriptionPlan.hasMany(User, {
   foreignKey: "planId",
-  as: "subscriptionPlan",
+  as: "subscriptionPlanUsers",
 });
 
 User.belongsTo(SubscriptionPlan, {

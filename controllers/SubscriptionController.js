@@ -706,12 +706,11 @@ exports.getSubUsers = async (req, res, next) => {
       order: [["createdAt", "DESC"]],
       include: [
         {
-          model: Subscription,
-          as: "subscriptions",
-        },
-        {
           model: User,
-          as: "subscriptionPlan",
+          as: "subscriptionPlanUsers",
+          attributes: {
+            exclude: ["password", "deletedAt"],
+          },
         },
       ],
     });
@@ -752,16 +751,19 @@ exports.getSubUsersCount = async (req, res, next) => {
 exports.getSubUsersByPlanId = async (req, res, next) => {
   try {
     const planId = req.params.planId;
-    const plans = await SubscriptionPlan.findOne({
-      where: { id: planId },
-      order: [["createdAt", "DESC"]],
-      include: [
-        {
-          model: SubscriptionPlanPackage,
-          as: "benefits",
-        },
-      ],
-    });
+       const plans = await SubscriptionPlan.findAll({
+        where: {id: planId},
+         order: [["createdAt", "DESC"]],
+         include: [
+           {
+             model: User,
+             as: "subscriptionPlanUsers",
+             attributes: {
+               exclude: ["password", "deletedAt"],
+             },
+           },
+         ],
+       });
     return res.status(200).send({
       success: true,
       data: plans,
