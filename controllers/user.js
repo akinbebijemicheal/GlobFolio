@@ -307,7 +307,7 @@ exports.LoginUser = async (req, res, next) => {
       };
 
       let token = jwt.sign(payload, process.env.TOKEN);
-
+      console.log(user.picture);
       let result = {
         id: user.id,
         fullname: user.fullname,
@@ -322,7 +322,7 @@ exports.LoginUser = async (req, res, next) => {
         referralId: user.referralId,
         createdAt: user.createdAt,
         access_token: token,
-        pictures: user.pictures,
+        picture: user.picture,
         Subscription: user.subscription,
       };
 
@@ -1111,7 +1111,7 @@ exports.googleSign = async (req, res, next) => {
         updatedAt: user.updatedAt,
         createdAt: user.createdAt,
         access_token: token,
-        pictures: user.pictures,
+        picture: user.picture,
         Subscription: user.subscription,
       };
 
@@ -1257,7 +1257,7 @@ exports.googleSignin = async (req, res) => {
       updatedAt: user.updatedAt,
       createdAt: user.createdAt,
       access_token: token,
-      pictures: user.pictures,
+      picture: user.picture,
       Subscription: user.subscription,
     };
     const mesg = `You just logged in using ${"google"}`;
@@ -1550,6 +1550,51 @@ exports.resendCode = async (req, res) => {
       return res.status(200).send({
         success: true,
         message: "Token Sent check email or mobile number",
+      });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send({
+        success: false,
+        message: error,
+      });
+    }
+  });
+};
+
+exports.resendCodePasswordReset = async (req, res) => {
+  sequelize.transaction(async (t) => {
+    try {
+      const { email } = req.body;
+      console.log(email);
+
+      const user = await User.findOne({ where: { email: email } });
+      if (!user) {
+        return res.status(404).send({
+          success: false,
+          message: "Invalid user",
+        });
+      }
+
+      let token = "";
+      token = helpers.generateMobileToken();
+      let message = helpers.forgotPasswordMessage(
+        { email, first_name: user.fullname },
+        token
+      );
+      await EmailService.sendMail(email, message, "Reset Password");
+
+      // message = helpers.resetPasswordMobileMessage(token);
+      // let message = helpers.resetPasswordMessage(email, token);
+
+      // await EmailService.sendMail(email, message, "Reset Password");
+      const data = {
+        password_token: token,
+        id: user.id,
+      };
+      await UserService.updateUser(data, t);
+      return res.status(200).send({
+        success: true,
+        message: "Password Reset Email Sent Successfully",
       });
     } catch (error) {
       console.log(error);

@@ -37,6 +37,7 @@ const {
   unsuspendUser,
   suspendUser,
   resendCode,
+  resendCodePasswordReset,
 } = require("../controllers/user");
 const {
   checkEmail,
@@ -159,6 +160,7 @@ router.route("/user/change-password").patch(jwtAuth, changePassword);
 
 router.route("/verifyemail").post(verifyUserEmail);
 router.route("/resendCode").post(resendCode);
+router.route("/resendCode/passwordReset").post(resendCodePasswordReset);
 
 router.route("/forgot-password").post(forgotPassword);
 
