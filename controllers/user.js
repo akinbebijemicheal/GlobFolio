@@ -1549,7 +1549,7 @@ exports.resendCode = async (req, res) => {
 
       return res.status(200).send({
         success: true,
-        message: "Token Sent check email or mobile number",
+        message: "OTP sent check your email",
       });
     } catch (error) {
       console.log(error);
