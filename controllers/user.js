@@ -1549,7 +1549,7 @@ exports.resendCode = async (req, res) => {
 
       return res.status(200).send({
         success: true,
-        message: "OTP sent check your email",
+        message: "Password Reset Email Sent Successfully",
       });
     } catch (error) {
       console.log(error);
