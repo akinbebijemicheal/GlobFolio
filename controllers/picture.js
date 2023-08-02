@@ -122,24 +122,30 @@ exports.updatePicture = async (req, res) => {
       where: {
         id: req.user.id,
       },
+      include: [
+        {
+          model: Picture,
+        },
+        {
+          model: Subscription,
+          as: "subscription",
+        },
+      ],
     });
 
     let output = {
       id: user.id,
       fullname: user.fullname,
       email: user.email,
-      role: user.role,
+      userType: user.userType,
       phone_no: user.phone_no,
       country: user.country,
       gender: user.gender,
-      serviceType: user.serviceType,
-      address: user.address,
-      expiresIn: "24 hours",
-      verified: user.verified,
-      img_url: result.secure_url,
       email_verify: user.email_verify,
-      updatedAt: user.updatedAt,
+      referralId: user.referralId,
       createdAt: user.createdAt,
+      picture: user.picture,
+      Subscription: user.subscription,
     };
 
     res.status(201).json({
