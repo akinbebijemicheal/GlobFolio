@@ -2,6 +2,7 @@
 const Picture = require("../model/profilepic");
 const cloudinary = require("../util/cloudinary");
 const User = require("../model/user");
+const Subscription = require("../model/Subscription");
 
 exports.uploadPicture = async (req, res) => {
   try {
