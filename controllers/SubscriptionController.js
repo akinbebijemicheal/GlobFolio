@@ -477,6 +477,15 @@ exports.verifySubscriptionUpgrade = async (req, res, next) => {
       };
 
       await Payment.create(paymentData, { transaction: t });
+
+      // update transaction
+
+      await Transaction.update(
+        { status: "PAID", paymentReference: reference },
+        { where: { TransactionId } }
+      );
+
+
       // get user has active sub
       const sub = await Subscription.findOne({
         where: { userId: id, status: 1 },
@@ -505,13 +514,6 @@ exports.verifySubscriptionUpgrade = async (req, res, next) => {
         userData,
         transaction: t,
       });
-
-      // update transaction
-
-      await Transaction.update(
-        { status: "PAID", paymentReference: reference },
-        { where: { TransactionId }, transaction: t }
-      );
 
       const transaction = await Transaction.findOne({
         where: { TransactionId },
@@ -584,7 +586,8 @@ exports.verifySubscription = async (req, res, next) => {
       if (response.status === false) {
         return res.status(400).json({
           success: false,
-          message: response.message || "Transaction reference not valid",
+          message:
+            response.message || "Payment Transaction reference not valid",
         });
       }
 
@@ -611,6 +614,22 @@ exports.verifySubscription = async (req, res, next) => {
       let pricerPerDay = amount / days;
 
       const user = await User.findByPk(userId);
+
+      // save transaction
+      const description = `Payment for ${plan.name}`;
+      const slug = Math.floor(190000000 + Math.random() * 990000000);
+      const txSlug = `GLF/TXN/${slug}`;
+      const newtransaction = {
+        TransactionId: txSlug,
+        userId: id,
+        type: "Subscription",
+        amount: amountToPay,
+        paymentReference: reference,
+        description,
+        status: "PAID",
+      };
+
+      await Transaction.create(newtransaction, {});
 
       // create subscription
       const newDate = moment(now, "DD-MM-YYYY").add(days, "days");
@@ -644,29 +663,10 @@ exports.verifySubscription = async (req, res, next) => {
 
       const userUpdated = await User.findByPk(userId);
 
-      // save transaction
-      const description = `Payment for ${plan.name}`;
-      const slug = Math.floor(190000000 + Math.random() * 990000000);
-      const txSlug = `GLF/TXN/${slug}`;
-      const newtransaction = {
-        TransactionId: txSlug,
-        userId: id,
-        type: "Subscription",
-        amount: amountToPay,
-        paymentReference: reference,
-        description,
-        status: "PAID",
-      };
-
-      const Txn = await Transaction.create(newtransaction, { transaction: t });
-      const TxnNew = JSON.parse(JSON.stringify(Txn));
-
-      id = TxnNew.id;
       const transaction = await Transaction.findOne({
-        where: { id },
+        where: { TransactionId: newtransaction.TransactionId },
       });
 
-      console.log(TxnNew);
       console.log(transaction);
 
       let orderData = {

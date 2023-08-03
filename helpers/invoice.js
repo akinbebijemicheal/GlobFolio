@@ -198,7 +198,7 @@ exports.invoice = (data) => {
         </tr>
         <tr>
             <td>
-                <b>Reference Cod:</b> ${data.transaction}<br/>
+                <b>Reference Cod:</b> ${data.transaction.paymentReference}<br/>
                 <b>Name:</b> ${data.user.fullname}<br/>
                 <b>Email Address:</b> ${data.user.email}<br/>
                 <b>Subscription Expiry Date:</b> ${data.expiryDate}<br/>
@@ -234,7 +234,7 @@ exports.invoice = (data) => {
         
             <tr>
                 <td>${data.plan.name}</td>
-                <td align="center">One month</td>
+                <td align="center">${data.plan.duration} Month</td>
                 <td>${data.plan.amount}</td>
                 <td>${data.amountPaid}</td>
             </tr>
